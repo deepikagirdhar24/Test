@@ -1,117 +1,149 @@
+NewPersonRequest.java
+java
+Copy
+Edit
 package ICOS;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import commonLibrary.devHelperLibrary;
-import config.TestConfig;
-import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
-import utilities.CucumberLogger;
-import utilities.EncryptionUtil;
-
-import java.util.*;
 import java.util.List;
 
-import static io.restassured.RestAssured.with;
+public class NewPersonRequest {
+    private String uuid;
+    private String subType;
+    private String domiCountry;
+    private String firstName;
+    private String lastName;
+    private String gender;
+    private List<String> nationalities;
 
-public class createContactNotes {
-    public ObjectMapper objectMapper;
-    public static EncryptionUtil objEncryptionUtil;
-    protected TestConfig testDataConfig= TestConfig.getTestDataConfig();
-
-    CucumberLogger objCucumberLogger;
-    devHelperLibrary objdevHelperLibrary;
-
-    public static RequestSpecification rspec;
-    private static Response response;
-    private static String responseBody;
-    String TYK_KEY = System.getenv("X-TYK-API-KEY");
-    String objectId;
-    String orderId;
-
-    public createContactNotes() throws Exception {
-        objEncryptionUtil= new EncryptionUtil();
-        objectMapper = new ObjectMapper();
-        objCucumberLogger= new CucumberLogger();
-        objdevHelperLibrary= new devHelperLibrary();
-        rspec=objdevHelperLibrary.setup();
+    // Getters and Setters
+    public String getUuid() {
+        return uuid;
     }
 
-    public Response createNewPerson(String strEnvType,String strBearerToken,String strJWTToken, String firstName) throws JsonProcessingException {
-        HashMap<String,String> formParams= new HashMap<String,String>();
-        String strAuthentication=strBearerToken+" "+strJWTToken;
-        objCucumberLogger.PrintStatus("authenticationis"+strAuthentication);
-        String strTYKURL=testDataConfig.readApplicationProperty("TYK.ENV."+strEnvType)+testDataConfig.readApplicationProperty("TYK.CREATENEWPERSON");
-        objCucumberLogger.PrintStatus("URL is"+strTYKURL);
-
-        Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("uuid", UUID.randomUUID().toString().substring(0,7));
-        requestBody.put("subType", "pers_form_ass");
-        requestBody.put("domiCountry", "CH");
-        requestBody.put("firstName", firstName);
-        requestBody.put("lastName", "Lastname");
-        requestBody.put("gender", "male");
-
-        List<String> nationalities = new ArrayList<>();
-        nationalities.add("CH");
-
-        requestBody.put("nationalities", nationalities);
-
-        String jsonBody = new ObjectMapper().writeValueAsString(requestBody);
-        objCucumberLogger.PrintStatus(jsonBody);
-
-        response = with().spec(rspec)
-                .header("Authorization",strBearerToken+" "+strJWTToken)
-                .header("X-TYK-API-KEY",TYK_KEY)
-                .header("Content-Type","application/json")
-                .body(jsonBody)
-                .post(strTYKURL);
-        responseBody = objdevHelperLibrary.getResponseBody(response);
-        objCucumberLogger.PrintStatus("Status code is"+response.statusCode());
-        objectId = response.jsonPath().getString("objectId");
-        orderId = response.jsonPath().getString("orderId");
-        objCucumberLogger.PrintStatus("Response is"+responseBody);
-        objCucumberLogger.PrintStatus("Extracted Object Id is : "+objectId);
-        objCucumberLogger.PrintStatus("Extracted Order Id is : "+orderId);
-        return response;
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
-    public Response createContactNote(String strEnvType,String strBearerToken,String strJWTToken) throws JsonProcessingException {
-        HashMap<String,String> formParams= new HashMap<String,String>();
-        String strAuthentication=strBearerToken+" "+strJWTToken;
-        objCucumberLogger.PrintStatus("authenticationis"+strAuthentication);
-        String strTYKURL=testDataConfig.readApplicationProperty("TYK.ENV."+strEnvType)+testDataConfig.readApplicationProperty("TYK.CONTACTNOTES");
-        objCucumberLogger.PrintStatus("URL is"+strTYKURL);
-
-        Map<String, Object> requestBody = new HashMap<>();
-
-        List<String> personIds = new ArrayList<>();
-        personIds.add(objectId);
-
-        requestBody.put("personIds", personIds);
-        requestBody.put("subject", "Testsubject");
-        requestBody.put("notes", "Testnote");
-        requestBody.put("hasFollowup", false);
-
-        String jsonBody = new ObjectMapper().writeValueAsString(requestBody);
-        objCucumberLogger.PrintStatus(jsonBody);
-
-        response = with().spec(rspec)
-                .header("Authorization",strBearerToken+" "+strJWTToken)
-                .header("X-TYK-API-KEY",TYK_KEY)
-                .header("Content-Type","application/json")
-                .body(jsonBody)
-                .post(strTYKURL);
-        responseBody = objdevHelperLibrary.getResponseBody(response);
-        objCucumberLogger.PrintStatus("Status code is"+response.statusCode());
-        objCucumberLogger.PrintStatus("Response is"+responseBody);
-        return response;
+    public String getSubType() {
+        return subType;
     }
 
-    public String getOrderId(Response response) throws JsonProcessingException {
-        JsonNode rootNode = objectMapper.readTree(response.asString());
-        return rootNode.path("orderId").asText();
+    public void setSubType(String subType) {
+        this.subType = subType;
     }
 
+    public String getDomiCountry() {
+        return domiCountry;
+    }
+
+    public void setDomiCountry(String domiCountry) {
+        this.domiCountry = domiCountry;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public List<String> getNationalities() {
+        return nationalities;
+    }
+
+    public void setNationalities(List<String> nationalities) {
+        this.nationalities = nationalities;
+    }
 }
+✅ ContactNoteRequest.java
+java
+Copy
+Edit
+package ICOS;
+
+import java.util.List;
+
+public class ContactNoteRequest {
+    private List<String> personIds;
+    private String subject;
+    private String notes;
+    private boolean hasFollowup;
+
+    // Getters and Setters
+    public List<String> getPersonIds() {
+        return personIds;
+    }
+
+    public void setPersonIds(List<String> personIds) {
+        this.personIds = personIds;
+    }
+
+    public String getSubject() {
+        return subject;
+    }
+
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+
+    public boolean isHasFollowup() {
+        return hasFollowup;
+    }
+
+    public void setHasFollowup(boolean hasFollowup) {
+        this.hasFollowup = hasFollowup;
+    }
+}
+✅ Update in createContactNotes Usage
+Update these lines in createNewPerson:
+
+java
+Copy
+Edit
+NewPersonRequest personRequest = new NewPersonRequest();
+personRequest.setUuid(UUID.randomUUID().toString().substring(0,7));
+personRequest.setSubType("pers_form_ass");
+personRequest.setDomiCountry("CH");
+personRequest.setFirstName(firstName);
+personRequest.setLastName("Lastname");
+personRequest.setGender("male");
+personRequest.setNationalities(Collections.singletonList("CH"));
+
+String jsonBody = objectMapper.writeValueAsString(personRequest);
+And in createContactNote:
+
+java
+Copy
+Edit
+ContactNoteRequest noteRequest = new ContactNoteRequest();
+noteRequest.setPersonIds(Collections.singletonList(objectId));
+noteRequest.setSubject("Testsubject");
+noteRequest.setNotes("Testnote");
+noteRequest.setHasFollowup(false);
+
+String jsonBody = objectMapper.writeValueAsString(noteRequest);
