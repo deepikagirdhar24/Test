@@ -1,1 +1,1 @@
-ExtentCucumberAdapter.addTestStepLog("Response is" +response.body().toString());
+Actual Response is : io.restassured.internal.RestAssuredResponseImpl@55c1ced9
