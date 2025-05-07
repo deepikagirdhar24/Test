@@ -1,31 +1,44 @@
-Generate New Person | New_PersonId_1							
-	TBox Set Buffer						
-		firstname				FirstName_1	
-		<Buffername>					
-	POST natural-persons | Send Request						
-		Endpoint				{CP[CP_Endpoint]}	
-		Authorization				Bearer {B[JWT]}	
-		X-TYK-API-KEY				{B[TYK]}	
-		Body					
-			uuid			{RND[7]}	
-			subType			pers_form_ass	
-			domiCountry			CH	
-			firstName			{B[firstname]}	
-			lastName			Lastname	
-			gender			male	
-			nationalities				
-				item		CH	
-
-
-public class Buffer {
-    private static final Map<String, String> buffer = new HashMap<>();
-
-    public static void set(String key, String value) {
-        buffer.put(key, value);
+    @And("Send request to generate New Person")
+    public void sendRequestToGenerateNewPerson() throws JsonProcessingException {
+        String jwtToken = scenarioContext.getToken("JWTToken");
+        response =objpostContactNotes.createNewPerson(strEnvType,"Bearer",jwtToken);
     }
 
-    public static String get(String key) {
-        return buffer.get(key);
-    }
-}
+public Response createNewPerson(String strEnvType,String strBearerToken,String strJWTToken) throws JsonProcessingException {
+        HashMap<String,String> formParams= new HashMap<String,String>();
+        String strAuthentication=strBearerToken+" "+strJWTToken;
+        objCucumberLogger.PrintStatus("authenticationis"+strAuthentication);
+        String strTYKURL=testDataConfig.readApplicationProperty("TYK.ENV."+strEnvType)+testDataConfig.readApplicationProperty("TYK.CREATENEWPERSON");
+        objCucumberLogger.PrintStatus("URL is"+strTYKURL);
 
+        Buffer.set("firstName", "FirstName_1");
+        String firstName = Buffer.get("firstName");
+
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("uuid", UUID.randomUUID().toString().substring(0,7));
+        requestBody.put("subType", "pers_form_ass");
+        requestBody.put("domiCountry", "CH");
+        requestBody.put("firstName", firstName);
+        requestBody.put("lastName", "Lastname");
+        requestBody.put("gender", "male");
+
+        Map<String, String> item = new HashMap<>();
+        item.put("item", "CH");
+
+        List<Map<String, String>> nationalities = new ArrayList<>();
+        nationalities.add(item);
+
+        requestBody.put("nationalities", nationalities);
+
+        String jsonBody = new ObjectMapper().writeValueAsString(requestBody);
+
+        response = with().spec(rspec)
+                .header("Authorization",strBearerToken+" "+strJWTToken)
+                .header("X-TYK-API-KEY",TYK_KEY)
+                .body(jsonBody)
+                .post(strTYKURL);
+        responseBody = objdevHelperLibrary.getResponseBody(response);
+        objCucumberLogger.PrintStatus("Status code is"+response.statusCode());
+        objCucumberLogger.PrintStatus("Response is"+responseBody);
+        return response;
+    }
