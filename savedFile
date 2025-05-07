@@ -1,0 +1,30 @@
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("uuid", UUID.randomUUID().toString().substring(0,7));
+        requestBody.put("subType", "pers_form_ass");
+        requestBody.put("domiCountry", "CH");
+        requestBody.put("firstName", firstName);
+        requestBody.put("lastName", "Lastname");
+        requestBody.put("gender", "male");
+
+        List<String> nationalities = new ArrayList<>();
+        nationalities.add("CH");
+
+        requestBody.put("nationalities", nationalities);
+
+        String jsonBody = new ObjectMapper().writeValueAsString(requestBody);
+        
+
+        *****************************************************************************
+        Map<String, Object> requestBody = new HashMap<>();
+
+        List<String> personIds = new ArrayList<>();
+        personIds.add(objectId);
+
+        requestBody.put("personIds", personIds);
+        requestBody.put("subject", "Testsubject");
+        requestBody.put("notes", "Testnote");
+        requestBody.put("hasFollowup", false);
+
+        String jsonBody = new ObjectMapper().writeValueAsString(requestBody);
+
+        
