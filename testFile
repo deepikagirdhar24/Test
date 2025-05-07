@@ -1,3 +1,22 @@
 Actual Response is : io.restassured.internal.RestAssuredResponseImpl@55c1ced9
 
         ExtentCucumberAdapter.addTestStepLog("Actual Response is : " +response.toString());
+
+Generate New Person | New_PersonId_1							
+	TBox Set Buffer						
+		firstname				FirstName_1	
+		<Buffername>					
+	POST natural-persons | Send Request						
+		Endpoint				{CP[CP_Endpoint]}	
+		Authorization				Bearer {B[JWT]}	
+		X-TYK-API-KEY				{B[TYK]}	
+		Body					
+			uuid			{RND[7]}	
+			subType			pers_form_ass	
+			domiCountry			CH	
+			firstName			{B[firstname]}	
+			lastName			Lastname	
+			gender			male	
+			nationalities				
+				item		CH	
+
