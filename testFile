@@ -1,123 +1,3 @@
-package ICOS;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import commonLibrary.devHelperLibrary;
-import config.TestConfig;
-import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
-import utilities.Buffer;
-import utilities.CucumberLogger;
-import utilities.EncryptionUtil;
-
-import java.awt.*;
-import java.util.*;
-import java.util.List;
-
-import static io.restassured.RestAssured.with;
-
-public class createContactNotes {
-    public ObjectMapper objectMapper;
-    public static EncryptionUtil objEncryptionUtil;
-    protected TestConfig testDataConfig= TestConfig.getTestDataConfig();
-
-    CucumberLogger objCucumberLogger;
-    devHelperLibrary objdevHelperLibrary;
-
-    public static RequestSpecification rspec;
-    private static Response response;
-    private static String responseBody;
-    String TYK_KEY = System.getenv("X-TYK-API-KEY");
-    String objectId;
-    String orderId;
-
-    public createContactNotes() throws Exception {
-        objEncryptionUtil= new EncryptionUtil();
-        objectMapper = new ObjectMapper();
-        objCucumberLogger= new CucumberLogger();
-        objdevHelperLibrary= new devHelperLibrary();
-        rspec=objdevHelperLibrary.setup();
-    }
-
-    public Response createNewPerson(String strEnvType,String strBearerToken,String strJWTToken, String firstName) throws JsonProcessingException {
-        HashMap<String,String> formParams= new HashMap<String,String>();
-        String strAuthentication=strBearerToken+" "+strJWTToken;
-        objCucumberLogger.PrintStatus("authenticationis"+strAuthentication);
-        String strTYKURL=testDataConfig.readApplicationProperty("TYK.ENV."+strEnvType)+testDataConfig.readApplicationProperty("TYK.CREATENEWPERSON");
-        objCucumberLogger.PrintStatus("URL is"+strTYKURL);
-
-        Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("uuid", UUID.randomUUID().toString().substring(0,7));
-        requestBody.put("subType", "pers_form_ass");
-        requestBody.put("domiCountry", "CH");
-        requestBody.put("firstName", firstName);
-        requestBody.put("lastName", "Lastname");
-        requestBody.put("gender", "male");
-
-        List<String> nationalities = new ArrayList<>();
-        nationalities.add("CH");
-
-        requestBody.put("nationalities", nationalities);
-
-        String jsonBody = new ObjectMapper().writeValueAsString(requestBody);
-        objCucumberLogger.PrintStatus(jsonBody);
-
-        response = with().spec(rspec)
-                .header("Authorization",strBearerToken+" "+strJWTToken)
-                .header("X-TYK-API-KEY",TYK_KEY)
-                .header("Content-Type","application/json")
-                .body(jsonBody)
-                .post(strTYKURL);
-        responseBody = objdevHelperLibrary.getResponseBody(response);
-        objCucumberLogger.PrintStatus("Status code is"+response.statusCode());
-        objectId = response.jsonPath().getString("objectId");
-        orderId = response.jsonPath().getString("orderId");
-        objCucumberLogger.PrintStatus("Response is"+responseBody);
-        objCucumberLogger.PrintStatus("Extracted Object Id is : "+objectId);
-        objCucumberLogger.PrintStatus("Extracted Order Id is : "+orderId);
-        return response;
-    }
-
-    public Response createContactNote(String strEnvType,String strBearerToken,String strJWTToken) throws JsonProcessingException {
-        HashMap<String,String> formParams= new HashMap<String,String>();
-        String strAuthentication=strBearerToken+" "+strJWTToken;
-        objCucumberLogger.PrintStatus("authenticationis"+strAuthentication);
-        String strTYKURL=testDataConfig.readApplicationProperty("TYK.ENV."+strEnvType)+testDataConfig.readApplicationProperty("TYK.CONTACTNOTES");
-        objCucumberLogger.PrintStatus("URL is"+strTYKURL);
-
-        Map<String, Object> requestBody = new HashMap<>();
-
-        List<String> personIds = new ArrayList<>();
-        personIds.add(objectId);
-
-        requestBody.put("personIds", personIds);
-        requestBody.put("subject", "Testsubject");
-        requestBody.put("notes", "Testnote");
-        requestBody.put("hasFollowup", false);
-
-        String jsonBody = new ObjectMapper().writeValueAsString(requestBody);
-        objCucumberLogger.PrintStatus(jsonBody);
-
-        response = with().spec(rspec)
-                .header("Authorization",strBearerToken+" "+strJWTToken)
-                .header("X-TYK-API-KEY",TYK_KEY)
-                .header("Content-Type","application/json")
-                .body(jsonBody)
-                .post(strTYKURL);
-        responseBody = objdevHelperLibrary.getResponseBody(response);
-        objCucumberLogger.PrintStatus("Status code is"+response.statusCode());
-        objCucumberLogger.PrintStatus("Response is"+responseBody);
-        return response;
-    }
-
-    public String getOrderId(Response response) throws JsonProcessingException {
-        JsonNode rootNode = objectMapper.readTree(response.asString());
-        return rootNode.path("orderId").asText();
-    }
-
-}
-
 package stepDefinations;
 
 import ICOS.createContactNotes;
@@ -220,19 +100,123 @@ public class CreateContactSteps extends BaseStep{
     }
 }
 
-Feature:  Post Contact Notes API
+package ICOS;
 
-  Scenario Outline: Verify the Post Contact Notes API
-    Given Send Request to get Authentication Token for ICOS
-    When I generate the JWT Token
-    And Send request to generate New Person with "<FirstName>"
-    Then Send POST ContactNote Request
-    And I verify the Status Code for Create Contact Notes "<StatusCode>"
-    And I verify the Order Id"
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import commonLibrary.devHelperLibrary;
+import config.TestConfig;
+import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
+import utilities.Buffer;
+import utilities.CucumberLogger;
+import utilities.EncryptionUtil;
 
-    Examples:
-      | StatusCode | FirstName   |
-      |  200       | FirstName_1 |
+import java.awt.*;
+import java.util.*;
+import java.util.List;
 
+import static io.restassured.RestAssured.with;
 
-I need to assert this response - INFO: Value is: Response is{"orderId":"2864378352"}
+public class createContactNotes {
+    public ObjectMapper objectMapper;
+    public static EncryptionUtil objEncryptionUtil;
+    protected TestConfig testDataConfig= TestConfig.getTestDataConfig();
+
+    CucumberLogger objCucumberLogger;
+    devHelperLibrary objdevHelperLibrary;
+
+    public static RequestSpecification rspec;
+    private static Response response;
+    private static String responseBody;
+    String TYK_KEY = System.getenv("X-TYK-API-KEY");
+    String objectId;
+    String orderId;
+
+    public createContactNotes() throws Exception {
+        objEncryptionUtil= new EncryptionUtil();
+        objectMapper = new ObjectMapper();
+        objCucumberLogger= new CucumberLogger();
+        objdevHelperLibrary= new devHelperLibrary();
+        rspec=objdevHelperLibrary.setup();
+    }
+
+    public Response createNewPerson(String strEnvType,String strBearerToken,String strJWTToken, String firstName) throws JsonProcessingException {
+        HashMap<String,String> formParams= new HashMap<String,String>();
+        String strAuthentication=strBearerToken+" "+strJWTToken;
+        objCucumberLogger.PrintStatus("authenticationis"+strAuthentication);
+        String strTYKURL=testDataConfig.readApplicationProperty("TYK.ENV."+strEnvType)+testDataConfig.readApplicationProperty("TYK.CREATENEWPERSON");
+        objCucumberLogger.PrintStatus("URL is"+strTYKURL);
+
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("uuid", UUID.randomUUID().toString().substring(0,7));
+        requestBody.put("subType", "pers_form_ass");
+        requestBody.put("domiCountry", "CH");
+        requestBody.put("firstName", firstName);
+        requestBody.put("lastName", "Lastname");
+        requestBody.put("gender", "male");
+
+        List<String> nationalities = new ArrayList<>();
+        nationalities.add("CH");
+
+        requestBody.put("nationalities", nationalities);
+
+        String jsonBody = new ObjectMapper().writeValueAsString(requestBody);
+        objCucumberLogger.PrintStatus(jsonBody);
+
+        response = with().spec(rspec)
+                .header("Authorization",strBearerToken+" "+strJWTToken)
+                .header("X-TYK-API-KEY",TYK_KEY)
+                .header("Content-Type","application/json")
+                .body(jsonBody)
+                .post(strTYKURL);
+        responseBody = objdevHelperLibrary.getResponseBody(response);
+        objCucumberLogger.PrintStatus("Status code is"+response.statusCode());
+        String objectId = response.jsonPath().getString("objectId");
+        String orderId = response.jsonPath().getString("orderId");
+        objCucumberLogger.PrintStatus("Response is"+responseBody);
+        objCucumberLogger.PrintStatus("Extracted Object Id is : "+objectId);
+        objCucumberLogger.PrintStatus("Extracted Order Id is : "+orderId);
+        return response;
+    }
+
+    public Response createContactNote(String strEnvType,String strBearerToken,String strJWTToken) throws JsonProcessingException {
+        HashMap<String,String> formParams= new HashMap<String,String>();
+        String strAuthentication=strBearerToken+" "+strJWTToken;
+        objCucumberLogger.PrintStatus("authenticationis"+strAuthentication);
+        String strTYKURL=testDataConfig.readApplicationProperty("TYK.ENV."+strEnvType)+testDataConfig.readApplicationProperty("TYK.CONTACTNOTES");
+        objCucumberLogger.PrintStatus("URL is"+strTYKURL);
+
+        Map<String, Object> requestBody = new HashMap<>();
+
+        List<String> personIds = new ArrayList<>();
+        personIds.add(objectId);
+
+        requestBody.put("personIds", personIds);
+        requestBody.put("subject", "Testsubject");
+        requestBody.put("notes", "Testnote");
+        requestBody.put("hasFollowup", false);
+
+        String jsonBody = new ObjectMapper().writeValueAsString(requestBody);
+        objCucumberLogger.PrintStatus(jsonBody);
+
+        response = with().spec(rspec)
+                .header("Authorization",strBearerToken+" "+strJWTToken)
+                .header("X-TYK-API-KEY",TYK_KEY)
+                .header("Content-Type","application/json")
+                .body(jsonBody)
+                .post(strTYKURL);
+        responseBody = objdevHelperLibrary.getResponseBody(response);
+        objCucumberLogger.PrintStatus("Status code is"+response.statusCode());
+        objCucumberLogger.PrintStatus("Response is"+responseBody);
+        return response;
+    }
+
+    public String getOrderId(Response response) throws JsonProcessingException {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        return rootNode.path("orderId").asText();
+    }
+
+}
+ help me how can I use scneario context here. I need to extract order Id from response of createContactNote and apply assert on it without using any hardcoded value.
