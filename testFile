@@ -30,21 +30,26 @@ public Response createNewPerson(String strEnvType,String strBearerToken,String s
 
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("uuid", UUID.randomUUID().toString().substring(0,7));
+        objCucumberLogger.PrintStatus(requestBody.get("uuid").toString());
         requestBody.put("subType", "pers_form_ass");
+        objCucumberLogger.PrintStatus(requestBody.get("subType").toString());
         requestBody.put("domiCountry", "CH");
+        objCucumberLogger.PrintStatus(requestBody.get("domiCountry").toString());
         requestBody.put("firstName", firstName);
+        objCucumberLogger.PrintStatus(requestBody.get("firstName").toString());
         requestBody.put("lastName", "Lastname");
+        objCucumberLogger.PrintStatus(requestBody.get("lastName").toString());
         requestBody.put("gender", "male");
+        objCucumberLogger.PrintStatus(requestBody.get("gender").toString());
 
-        Map<String, String> item = new HashMap<>();
-        item.put("item", "CH");
-
-        List<Map<String, String>> nationalities = new ArrayList<>();
-        nationalities.add(item);
+        List<String> nationalities = new ArrayList<>();
+        nationalities.add("CH");
 
         requestBody.put("nationalities", nationalities);
+        objCucumberLogger.PrintStatus(requestBody.get("nationalities").toString());
 
         String jsonBody = new ObjectMapper().writeValueAsString(requestBody);
+        objCucumberLogger.PrintStatus(jsonBody);
 
         response = with().spec(rspec)
                 .header("Authorization",strBearerToken+" "+strJWTToken)
@@ -57,7 +62,21 @@ public Response createNewPerson(String strEnvType,String strBearerToken,String s
         return response;
     }
 
-[INFO] 
+Payload is - 
+
+{
+    "uuid": "12345",
+    "subType": "pers_form_ass",
+    "domiCountry": "GB",
+    "firstName": "Firstname",
+    "lastName": "Lastname",
+    "gender": "male",
+    "nationalities": [
+        "GB"
+    ]
+} 
+
+Error is - [INFO] 
 [INFO] --- maven-surefire-plugin:3.0.0-M5:test (default-test) @ wealth-icos-api ---
 [INFO] 
 [INFO] -------------------------------------------------------
@@ -66,23 +85,39 @@ public Response createNewPerson(String strEnvType,String strBearerToken,String s
 [INFO] Running testRunner.Runner
 Scenario Outline: Verify the Post Contact Notes API           # src/test/resources/Features/CreateContactNotes.feature:12
 Before All
-May 07, 2025 8:21:45 AM hooks.CucumberHooks beforeScenario
+May 07, 2025 9:14:39 AM hooks.CucumberHooks beforeScenario
 INFO: Before Scenario: Test is starting!
-May 07, 2025 8:21:50 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Access Token is51kgmaz2Nn5NtJPlkU4wolFcwyDp
-May 07, 2025 8:21:50 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Access Token  is{accessToken=51kgmaz2Nn5NtJPlkU4wolFcwyDp, tokenType=Bearer}
+May 07, 2025 9:14:43 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: Access Token is51kg3OyFUsQLxGOpD42WvOqr85j5
+May 07, 2025 9:14:43 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: Access Token  is{accessToken=51kg3OyFUsQLxGOpD42WvOqr85j5, tokenType=Bearer}
   Given Send Request to get Authentication Token for ICOS     # stepDefinations.GetUserSteps.sendRequestToGetAuthenticationTokenForICOS()
-May 07, 2025 8:21:51 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Tyk Token iseyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzdXAtYW1pd3Mtand0LWdlbmVyYXRvciIsInN1YiI6IlJCU0MkQ0xNX09OQk9BUkRJTkciLCJhdWQiOiJBTUlXZWJTZXJ2aWNlcyIsImV4cCI6MTc0NjYwMzQxMSwiaWF0IjoxNzQ2NjAyNTExLCJhdmFsb3FfYnVfaWQiOiI2In0.iVS2GnpyDvmHYuJOftSKGplog5qp2Ed1YoWE7GrD3JWp7ekV6NxmqgTm46mezA8jVsG8CllQ6atiIqI7pB3AhHPkR4YaQTiUD7NujfiK4eUkc8DDWfhPM61buTqx5svXeK706Jne0N2bU3ltMx1rVc1kZm8oxXGEIx_Cqt5d1eLwDR85ZJTdwXE7JUSB_fESwQ4fLtUyR8RtdIbE_Pnve-Oz0flySAso_tQAmGwtK5BNuscVnmBifdJSH9L8syPMx2ISpZSOGJ-bHMdvHxOoaT640gWr5DWqjnnIp9L7tocSlyAUXrgYiE8kagZgyp0bCdBAvvKVxJNDVc1b_GVYBQ
+May 07, 2025 9:14:44 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: Tyk Token iseyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzdXAtYW1pd3Mtand0LWdlbmVyYXRvciIsInN1YiI6IlJCU0MkQ0xNX09OQk9BUkRJTkciLCJhdWQiOiJBTUlXZWJTZXJ2aWNlcyIsImV4cCI6MTc0NjYwNjU4NSwiaWF0IjoxNzQ2NjA1Njg1LCJhdmFsb3FfYnVfaWQiOiI2In0.DwjkZoVWJQKF2Vj2s8KMrTjSub2N-PghzB3OYVVKL1ue2MM6Yw4WiuRMOXxbQq8un8fghFRWenizRnDf8bIBGuXmPK0Lf30y99foeJ-TF1lAnSPBCJKhJRRiczk3cf6_tlH2clTYhcuENG1N9LJ1Dbm3xd0_-pH9-tdy7DhvWCt23cHoFYBEBGsVesBHpa-ZNMmQRauHwhnjWIfWaOjcSUxsLTbW_p6yBccBkC10yp86n6RcVeffftp_oWcg7lIkx-5oOA6E6qy4qEP63L265orJ0Wmzd1X-D7n-wuve1bDASumhF_6THW9osZkkEhVYY19ZuCN2PIhKy1UgmLhuAw
   When I generate the JWT Token                               # stepDefinations.GetUserSteps.iGenerateTheJWTToken()
-May 07, 2025 8:21:51 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: authenticationisBearer eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzdXAtYW1pd3Mtand0LWdlbmVyYXRvciIsInN1YiI6IlJCU0MkQ0xNX09OQk9BUkRJTkciLCJhdWQiOiJBTUlXZWJTZXJ2aWNlcyIsImV4cCI6MTc0NjYwMzQxMSwiaWF0IjoxNzQ2NjAyNTExLCJhdmFsb3FfYnVfaWQiOiI2In0.iVS2GnpyDvmHYuJOftSKGplog5qp2Ed1YoWE7GrD3JWp7ekV6NxmqgTm46mezA8jVsG8CllQ6atiIqI7pB3AhHPkR4YaQTiUD7NujfiK4eUkc8DDWfhPM61buTqx5svXeK706Jne0N2bU3ltMx1rVc1kZm8oxXGEIx_Cqt5d1eLwDR85ZJTdwXE7JUSB_fESwQ4fLtUyR8RtdIbE_Pnve-Oz0flySAso_tQAmGwtK5BNuscVnmBifdJSH9L8syPMx2ISpZSOGJ-bHMdvHxOoaT640gWr5DWqjnnIp9L7tocSlyAUXrgYiE8kagZgyp0bCdBAvvKVxJNDVc1b_GVYBQ
-May 07, 2025 8:21:51 AM utilities.CucumberLogger PrintStatus
+May 07, 2025 9:14:44 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: authenticationisBearer eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzdXAtYW1pd3Mtand0LWdlbmVyYXRvciIsInN1YiI6IlJCU0MkQ0xNX09OQk9BUkRJTkciLCJhdWQiOiJBTUlXZWJTZXJ2aWNlcyIsImV4cCI6MTc0NjYwNjU4NSwiaWF0IjoxNzQ2NjA1Njg1LCJhdmFsb3FfYnVfaWQiOiI2In0.DwjkZoVWJQKF2Vj2s8KMrTjSub2N-PghzB3OYVVKL1ue2MM6Yw4WiuRMOXxbQq8un8fghFRWenizRnDf8bIBGuXmPK0Lf30y99foeJ-TF1lAnSPBCJKhJRRiczk3cf6_tlH2clTYhcuENG1N9LJ1Dbm3xd0_-pH9-tdy7DhvWCt23cHoFYBEBGsVesBHpa-ZNMmQRauHwhnjWIfWaOjcSUxsLTbW_p6yBccBkC10yp86n6RcVeffftp_oWcg7lIkx-5oOA6E6qy4qEP63L265orJ0Wmzd1X-D7n-wuve1bDASumhF_6THW9osZkkEhVYY19ZuCN2PIhKy1UgmLhuAw
+May 07, 2025 9:14:44 AM utilities.CucumberLogger PrintStatus
 INFO: Value is: URL ishttps://tyk-gateway.tadpole.uat01-fds.wealth.banksvcs.net/avq/acpr/sas-person/v1/natural-persons
-May 07, 2025 8:21:52 AM utilities.CucumberLogger PrintStatus
+May 07, 2025 9:14:44 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: 230e78e
+May 07, 2025 9:14:44 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: pers_form_ass
+May 07, 2025 9:14:44 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: CH
+May 07, 2025 9:14:44 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: FirstName_1
+May 07, 2025 9:14:44 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: Lastname
+May 07, 2025 9:14:44 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: male
+May 07, 2025 9:14:44 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: [CH]
+May 07, 2025 9:14:44 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: {"firstName":"FirstName_1","lastName":"Lastname","domiCountry":"CH","gender":"male","subType":"pers_form_ass","nationalities":["CH"],"uuid":"230e78e"}
+May 07, 2025 9:14:45 AM utilities.CucumberLogger PrintStatus
 INFO: Value is: Status code is400
-May 07, 2025 8:21:52 AM utilities.CucumberLogger PrintStatus
+May 07, 2025 9:14:45 AM utilities.CucumberLogger PrintStatus
 INFO: Value is: Response is{"status":400,"type":"/aws/client_error","detail":"The service cannot and will not process the request because there is a client error in the request","title":"Client Error","errorDetails":[]}
   And Send request to generate New Person                     # stepDefinations.CreateContactSteps.sendRequestToGenerateNewPerson()
   Then Send POST ContactNote Request                          # stepDefinations.CreateContactSteps.sendPOSTContactNoteRequest()
@@ -97,10 +132,10 @@ INFO: Value is: Response is{"status":400,"type":"/aws/client_error","detail":"Th
 	at org.testng.Assert.assertEquals(Assert.java:1429)
 	at stepDefinations.CreateContactSteps.iVerifyTheStatusCodeForCreateContactNotes(CreateContactSteps.java:99)
 	at âœ½.I verify the Status Code for Create Contact Notes "200"(file:///C:/Users/girdd/IdeaProjects/icosapitests/src/test/resources/Features/CreateContactNotes.feature:8)
-May 07, 2025 8:21:54 AM tech.grasshopper.pdf.PDFCucumberReport collectReportConfiguration
+May 07, 2025 9:14:47 AM tech.grasshopper.pdf.PDFCucumberReport collectReportConfiguration
 INFO: PDF report configuration YAML file not found. Using default settings.
-[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 12.906 s <<< FAILURE! - in testRunner.Runner
-[ERROR] Post Contact Notes API.Verify the Post Contact Notes API  Time elapsed: 7.574 s  <<< FAILURE!
+[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 11.703 s <<< FAILURE! - in testRunner.Runner
+[ERROR] Post Contact Notes API.Verify the Post Contact Notes API  Time elapsed: 7.492 s  <<< FAILURE!
 java.lang.AssertionError: expected [400] but found [200]
 [INFO] 
 [INFO] Results:
@@ -110,4 +145,3 @@ java.lang.AssertionError: expected [400] but found [200]
 [INFO] 
 [ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0
 [INFO] 
-
