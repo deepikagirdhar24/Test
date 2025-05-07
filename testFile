@@ -1,86 +1,117 @@
-1. Update createContactNotes to accept ScenarioContext
-Update your class constructor and add a field:
+package ICOS;
 
-java
-Copy
-Edit
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import commonLibrary.devHelperLibrary;
+import config.TestConfig;
+import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
+import utilities.CucumberLogger;
+import utilities.EncryptionUtil;
+
+import java.util.*;
+import java.util.List;
+
+import static io.restassured.RestAssured.with;
+
 public class createContactNotes {
-    ...
-    private ScenarioContext scenarioContext;
+    public ObjectMapper objectMapper;
+    public static EncryptionUtil objEncryptionUtil;
+    protected TestConfig testDataConfig= TestConfig.getTestDataConfig();
 
-    public createContactNotes(ScenarioContext scenarioContext) throws Exception {
-        this.scenarioContext = scenarioContext;
-        objEncryptionUtil = new EncryptionUtil();
+    CucumberLogger objCucumberLogger;
+    devHelperLibrary objdevHelperLibrary;
+
+    public static RequestSpecification rspec;
+    private static Response response;
+    private static String responseBody;
+    String TYK_KEY = System.getenv("X-TYK-API-KEY");
+    String objectId;
+    String orderId;
+
+    public createContactNotes() throws Exception {
+        objEncryptionUtil= new EncryptionUtil();
         objectMapper = new ObjectMapper();
-        objCucumberLogger = new CucumberLogger();
-        objdevHelperLibrary = new devHelperLibrary();
-        rspec = objdevHelperLibrary.setup();
+        objCucumberLogger= new CucumberLogger();
+        objdevHelperLibrary= new devHelperLibrary();
+        rspec=objdevHelperLibrary.setup();
     }
-    ...
+
+    public Response createNewPerson(String strEnvType,String strBearerToken,String strJWTToken, String firstName) throws JsonProcessingException {
+        HashMap<String,String> formParams= new HashMap<String,String>();
+        String strAuthentication=strBearerToken+" "+strJWTToken;
+        objCucumberLogger.PrintStatus("authenticationis"+strAuthentication);
+        String strTYKURL=testDataConfig.readApplicationProperty("TYK.ENV."+strEnvType)+testDataConfig.readApplicationProperty("TYK.CREATENEWPERSON");
+        objCucumberLogger.PrintStatus("URL is"+strTYKURL);
+
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("uuid", UUID.randomUUID().toString().substring(0,7));
+        requestBody.put("subType", "pers_form_ass");
+        requestBody.put("domiCountry", "CH");
+        requestBody.put("firstName", firstName);
+        requestBody.put("lastName", "Lastname");
+        requestBody.put("gender", "male");
+
+        List<String> nationalities = new ArrayList<>();
+        nationalities.add("CH");
+
+        requestBody.put("nationalities", nationalities);
+
+        String jsonBody = new ObjectMapper().writeValueAsString(requestBody);
+        objCucumberLogger.PrintStatus(jsonBody);
+
+        response = with().spec(rspec)
+                .header("Authorization",strBearerToken+" "+strJWTToken)
+                .header("X-TYK-API-KEY",TYK_KEY)
+                .header("Content-Type","application/json")
+                .body(jsonBody)
+                .post(strTYKURL);
+        responseBody = objdevHelperLibrary.getResponseBody(response);
+        objCucumberLogger.PrintStatus("Status code is"+response.statusCode());
+        objectId = response.jsonPath().getString("objectId");
+        orderId = response.jsonPath().getString("orderId");
+        objCucumberLogger.PrintStatus("Response is"+responseBody);
+        objCucumberLogger.PrintStatus("Extracted Object Id is : "+objectId);
+        objCucumberLogger.PrintStatus("Extracted Order Id is : "+orderId);
+        return response;
+    }
+
+    public Response createContactNote(String strEnvType,String strBearerToken,String strJWTToken) throws JsonProcessingException {
+        HashMap<String,String> formParams= new HashMap<String,String>();
+        String strAuthentication=strBearerToken+" "+strJWTToken;
+        objCucumberLogger.PrintStatus("authenticationis"+strAuthentication);
+        String strTYKURL=testDataConfig.readApplicationProperty("TYK.ENV."+strEnvType)+testDataConfig.readApplicationProperty("TYK.CONTACTNOTES");
+        objCucumberLogger.PrintStatus("URL is"+strTYKURL);
+
+        Map<String, Object> requestBody = new HashMap<>();
+
+        List<String> personIds = new ArrayList<>();
+        personIds.add(objectId);
+
+        requestBody.put("personIds", personIds);
+        requestBody.put("subject", "Testsubject");
+        requestBody.put("notes", "Testnote");
+        requestBody.put("hasFollowup", false);
+
+        String jsonBody = new ObjectMapper().writeValueAsString(requestBody);
+        objCucumberLogger.PrintStatus(jsonBody);
+
+        response = with().spec(rspec)
+                .header("Authorization",strBearerToken+" "+strJWTToken)
+                .header("X-TYK-API-KEY",TYK_KEY)
+                .header("Content-Type","application/json")
+                .body(jsonBody)
+                .post(strTYKURL);
+        responseBody = objdevHelperLibrary.getResponseBody(response);
+        objCucumberLogger.PrintStatus("Status code is"+response.statusCode());
+        objCucumberLogger.PrintStatus("Response is"+responseBody);
+        return response;
+    }
+
+    public String getOrderId(Response response) throws JsonProcessingException {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        return rootNode.path("orderId").asText();
+    }
+
 }
-🔧 2. Store orderId in ScenarioContext after extracting it
-In createNewPerson() method, modify:
-
-java
-Copy
-Edit
-String orderId = response.jsonPath().getString("orderId");
-To:
-
-java
-Copy
-Edit
-orderId = response.jsonPath().getString("orderId");
-objectId = response.jsonPath().getString("objectId");
-scenarioContext.setToken("orderId", orderId);
-scenarioContext.setToken("objectId", objectId);
-✅ This stores both values in ScenarioContext.
-
-🔧 3. Fix object initialization in CreateContactSteps
-In CreateContactSteps, replace this line:
-
-java
-Copy
-Edit
-objpostContactNotes = new createContactNotes();
-With this:
-
-java
-Copy
-Edit
-objpostContactNotes = new createContactNotes(this.scenarioContext);
-Make sure this is inside the constructor that receives ScenarioContext (which you're already using):
-
-java
-Copy
-Edit
-public CreateContactSteps(ScenarioContext scenarioContext) throws Exception {
-    ...
-    this.scenarioContext = scenarioContext;
-    ...
-    objpostContactNotes = new createContactNotes(this.scenarioContext);
-}
-🔧 4. Use the stored orderId for assertion
-In your step method:
-
-java
-Copy
-Edit
-@And("I verify the OrderId")
-public void iVerifyTheOrderId() throws JsonProcessingException {
-    String actualOrderId = objpostContactNotes.getOrderId(response);  // This gets the response value again
-    String expectedOrderId = scenarioContext.getToken("orderId");     // This gets the stored one from earlier
-
-    ExtentCucumberAdapter.addTestStepLog("Actual Order ID from response: " + actualOrderId);
-    ExtentCucumberAdapter.addTestStepLog("Expected Order ID from ScenarioContext: " + expectedOrderId);
-
-    Assert.assertEquals(actualOrderId, expectedOrderId, "Order ID does not match");
-}
-✅ Summary
-Pass ScenarioContext to createContactNotes
-
-Store the orderId in ScenarioContext during createNewPerson
-
-Use ScenarioContext in step definition to retrieve and assert
-
-This makes your test fully data-driven and decouples the steps from any hardcoded values. Let me know if you also want to assert objectId, or log both in one place.
