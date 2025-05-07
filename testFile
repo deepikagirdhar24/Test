@@ -73,9 +73,9 @@ public class createContactNotes {
         objCucumberLogger.PrintStatus("Status code is"+response.statusCode());
         objectId = response.jsonPath().getString("objectId");
         orderId = response.jsonPath().getString("orderId");
-        objCucumberLogger.PrintStatus("Extracted Object Id is"+objectId);
-        objCucumberLogger.PrintStatus("Extracted Order Id is"+orderId);
         objCucumberLogger.PrintStatus("Response is"+responseBody);
+        objCucumberLogger.PrintStatus("Extracted Object Id is : "+objectId);
+        objCucumberLogger.PrintStatus("Extracted Order Id is : "+orderId);
         return response;
     }
 
@@ -83,7 +83,7 @@ public class createContactNotes {
         HashMap<String,String> formParams= new HashMap<String,String>();
         String strAuthentication=strBearerToken+" "+strJWTToken;
         objCucumberLogger.PrintStatus("authenticationis"+strAuthentication);
-        String strTYKURL=testDataConfig.readApplicationProperty("TYK.ENV."+strEnvType)+testDataConfig.readApplicationProperty("TYK.CREATENEWPERSON");
+        String strTYKURL=testDataConfig.readApplicationProperty("TYK.ENV."+strEnvType)+testDataConfig.readApplicationProperty("TYK.CONTACTNOTES");
         objCucumberLogger.PrintStatus("URL is"+strTYKURL);
 
         Map<String, Object> requestBody = new HashMap<>();
@@ -111,7 +111,89 @@ public class createContactNotes {
         return response;
     }
 
+    public String getOrderId(Response response) throws JsonProcessingException {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        return rootNode.path("orderId").asText();
+    }
+
 }
+
+package stepDefinations;
+
+import ICOS.createContactNotes;
+import ICOS.getContactNotes;
+import com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import commonLibrary.DBUtil;
+import commonLibrary.SQLQueries;
+import config.JsonExtractor;
+import config.JsonVerifier;
+import config.TestConfig;
+import hooks.CucumberHooks;
+import io.cucumber.core.logging.Logger;
+import io.cucumber.core.logging.LoggerFactory;
+import io.cucumber.java.en.And;
+import io.cucumber.java.en.Then;
+import io.restassured.response.Response;
+import org.testng.Assert;
+import utilities.CucumberLogger;
+import utilities.ScenarioContext;
+
+public class CreateContactSteps extends BaseStep{
+
+
+    protected TestConfig testDataConfig = TestConfig.getTestDataConfig();
+    private static final Logger logger = LoggerFactory.getLogger(CucumberHooks.class);
+    TestConfig testConfig;
+    createContactNotes objpostContactNotes;
+    private static Response response;
+    public static String strToken;
+    public String strMembershipDetails;
+    public int sizeOfPagination;
+    public static String strEnv;
+    public static String strEnvType;
+    public static String strEnvFDSType;
+    public String strFDSHostURL;
+    public String strFDSDevHelperURL;
+    public Object strRes;
+    public String strJWTToken;
+    public String strEIAMTokenURL;
+    CucumberLogger objCucumberLogger;
+    JsonVerifier objJsonVerifier;
+    JsonExtractor objJsonExtractor;
+    //HashMap<String,String> objAccessToken= new HashMap<>();
+    DBUtil objDBUtil;
+    public String strUserid;
+    SQLQueries objSQLQueries;
+    protected ScenarioContext scenarioContext;
+
+
+    public CreateContactSteps() throws Exception {
+        super();
+        testConfig = new TestConfig();
+        objCucumberLogger= new CucumberLogger();
+        objJsonVerifier= new JsonVerifier();
+        objJsonExtractor= new JsonExtractor();
+        objDBUtil= new DBUtil();
+        objSQLQueries= new SQLQueries();
+        objpostContactNotes = new createContactNotes();
+
+        //scenarioContext = new ScenarioContext();
+    }
+
+    public CreateContactSteps(ScenarioContext scenarioContext) throws Exception {
+        super();
+        this.scenarioContext = scenarioContext;
+        testConfig = new TestConfig();
+        objCucumberLogger= new CucumberLogger();
+        objJsonVerifier= new JsonVerifier();
+        objJsonExtractor= new JsonExtractor();
+        objDBUtil= new DBUtil();
+        objSQLQueries= new SQLQueries();
+        objpostContactNotes = new createContactNotes();
+        this.strEnvType = scenarioContext.getToken("strEnvType");
+    }
+
     @And("Send request to generate New Person with {string}")
     public void sendRequestToGenerateNewPerson(String firstName) throws JsonProcessingException {
         String jwtToken = scenarioContext.getToken("JWTToken");
@@ -124,6 +206,20 @@ public class createContactNotes {
         response =objpostContactNotes.createContactNote(strEnvType,"Bearer",jwtToken);
     }
 
+    @And("I verify the Status Code for Create Contact Notes {string}")
+    public void iVerifyTheStatusCodeForCreateContactNotes(String strStatusCode) {
+        int responseCode= response.statusCode();
+        Assert.assertEquals(Integer.parseInt(strStatusCode),responseCode);
+    }
+
+    @And("I verify the OrderId")
+    public void iVerifyTheOrderId() throws JsonProcessingException {
+        String stringOrderId=objpostContactNotes.getOrderId(response);
+        ExtentCucumberAdapter.addTestStepLog("Actual value of Order Id is : " +stringOrderId);
+        Assert.assertEquals(,stringOrderId);
+    }
+}
+
 Feature:  Post Contact Notes API
 
   Scenario Outline: Verify the Post Contact Notes API
@@ -132,88 +228,11 @@ Feature:  Post Contact Notes API
     And Send request to generate New Person with "<FirstName>"
     Then Send POST ContactNote Request
     And I verify the Status Code for Create Contact Notes "<StatusCode>"
+    And I verify the Order Id"
 
     Examples:
       | StatusCode | FirstName   |
       |  200       | FirstName_1 |
 
-[INFO] 
-[INFO] --- maven-surefire-plugin:3.0.0-M5:test (default-test) @ wealth-icos-api ---
-[INFO] 
-[INFO] -------------------------------------------------------
-[INFO]  T E S T S
-[INFO] -------------------------------------------------------
-[INFO] Running testRunner.Runner
-Scenario Outline: Verify the Post Contact Notes API           # src/test/resources/Features/CreateContactNotes.feature:12
-Before All
-May 07, 2025 11:30:39 AM hooks.CucumberHooks beforeScenario
-INFO: Before Scenario: Test is starting!
-May 07, 2025 11:30:47 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Access Token is51kg3ldrd27Izye33FYywaOMwQZz
-May 07, 2025 11:30:47 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Access Token  is{accessToken=51kg3ldrd27Izye33FYywaOMwQZz, tokenType=Bearer}
-  Given Send Request to get Authentication Token for ICOS     # stepDefinations.GetUserSteps.sendRequestToGetAuthenticationTokenForICOS()
-May 07, 2025 11:30:48 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Tyk Token iseyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzdXAtYW1pd3Mtand0LWdlbmVyYXRvciIsInN1YiI6IlJCU0MkQ0xNX09OQk9BUkRJTkciLCJhdWQiOiJBTUlXZWJTZXJ2aWNlcyIsImV4cCI6MTc0NjYxNDc0OCwiaWF0IjoxNzQ2NjEzODQ4LCJhdmFsb3FfYnVfaWQiOiI2In0.dhuMF53baRlZn_-_dHjvndTSEEywFH5affvHN_rBvY4P4C6pgBqNOxHaWiacwBFfpO_7MLp-3CBRmxubXX0EyH_-LENMshLcCUgm7QARDJWPq5lpfTx1hisp7Rri8tbBgokxbrbhibuSy_QHG4GC929iKdcVMB_aGo7pgCwunw08vvtnDX4M_7xd5jpTP2npjsyJPt2Ct0vhy9xoy5C5W_25uRqGMlE6GyquB2URx0nwY4MHhb2LlhbW-94s0WMg2Pf8oO4I8i4VsaEFj9XypYLsMinE3Wfia7OaVVQSAr2BTMtUdSdOMjF70ihTxwmX72_MMSfEomylsjF9kC6ixQ
-  When I generate the JWT Token                               # stepDefinations.GetUserSteps.iGenerateTheJWTToken()
-May 07, 2025 11:30:48 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: authenticationisBearer eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzdXAtYW1pd3Mtand0LWdlbmVyYXRvciIsInN1YiI6IlJCU0MkQ0xNX09OQk9BUkRJTkciLCJhdWQiOiJBTUlXZWJTZXJ2aWNlcyIsImV4cCI6MTc0NjYxNDc0OCwiaWF0IjoxNzQ2NjEzODQ4LCJhdmFsb3FfYnVfaWQiOiI2In0.dhuMF53baRlZn_-_dHjvndTSEEywFH5affvHN_rBvY4P4C6pgBqNOxHaWiacwBFfpO_7MLp-3CBRmxubXX0EyH_-LENMshLcCUgm7QARDJWPq5lpfTx1hisp7Rri8tbBgokxbrbhibuSy_QHG4GC929iKdcVMB_aGo7pgCwunw08vvtnDX4M_7xd5jpTP2npjsyJPt2Ct0vhy9xoy5C5W_25uRqGMlE6GyquB2URx0nwY4MHhb2LlhbW-94s0WMg2Pf8oO4I8i4VsaEFj9XypYLsMinE3Wfia7OaVVQSAr2BTMtUdSdOMjF70ihTxwmX72_MMSfEomylsjF9kC6ixQ
-May 07, 2025 11:30:48 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: URL ishttps://tyk-gateway.tadpole.uat01-fds.wealth.banksvcs.net/avq/acpr/sas-person/v1/natural-persons
-May 07, 2025 11:30:48 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: {"firstName":"FirstName_1","lastName":"Lastname","domiCountry":"CH","gender":"male","subType":"pers_form_ass","nationalities":["CH"],"uuid":"677d221"}
-May 07, 2025 11:30:51 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Status code is200
-May 07, 2025 11:30:54 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Extracted Object Id is665078413
-May 07, 2025 11:30:54 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Extracted Order Id is2864378091
-May 07, 2025 11:30:54 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Response is{"objectId":"665078413","orderId":"2864378091"}
-  And Send request to generate New Person with "FirstName_1"  # stepDefinations.CreateContactSteps.sendRequestToGenerateNewPerson(java.lang.String)
-May 07, 2025 11:30:54 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: authenticationisBearer eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzdXAtYW1pd3Mtand0LWdlbmVyYXRvciIsInN1YiI6IlJCU0MkQ0xNX09OQk9BUkRJTkciLCJhdWQiOiJBTUlXZWJTZXJ2aWNlcyIsImV4cCI6MTc0NjYxNDc0OCwiaWF0IjoxNzQ2NjEzODQ4LCJhdmFsb3FfYnVfaWQiOiI2In0.dhuMF53baRlZn_-_dHjvndTSEEywFH5affvHN_rBvY4P4C6pgBqNOxHaWiacwBFfpO_7MLp-3CBRmxubXX0EyH_-LENMshLcCUgm7QARDJWPq5lpfTx1hisp7Rri8tbBgokxbrbhibuSy_QHG4GC929iKdcVMB_aGo7pgCwunw08vvtnDX4M_7xd5jpTP2npjsyJPt2Ct0vhy9xoy5C5W_25uRqGMlE6GyquB2URx0nwY4MHhb2LlhbW-94s0WMg2Pf8oO4I8i4VsaEFj9XypYLsMinE3Wfia7OaVVQSAr2BTMtUdSdOMjF70ihTxwmX72_MMSfEomylsjF9kC6ixQ
-May 07, 2025 11:30:54 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: URL ishttps://tyk-gateway.tadpole.uat01-fds.wealth.banksvcs.net/avq/acpr/sas-person/v1/natural-persons
-May 07, 2025 11:30:54 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: {"notes":"Testnote","subject":"Testsubject","hasFollowup":false,"personIds":["665078413"]}
-May 07, 2025 11:30:55 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Status code is500
-May 07, 2025 11:30:55 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Response is{"orderId":null,"error":"Mandatory: Name"}
-  Then Send POST ContactNote Request                          # stepDefinations.CreateContactSteps.sendPOSTContactNoteRequest()
-  And I verify the Status Code for Create Contact Notes "200" # stepDefinations.CreateContactSteps.iVerifyTheStatusCodeForCreateContactNotes(java.lang.String)
-      java.lang.AssertionError: expected [500] but found [200]
-	at org.testng.Assert.fail(Assert.java:111)
-	at org.testng.Assert.failNotEquals(Assert.java:1578)
-	at org.testng.Assert.assertEqualsImpl(Assert.java:150)
-	at org.testng.Assert.assertEquals(Assert.java:132)
-	at org.testng.Assert.assertEquals(Assert.java:1419)
-	at org.testng.Assert.assertEquals(Assert.java:1383)
-	at org.testng.Assert.assertEquals(Assert.java:1429)
-	at stepDefinations.CreateContactSteps.iVerifyTheStatusCodeForCreateContactNotes(CreateContactSteps.java:91)
-	at âœ½.I verify the Status Code for Create Contact Notes "200"(file:///C:/Users/girdd/IdeaProjects/icosapitests/src/test/resources/Features/CreateContactNotes.feature:8)
-May 07, 2025 11:30:58 AM tech.grasshopper.pdf.PDFCucumberReport collectReportConfiguration
-INFO: PDF report configuration YAML file not found. Using default settings.
-[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 23.974 s <<< FAILURE! - in testRunner.Runner
-[ERROR] Post Contact Notes API.Verify the Post Contact Notes API  Time elapsed: 18.703 s  <<< FAILURE!
-java.lang.AssertionError: expected [500] but found [200]
-[INFO] 
-[INFO] Results:
-[INFO] 
-[ERROR] Failures: 
-[ERROR]   expected [500] but found [200]
-[INFO] 
-[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0
-[INFO] 
 
-Payload - 
-{
-    "personIds": [
-        "665949635", 
-        "665949635"
-    ],
-    "subject": "SubjectasdaSubjectasdaSubjectasdaSubjectasdaSubjectasdaSubjectasdaSubjectasdaSubjectasdaSubjectasdaSubjectasdaSubjectasdaSubjectasdaSubjectasdaSubjectasdaaSubjectasdaSubjectasdaSubjectasdaSubjectasdaaSubjectasdaSubjectasdaSubjectasdaSubjectasdaaaaaaa",
-    "notes": "Notes",
-    "hasFollowup": false
-}
+I need to assert this response - INFO: Value is: Response is{"orderId":"2864378352"}
