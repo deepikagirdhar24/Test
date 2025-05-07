@@ -1,7 +1,3 @@
-Actual Response is : io.restassured.internal.RestAssuredResponseImpl@55c1ced9
-
-        ExtentCucumberAdapter.addTestStepLog("Actual Response is : " +response.toString());
-
 Generate New Person | New_PersonId_1							
 	TBox Set Buffer						
 		firstname				FirstName_1	
@@ -19,4 +15,17 @@ Generate New Person | New_PersonId_1
 			gender			male	
 			nationalities				
 				item		CH	
+
+
+public class Buffer {
+    private static final Map<String, String> buffer = new HashMap<>();
+
+    public static void set(String key, String value) {
+        buffer.put(key, value);
+    }
+
+    public static String get(String key) {
+        return buffer.get(key);
+    }
+}
 
