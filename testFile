@@ -1,4 +1,18 @@
-    @And("Send request to generate New Person")
+Feature:  Post Contact Notes API
+
+  Scenario Outline: Verify the Post Contact Notes API
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    And Send request to generate New Person
+    Then Send POST ContactNote Request
+    And I verify the Status Code for Create Contact Notes "<StatusCode>"
+
+    Examples:
+      | StatusCode |
+      |  200       |
+
+
+@And("Send request to generate New Person")
     public void sendRequestToGenerateNewPerson() throws JsonProcessingException {
         String jwtToken = scenarioContext.getToken("JWTToken");
         response =objpostContactNotes.createNewPerson(strEnvType,"Bearer",jwtToken);
