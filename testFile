@@ -1,3 +1,77 @@
+package ICOS.pojo;
+
+import java.util.List;
+
+public class NewPersonRequest {
+
+    private String strUuid;
+    private String strSubType;
+    private String strDomiCountry;
+    private String strFirstName;
+    private String strLastName;
+    private String strGender;
+    private List<String> lstNationalities;
+
+    // Getters and Setters
+    public String getStrUuid() {
+        return strUuid;
+    }
+
+    public void setStrUuid(String strUuid) {
+        this.strUuid = strUuid;
+    }
+
+    public String getStrSubType() {
+        return strSubType;
+    }
+
+    public void setStrSubType(String strSubType) {
+        this.strSubType = strSubType;
+    }
+
+    public String getStrDomiCountry() {
+        return strDomiCountry;
+    }
+
+    public void setStrDomiCountry(String strDomiCountry) {
+        this.strDomiCountry = strDomiCountry;
+    }
+
+    public String getStrFirstName() {
+        return strFirstName;
+    }
+
+    public void setStrFirstName(String strFirstName) {
+        this.strFirstName = strFirstName;
+    }
+
+    public String getStrLastName() {
+        return strLastName;
+    }
+
+    public void setStrLastName(String strLastName) {
+        this.strLastName = strLastName;
+    }
+
+    public String getStrGender() {
+        return strGender;
+    }
+
+    public void setStrGender(String strGender) {
+        this.strGender = strGender;
+    }
+
+    public List<String> getLstNationalities() {
+        return lstNationalities;
+    }
+
+    public void setLstNationalities(List<String> lstNationalities) {
+        this.lstNationalities = lstNationalities;
+    }
+
+}
+
+
 Feature:  Post Contact Notes API
 
   Scenario Outline: Verify the Post Contact Notes API
