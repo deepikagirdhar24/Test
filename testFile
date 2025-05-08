@@ -1,6 +1,7 @@
 package ICOS.pojo;
 
 import java.util.List;
+import java.util.Objects;
 
 public class NewPersonRequest {
 
@@ -12,13 +13,18 @@ public class NewPersonRequest {
     private String strGender;
     private List<String> lstNationalities;
 
+    // Utility method to clean string inputs
+    private String clean(String input) {
+        return (input == null || input.trim().isEmpty()) ? null : input.trim();
+    }
+
     // Getters and Setters
     public String getStrUuid() {
         return strUuid;
     }
 
     public void setStrUuid(String strUuid) {
-        this.strUuid = strUuid;
+        this.strUuid = clean(strUuid);
     }
 
     public String getStrSubType() {
@@ -26,7 +32,7 @@ public class NewPersonRequest {
     }
 
     public void setStrSubType(String strSubType) {
-        this.strSubType = strSubType;
+        this.strSubType = clean(strSubType);
     }
 
     public String getStrDomiCountry() {
@@ -34,7 +40,7 @@ public class NewPersonRequest {
     }
 
     public void setStrDomiCountry(String strDomiCountry) {
-        this.strDomiCountry = strDomiCountry;
+        this.strDomiCountry = clean(strDomiCountry);
     }
 
     public String getStrFirstName() {
@@ -42,7 +48,7 @@ public class NewPersonRequest {
     }
 
     public void setStrFirstName(String strFirstName) {
-        this.strFirstName = strFirstName;
+        this.strFirstName = clean(strFirstName);
     }
 
     public String getStrLastName() {
@@ -50,7 +56,7 @@ public class NewPersonRequest {
     }
 
     public void setStrLastName(String strLastName) {
-        this.strLastName = strLastName;
+        this.strLastName = clean(strLastName);
     }
 
     public String getStrGender() {
@@ -58,7 +64,7 @@ public class NewPersonRequest {
     }
 
     public void setStrGender(String strGender) {
-        this.strGender = strGender;
+        this.strGender = clean(strGender);
     }
 
     public List<String> getLstNationalities() {
@@ -68,7 +74,6 @@ public class NewPersonRequest {
     public void setLstNationalities(List<String> lstNationalities) {
         this.lstNationalities = lstNationalities;
     }
-
 }
 
 package ICOS.pojo;
@@ -81,6 +86,11 @@ public class ContactNoteRequest {
     private String strSubject;
     private String strNotes;
     private boolean boolHasFollowup;
+
+    // Utility method to clean string inputs
+    private String clean(String input) {
+        return (input == null || input.trim().isEmpty()) ? null : input.trim();
+    }
 
     // Getters and Setters
     public List<String> getLstPersonIds() {
@@ -96,7 +106,7 @@ public class ContactNoteRequest {
     }
 
     public void setStrSubject(String strSubject) {
-        this.strSubject = strSubject;
+        this.strSubject = clean(strSubject);
     }
 
     public String getStrNotes() {
@@ -104,7 +114,7 @@ public class ContactNoteRequest {
     }
 
     public void setStrNotes(String strNotes) {
-        this.strNotes = strNotes;
+        this.strNotes = clean(strNotes);
     }
 
     public boolean isBoolHasFollowup() {
@@ -114,5 +124,4 @@ public class ContactNoteRequest {
     public void setBoolHasFollowup(boolean boolHasFollowup) {
         this.boolHasFollowup = boolHasFollowup;
     }
-
 }
