@@ -1,138 +1,37 @@
-package ICOS.pojo;
+Below is one of the functions in createContactNotes.java - 
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.List;
-
-public class NewPersonRequest {
-
-    @JsonProperty("strUuid")
-    private String strUuid;
-
-    @JsonProperty("strSubType")
-    private String strSubType;
-
-    @JsonProperty("strDomiCountry")
-    private String strDomiCountry;
-
-    @JsonProperty("strFirstName")
-    private String strFirstName;
-
-    @JsonProperty("strLastName")
-    private String strLastName;
-
-    @JsonProperty("strGender")
-    private String strGender;
-
-    @JsonProperty("lstNationalities")
-    private List<String> lstNationalities;
-
-    // Getters and Setters
-    public String getStrUuid() {
-        return strUuid;
+    public String getOrderId(Response response) throws JsonProcessingException {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        return rootNode.path("orderId").asText();
     }
 
-    public void setStrUuid(String strUuid) {
-        this.strUuid = strUuid;
+CreateContactSteps.java - 
+    @And("I verify the OrderId")
+    public void iVerifyTheOrderId() throws JsonProcessingException {
+        String stringOrderId=objpostContactNotes.getOrderId(response);
+        ExtentCucumberAdapter.addTestStepLog("Actual value of Order Id is : " +stringOrderId);
+        Assert.assertNotNull(stringOrderId, "Order Id should not be null");
+        Assert.assertFalse(stringOrderId.isEmpty(), "Order Id should not be empty");
     }
 
-    public String getStrSubType() {
-        return strSubType;
-    }
+Feature file - 
 
-    public void setStrSubType(String strSubType) {
-        this.strSubType = strSubType;
-    }
+Feature:  Post Contact Notes API
 
-    public String getStrDomiCountry() {
-        return strDomiCountry;
-    }
+  Scenario Outline: Verify the Post Contact Notes API
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    And Send request to generate New Person with "<FirstName>"
+    Then Send POST ContactNote Request
+    And I verify the Status Code for Create Contact Notes "<StatusCode>"
+    And I verify the OrderId
 
-    public void setStrDomiCountry(String strDomiCountry) {
-        this.strDomiCountry = strDomiCountry;
-    }
+    Examples:
+      | StatusCode | FirstName   |
+      |  200       | FirstName_1 |
+      |  200       | FirstName_2 |
 
-    public String getStrFirstName() {
-        return strFirstName;
-    }
+The comment from my senior is - 
+The 'orderid' key should be parameterized as a function argument to enhance reusability. This would allow the function to work with various keys (e.g., 'orderid', 'personid') without duplicating similar code for each key. Following this approach would improve maintainability and adhere to the DRY (Don't Repeat Yourself) principle, allowing a single function to handle multiple data types with minimal code.
 
-    public void setStrFirstName(String strFirstName) {
-        this.strFirstName = strFirstName;
-    }
-
-    public String getStrLastName() {
-        return strLastName;
-    }
-
-    public void setStrLastName(String strLastName) {
-        this.strLastName = strLastName;
-    }
-
-    public String getStrGender() {
-        return strGender;
-    }
-
-    public void setStrGender(String strGender) {
-        this.strGender = strGender;
-    }
-
-    public List<String> getLstNationalities() {
-        return lstNationalities;
-    }
-
-    public void setLstNationalities(List<String> lstNationalities) {
-        this.lstNationalities = lstNationalities;
-    }
-}
-
-package ICOS.pojo;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.List;
-
-public class ContactNoteRequest {
-
-    @JsonProperty("lstPersonIds")
-    private List<String> lstPersonIds;
-
-    @JsonProperty("strSubject")
-    private String strSubject;
-
-    @JsonProperty("strNotes")
-    private String strNotes;
-
-    @JsonProperty("boolHasFollowup")
-    private boolean boolHasFollowup;
-
-    // Getters and Setters
-    public List<String> getLstPersonIds() {
-        return lstPersonIds;
-    }
-
-    public void setLstPersonIds(List<String> lstPersonIds) {
-        this.lstPersonIds = lstPersonIds;
-    }
-
-    public String getStrSubject() {
-        return strSubject;
-    }
-
-    public void setStrSubject(String strSubject) {
-        this.strSubject = strSubject;
-    }
-
-    public String getStrNotes() {
-        return strNotes;
-    }
-
-    public void setStrNotes(String strNotes) {
-        this.strNotes = strNotes;
-    }
-
-    public boolean isBoolHasFollowup() {
-        return boolHasFollowup;
-    }
-
-    public void setBoolHasFollowup(boolean boolHasFollowup) {
-        this.boolHasFollowup = boolHasFollowup;
-    }
-}
+How to implement this ?
