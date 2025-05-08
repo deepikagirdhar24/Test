@@ -1,125 +1,202 @@
-package stepDefinations;
+package ICOS;
 
-import ICOS.ContactNotes;
+import ICOS.pojo.ContactNoteRequest;
+import ICOS.pojo.NewPersonRequest;
 import com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import commonLibrary.DBUtil;
-import commonLibrary.SQLQueries;
-import config.JsonExtractor;
-import config.JsonVerifier;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import commonLibrary.devHelperLibrary;
 import config.TestConfig;
-import hooks.CucumberHooks;
-import io.cucumber.core.logging.Logger;
-import io.cucumber.core.logging.LoggerFactory;
-import io.cucumber.java.en.And;
-import io.cucumber.java.en.Then;
 import io.restassured.response.Response;
-import org.testng.Assert;
+import io.restassured.specification.RequestSpecification;
 import utilities.CucumberLogger;
-import utilities.ScenarioContext;
+import utilities.EncryptionUtil;
 
-public class ContactNotesSteps extends BaseStep{
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.UUID;
 
+import static io.restassured.RestAssured.with;
 
-    protected TestConfig testDataConfig = TestConfig.getTestDataConfig();
-    private static final Logger logger = LoggerFactory.getLogger(CucumberHooks.class);
-    TestConfig testConfig;
-    ContactNotes objContactNotes;
-    private static Response response;
-    public static String strToken;
-    public String strMembershipDetails;
-    public int sizeOfPagination;
-    public static String strEnv;
-    public static String strEnvType;
-    public static String strEnvFDSType;
-    public String strFDSHostURL;
-    public String strFDSDevHelperURL;
-    public Object strRes;
-    public String strJWTToken;
-    public String strEIAMTokenURL;
+public class ContactNotes {
+    public ObjectMapper objectMapper;
+    public static EncryptionUtil objEncryptionUtil;
+    protected TestConfig testDataConfig= TestConfig.getTestDataConfig();
+
     CucumberLogger objCucumberLogger;
-    JsonVerifier objJsonVerifier;
-    JsonExtractor objJsonExtractor;
-    DBUtil objDBUtil;
-    public String strUserid;
-    SQLQueries objSQLQueries;
-    protected ScenarioContext scenarioContext;
+    devHelperLibrary objdevHelperLibrary;
 
-    public ContactNotesSteps(ScenarioContext scenarioContext) throws Exception {
-        super();
-        this.scenarioContext = scenarioContext;
-        testConfig = new TestConfig();
+    public static RequestSpecification rspec;
+    private static Response response;
+    private static String responseBody;
+    String TYK_KEY = System.getenv("X-TYK-API-KEY");
+    String strObjectId;
+    String strOrderId;
+    String strJsonBody;
+
+    public ContactNotes() throws Exception {
+        objEncryptionUtil= new EncryptionUtil();
+        objectMapper = new ObjectMapper();
         objCucumberLogger= new CucumberLogger();
-        objJsonVerifier= new JsonVerifier();
-        objJsonExtractor= new JsonExtractor();
-        objDBUtil= new DBUtil();
-        objSQLQueries= new SQLQueries();
-        objContactNotes = new ContactNotes();
-        this.strEnvType = scenarioContext.getToken("strEnvType");
+        objdevHelperLibrary= new devHelperLibrary();
+        rspec=objdevHelperLibrary.setup();
     }
 
-    @Then("Send Request to get Contact Note Information")
-    public void sendRequestToGetContactNoteInformation() throws JsonProcessingException {
-        String jwtToken = scenarioContext.getToken("JWTToken");
-        //response =objContactNotes.getGetContactNotes(strEnvType,objAccessToken.get("tokenType"),strJWTToken);
-        response =objContactNotes.getGetContactNotes(strEnvType,"Bearer",jwtToken);
-        ExtentCucumberAdapter.addTestStepLog("Actual Response is : " +response.asString());
+    // New method to get Contact Notes
+    public Response getGetContactNotes(String strEnvType,String strBearerToken,String strJWTToken) throws JsonProcessingException {
+        HashMap<String,String> formParams= new HashMap<String,String>();
+        String strAuthentication=strBearerToken+" "+strJWTToken;
+        objCucumberLogger.PrintStatus("authenticationis"+strAuthentication);
+        ExtentCucumberAdapter.addTestStepLog("Actual value of Authentication is : " +strAuthentication);
+        //String strTYKURLKey="TYK.ENV."+strEnvType;
+        String strTYKURL=testDataConfig.readApplicationProperty("TYK.ENV."+strEnvType)+testDataConfig.readApplicationProperty("TYK.CONTACTNOTES");
+        objCucumberLogger.PrintStatus("URL is"+strTYKURL);
+        response = with().spec(rspec)
+                .header("Authorization",strBearerToken+" "+strJWTToken)
+                .header("X-TYK-API-KEY",TYK_KEY)
+                .get(strTYKURL);
+        responseBody = objdevHelperLibrary.getResponseBody(response);
+        objCucumberLogger.PrintStatus("Status code is"+response.statusCode());
+        objCucumberLogger.PrintStatus("Response is"+responseBody);
+        return response;
     }
 
-    @And("I verify the Status Code for Contact Notes {string}")
-    public void iVerifyTheStatusCodeForContactNotes(String strStatusCode) {
-        int responseCode= response.statusCode();
-        ExtentCucumberAdapter.addTestStepLog("Actual value of Status code is : " +responseCode);
-        Assert.assertEquals(Integer.parseInt(strStatusCode),responseCode);
+    // Method to extract a value from JSON by key
+    public String extractStringField(Response response, String key) throws JsonProcessingException {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        return rootNode.path(key).asText();
     }
 
-    @And("I verify the Subject {string}")
-    public void iVerifyTheSubject(String subject) throws JsonProcessingException {
-        String stringValueSubject=objContactNotes.extractStringField(response, "subject");
-        ExtentCucumberAdapter.addTestStepLog("Actual value of Subject is : " +stringValueSubject);
-        Assert.assertEquals(subject,stringValueSubject);
+    public Boolean extractBooleanField(Response response, String key) throws JsonProcessingException {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        return rootNode.path(key).asBoolean();
     }
 
-    @And("I verify the Notes {string}")
-    public void iVerifyTheNotes(String notes) throws JsonProcessingException {
-        String stringValueNotes=objContactNotes.extractStringField(response, "notes");
-        ExtentCucumberAdapter.addTestStepLog("Actual value of Notes is : " +stringValueNotes);
-        Assert.assertEquals(notes,stringValueNotes);
+    // Generic method to check if a value exists in a JSON array at the given JSON path
+    public boolean valueExistsInJsonArray(Response response, String jsonPath, String targetValue) throws JsonProcessingException {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode arrayNode = rootNode.path(jsonPath);
+        if (arrayNode.isArray()) {
+            return iterateAndCheckArray(arrayNode, targetValue);
+        }
+        return false;
     }
 
-    @And("I verify the HasFollowup {string}")
-    public void iVerifyTheHasFollowup(String hasFollowup) throws JsonProcessingException {
-        Boolean boolValuehasFollowup=objContactNotes.extractBooleanField(response, "hasFollowup");
-        ExtentCucumberAdapter.addTestStepLog("Actual value of HasFollowUp is : " +boolValuehasFollowup);
-        Assert.assertEquals(true,boolValuehasFollowup);
+    // Loop function used to check each item in the JSON array
+    public boolean iterateAndCheckArray(JsonNode arrayNode, String targetValue) {
+        for (JsonNode itemNode : arrayNode) {
+            String currentValue = itemNode.asText();
+            objCucumberLogger.PrintStatus("Checking item: " + currentValue); // Debugging line
+            if (targetValue.equals(currentValue)) {
+                logMatchFound(currentValue);
+                return true;
+            }
+        }
+        return false;
     }
 
-    @And("Send request to generate New Person with {string}")
-    public void sendRequestToGenerateNewPerson(String strFirstName) throws JsonProcessingException {
-        String jwtToken = scenarioContext.getToken("JWTToken");
-        response = objContactNotes.createNewPerson(strEnvType,"Bearer",jwtToken, strFirstName);
-        //ExtentCucumberAdapter.addTestStepLog("Actual Response is : " +response.asString());
+    // Logger method to add report entry for matched item
+    private void logMatchFound(String value) {
+        objCucumberLogger.PrintStatus("Match found: " + value);
+        ExtentCucumberAdapter.addTestStepLog("Actual value found: " + value);
     }
 
-    @Then("Send POST ContactNote Request")
-    public void sendPOSTContactNoteRequest() throws JsonProcessingException {
-        String jwtToken = scenarioContext.getToken("JWTToken");
-        response = objContactNotes.createContactNote(strEnvType,"Bearer",jwtToken);
-        //ExtentCucumberAdapter.addTestStepLog("Actual Response is : " +response.asString());
+    // Specific usage example: Check if a personId exists
+    public boolean personIdExists(Response response, String personId) throws JsonProcessingException {
+        return valueExistsInJsonArray(response, "personIds", personId);
     }
 
-    @And("I verify the Person Item {string}")
-    public void iVerifyThePersonItem(String personItem) throws JsonProcessingException {
-        boolean boolIsPersonPresent = objContactNotes.personIdExists(response, personItem);
-        Assert.assertEquals(true, boolIsPersonPresent);
+    //Function to create a New Person
+    public Response createNewPerson(String strEnvType,String strBearerToken,String strJWTToken, String strFirstName) throws JsonProcessingException {
+        HashMap<String,String> formParams= new HashMap<String,String>();
+        String strAuthentication=strBearerToken+" "+strJWTToken;
+        //objCucumberLogger.PrintStatus("authenticationis"+strAuthentication);
+        String strTYKURL=testDataConfig.readApplicationProperty("TYK.ENV."+strEnvType)+testDataConfig.readApplicationProperty("TYK.CREATENEWPERSON");
+        //objCucumberLogger.PrintStatus("URL is"+strTYKURL);
+
+        NewPersonRequest personRequest = new NewPersonRequest();
+        personRequest.setStrUuid(UUID.randomUUID().toString().substring(0,7));
+        personRequest.setStrSubType("pers_form_ass");
+        personRequest.setStrDomiCountry("CH");
+        personRequest.setStrFirstName(strFirstName);
+        personRequest.setStrLastName("Lastname");
+        personRequest.setStrGender("male");
+        personRequest.setLstNationalities(Collections.singletonList("CH"));
+
+        strJsonBody = new ObjectMapper().writeValueAsString(personRequest);
+
+        //objCucumberLogger.PrintStatus(jsonBody);
+
+        // Logging request details
+        ExtentCucumberAdapter.addTestStepLog("Sending request to Create New Person");
+        ExtentCucumberAdapter.addTestStepLog("Request URL: " + strTYKURL);
+        ExtentCucumberAdapter.addTestStepLog("Request Headers: Authorization=" + strAuthentication);
+        ExtentCucumberAdapter.addTestStepLog("Request Body:\n" + strJsonBody);
+
+        response = with().spec(rspec)
+                .header("Authorization",strBearerToken+" "+strJWTToken)
+                .header("X-TYK-API-KEY",TYK_KEY)
+                .header("Content-Type","application/json")
+                .body(strJsonBody)
+                .post(strTYKURL);
+        responseBody = objdevHelperLibrary.getResponseBody(response);
+
+        // Logging response details
+        ExtentCucumberAdapter.addTestStepLog("Response Code: " + response.getStatusCode());
+        ExtentCucumberAdapter.addTestStepLog("Response Body:\n" + responseBody);
+
+        //objCucumberLogger.PrintStatus("Status code is"+response.statusCode());
+        strObjectId = response.jsonPath().getString("objectId");
+        strOrderId = response.jsonPath().getString("orderId");
+
+        objCucumberLogger.PrintStatus("Response is"+responseBody);
+        //objCucumberLogger.PrintStatus("Extracted Object Id is : "+ strObjectId);
+        //objCucumberLogger.PrintStatus("Extracted Order Id is : "+ strOrderId);
+        ExtentCucumberAdapter.addTestStepLog("Extracted Object Id is : "+ strObjectId);
+        ExtentCucumberAdapter.addTestStepLog("Extracted Order Id is : " + strOrderId);
+        return response;
     }
 
-    @And("I verify the OrderId")
-    public void iVerifyTheOrderId() throws JsonProcessingException {
-        String actualOrderId = objContactNotes.extractStringField(response, "orderId");
-        ExtentCucumberAdapter.addTestStepLog("Actual value of Order Id is: " + actualOrderId);
+    //Function to create a Contact Note
+    public Response createContactNote(String strEnvType,String strBearerToken,String strJWTToken) throws JsonProcessingException {
+        HashMap<String,String> formParams= new HashMap<String,String>();
+        String strAuthentication=strBearerToken+" "+strJWTToken;
+        //objCucumberLogger.PrintStatus("authenticationis"+strAuthentication);
+        String strTYKURL=testDataConfig.readApplicationProperty("TYK.ENV."+strEnvType)+testDataConfig.readApplicationProperty("TYK.CONTACTNOTES");
+        //objCucumberLogger.PrintStatus("URL is"+strTYKURL);
 
-        Assert.assertNotNull(actualOrderId, "Order Id should not be null");
-        Assert.assertFalse(actualOrderId.isEmpty(), "Order Id should not be empty");
+        ContactNoteRequest noteRequest = new ContactNoteRequest();
+        noteRequest.setLstPersonIds(Collections.singletonList(strObjectId));
+        noteRequest.setStrSubject("Testsubject");
+        noteRequest.setStrNotes("Testnote");
+        noteRequest.setBoolHasFollowup(false);
+
+        strJsonBody = objectMapper.writeValueAsString(noteRequest);
+
+        // Logging request details
+        ExtentCucumberAdapter.addTestStepLog("Sending request to Create Contact Note");
+        ExtentCucumberAdapter.addTestStepLog("Request URL: " + strTYKURL);
+        ExtentCucumberAdapter.addTestStepLog("Request Headers: Authorization=" + strAuthentication);
+        ExtentCucumberAdapter.addTestStepLog("Request Body:\n" + strJsonBody);
+
+        //objCucumberLogger.PrintStatus(strJsonBody);
+
+        response = with().spec(rspec)
+                .header("Authorization",strBearerToken+" "+strJWTToken)
+                .header("X-TYK-API-KEY",TYK_KEY)
+                .header("Content-Type","application/json")
+                .body(strJsonBody)
+                .post(strTYKURL);
+        responseBody = objdevHelperLibrary.getResponseBody(response);
+
+        // Logging response details
+        ExtentCucumberAdapter.addTestStepLog("Response Code: " + response.getStatusCode());
+        ExtentCucumberAdapter.addTestStepLog("Response Body:\n" + responseBody);
+
+        //objCucumberLogger.PrintStatus("Status code is"+response.statusCode());
+        objCucumberLogger.PrintStatus("Response is"+responseBody);
+        return response;
     }
+
 }
