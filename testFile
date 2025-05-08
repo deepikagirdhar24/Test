@@ -1,20 +1,125 @@
-@And("I verify the Person Item {string}")
-public void iVerifyThePersonItem(String personItem) throws JsonProcessingException {
-    boolean isPersonPresent = objContactNotes.personIdExists(response, personItem);
-    Assert.assertTrue("Expected personId to be present: " + personItem, isPersonPresent);
-}
+package stepDefinations;
 
-@And("I verify the Order Id {string}")
-public void iVerifyTheOrderId(String orderId) throws JsonProcessingException {
-    boolean isOrderPresent = objContactNotes.orderIdExists(response, orderId);
-    Assert.assertTrue("Expected orderId to be present: " + orderId, isOrderPresent);
-}
-@And("I verify the Order Id")
-public void iVerifyTheOrderId() throws JsonProcessingException {
-    String actualOrderId = objContactNotes.extractStringField(response, "orderId");
-    ExtentCucumberAdapter.addTestStepLog("Actual value of Order Id is: " + actualOrderId);
+import ICOS.ContactNotes;
+import com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import commonLibrary.DBUtil;
+import commonLibrary.SQLQueries;
+import config.JsonExtractor;
+import config.JsonVerifier;
+import config.TestConfig;
+import hooks.CucumberHooks;
+import io.cucumber.core.logging.Logger;
+import io.cucumber.core.logging.LoggerFactory;
+import io.cucumber.java.en.And;
+import io.cucumber.java.en.Then;
+import io.restassured.response.Response;
+import org.testng.Assert;
+import utilities.CucumberLogger;
+import utilities.ScenarioContext;
 
-    Assert.assertNotNull(actualOrderId, "Order Id should not be null");
-    Assert.assertFalse(actualOrderId.isEmpty(), "Order Id should not be empty");
-}
+public class ContactNotesSteps extends BaseStep{
 
+
+    protected TestConfig testDataConfig = TestConfig.getTestDataConfig();
+    private static final Logger logger = LoggerFactory.getLogger(CucumberHooks.class);
+    TestConfig testConfig;
+    ContactNotes objContactNotes;
+    private static Response response;
+    public static String strToken;
+    public String strMembershipDetails;
+    public int sizeOfPagination;
+    public static String strEnv;
+    public static String strEnvType;
+    public static String strEnvFDSType;
+    public String strFDSHostURL;
+    public String strFDSDevHelperURL;
+    public Object strRes;
+    public String strJWTToken;
+    public String strEIAMTokenURL;
+    CucumberLogger objCucumberLogger;
+    JsonVerifier objJsonVerifier;
+    JsonExtractor objJsonExtractor;
+    DBUtil objDBUtil;
+    public String strUserid;
+    SQLQueries objSQLQueries;
+    protected ScenarioContext scenarioContext;
+
+    public ContactNotesSteps(ScenarioContext scenarioContext) throws Exception {
+        super();
+        this.scenarioContext = scenarioContext;
+        testConfig = new TestConfig();
+        objCucumberLogger= new CucumberLogger();
+        objJsonVerifier= new JsonVerifier();
+        objJsonExtractor= new JsonExtractor();
+        objDBUtil= new DBUtil();
+        objSQLQueries= new SQLQueries();
+        objContactNotes = new ContactNotes();
+        this.strEnvType = scenarioContext.getToken("strEnvType");
+    }
+
+    @Then("Send Request to get Contact Note Information")
+    public void sendRequestToGetContactNoteInformation() throws JsonProcessingException {
+        String jwtToken = scenarioContext.getToken("JWTToken");
+        //response =objContactNotes.getGetContactNotes(strEnvType,objAccessToken.get("tokenType"),strJWTToken);
+        response =objContactNotes.getGetContactNotes(strEnvType,"Bearer",jwtToken);
+        ExtentCucumberAdapter.addTestStepLog("Actual Response is : " +response.asString());
+    }
+
+    @And("I verify the Status Code for Contact Notes {string}")
+    public void iVerifyTheStatusCodeForContactNotes(String strStatusCode) {
+        int responseCode= response.statusCode();
+        ExtentCucumberAdapter.addTestStepLog("Actual value of Status code is : " +responseCode);
+        Assert.assertEquals(Integer.parseInt(strStatusCode),responseCode);
+    }
+
+    @And("I verify the Subject {string}")
+    public void iVerifyTheSubject(String subject) throws JsonProcessingException {
+        String stringValueSubject=objContactNotes.extractStringField(response, "subject");
+        ExtentCucumberAdapter.addTestStepLog("Actual value of Subject is : " +stringValueSubject);
+        Assert.assertEquals(subject,stringValueSubject);
+    }
+
+    @And("I verify the Notes {string}")
+    public void iVerifyTheNotes(String notes) throws JsonProcessingException {
+        String stringValueNotes=objContactNotes.extractStringField(response, "notes");
+        ExtentCucumberAdapter.addTestStepLog("Actual value of Notes is : " +stringValueNotes);
+        Assert.assertEquals(notes,stringValueNotes);
+    }
+
+    @And("I verify the HasFollowup {string}")
+    public void iVerifyTheHasFollowup(String hasFollowup) throws JsonProcessingException {
+        Boolean boolValuehasFollowup=objContactNotes.extractBooleanField(response, "hasFollowup");
+        ExtentCucumberAdapter.addTestStepLog("Actual value of HasFollowUp is : " +boolValuehasFollowup);
+        Assert.assertEquals(true,boolValuehasFollowup);
+    }
+
+    @And("Send request to generate New Person with {string}")
+    public void sendRequestToGenerateNewPerson(String strFirstName) throws JsonProcessingException {
+        String jwtToken = scenarioContext.getToken("JWTToken");
+        response = objContactNotes.createNewPerson(strEnvType,"Bearer",jwtToken, strFirstName);
+        //ExtentCucumberAdapter.addTestStepLog("Actual Response is : " +response.asString());
+    }
+
+    @Then("Send POST ContactNote Request")
+    public void sendPOSTContactNoteRequest() throws JsonProcessingException {
+        String jwtToken = scenarioContext.getToken("JWTToken");
+        response = objContactNotes.createContactNote(strEnvType,"Bearer",jwtToken);
+        //ExtentCucumberAdapter.addTestStepLog("Actual Response is : " +response.asString());
+    }
+
+    @And("I verify the Person Item {string}")
+    public void iVerifyThePersonItem(String personItem) throws JsonProcessingException {
+        boolean boolIsPersonPresent = objContactNotes.personIdExists(response, personItem);
+        Assert.assertEquals(true, boolIsPersonPresent);
+    }
+
+    @And("I verify the OrderId")
+    public void iVerifyTheOrderId() throws JsonProcessingException {
+        String actualOrderId = objContactNotes.extractStringField(response, "orderId");
+        ExtentCucumberAdapter.addTestStepLog("Actual value of Order Id is: " + actualOrderId);
+
+        Assert.assertNotNull(actualOrderId, "Order Id should not be null");
+        Assert.assertFalse(actualOrderId.isEmpty(), "Order Id should not be empty");
+    }
+}
