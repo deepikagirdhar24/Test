@@ -1,22 +1,30 @@
 package ICOS.pojo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
-import java.util.Objects;
 
 public class NewPersonRequest {
 
+    @JsonProperty("strUuid")
     private String strUuid;
-    private String strSubType;
-    private String strDomiCountry;
-    private String strFirstName;
-    private String strLastName;
-    private String strGender;
-    private List<String> lstNationalities;
 
-    // Utility method to clean string inputs
-    private String clean(String input) {
-        return (input == null || input.trim().isEmpty()) ? null : input.trim();
-    }
+    @JsonProperty("strSubType")
+    private String strSubType;
+
+    @JsonProperty("strDomiCountry")
+    private String strDomiCountry;
+
+    @JsonProperty("strFirstName")
+    private String strFirstName;
+
+    @JsonProperty("strLastName")
+    private String strLastName;
+
+    @JsonProperty("strGender")
+    private String strGender;
+
+    @JsonProperty("lstNationalities")
+    private List<String> lstNationalities;
 
     // Getters and Setters
     public String getStrUuid() {
@@ -24,7 +32,7 @@ public class NewPersonRequest {
     }
 
     public void setStrUuid(String strUuid) {
-        this.strUuid = clean(strUuid);
+        this.strUuid = strUuid;
     }
 
     public String getStrSubType() {
@@ -32,7 +40,7 @@ public class NewPersonRequest {
     }
 
     public void setStrSubType(String strSubType) {
-        this.strSubType = clean(strSubType);
+        this.strSubType = strSubType;
     }
 
     public String getStrDomiCountry() {
@@ -40,7 +48,7 @@ public class NewPersonRequest {
     }
 
     public void setStrDomiCountry(String strDomiCountry) {
-        this.strDomiCountry = clean(strDomiCountry);
+        this.strDomiCountry = strDomiCountry;
     }
 
     public String getStrFirstName() {
@@ -48,7 +56,7 @@ public class NewPersonRequest {
     }
 
     public void setStrFirstName(String strFirstName) {
-        this.strFirstName = clean(strFirstName);
+        this.strFirstName = strFirstName;
     }
 
     public String getStrLastName() {
@@ -56,7 +64,7 @@ public class NewPersonRequest {
     }
 
     public void setStrLastName(String strLastName) {
-        this.strLastName = clean(strLastName);
+        this.strLastName = strLastName;
     }
 
     public String getStrGender() {
@@ -64,7 +72,7 @@ public class NewPersonRequest {
     }
 
     public void setStrGender(String strGender) {
-        this.strGender = clean(strGender);
+        this.strGender = strGender;
     }
 
     public List<String> getLstNationalities() {
@@ -78,19 +86,22 @@ public class NewPersonRequest {
 
 package ICOS.pojo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
 public class ContactNoteRequest {
 
+    @JsonProperty("lstPersonIds")
     private List<String> lstPersonIds;
-    private String strSubject;
-    private String strNotes;
-    private boolean boolHasFollowup;
 
-    // Utility method to clean string inputs
-    private String clean(String input) {
-        return (input == null || input.trim().isEmpty()) ? null : input.trim();
-    }
+    @JsonProperty("strSubject")
+    private String strSubject;
+
+    @JsonProperty("strNotes")
+    private String strNotes;
+
+    @JsonProperty("boolHasFollowup")
+    private boolean boolHasFollowup;
 
     // Getters and Setters
     public List<String> getLstPersonIds() {
@@ -106,7 +117,7 @@ public class ContactNoteRequest {
     }
 
     public void setStrSubject(String strSubject) {
-        this.strSubject = clean(strSubject);
+        this.strSubject = strSubject;
     }
 
     public String getStrNotes() {
@@ -114,7 +125,7 @@ public class ContactNoteRequest {
     }
 
     public void setStrNotes(String strNotes) {
-        this.strNotes = clean(strNotes);
+        this.strNotes = strNotes;
     }
 
     public boolean isBoolHasFollowup() {
