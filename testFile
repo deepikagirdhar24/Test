@@ -1,3 +1,57 @@
+// Method to extract a value from JSON by key
+public String extractStringField(Response response, String key) throws JsonProcessingException {
+    JsonNode rootNode = objectMapper.readTree(response.asString());
+    return rootNode.path(key).asText();
+}
+
+public Boolean extractBooleanField(Response response, String key) throws JsonProcessingException {
+    JsonNode rootNode = objectMapper.readTree(response.asString());
+    return rootNode.path(key).asBoolean();
+}
+
+// Generic method to check if a value exists in a JSON array at the given JSON path
+public boolean valueExistsInJsonArray(Response response, String jsonPath, String targetValue) throws JsonProcessingException {
+    JsonNode rootNode = objectMapper.readTree(response.asString());
+    JsonNode arrayNode = rootNode.path(jsonPath);
+    if (arrayNode.isArray()) {
+        return iterateAndCheckArray(arrayNode, targetValue);
+    }
+    return false;
+}
+
+// Loop function used to check each item in the JSON array
+public boolean iterateAndCheckArray(JsonNode arrayNode, String targetValue) {
+    for (JsonNode itemNode : arrayNode) {
+        String currentValue = itemNode.asText();
+        objCucumberLogger.PrintStatus("Checking item: " + currentValue); // Debugging line
+        if (targetValue.equals(currentValue)) {
+            logMatchFound(currentValue);
+            return true;
+        }
+    }
+    return false;
+}
+
+// Logger method to add report entry for matched item
+private void logMatchFound(String value) {
+    objCucumberLogger.PrintStatus("Match found: " + value);
+    ExtentCucumberAdapter.addTestStepLog("Actual value found: " + value);
+}
+
+// Specific usage example: Check if a personId exists
+public boolean personIdExists(Response response, String personId) throws JsonProcessingException {
+    return valueExistsInJsonArray(response, "personIds", personId);
+}
+
+// Specific usage example: Check if an orderId exists
+public boolean orderIdExists(Response response, String orderId) throws JsonProcessingException {
+    return valueExistsInJsonArray(response, "orderIds", orderId);
+}
+********************************************************************************************************
+
+
+
+
 @And("I verify the Subject {string}")
     public void iVerifyTheSubject(String subject) throws JsonProcessingException {
         String stringValueSubject=objContactNotes.getSubject(response);
