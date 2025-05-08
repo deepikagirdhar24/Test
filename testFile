@@ -1,3 +1,10 @@
+    @And("I verify the Status Code for Contact Notes {string}")
+    public void iVerifyTheStatusCodeForContactNotes(String strStatusCode) {
+        int responseCode= response.statusCode();
+        ExtentCucumberAdapter.addTestStepLog("Actual value of Status code is : " +responseCode);
+        Assert.assertEquals(Integer.parseInt(strStatusCode),responseCode);
+    }
+
 // New method to get Subject from the JSON
     public String getSubject(Response response) throws JsonProcessingException {
         JsonNode rootNode = objectMapper.readTree(response.asString());
