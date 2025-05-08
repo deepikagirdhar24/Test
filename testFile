@@ -78,6 +78,14 @@ public boolean orderIdExists(Response response, String orderId) throws JsonProce
         Assert.assertEquals(true, boolHasPersonItem);
     }
 
+    @And("I verify the OrderId")
+    public void iVerifyTheOrderId() throws JsonProcessingException {
+        String stringOrderId= objContactNotes.getFieldFromResponse(response, "orderId");
+        ExtentCucumberAdapter.addTestStepLog("Actual value of Order Id is : " +stringOrderId);
+        Assert.assertNotNull(stringOrderId, "Order Id should not be null");
+        Assert.assertFalse(stringOrderId.isEmpty(), "Order Id should not be empty");
+    }
+
 
 
 @And("I verify the Status Code for Contact Notes {string}")
