@@ -1,178 +1,118 @@
-Feature:  Post Contact Notes API
+package ICOS.pojo;
 
-  Scenario Outline: Verify the Post Contact Notes API
-    Given Send Request to get Authentication Token for ICOS
-    When I generate the JWT Token
-    And Send request to generate New Person with "<FirstName>"
-#    Then Send POST ContactNote Request
-#    And I verify the Status Code for Create Contact Notes "<StatusCode>"
-#    And I verify the OrderId
+import java.util.List;
 
-    Examples:
-      | StatusCode | FirstName   |
-      |  200       | FirstName_1 |
-#      |  200       | FirstName_2 |
+public class NewPersonRequest {
 
+    private String strUuid;
+    private String strSubType;
+    private String strDomiCountry;
+    private String strFirstName;
+    private String strLastName;
+    private String strGender;
+    private List<String> lstNationalities;
 
-
-    @And("Send request to generate New Person with {string}")
-    public void sendRequestToGenerateNewPerson(String strFirstName) throws JsonProcessingException {
-        String jwtToken = scenarioContext.getToken("JWTToken");
-        response =objpostContactNotes.createNewPerson(strEnvType,"Bearer",jwtToken, strFirstName);
-        //ExtentCucumberAdapter.addTestStepLog("Actual Response is : " +response.asString());
+    // Getters and Setters
+    public String getStrUuid() {
+        return strUuid;
     }
 
-public Response createNewPerson(String strEnvType,String strBearerToken,String strJWTToken, String strFirstName) throws JsonProcessingException {
-        HashMap<String,String> formParams= new HashMap<String,String>();
-        String strAuthentication=strBearerToken+" "+strJWTToken;
-        //objCucumberLogger.PrintStatus("authenticationis"+strAuthentication);
-        String strTYKURL=testDataConfig.readApplicationProperty("TYK.ENV."+strEnvType)+testDataConfig.readApplicationProperty("TYK.CREATENEWPERSON");
-        //objCucumberLogger.PrintStatus("URL is"+strTYKURL);
-
-        NewPersonRequest personRequest = new NewPersonRequest();
-        personRequest.setStrUuid(UUID.randomUUID().toString().substring(0,7));
-        personRequest.setStrSubType("pers_form_ass");
-        personRequest.setStrDomiCountry("CH");
-        personRequest.setStrFirstName(strFirstName);
-        personRequest.setStrLastName("Lastname");
-        personRequest.setStrGender("male");
-        personRequest.setLstNationalities(Collections.singletonList("CH"));
-
-        String jsonBody = new ObjectMapper().writeValueAsString(personRequest);
-
-        //objCucumberLogger.PrintStatus(jsonBody);
-
-        // Logging request details
-        ExtentCucumberAdapter.addTestStepLog("Sending request to Create New Person");
-        ExtentCucumberAdapter.addTestStepLog("Request URL: " + strTYKURL);
-        ExtentCucumberAdapter.addTestStepLog("Request Headers: Authorization=" + strAuthentication);
-        ExtentCucumberAdapter.addTestStepLog("Request Body:\n" + jsonBody);
-
-        response = with().spec(rspec)
-                .header("Authorization",strBearerToken+" "+strJWTToken)
-                .header("X-TYK-API-KEY",TYK_KEY)
-                .header("Content-Type","application/json")
-                .body(jsonBody)
-                .post(strTYKURL);
-        responseBody = objdevHelperLibrary.getResponseBody(response);
-
-        // Logging response details
-        ExtentCucumberAdapter.addTestStepLog("Response Code: " + response.getStatusCode());
-        ExtentCucumberAdapter.addTestStepLog("Response Body:\n" + responseBody);
-
-        //objCucumberLogger.PrintStatus("Status code is"+response.statusCode());
-        strObjectId = response.jsonPath().getString("objectId");
-        strOrderId = response.jsonPath().getString("orderId");
-
-        objCucumberLogger.PrintStatus("Response is"+responseBody);
-        //objCucumberLogger.PrintStatus("Extracted Object Id is : "+ strObjectId);
-        //objCucumberLogger.PrintStatus("Extracted Order Id is : "+ strOrderId);
-        ExtentCucumberAdapter.addTestStepLog("Extracted Object Id is : "+ strObjectId);
-        ExtentCucumberAdapter.addTestStepLog("Extracted Order Id is : " + strOrderId);
-        return response;
+    public void setStrUuid(String strUuid) {
+        this.strUuid = strUuid;
     }
 
-"C:\Program Files\Java\jdk-17\bin\java.exe" -Dmaven.multiModuleProjectDirectory=C:\Users\girdd\IdeaProjects\icosapitests -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -Dmaven.wagon.provider.http=httpclient -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -Dcom.sun.net.ssl.checkRevocation=false -Djavax.net.ssl.trustStore "-Dmaven.home=C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2021.3.2\plugins\maven\lib\maven3" "-Dclassworlds.conf=C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2021.3.2\plugins\maven\lib\maven3\bin\m2.conf" "-Dmaven.ext.class.path=C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2021.3.2\plugins\maven\lib\maven-event-listener.jar" "-javaagent:C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2021.3.2\lib\idea_rt.jar=56875:C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2021.3.2\bin" -Dfile.encoding=UTF-8 -classpath "C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2021.3.2\plugins\maven\lib\maven3\boot\plexus-classworlds-2.6.0.jar;C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2021.3.2\plugins\maven\lib\maven3\boot\plexus-classworlds.license" org.codehaus.classworlds.Launcher -Didea.version=2021.3.2 -s C:\maven\apache-maven-3.6.1\conf\settings.xml clean install
-[INFO] Scanning for projects...
-[WARNING] 
-[WARNING] Some problems were encountered while building the effective model for org.example:wealth-icos-api:jar:1.0-SNAPSHOT
-[WARNING] 'dependencies.dependency.(groupId:artifactId:type:classifier)' must be unique: io.cucumber:cucumber-java:jar -> duplicate declaration of version ${cucumber.version} @ line 305, column 21
-[WARNING] 'dependencies.dependency.(groupId:artifactId:type:classifier)' must be unique: io.cucumber:cucumber-junit:jar -> duplicate declaration of version ${cucumber.version} @ line 313, column 21
-[WARNING] 'dependencies.dependency.(groupId:artifactId:type:classifier)' must be unique: tech.grasshopper:extent-pdf-report:jar -> version 2.12.0 vs 1.7.3 @ line 378, column 21
-[WARNING] 
-[WARNING] It is highly recommended to fix these problems because they threaten the stability of your build.
-[WARNING] 
-[WARNING] For this reason, future Maven versions might no longer support building such malformed projects.
-[WARNING] 
-[INFO] 
-[INFO] --------------------< org.example:wealth-icos-api >---------------------
-[INFO] Building wealth-icos-api 1.0-SNAPSHOT
-[INFO] --------------------------------[ jar ]---------------------------------
-Downloading from zambezi-all-repos: https://artifactory-server.app.banksvcs.net/artifactory/dws-all-repos/io/cucumber/messages/maven-metadata.xml
-Downloading from dws-all-fallback-zambezi-mirror: https://artifactory-server.app.banksvcs.net/artifactory/dws-all-repos/io/cucumber/messages/maven-metadata.xml
-Downloaded from dws-all-fallback-zambezi-mirror: https://artifactory-server.app.banksvcs.net/artifactory/dws-all-repos/io/cucumber/messages/maven-metadata.xml (2.8 kB at 4.1 kB/s)
-Downloaded from zambezi-all-repos: https://artifactory-server.app.banksvcs.net/artifactory/dws-all-repos/io/cucumber/messages/maven-metadata.xml (2.8 kB at 4.0 kB/s)
-Downloading from dws-all-fallback-zambezi-mirror: https://artifactory-server.app.banksvcs.net/artifactory/dws-all-repos/io/cucumber/query/maven-metadata.xml
-Downloading from zambezi-all-repos: https://artifactory-server.app.banksvcs.net/artifactory/dws-all-repos/io/cucumber/query/maven-metadata.xml
-Downloaded from zambezi-all-repos: https://artifactory-server.app.banksvcs.net/artifactory/dws-all-repos/io/cucumber/query/maven-metadata.xml (582 B at 4.8 kB/s)
-Downloaded from dws-all-fallback-zambezi-mirror: https://artifactory-server.app.banksvcs.net/artifactory/dws-all-repos/io/cucumber/query/maven-metadata.xml (582 B at 4.1 kB/s)
-[INFO] 
-[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ wealth-icos-api ---
-[INFO] Deleting C:\Users\girdd\IdeaProjects\icosapitests\target
-[INFO] 
-[INFO] --- build-helper-maven-plugin:3.0.0:add-source (default) @ wealth-icos-api ---
-[INFO] Source directory: C:\Users\girdd\IdeaProjects\icosapitests\src\main\java added.
-[INFO] Source directory: C:\Users\girdd\IdeaProjects\icosapitests\src\test\java added.
-[INFO] 
-[INFO] --- properties-maven-plugin:1.1.0:write-project-properties (default) @ wealth-icos-api ---
-[INFO] 
-[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ wealth-icos-api ---
-[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
-[INFO] skip non existing resourceDirectory C:\Users\girdd\IdeaProjects\icosapitests\src\main\resources
-[INFO] 
-[INFO] --- maven-compiler-plugin:3.10.0:compile (default-compile) @ wealth-icos-api ---
-[INFO] Changes detected - recompiling the module!
-[WARNING] File encoding has not been set, using platform encoding UTF-8, i.e. build is platform dependent!
-[INFO] Compiling 29 source files to C:\Users\girdd\IdeaProjects\icosapitests\target\classes
-[INFO] /C:/Users/girdd/IdeaProjects/icosapitests/src/main/java/commonLibrary/devHelperLibrary.java: C:\Users\girdd\IdeaProjects\icosapitests\src\main\java\commonLibrary\devHelperLibrary.java uses or overrides a deprecated API.
-[INFO] /C:/Users/girdd/IdeaProjects/icosapitests/src/main/java/commonLibrary/devHelperLibrary.java: Recompile with -Xlint:deprecation for details.
-[INFO] /C:/Users/girdd/IdeaProjects/icosapitests/src/test/java/stepDefinations/GetUserSteps.java: C:\Users\girdd\IdeaProjects\icosapitests\src\test\java\stepDefinations\GetUserSteps.java uses unchecked or unsafe operations.
-[INFO] /C:/Users/girdd/IdeaProjects/icosapitests/src/test/java/stepDefinations/GetUserSteps.java: Recompile with -Xlint:unchecked for details.
-[INFO] 
-[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ wealth-icos-api ---
-[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
-[INFO] Copying 12 resources
-[INFO] 
-[INFO] --- maven-compiler-plugin:3.10.0:testCompile (default-testCompile) @ wealth-icos-api ---
-[INFO] Changes detected - recompiling the module!
-[WARNING] File encoding has not been set, using platform encoding UTF-8, i.e. build is platform dependent!
-[INFO] Compiling 8 source files to C:\Users\girdd\IdeaProjects\icosapitests\target\test-classes
-[INFO] /C:/Users/girdd/IdeaProjects/icosapitests/src/test/java/stepDefinations/GetUserSteps.java: C:\Users\girdd\IdeaProjects\icosapitests\src\test\java\stepDefinations\GetUserSteps.java uses unchecked or unsafe operations.
-[INFO] /C:/Users/girdd/IdeaProjects/icosapitests/src/test/java/stepDefinations/GetUserSteps.java: Recompile with -Xlint:unchecked for details.
-[INFO] 
-[INFO] --- maven-surefire-plugin:3.0.0-M5:test (default-test) @ wealth-icos-api ---
-[INFO] 
-[INFO] -------------------------------------------------------
-[INFO]  T E S T S
-[INFO] -------------------------------------------------------
-[INFO] Running testRunner.Runner
+    public String getStrSubType() {
+        return strSubType;
+    }
 
-Scenario Outline: Verify the Post Contact Notes API          # src/test/resources/Features/CreateContactNotes.feature:13
-Before All
-  Given Send Request to get Authentication Token for ICOS    # stepDefinations.GetUserSteps.sendRequestToGetAuthenticationTokenForICOS()
-May 08, 2025 9:31:24 AM hooks.CucumberHooks beforeScenario
-INFO: Before Scenario: Test is starting!
-May 08, 2025 9:31:30 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Access Token is51kgRyqNUECTXFUn6xwtDwOAk07M
-May 08, 2025 9:31:30 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Access Token  is{accessToken=51kgRyqNUECTXFUn6xwtDwOAk07M, tokenType=Bearer}
-May 08, 2025 9:31:30 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Tyk Token iseyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzdXAtYW1pd3Mtand0LWdlbmVyYXRvciIsInN1YiI6IlJCU0MkQ0xNX09OQk9BUkRJTkciLCJhdWQiOiJBTUlXZWJTZXJ2aWNlcyIsImV4cCI6MTc0NjY5Mzk5MSwiaWF0IjoxNzQ2NjkzMDkxLCJhdmFsb3FfYnVfaWQiOiI2In0.vZpzybgFRPdhSjkruiOF4F7riB5OLTT516lWXfjjoMZ-6csbwnEPcFFIv9Twiy-hvZaSp4csi_JB_tWBFrJTz3GTulLOPXov_siGxqpltH_76uggSUGA8yEC9tIXmElX2EmyQVlS9yEx5JK0NCzi0ri8qBqVpqcun_NJzzGT7Fxs9Os1LB3HcpfFXFourUXU_pVtC9_bYiwSixH7gTovF_bP5iQPobju9IqDqmliv-GJ9Ydeoiv9O-d9o542DGiEKwwjJL7fTIHppsUCaPvVwC3vx4V9UAapNTYMpjJ_vjCmbB7EAFOhizSmL7ylP2JuRDdHmrC7gwyjroU0fJf6tQ
-May 08, 2025 9:31:34 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Response is{"orderId":null,"error":"Mandatory: Name"}
-  When I generate the JWT Token                              # stepDefinations.GetUserSteps.iGenerateTheJWTToken()
-  And Send request to generate New Person with "FirstName_1" # stepDefinations.CreateContactSteps.sendRequestToGenerateNewPerson(java.lang.String)
-May 08, 2025 9:31:36 AM tech.grasshopper.pdf.PDFCucumberReport collectReportConfiguration
-INFO: PDF report configuration YAML file not found. Using default settings.
-[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 15.235 s - in testRunner.Runner
-[INFO] 
-[INFO] Results:
-[INFO] 
-[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
-[INFO] 
-[INFO] 
-[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ wealth-icos-api ---
-[INFO] Building jar: C:\Users\girdd\IdeaProjects\icosapitests\target\wealth-icos-api-1.0-SNAPSHOT.jar
-[INFO] 
-[INFO] --- maven-install-plugin:2.4:install (default-install) @ wealth-icos-api ---
-[INFO] Installing C:\Users\girdd\IdeaProjects\icosapitests\target\wealth-icos-api-1.0-SNAPSHOT.jar to C:\dev\maven\repository\org\example\wealth-icos-api\1.0-SNAPSHOT\wealth-icos-api-1.0-SNAPSHOT.jar
-[INFO] Installing C:\Users\girdd\IdeaProjects\icosapitests\pom.xml to C:\dev\maven\repository\org\example\wealth-icos-api\1.0-SNAPSHOT\wealth-icos-api-1.0-SNAPSHOT.pom
-[INFO] ------------------------------------------------------------------------
-[INFO] BUILD SUCCESS
-[INFO] ------------------------------------------------------------------------
-[INFO] Total time:  50.761 s
-[INFO] Finished at: 2025-05-08T09:31:41+01:00
-[INFO] ------------------------------------------------------------------------
+    public void setStrSubType(String strSubType) {
+        this.strSubType = strSubType;
+    }
 
-Process finished with exit code 0
- JSON is correct - I renamed the variables firstName to strFirstname and other variables, earlier it was working fine, why has it stopped tow ork now ?
+    public String getStrDomiCountry() {
+        return strDomiCountry;
+    }
+
+    public void setStrDomiCountry(String strDomiCountry) {
+        this.strDomiCountry = strDomiCountry;
+    }
+
+    public String getStrFirstName() {
+        return strFirstName;
+    }
+
+    public void setStrFirstName(String strFirstName) {
+        this.strFirstName = strFirstName;
+    }
+
+    public String getStrLastName() {
+        return strLastName;
+    }
+
+    public void setStrLastName(String strLastName) {
+        this.strLastName = strLastName;
+    }
+
+    public String getStrGender() {
+        return strGender;
+    }
+
+    public void setStrGender(String strGender) {
+        this.strGender = strGender;
+    }
+
+    public List<String> getLstNationalities() {
+        return lstNationalities;
+    }
+
+    public void setLstNationalities(List<String> lstNationalities) {
+        this.lstNationalities = lstNationalities;
+    }
+
+}
+
+package ICOS.pojo;
+
+import java.util.List;
+
+public class ContactNoteRequest {
+
+    private List<String> lstPersonIds;
+    private String strSubject;
+    private String strNotes;
+    private boolean boolHasFollowup;
+
+    // Getters and Setters
+    public List<String> getLstPersonIds() {
+        return lstPersonIds;
+    }
+
+    public void setLstPersonIds(List<String> lstPersonIds) {
+        this.lstPersonIds = lstPersonIds;
+    }
+
+    public String getStrSubject() {
+        return strSubject;
+    }
+
+    public void setStrSubject(String strSubject) {
+        this.strSubject = strSubject;
+    }
+
+    public String getStrNotes() {
+        return strNotes;
+    }
+
+    public void setStrNotes(String strNotes) {
+        this.strNotes = strNotes;
+    }
+
+    public boolean isBoolHasFollowup() {
+        return boolHasFollowup;
+    }
+
+    public void setBoolHasFollowup(boolean boolHasFollowup) {
+        this.boolHasFollowup = boolHasFollowup;
+    }
+
+}
