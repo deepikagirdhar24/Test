@@ -9,3 +9,12 @@ public void iVerifyTheOrderId(String orderId) throws JsonProcessingException {
     boolean isOrderPresent = objContactNotes.orderIdExists(response, orderId);
     Assert.assertTrue("Expected orderId to be present: " + orderId, isOrderPresent);
 }
+@And("I verify the Order Id")
+public void iVerifyTheOrderId() throws JsonProcessingException {
+    String actualOrderId = objContactNotes.extractStringField(response, "orderId");
+    ExtentCucumberAdapter.addTestStepLog("Actual value of Order Id is: " + actualOrderId);
+
+    Assert.assertNotNull(actualOrderId, "Order Id should not be null");
+    Assert.assertFalse(actualOrderId.isEmpty(), "Order Id should not be empty");
+}
+
