@@ -1,4 +1,32 @@
-    @And("I verify the Status Code for Contact Notes {string}")
+@And("I verify the Subject {string}")
+    public void iVerifyTheSubject(String subject) throws JsonProcessingException {
+        String stringValueSubject=objContactNotes.getSubject(response);
+        ExtentCucumberAdapter.addTestStepLog("Actual value of Subject is : " +stringValueSubject);
+        Assert.assertEquals(subject,stringValueSubject);
+    }
+
+    @And("I verify the Notes {string}")
+    public void iVerifyTheNotes(String notes) throws JsonProcessingException {
+        String stringValueNotes=objContactNotes.getNotes(response);
+        ExtentCucumberAdapter.addTestStepLog("Actual value of Notes is : " +stringValueNotes);
+        Assert.assertEquals(notes,stringValueNotes);
+    }
+
+    @And("I verify the HasFollowup {string}")
+    public void iVerifyTheHasFollowup(String hasFollowup) throws JsonProcessingException {
+        ExtentCucumberAdapter.addTestStepLog("Actual value of HasFollowUp is : " +objContactNotes.hasFollowup(response));
+        Assert.assertEquals(true,objContactNotes.hasFollowup(response));
+    }
+
+    @And("I verify the Person Item {string}")
+    public void iVerifyThePersonItem(String personItem) throws JsonProcessingException {
+        boolean boolHasPersonItem = objContactNotes.getPersonItem(response, personItem);
+        Assert.assertEquals(true, boolHasPersonItem);
+    }
+
+
+
+@And("I verify the Status Code for Contact Notes {string}")
     public void iVerifyTheStatusCodeForContactNotes(String strStatusCode) {
         int responseCode= response.statusCode();
         ExtentCucumberAdapter.addTestStepLog("Actual value of Status code is : " +responseCode);
