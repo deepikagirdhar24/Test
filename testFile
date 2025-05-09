@@ -1,8 +1,88 @@
-PS C:\Users\girdd\IdeaProjects\icosapitests> target/
-target/ : The term 'target/' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify 
-that the path is correct and try again.                                                    
-At line:1 char:1                                                                           
-+ target/                                                                                  
-+ ~~~~~~~                                                                                  
-    + CategoryInfo          : ObjectNotFound: (target/:String) [], CommandNotFoundException
-    + FullyQualifiedErrorId : CommandNotFoundException   
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+Try the new cross-platform PowerShell https://aka.ms/pscore6
+
+PS C:\Users\girdd\IdeaProjects\icosapitests> git branch
+* feature/DG
+  icos_branch
+PS C:\Users\girdd\IdeaProjects\icosapitests> git add .              
+warning: in the working copy of 'target/TestReports/report.xml', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/createdFiles.lst', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/inputFiles.lst', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'target/surefire-reports/html/extent.html', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'Reports/SparkReport 7-May-25_17_16_16/Extent_Reports/Spark.html', LF will be replaced by CRLF the next time Git touches it
+PS C:\Users\girdd\IdeaProjects\icosapitests> git commit -m "ContactNotes-Commit1"
+[feature/DG 652f694] ContactNotes-Commit1
+ 31 files changed, 1607 insertions(+), 337 deletions(-)
+ create mode 100644 Reports/SparkReport 7-May-25_17_16_16/Extent_Reports/Spark.html
+ create mode 100644 Reports/SparkReport 7-May-25_17_16_16/PDF_Report/ExtentPdf.pdf
+ create mode 100644 src/main/java/ICOS/createContactNotes.java
+ create mode 100644 src/main/java/ICOS/getContactNotes.java
+ create mode 100644 src/main/java/ICOS/pojo/NewPersonRequest.java
+ create mode 100644 src/main/java/utilities/ScenarioContext.java
+ create mode 100644 src/test/java/stepDefinations/CreateContactSteps.java
+ create mode 100644 src/test/java/stepDefinations/GetContactSteps.java
+ create mode 100644 src/test/resources/Features/CreateContactNotes.feature
+ create mode 100644 src/test/resources/Features/GetContactNotes.feature
+ create mode 100644 src/test/resources/extent-config.xml
+ create mode 100644 src/test/resources/extent.properties
+PS C:\Users\girdd\IdeaProjects\icosapitests> git push origin feature/DG
+Enumerating objects: 108, done.
+Counting objects: 100% (108/108), done.
+Delta compression using up to 2 threads
+PS C:\Users\girdd\IdeaProjects\icosapitests> git rm -r --cached target/
+rm 'target/TestReports/report.json'                     
+rm 'target/TestReports/report.xml'                      
+rm 'target/classes/ICOS/getUser.class'                  
+rm 'target/classes/commonLibrary/DBUtil.class'          
+rm 'target/classes/commonLibrary/SQLQueries.class'      
+rm 'target/classes/commonLibrary/devHelperLibrary.class'
+rm 'target/classes/config/AppConfig.class'              
+rm 'target/classes/config/JsonExtractor.class'          
+rm 'target/classes/config/JsonFileHandler.class'        
+rm 'target/classes/config/JsonUtils$1.class'
+rm 'target/classes/config/JsonUtils.class'
+rm 'target/classes/config/JsonVerifier.class'
+rm 'target/classes/config/TestConfig.class'
+rm 'target/classes/config/Tuple.class'
+rm 'target/classes/config/Tuple_4Items.class'
+rm 'target/classes/hooks/CucumberHooks.class'
+rm 'target/classes/stepDefinations/BaseStep.class'
+rm 'target/classes/stepDefinations/GetUserSteps.class'
+rm 'target/classes/testDataTypes/TestData.class'
+rm 'target/classes/testDataTypes/getCurrencyData$NameItem.class'
+rm 'target/classes/testDataTypes/getCurrencyData$commonObject.class'
+rm 'target/classes/testDataTypes/getCurrencyData$metadataItem.class'
+rm 'target/classes/testDataTypes/getCurrencyData.class'
+rm 'target/classes/testRunner/Runner.class'
+rm 'target/classes/utilities/CucumberLogger.class'
+rm 'target/classes/utilities/EncryptionUtil.class'
+rm 'target/classes/utilities/Logger.class'
+rm 'target/classes/utilities/TestCase.class'
+rm 'target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst'
+rm 'target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst'
+rm 'target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/createdFiles.lst'
+rm 'target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/inputFiles.lst'
+rm 'target/surefire-reports/html/extent.html'
+rm 'target/test-classes/Features/GetUser.feature'
+rm 'target/test-classes/config/Log4j.properties'
+rm 'target/test-classes/config/TestData.properties'
+rm 'target/test-classes/config/config.properties'
+rm 'target/test-classes/config/truststore-intranet.jks'
+rm 'target/test-classes/config/truststore-intranet1.jks'
+rm 'target/test-classes/hooks/CucumberHooks.class'
+rm 'target/test-classes/maven.properties'
+rm 'target/test-classes/testDataResources/Employee.json'
+rm 'target/test-classes/testDataTypes/TestData.class'
+rm 'target/test-classes/testDataTypes/getCurrencyData$NameItem.class'
+rm 'target/test-classes/testDataTypes/getCurrencyData$commonObject.class'
+rm 'target/test-classes/testDataTypes/getCurrencyData$metadataItem.class'
+rm 'target/test-classes/testDataTypes/getCurrencyData.class'
+PS C:\Users\girdd\IdeaProjects\icosapitests> git add .
+warning: in the working copy of 'Reports/SparkReport 9-May-25_08_36_57/Extent_Reports/Spark.html', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'Reports/SparkReport 9-May-25_08_46_35/Extent_Reports/Spark.html', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'Reports/SparkReport 9-May-25_08_56_22/Extent_Reports/Spark.html', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'Reports/SparkReport 9-May-25_09_03_14/Extent_Reports/Spark.html', LF will be replaced by CRLF the next time Git touches it
+PS C:\Users\girdd\IdeaProjects\icosapitests> 
