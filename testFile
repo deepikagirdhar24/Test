@@ -1,24 +1,3 @@
-package ICOS;
-
-import ICOS.pojo.ContactNoteRequest;
-import ICOS.pojo.NewPersonRequest;
-import com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import commonLibrary.devHelperLibrary;
-import config.TestConfig;
-import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
-import utilities.CucumberLogger;
-import utilities.EncryptionUtil;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.UUID;
-
-import static io.restassured.RestAssured.with;
-
 public class ContactNotes {
     public ObjectMapper objectMapper;
     public static EncryptionUtil objEncryptionUtil;
@@ -35,168 +14,517 @@ public class ContactNotes {
     String strOrderId;
     String strJsonBody;
 
-    public ContactNotes() throws Exception {
-        objEncryptionUtil= new EncryptionUtil();
-        objectMapper = new ObjectMapper();
-        objCucumberLogger= new CucumberLogger();
-        objdevHelperLibrary= new devHelperLibrary();
-        rspec=objdevHelperLibrary.setup();
-    }
+comment from my senior is - Create a function in TestConfig for this. We should not be exposing Env variables directly in page classes until its required. It should be kept hidden in TestConfig class .
 
-    // New method to get Contact Notes
-    public Response getGetContactNotes(String strEnvType,String strBearerToken,String strJWTToken) throws JsonProcessingException {
-        HashMap<String,String> formParams= new HashMap<String,String>();
-        String strAuthentication=strBearerToken+" "+strJWTToken;
-        objCucumberLogger.PrintStatus("authenticationis"+strAuthentication);
-        ExtentCucumberAdapter.addTestStepLog("Actual value of Authentication is : " +strAuthentication);
-        //String strTYKURLKey="TYK.ENV."+strEnvType;
-        String strTYKURL=testDataConfig.readApplicationProperty("TYK.ENV."+strEnvType)+testDataConfig.readApplicationProperty("TYK.CONTACTNOTES");
-        objCucumberLogger.PrintStatus("URL is"+strTYKURL);
-        response = with().spec(rspec)
-                .header("Authorization",strBearerToken+" "+strJWTToken)
-                .header("X-TYK-API-KEY",TYK_KEY)
-                .get(strTYKURL);
-        responseBody = objdevHelperLibrary.getResponseBody(response);
-        objCucumberLogger.PrintStatus("Status code is"+response.statusCode());
-        objCucumberLogger.PrintStatus("Response is"+responseBody);
-        return response;
-    }
+ALreay existing TestCOnfig.java file - 
 
-    // Method to extract a value from JSON by key
-    public String extractStringField(Response response, String key) throws JsonProcessingException {
-        JsonNode rootNode = objectMapper.readTree(response.asString());
-        return rootNode.path(key).asText();
-    }
+package config;
 
-    public Boolean extractBooleanField(Response response, String key) throws JsonProcessingException {
-        JsonNode rootNode = objectMapper.readTree(response.asString());
-        return rootNode.path(key).asBoolean();
-    }
+import org.junit.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import utilities.CucumberLogger;
+import utilities.EncryptionUtil;
 
-    // Generic method to check if a value exists in a JSON array at the given JSON path
-    public boolean valueExistsInJsonArray(Response response, String jsonPath, String targetValue) throws JsonProcessingException {
-        JsonNode rootNode = objectMapper.readTree(response.asString());
-        JsonNode arrayNode = rootNode.path(jsonPath);
-        if (arrayNode.isArray()) {
-            return iterateAndCheckArray(arrayNode, targetValue);
-        }
-        return false;
-    }
+import java.io.*;
+import java.util.Optional;
+import java.util.Properties;
+import java.util.concurrent.Callable;
 
-    // Loop function used to check each item in the JSON array
-    public boolean iterateAndCheckArray(JsonNode arrayNode, String targetValue) {
-        for (JsonNode itemNode : arrayNode) {
-            String currentValue = itemNode.asText();
-            objCucumberLogger.PrintStatus("Checking item: " + currentValue); // Debugging line
-            if (targetValue.equals(currentValue)) {
-                logMatchFound(currentValue);
-                return true;
+public class TestConfig {
+
+	private static TestConfig testConfigInstance;
+	public static Properties properties;
+	public static Properties userproperties;
+	public static Properties logproperties;
+    private static String ENVIRONMENT;							
+	private final String propertyFilePath = System.getProperty("user.dir")+"\\src\\test\\resources\\config\\config.properties";
+	private final String userPropertyFilePath = System.getProperty("user.dir")+"\\src\\test\\resources\\config\\TestData.properties";
+	private final String logPropertyFilePath = System.getProperty("user.dir")+"\\src\\test\\resources\\config\\Log4j.properties";
+	public static Properties mavenProperties;
+	private InputStream mavenPropertyFilePath;									   									   
+	public static String PREFIX;
+	private static String browser;
+	private static String browserProfile;
+	protected static final Logger LOGGER = LoggerFactory.getLogger("TestConfig.class");
+	private static final int LOGIN_RETRY_DEFAULT = 0;
+	private static final int LINK_WAIT_TIMEOUT_DEFAULT_MS = 2000;
+	private static String saucelabsFlag;
+	private String staffHubUrl;
+	private static String linkProxy;
+	private static String linkProxyPort;
+	private String browserstackFlag;
+	private String browserstackUser;
+	private String browserstackAccessKey;
+	private String browserstackBinary;
+	private String seleniumGridFlag;
+	private String device;
+	private static String EXECUTION;
+	CucumberLogger objCucumberLogger;
+
+	AppConfig config;
+
+	private static String APP_PROXY  = "userproxy-pnf.web.banksvcs.net:8080";
+	private static String JIRA_PASSWORD = System.getenv("JIRA_PASSWORD");
+	private static String JIRA_RACF_ID = System.getenv("JIRA_RACF_ID");
+
+
+
+	public String getFDSKeystorePassword() {
+		System.out.println(properties.getProperty("EXECUTION"));
+		System.out.println(getSystemVariable("FDSKeystorePassword"));
+		if (EXECUTION == null) {
+			EXECUTION = properties.getProperty("EXECUTION").equalsIgnoreCase("LOCAL")
+					? getSystemVariable("FDSKeystorePassword")
+					: config.getstrFDSKeystorePassword();
+
+		}
+		System.out.println(EXECUTION);
+		return EXECUTION;
+	}
+	public static String getSystemVariable(String key) {
+		assert key != null;
+		String value = System.getenv(key);
+		Assert.assertNotNull(String.format("%s should not be null. Please check your Environment variables.", key), value);
+		return value;
+	}
+
+	public static String getAppProxy() {
+		if (APP_PROXY == null)
+			APP_PROXY = getSystemVariable("APP_PROXY");
+
+		return APP_PROXY;
+	}
+
+
+	public static String getJiraRacfID() {
+		if (JIRA_RACF_ID == null)
+			JIRA_RACF_ID = getSystemVariable("JIRA_RACF_ID");
+
+		return JIRA_RACF_ID;
+	}
+
+	public static String getJiraPassword() {
+		if (JIRA_PASSWORD == null)
+			JIRA_PASSWORD = EncryptionUtil.decryptPassword(getSystemVariable("JIRA_PASSWORD"));
+
+		return JIRA_PASSWORD;
+	}
+
+	public TestConfig() {
+		BufferedReader reader;
+		BufferedReader userFileReader;
+		BufferedReader logFileReader;
+		objCucumberLogger = new CucumberLogger();
+		config=new AppConfig();
+		try {
+			reader = new BufferedReader(new FileReader(propertyFilePath));
+			File file = new File(propertyFilePath);
+			System.out.println(file.exists());  //false
+			System.out.println(file.canRead());  //false
+			FileInputStream fis = new FileInputStream(file);
+			userFileReader = new BufferedReader(new FileReader(userPropertyFilePath));
+			File filelog= new File(logPropertyFilePath);
+			FileInputStream fislog = new FileInputStream(filelog);
+			//logFileReader = new BufferedReader(new FileReader(logPropertyFilePath));
+			properties = new Properties();
+			userproperties = new Properties();
+			try {
+				properties.load(fis);
+				userproperties.load(userFileReader);
+				//logproperties.load(logFileReader);
+				//loadMavenPropertyFile();
+							
+			PREFIX = properties.getProperty("ENV") + ".";
+				reader.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+				System.out.println(e);
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			throw new RuntimeException("Configuration.properties not found at " + propertyFilePath+e);
+		}
+	}
+	public static TestConfig getTestDataConfig() throws Exception {
+		if (testConfigInstance == null) {
+			testConfigInstance = new TestConfig();
+												  
+		}
+		return testConfigInstance;
+	}
+	 private void loadMavenPropertyFile() throws IOException {
+	        mavenPropertyFilePath = Thread.currentThread().getContextClassLoader().getResourceAsStream("maven.properties");
+	        mavenProperties = new Properties();
+	        mavenProperties.load(mavenPropertyFilePath);
+	    }
+
+
+		public String getLogProperty(String key)
+		{
+			String value = null;
+
+			try {
+				value = logproperties.getProperty(key);
+				if (value == null) {
+					LOGGER.error(key + " Test data missing");
+				}
+			} catch (Exception e) {
+				LOGGER.error("TestData reading error " + key);
+			}
+
+			return value;
+		}
+	public String getTestData(String key) {
+		String value = null;
+
+		try {
+			value = userproperties.getProperty(key);
+			if (value == null) {
+				LOGGER.error(key + " Test data missing");
+			}
+		} catch (Exception e) {
+			LOGGER.error("TestData reading error " + key);
+		}
+
+		return value;
+	}
+	 
+
+	public String readApplicationProperty(String key) {
+		return properties.getProperty(key);
+												
+	}
+	public String getEnvironment() {
+            try {
+                if (ENVIRONMENT == null) {
+                   // ENVIRONMENT = (getTestDataConfig().readMavenProperty("TEAMCITY_EXECUTION").equalsIgnoreCase("true") ? getEnvFromProperties() : properties.getProperty("ENV"));
+					ENVIRONMENT =  properties.getProperty("ENV");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+            return ENVIRONMENT;
         }
-        return false;
-    }
 
-    // Logger method to add report entry for matched item
-    private void logMatchFound(String value) {
-        objCucumberLogger.PrintStatus("Match found: " + value);
-        ExtentCucumberAdapter.addTestStepLog("Actual value found: " + value);
-    }
+		public String getENVIRONMENT_MAVEN()
+		{
+			try {
+				if (ENVIRONMENT == null) {
+					ENVIRONMENT = (properties.getProperty("EXECUTION").equalsIgnoreCase("MAVEN") ? getEnvFromMavenProperties() : properties.getProperty("ENV"));
+					//ENVIRONMENT =  properties.getProperty("ENV");
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return ENVIRONMENT;
+		}
 
-    // Specific usage example: Check if a personId exists
-    public boolean personIdExists(Response response, String personId) throws JsonProcessingException {
-        return valueExistsInJsonArray(response, "personIds", personId);
-    }
+		public String getENVIRONMENT()
+		{
+			try {
+				if (ENVIRONMENT == null) {
+					ENVIRONMENT = (properties.getProperty("EXECUTION").equalsIgnoreCase("MAVEN") ? getEnvFromMavenProperties() : properties.getProperty("TACB.ENV"));
+					//ENVIRONMENT =  properties.getProperty("ENV");
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return ENVIRONMENT;
+		}
 
-    //Function to create a New Person
-    public Response createNewPerson(String strEnvType,String strBearerToken,String strJWTToken, String strFirstName) throws JsonProcessingException {
-        HashMap<String,String> formParams= new HashMap<String,String>();
-        String strAuthentication=strBearerToken+" "+strJWTToken;
-        //objCucumberLogger.PrintStatus("authenticationis"+strAuthentication);
-        String strTYKURL=testDataConfig.readApplicationProperty("TYK.ENV."+strEnvType)+testDataConfig.readApplicationProperty("TYK.CREATENEWPERSON");
-        //objCucumberLogger.PrintStatus("URL is"+strTYKURL);
 
-        NewPersonRequest personRequest = new NewPersonRequest();
-        personRequest.setStrUuid(UUID.randomUUID().toString().substring(0,7));
-        personRequest.setStrSubType("pers_form_ass");
-        personRequest.setStrDomiCountry("CH");
-        personRequest.setStrFirstName(strFirstName);
-        personRequest.setStrLastName("Lastname");
-        personRequest.setStrGender("male");
-        personRequest.setLstNationalities(Collections.singletonList("CH"));
+		public String getTACBEnv()
+		{
+			return properties.getProperty("TACB.DB");
 
-        strJsonBody = new ObjectMapper().writeValueAsString(personRequest);
+		}
 
-        //objCucumberLogger.PrintStatus(jsonBody);
+		public String getTACBPassword(String strEnv)
+		{
+			String strkey=strEnv+".PASSWORD";
+			objCucumberLogger.PrintStatus("TACB Password is"+System.getenv(strkey));
+			return System.getenv(strkey);
+		}
 
-        // Logging request details
-        ExtentCucumberAdapter.addTestStepLog("Sending request to Create New Person");
-        ExtentCucumberAdapter.addTestStepLog("Request URL: " + strTYKURL);
-        ExtentCucumberAdapter.addTestStepLog("Request Headers: Authorization=" + strAuthentication);
-        ExtentCucumberAdapter.addTestStepLog("Request Body:\n" + strJsonBody);
 
-        response = with().spec(rspec)
-                .header("Authorization",strBearerToken+" "+strJWTToken)
-                .header("X-TYK-API-KEY",TYK_KEY)
-                .header("Content-Type","application/json")
-                .body(strJsonBody)
-                .post(strTYKURL);
-        responseBody = objdevHelperLibrary.getResponseBody(response);
+		public String getEnvFromMavenProperties()
+		{
+			return System.getProperty("env");
+		}
 
-        // Logging response details
-        ExtentCucumberAdapter.addTestStepLog("Response Code: " + response.getStatusCode());
-        ExtentCucumberAdapter.addTestStepLog("Response Body:\n" + responseBody);
+		public String getEnvType()
+		{
+			return System.getProperty("envType");
+		}
 
-        //objCucumberLogger.PrintStatus("Status code is"+response.statusCode());
-        strObjectId = response.jsonPath().getString("objectId");
-        strOrderId = response.jsonPath().getString("orderId");
+		public String getFDSEnv()
+		{
+			return System.getProperty("envFDS");
+		}
+		public String getToken() { return System.getProperty("token");}
+		public String getPassword() { return System.getProperty("password"); }
+		public String getDbEnv() { return System.getProperty("tacbDB");}
 
-        objCucumberLogger.PrintStatus("Response is"+responseBody);
-        //objCucumberLogger.PrintStatus("Extracted Object Id is : "+ strObjectId);
-        //objCucumberLogger.PrintStatus("Extracted Order Id is : "+ strOrderId);
-        ExtentCucumberAdapter.addTestStepLog("Extracted Object Id is : "+ strObjectId);
-        ExtentCucumberAdapter.addTestStepLog("Extracted Order Id is : " + strOrderId);
-        return response;
-    }
 
-    //Function to create a Contact Note
-    public Response createContactNote(String strEnvType,String strBearerToken,String strJWTToken) throws JsonProcessingException {
-        HashMap<String,String> formParams= new HashMap<String,String>();
-        String strAuthentication=strBearerToken+" "+strJWTToken;
-        //objCucumberLogger.PrintStatus("authenticationis"+strAuthentication);
-        String strTYKURL=testDataConfig.readApplicationProperty("TYK.ENV."+strEnvType)+testDataConfig.readApplicationProperty("TYK.CONTACTNOTES");
-        //objCucumberLogger.PrintStatus("URL is"+strTYKURL);
+       public String getEnvFromProperties() throws IOException {
+            return readMavenProperty("TeamCityEnvironment");
+        }
+		
+		 public String readMavenProperty(String key) {
+            String value = null;
+																													
+  
 
-        ContactNoteRequest noteRequest = new ContactNoteRequest();
-        noteRequest.setLstPersonIds(Collections.singletonList(strObjectId));
-        noteRequest.setStrSubject("Testsubject");
-        noteRequest.setStrNotes("Testnote");
-        noteRequest.setBoolHasFollowup(false);
+            try {
+                value = mavenProperties.getProperty(key);
+                if (value == null) {
+                    LOGGER.error("Maven value is missing for key: " + key);
+                }
+            } catch (Exception e) {
+                LOGGER.error("Error reading maven property file for key: " + key);
+            }
+            return value;
+        }
+        public String getEnvFromSystemVariables() {
+            return System.getenv("ENV");
+        }
 
-        strJsonBody = objectMapper.writeValueAsString(noteRequest);
+	public String getTestDataResourcePath() {
+		String testDataResourcePath = properties.getProperty("testDataResourcePath");
+		if (testDataResourcePath != null)
+			return testDataResourcePath;
+		else
+			throw new RuntimeException(
+					"Test Data Resource Path not specified in the Configuration.properties file for the Key:testDataResourcePath");
+	}
 
-        // Logging request details
-        ExtentCucumberAdapter.addTestStepLog("Sending request to Create Contact Note");
-        ExtentCucumberAdapter.addTestStepLog("Request URL: " + strTYKURL);
-        ExtentCucumberAdapter.addTestStepLog("Request Headers: Authorization=" + strAuthentication);
-        ExtentCucumberAdapter.addTestStepLog("Request Body:\n" + strJsonBody);
+	public String readUserProperty(String key) {
+		 
+		return userproperties.getProperty(key);
+	}
+	
+	public String getApplicationUrl() {
+		String url = readApplicationProperty(PREFIX + "URL");
+		if (url != null)
+			return url;
+		else
+			throw new RuntimeException("url not specified in the Configuration.properties file.");
+	}
+	/**public String getCaseId() {
+		String caseId = readApplicationProperty("CaseId");
+		if(caseId != null) return caseId;
+					  
+	  
+		else throw new RuntimeException("caseId not specified in the Configuration.properties file.");
+	}**/
+	
+	public String getApplicationPortalUrl() {
+		String url = readApplicationProperty(PREFIX + "PortalURL");
+		if (url != null)
+			return url;
+		else
+			throw new RuntimeException("url not specified in the Configuration.properties file.");
+	}
 
-        //objCucumberLogger.PrintStatus(strJsonBody);
+	public String getUsername() {
+		String Username = readUserProperty("Username");
+		if (Username != null)
+			return Username;
+		else
+			throw new RuntimeException("url not specified in the Configuration.properties file.");
+	}
+	
 
-        response = with().spec(rspec)
-                .header("Authorization",strBearerToken+" "+strJWTToken)
-                .header("X-TYK-API-KEY",TYK_KEY)
-                .header("Content-Type","application/json")
-                .body(strJsonBody)
-                .post(strTYKURL);
-        responseBody = objdevHelperLibrary.getResponseBody(response);
+	
+	public String getExecutionType() {
+		String executionType = readUserProperty("ExecutionType");
+		if (executionType != null)
+			return executionType;
+		else
+			throw new RuntimeException("Execution Type not specified in the Configuration.properties file.");
+	}
+	
+	
+	public String getTestType() {
+		String testType = readUserProperty("TestType");
+		if (testType != null)
+			return testType;
+		else
+			throw new RuntimeException("Test Type not specified in the Configuration.properties file.");
+	}
+	
+	public String getTestData() {
+		String testData = readUserProperty("TestData");
+		if (testData != null)
+			return testData;
+		else
+			throw new RuntimeException("Test Data not specified in the Configuration.properties file.");
+	}
 
-        // Logging response details
-        ExtentCucumberAdapter.addTestStepLog("Response Code: " + response.getStatusCode());
-        ExtentCucumberAdapter.addTestStepLog("Response Body:\n" + responseBody);
+	public String getBrowser() {
+		String Browser = readApplicationProperty("Browser");
+		if (Browser != null)
+			return Browser;
+		else
+			throw new RuntimeException("url not specified in the Configuration.properties file.");
+	}
 
-        //objCucumberLogger.PrintStatus("Status code is"+response.statusCode());
-        objCucumberLogger.PrintStatus("Response is"+responseBody);
-        return response;
-    }
+	public String getReportConfigPath() {
+		String reportConfigPath = readApplicationProperty("reportConfigPath");
+		if (reportConfigPath != null)
+			return reportConfigPath;
+		else
+			throw new RuntimeException(
+					"Report Config Path not specified in the Configuration.properties file for the Key:reportConfigPath");
+	}
 
+	public String getDevice() {
+		device = this.getTestProperty("TARGET_DEVICE");
+		LOGGER.info("Testing device " + device);
+		return device;
+	}
+
+
+	public static String read(Properties configFileProperties, String key) {
+		return readJavaProperty(PREFIX + key)
+											 
+				.orElse(readEnvVariable(PREFIX + key).orElse(readConfigFile(configFileProperties, key).orElse(null)));
+																 
+
+																
+	}
+
+	private static Optional<String> readJavaProperty(String key) {
+		return optionalValue(() -> System.getProperty(key));
+	}
+
+	private static Optional<String> readEnvVariable(String key) {
+		return optionalValue(() -> System.getenv(key));
+  
+	}
+  
+	private static Optional<String> readConfigFile(Properties configFileProperties, String key) {
+		return optionalValue(() -> configFileProperties.getProperty(key));
+	}
+
+	private static Optional<String> optionalValue(Callable<String> func) {
+		try {
+			String value = func.call();
+			return Optional.ofNullable(value);
+		} catch (Exception e) {
+			return Optional.empty();
+		}
+	}
+
+	// private utility to safely retrieve values from env vars or test config file
+	public String getTestProperty(String propertyName) {
+		String propertyValue;
+		try {
+			propertyValue = System.getenv(propertyName);
+			if (propertyValue == null) {
+				propertyValue = read(properties, propertyName);
+			}
+			// test_property now ought not to be null after config read
+			if (propertyValue == null) {
+				LOGGER.error(
+						"Property: " + propertyName + " not set, please check systems env variable or config file");
+				// Assert.fail();
+			}
+		} catch (Exception e) {
+			LOGGER.error("Unable to obtain test config relating to: " + propertyName);
+			return null;
+		}
+
+		LOGGER.info(propertyName + " flag set to: " + propertyValue);
+		return propertyValue;
+	}
+
+	public String getSaucelabsFlag() {
+		if (saucelabsFlag == null)
+			saucelabsFlag = getTestProperty("SAUCE_LABS_EXECUTION");
+
+		return saucelabsFlag;
+	}
+
+	public String getBrowserStackProperty() {
+		if (browserstackFlag == null)
+			browserstackFlag = getTestProperty("BROWSERSTACK_EXECUTION");
+
+		return browserstackFlag;
+  
+
+	}
+
+	public String getBrowserStackUser() {
+		if (browserstackUser == null)
+			browserstackUser = getTestProperty("BROWSERSTACK_USER");
+
+		return browserstackUser;
+								
+
+
+	}
+
+	public String getBrowserStackAccessKey() {
+		if (browserstackAccessKey == null)
+			browserstackAccessKey = getTestProperty("BROWSERSTACK_ACCESS_KEY");
+
+		return browserstackAccessKey;
+
+	}
+
+	public String getBrowserStackBinaryPath() {
+		if (browserstackBinary == null)
+			browserstackBinary = getTestProperty("BROWSERSTACK_LOCAL_BINARY");
+
+		return browserstackBinary;
+	}
+
+	public String getSeleniumGridProperty() {
+		if (seleniumGridFlag == null)
+			seleniumGridFlag = getTestProperty("SELENIUM_GRID_EXECUTION");
+
+		return seleniumGridFlag;
+	 
+	}
+
+	public int getLinkTimeout() {
+		return getTestProperty("LINK_WAIT_TIMEOUT_MS") != null
+				? Integer.parseInt(getTestProperty("LINK_WAIT_TIMEOUT_MS"))
+				: LINK_WAIT_TIMEOUT_DEFAULT_MS;
+	}
+
+	public String getLinkProxy() {
+		if (linkProxy == null)
+			linkProxy = getTestProperty("LINK_PROXY");
+
+		return linkProxy;
+	}
+
+	public String getLinkProxyPort() {
+		if (linkProxyPort == null)
+			linkProxyPort = getTestProperty("LINK_PROXY_PORT");
+
+		return linkProxyPort;
+	}
+
+	public boolean getUseHeadlessChrome() throws Exception {
+		return getTestProperty("CHROME_HEADLESS") != null ? getTestProperty("CHROME_HEADLESS").equals("true") : false;
+	}
+
+	/*
+	 * public Properties getPropertiesByEnv(String propFileName) throws Exception {
+	 * LOGGER.trace("Reading properties: " + propFileName); String
+	 * testConfigEnvLocation = Paths.get(configLocation,
+	 * getBackEndDataLocation()).toString(); Properties props =
+	 * ConfigFileReader.readFromPath(testConfigEnvLocation, propFileName, LOGGER);
+	 * LOGGER.trace("Properties Loaded Successfully"); return props; }
+	 * 
+  
+
+	 */
+		
 }
+
+Please add the required details which my senior mentioned in this Test COnfig class.
