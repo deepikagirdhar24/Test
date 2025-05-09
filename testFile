@@ -4,8 +4,8 @@ Feature: Create Contact Notes API
     Given Send Request to get Authentication Token for ICOS
     When I generate the JWT Token
     And Send request to generate New Person with below details
-      | firstName       | John           |
-      | lastName        | Doe            |
+      | firstName       | FirstName_1    |
+      | lastName        | Lastname       |
       | subType         | pers_form_ass  |
       | domicileCountry | CH             |
       | gender          | male           |
@@ -13,21 +13,3 @@ Feature: Create Contact Notes API
     Then Send POST ContactNote Request
     And I verify the Status Code for Contact Notes "200"
     And I verify the OrderId
-
-@And("Send request to generate New Person with below details")
-public void sendRequestToGenerateNewPersonWithDetails(DataTable dataTable) throws JsonProcessingException {
-    Map<String, String> personDetails = dataTable.asMap(String.class, String.class);
-    String jwtToken = scenarioContext.getToken("JWTToken");
-    response = objContactNotes.createNewPerson(strEnvType, "Bearer", jwtToken, personDetails);
-}
-
-NewPersonRequest personRequest = new NewPersonRequest();
-personRequest.setStrUuid(UUID.randomUUID().toString().substring(0, 7));
-personRequest.setStrSubType(personDetails.get("subType"));
-personRequest.setStrDomiCountry(personDetails.get("domicileCountry"));
-personRequest.setStrFirstName(personDetails.get("firstName"));
-personRequest.setStrLastName(personDetails.get("lastName"));
-personRequest.setStrGender(personDetails.get("gender"));
-personRequest.setLstNationalities(Collections.singletonList(personDetails.get("nationality")));
-
-public Response createNewPerson(String strEnvType, String strBearerToken, String strJWTToken, Map<String, String> personDetails) throws JsonProcessingException {
