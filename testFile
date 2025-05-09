@@ -49,8 +49,26 @@
         return response;
     }
 
-my senior has suggested - 
+this i the setp defintiion - updae this
+    @And("Send request to generate New Person with {string}")
+    public void sendRequestToGenerateNewPerson(String strFirstName) throws JsonProcessingException {
+        String jwtToken = scenarioContext.getToken("JWTToken");
+        response = objContactNotes.createNewPerson(strEnvType,"Bearer",jwtToken, strFirstName);
+        //ExtentCucumberAdapter.addTestStepLog("Actual Response is : " +response.asString());
+    }
 
-Please remove any hardcoding for any value in any map. personRequest .setSubType("") Values should be passed via HashMap from step definitions and these values should be passed from feature file. rewrite this code
+this is feature file - udpate this - 
+Feature: Create Contact Notes API
 
-how to do this ? please give code.
+  Scenario Outline: Verify the Post Contact Notes API
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    And Send request to generate New Person with "<FirstName>"
+    Then Send POST ContactNote Request
+    And I verify the Status Code for Contact Notes "<StatusCode>"
+    And I verify the OrderId
+
+    Examples:
+    | FirstName   | StatusCode |
+    | FirstName_1 | 200        |
+    | FirstName_2 | 200        |
