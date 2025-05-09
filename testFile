@@ -1,13 +1,56 @@
-// Add at class level
-private static String TYK_API_KEY;
+/Function to create a New Person
+    public Response createNewPerson(String strEnvType,String strBearerToken,String strJWTToken, String strFirstName) throws JsonProcessingException {
+        HashMap<String,String> formParams= new HashMap<String,String>();
+        String strAuthentication=strBearerToken+" "+strJWTToken;
+        //objCucumberLogger.PrintStatus("authenticationis"+strAuthentication);
+        String strTYKURL=testDataConfig.readApplicationProperty("TYK.ENV."+strEnvType)+testDataConfig.readApplicationProperty("TYK.CREATENEWPERSON");
+        //objCucumberLogger.PrintStatus("URL is"+strTYKURL);
 
-// Add this method inside TestConfig
-public static String getTykApiKey() {
-    if (TYK_API_KEY == null) {
-        TYK_API_KEY = getSystemVariable("X-TYK-API-KEY");
+        NewPersonRequest personRequest = new NewPersonRequest();
+        personRequest.setStrUuid(UUID.randomUUID().toString().substring(0,7));
+        personRequest.setStrSubType("pers_form_ass");
+        personRequest.setStrDomiCountry("CH");
+        personRequest.setStrFirstName(strFirstName);
+        personRequest.setStrLastName("Lastname");
+        personRequest.setStrGender("male");
+        personRequest.setLstNationalities(Collections.singletonList("CH"));
+
+        strJsonBody = new ObjectMapper().writeValueAsString(personRequest);
+
+        //objCucumberLogger.PrintStatus(jsonBody);
+
+        // Logging request details
+        ExtentCucumberAdapter.addTestStepLog("Sending request to Create New Person");
+        ExtentCucumberAdapter.addTestStepLog("Request URL: " + strTYKURL);
+        ExtentCucumberAdapter.addTestStepLog("Request Headers: Authorization=" + strAuthentication);
+        ExtentCucumberAdapter.addTestStepLog("Request Body:\n" + strJsonBody);
+
+        response = with().spec(rspec)
+                .header("Authorization",strBearerToken+" "+strJWTToken)
+                .header("X-TYK-API-KEY",TYK_KEY)
+                .header("Content-Type","application/json")
+                .body(strJsonBody)
+                .post(strTYKURL);
+        responseBody = objdevHelperLibrary.getResponseBody(response);
+
+        // Logging response details
+        ExtentCucumberAdapter.addTestStepLog("Response Code: " + response.getStatusCode());
+        ExtentCucumberAdapter.addTestStepLog("Response Body:\n" + responseBody);
+
+        //objCucumberLogger.PrintStatus("Status code is"+response.statusCode());
+        strObjectId = response.jsonPath().getString("objectId");
+        strOrderId = response.jsonPath().getString("orderId");
+
+        objCucumberLogger.PrintStatus("Response is"+responseBody);
+        //objCucumberLogger.PrintStatus("Extracted Object Id is : "+ strObjectId);
+        //objCucumberLogger.PrintStatus("Extracted Order Id is : "+ strOrderId);
+        ExtentCucumberAdapter.addTestStepLog("Extracted Object Id is : "+ strObjectId);
+        ExtentCucumberAdapter.addTestStepLog("Extracted Order Id is : " + strOrderId);
+        return response;
     }
-    return TYK_API_KEY;
-}
 
- Update ContactNotes class:
-String TYK_KEY = TestConfig.getTykApiKey();
+my senior has suggested - 
+
+Please remove any hardcoding for any value in any map. personRequest .setSubType("") Values should be passed via HashMap from step definitions and these values should be passed from feature file. rewrite this code
+
+how to do this ? please give code.
