@@ -1,16 +1,25 @@
- // Method to extract a value from JSON by key
-    public String extractStringField(Response response, String key) throws JsonProcessingException {
+package utilities;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.restassured.response.Response;
+import com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter;
+
+public class JsonHelper {
+
+    static ObjectMapper objectMapper = new ObjectMapper();
+
+    public static String extractStringField(Response response, String key) throws Exception {
         JsonNode rootNode = objectMapper.readTree(response.asString());
         return rootNode.path(key).asText();
     }
 
-    public Boolean extractBooleanField(Response response, String key) throws JsonProcessingException {
+    public static Boolean extractBooleanField(Response response, String key) throws Exception {
         JsonNode rootNode = objectMapper.readTree(response.asString());
         return rootNode.path(key).asBoolean();
     }
 
-    // Generic method to check if a value exists in a JSON array at the given JSON path
-    public boolean valueExistsInJsonArray(Response response, String jsonPath, String targetValue) throws JsonProcessingException {
+    public static boolean valueExistsInJsonArray(Response response, String jsonPath, String targetValue) throws Exception {
         JsonNode rootNode = objectMapper.readTree(response.asString());
         JsonNode arrayNode = rootNode.path(jsonPath);
         if (arrayNode.isArray()) {
@@ -19,11 +28,10 @@
         return false;
     }
 
-    // Loop function used to check each item in the JSON array
-    public boolean iterateAndCheckArray(JsonNode arrayNode, String targetValue) {
+    private static boolean iterateAndCheckArray(JsonNode arrayNode, String targetValue) {
         for (JsonNode itemNode : arrayNode) {
             String currentValue = itemNode.asText();
-            objCucumberLogger.PrintStatus("Checking item: " + currentValue); // Debugging line
+            System.out.println("Checking item: " + currentValue);
             if (targetValue.equals(currentValue)) {
                 logMatchFound(currentValue);
                 return true;
@@ -32,10 +40,12 @@
         return false;
     }
 
-    // Logger method to add report entry for matched item
-    private void logMatchFound(String value) {
-        objCucumberLogger.PrintStatus("Match found: " + value);
+    private static void logMatchFound(String value) {
+        System.out.println("Match found: " + value);
         ExtentCucumberAdapter.addTestStepLog("Actual value found: " + value);
     }
+}
 
-These 3 are common methods to be used in COntatcNotes or other page classes, can we declare them in some global or Base ?
+String val = JsonHelper.extractStringField(response, "objectId");
+Boolean flag = JsonHelper.extractBooleanField(response, "hasFollowup");
+boolean found = JsonHelper.valueExistsInJsonArray(response, "personIds", "1234");
