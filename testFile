@@ -1,3 +1,18 @@
+do the Hashmap passinga s parameters from feature file for below code also - 
+
+public Response createContactNote(String strEnvType,String strBearerToken,String strJWTToken) throws JsonProcessingException {
+        HashMap<String,String> formParams= new HashMap<String,String>();
+        String strAuthentication=strBearerToken+" "+strJWTToken;
+        //objCucumberLogger.PrintStatus("authenticationis"+strAuthentication);
+        String strTYKURL=testDataConfig.readApplicationProperty("TYK.ENV."+strEnvType)+testDataConfig.readApplicationProperty("TYK.CONTACTNOTES");
+        //objCucumberLogger.PrintStatus("URL is"+strTYKURL);
+
+        ContactNoteRequest noteRequest = new ContactNoteRequest();
+        noteRequest.setLstPersonIds(Collections.singletonList(strObjectId));
+        noteRequest.setStrSubject("Testsubject");
+        noteRequest.setStrNotes("Testnote");
+        noteRequest.setBoolHasFollowup(false);
+
 Feature: Create Contact Notes API
 
   Scenario Outline: Verify the Post Contact Notes API
@@ -18,3 +33,10 @@ Feature: Create Contact Notes API
       | firstName   | statusCode |
       | FirstName_1 | 200        |
       | FirstName_2 | 200        |
+
+    @Then("Send POST ContactNote Request")
+    public void sendPOSTContactNoteRequest() throws JsonProcessingException {
+        String jwtToken = scenarioContext.getToken("JWTToken");
+        response = objContactNotes.createContactNote(strEnvType,"Bearer",jwtToken);
+        //ExtentCucumberAdapter.addTestStepLog("Actual Response is : " +response.asString());
+    }
