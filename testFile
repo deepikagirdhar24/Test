@@ -1,51 +1,34 @@
-package utilities;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.restassured.response.Response;
-import com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter;
-
-public class JsonHelper {
-
-    static ObjectMapper objectMapper = new ObjectMapper();
-
-    public static String extractStringField(Response response, String key) throws Exception {
-        JsonNode rootNode = objectMapper.readTree(response.asString());
-        return rootNode.path(key).asText();
+    // Specific usage example: Check if a personId exists
+    public boolean personIdExists(Response response, String personId) throws JsonProcessingException {
+        return valueExistsInJsonArray(response, "personIds", personId);
     }
 
-    public static Boolean extractBooleanField(Response response, String key) throws Exception {
-        JsonNode rootNode = objectMapper.readTree(response.asString());
-        return rootNode.path(key).asBoolean();
+ @And("I verify the Subject {string}")
+    public void iVerifyTheSubject(String subject) throws JsonProcessingException {
+        String stringValueSubject=objContactNotes.extractStringField(response, "subject");
+        ExtentCucumberAdapter.addTestStepLog("Actual value of Subject is : " +stringValueSubject);
+        Assert.assertEquals(subject,stringValueSubject);
     }
 
-    public static boolean valueExistsInJsonArray(Response response, String jsonPath, String targetValue) throws Exception {
-        JsonNode rootNode = objectMapper.readTree(response.asString());
-        JsonNode arrayNode = rootNode.path(jsonPath);
-        if (arrayNode.isArray()) {
-            return iterateAndCheckArray(arrayNode, targetValue);
-        }
-        return false;
+    @And("I verify the Notes {string}")
+    public void iVerifyTheNotes(String notes) throws JsonProcessingException {
+        String stringValueNotes=objContactNotes.extractStringField(response, "notes");
+        ExtentCucumberAdapter.addTestStepLog("Actual value of Notes is : " +stringValueNotes);
+        Assert.assertEquals(notes,stringValueNotes);
     }
 
-    private static boolean iterateAndCheckArray(JsonNode arrayNode, String targetValue) {
-        for (JsonNode itemNode : arrayNode) {
-            String currentValue = itemNode.asText();
-            System.out.println("Checking item: " + currentValue);
-            if (targetValue.equals(currentValue)) {
-                logMatchFound(currentValue);
-                return true;
-            }
-        }
-        return false;
+    @And("I verify the HasFollowup {string}")
+    public void iVerifyTheHasFollowup(String hasFollowup) throws JsonProcessingException {
+        Boolean boolValuehasFollowup=objContactNotes.extractBooleanField(response, "hasFollowup");
+        ExtentCucumberAdapter.addTestStepLog("Actual value of HasFollowUp is : " +boolValuehasFollowup);
+        Assert.assertEquals(true,boolValuehasFollowup);
     }
 
-    private static void logMatchFound(String value) {
-        System.out.println("Match found: " + value);
-        ExtentCucumberAdapter.addTestStepLog("Actual value found: " + value);
-    }
-}
+    @And("I verify the OrderId")
+    public void iVerifyTheOrderId() throws JsonProcessingException {
+        String actualOrderId = objContactNotes.extractStringField(response, "orderId");
+        ExtentCucumberAdapter.addTestStepLog("Actual value of Order Id is: " + actualOrderId);
 
-String val = JsonHelper.extractStringField(response, "objectId");
-Boolean flag = JsonHelper.extractBooleanField(response, "hasFollowup");
-boolean found = JsonHelper.valueExistsInJsonArray(response, "personIds", "1234");
+        Assert.assertNotNull(actualOrderId, "Order Id should not be null");
+        Assert.assertFalse(actualOrderId.isEmpty(), "Order Id should not be empty");
+    }
