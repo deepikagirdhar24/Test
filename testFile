@@ -1,15 +1,20 @@
 Feature: Create Contact Notes API
 
-  Scenario: Verify the Post Contact Notes API
+  Scenario Outline: Verify the Post Contact Notes API
     Given Send Request to get Authentication Token for ICOS
     When I generate the JWT Token
     And Send request to generate New Person with below details
-      | firstName       | FirstName_1    |
+      | firstName       | <firstName>    |
       | lastName        | Lastname       |
       | subType         | pers_form_ass  |
       | domicileCountry | CH             |
       | gender          | male           |
       | nationality     | CH             |
     Then Send POST ContactNote Request
-    And I verify the Status Code for Contact Notes "200"
+    And I verify the Status Code for Contact Notes "<statusCode>"
     And I verify the OrderId
+
+    Examples:
+      | firstName   | statusCode |
+      | FirstName_1 | 200        |
+      | FirstName_2 | 200        |
