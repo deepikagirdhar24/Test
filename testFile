@@ -1,34 +1,8 @@
-    // Specific usage example: Check if a personId exists
-    public boolean personIdExists(Response response, String personId) throws JsonProcessingException {
-        return valueExistsInJsonArray(response, "personIds", personId);
-    }
-
- @And("I verify the Subject {string}")
-    public void iVerifyTheSubject(String subject) throws JsonProcessingException {
-        String stringValueSubject=objContactNotes.extractStringField(response, "subject");
-        ExtentCucumberAdapter.addTestStepLog("Actual value of Subject is : " +stringValueSubject);
-        Assert.assertEquals(subject,stringValueSubject);
-    }
-
-    @And("I verify the Notes {string}")
-    public void iVerifyTheNotes(String notes) throws JsonProcessingException {
-        String stringValueNotes=objContactNotes.extractStringField(response, "notes");
-        ExtentCucumberAdapter.addTestStepLog("Actual value of Notes is : " +stringValueNotes);
-        Assert.assertEquals(notes,stringValueNotes);
-    }
-
-    @And("I verify the HasFollowup {string}")
-    public void iVerifyTheHasFollowup(String hasFollowup) throws JsonProcessingException {
-        Boolean boolValuehasFollowup=objContactNotes.extractBooleanField(response, "hasFollowup");
-        ExtentCucumberAdapter.addTestStepLog("Actual value of HasFollowUp is : " +boolValuehasFollowup);
-        Assert.assertEquals(true,boolValuehasFollowup);
-    }
-
-    @And("I verify the OrderId")
-    public void iVerifyTheOrderId() throws JsonProcessingException {
-        String actualOrderId = objContactNotes.extractStringField(response, "orderId");
-        ExtentCucumberAdapter.addTestStepLog("Actual value of Order Id is: " + actualOrderId);
-
-        Assert.assertNotNull(actualOrderId, "Order Id should not be null");
-        Assert.assertFalse(actualOrderId.isEmpty(), "Order Id should not be empty");
-    }
+PS C:\Users\girdd\IdeaProjects\icosapitests> target/
+target/ : The term 'target/' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify 
+that the path is correct and try again.                                                    
+At line:1 char:1                                                                           
++ target/                                                                                  
++ ~~~~~~~                                                                                  
+    + CategoryInfo          : ObjectNotFound: (target/:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException   
