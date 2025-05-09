@@ -1,37 +1,108 @@
-public class ApiHelperUtils {
+public Response createNewPerson(String strEnvType, String strBearerToken, String strJWTToken, Map<String, String> mapPersonDetails) throws JsonProcessingException {
+    // Use getTykToken to get the Tyk token dynamically
+    String strTykToken = objdevHelperLibrary.getTykToken(strEnvType, strJWTToken, strBearerToken);
 
-    public static String buildAuthenticationHeader(String bearer, String jwt) {
-        return bearer + " " + jwt;
-    }
+    // Create the person request
+    NewPersonRequest personRequest = new NewPersonRequest();
+    personRequest.setStrUuid(UUID.randomUUID().toString().substring(0, 7));
+    personRequest.setStrSubType(mapPersonDetails.get("subType"));
+    personRequest.setStrDomiCountry(mapPersonDetails.get("domicileCountry"));
+    personRequest.setStrFirstName(mapPersonDetails.get("firstName"));
+    personRequest.setStrLastName(mapPersonDetails.get("lastName"));
+    personRequest.setStrGender(mapPersonDetails.get("gender"));
+    personRequest.setLstNationalities(Collections.singletonList(mapPersonDetails.get("nationality")));
 
-    public static String buildTYKUrl(String envType, String endpointKey, TestDataConfig config) {
-        return config.readApplicationProperty("TYK.ENV." + envType) + config.readApplicationProperty(endpointKey);
-    }
+    // Serialize to JSON
+    strJsonBody = new ObjectMapper().writeValueAsString(personRequest);
+
+    // URL
+    String strTYKURL = testDataConfig.readApplicationProperty("TYK.ENV." + strEnvType) + testDataConfig.readApplicationProperty("TYK.CREATENEWPERSON");
+
+    // Send request
+    response = with().spec(rspec)
+            .header("Authorization", "Bearer " + strTykToken)  // Use the Tyk token from the helper
+            .header("X-TYK-API-KEY", TYK_KEY)
+            .header("Content-Type", "application/json")
+            .body(strJsonBody)
+            .post(strTYKURL);
+
+    // Response body
+    responseBody = objdevHelperLibrary.getResponseBody(response);
+
+    // Logging
+    ExtentCucumberAdapter.addTestStepLog("Response Code: " + response.getStatusCode());
+    ExtentCucumberAdapter.addTestStepLog("Response Body:\n" + responseBody);
+
+    // Extract ObjectId and OrderId
+    strObjectId = response.jsonPath().getString("objectId");
+    strOrderId = response.jsonPath().getString("orderId");
+
+    ExtentCucumberAdapter.addTestStepLog("Extracted Object Id is : " + strObjectId);
+    ExtentCucumberAdapter.addTestStepLog("Extracted Order Id is : " + strOrderId);
+
+    return response;
 }
 
-String strAuthentication = ApiHelperUtils.buildAuthenticationHeader(strBearerToken, strJWTToken);
-String strTYKURL = ApiHelperUtils.buildTYKUrl(strEnvType, "TYK.CREATENEWPERSON", testDataConfig);
+public Response createContactNote(String strEnvType, String strBearerToken, String strJWTToken, Map<String, String> mapNoteDetails) throws JsonProcessingException {
+    // Use getTykToken to get the Tyk token dynamically
+    String strTykToken = objdevHelperLibrary.getTykToken(strEnvType, strJWTToken, strBearerToken);
+
+    // Create the contact note request
+    ContactNoteRequest noteRequest = new ContactNoteRequest();
+    noteRequest.setLstPersonIds(Collections.singletonList(strObjectId));  // assumed to be set globally
+
+    noteRequest.setStrSubject(mapNoteDetails.get("subject"));
+    noteRequest.setStrNotes(mapNoteDetails.get("notes"));
+    noteRequest.setBoolHasFollowup(Boolean.parseBoolean(mapNoteDetails.get("hasFollowup")));
+
+    // Serialize to JSON
+    strJsonBody = objectMapper.writeValueAsString(noteRequest);
+
+    // URL
+    String strTYKURL = testDataConfig.readApplicationProperty("TYK.ENV." + strEnvType) + testDataConfig.readApplicationProperty("TYK.CONTACTNOTES");
+
+    // Send request
+    response = with().spec(rspec)
+            .header("Authorization", "Bearer " + strTykToken)  // Use the Tyk token from the helper
+            .header("X-TYK-API-KEY", TYK_KEY)
+            .header("Content-Type", "application/json")
+            .body(strJsonBody)
+            .post(strTYKURL);
+
+    // Response body
+    responseBody = objdevHelperLibrary.getResponseBody(response);
+
+    // Logging
+    ExtentCucumberAdapter.addTestStepLog("Response Code: " + response.getStatusCode());
+    ExtentCucumberAdapter.addTestStepLog("Response Body:\n" + responseBody);
+
+    return response;
+}
 
 
-String strAuthentication = ApiHelperUtils.buildAuthenticationHeader(strBearerToken, strJWTToken);
-String strTYKURL = ApiHelperUtils.buildTYKUrl(strEnvType, "TYK.CONTACTNOTES", testDataConfig);
+// New method to get Contact Notes
+public Response getGetContactNotes(String strEnvType, String strBearerToken, String strJWTToken) throws JsonProcessingException {
+    // Use getTykToken to get the Tyk token dynamically
+    String strTykToken = objdevHelperLibrary.getTykToken(strEnvType, strJWTToken, strBearerToken);
 
-String strAuthentication = ApiHelperUtils.buildAuthenticationHeader(strBearerToken, strJWTToken);
-    String strTYKURL = ApiHelperUtils.buildTYKUrl(strEnvType, "TYK.CONTACTNOTES", testDataConfig);
+    // Logging the token (optional)
+    objCucumberLogger.PrintStatus("Tyk Token is: " + strTykToken);
 
-There is a function in below devHelperLibrary class in main/java/commonLibrary. can we use this, do you know- 
+    // URL
+    String strTYKURL = testDataConfig.readApplicationProperty("TYK.ENV." + strEnvType) + testDataConfig.readApplicationProperty("TYK.CONTACTNOTES");
 
-public String getTykToken(String strEnvType, String strAccessToken, String strBearerToken) throws JsonProcessingException {
-        HashMap<String,String> formParams= new HashMap<String,String>();
-        //String strAuthentication=strBearerToken+" "+strAccessToken;
-        //String strTYKURLKey="TYK.ENV."+strEnvType;
-        String strTYKURL=testDataConfig.readApplicationProperty("TYK.ENV."+strEnvType)+testDataConfig.readApplicationProperty("TYK.TOKEN");
-        response = with().spec(rspec)
-                .header("Authorization",strBearerToken+" "+strAccessToken)
-                .header("X-TYK-API-KEY",TYK_KEY)
-                .post(strTYKURL);
-        responseBody = getResponseBody(response);
-        String strTykToken = getResponseValueFromJsonNode(response,"token");
-        objCucumberLogger.PrintStatus("Tyk Token is"+strTykToken);
-        return strTykToken;
-    }
+    // Send request to get Contact Notes
+    response = with().spec(rspec)
+            .header("Authorization", "Bearer " + strTykToken)  // Use the Tyk token from the helper
+            .header("X-TYK-API-KEY", TYK_KEY)
+            .get(strTYKURL);
+
+    // Get response body
+    responseBody = objdevHelperLibrary.getResponseBody(response);
+
+    // Logging the response details
+    objCucumberLogger.PrintStatus("Status code is: " + response.statusCode());
+    objCucumberLogger.PrintStatus("Response is: " + responseBody);
+
+    return response;
+}
