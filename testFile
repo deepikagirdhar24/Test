@@ -108,3 +108,13 @@ public Response createNewPerson(String strEnvType,String strBearerToken,String s
         objCucumberLogger.PrintStatus("Response is"+responseBody);
         return response;
     }
+
+There are few common lines in all these 3 functions - 
+
+        HashMap<String,String> formParams= new HashMap<String,String>();
+        String strAuthentication=strBearerToken+" "+strJWTToken;
+        //objCucumberLogger.PrintStatus("authenticationis"+strAuthentication);
+        String strTYKURL=testDataConfig.readApplicationProperty("TYK.ENV."+strEnvType)+testDataConfig.readApplicationProperty("this parameters is diiffrent");
+        //objCucumberLogger.PrintStatus("URL is"+strTYKURL);
+
+can we add these common steps  someweher ?
