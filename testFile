@@ -190,3 +190,19 @@ public Response createNewPerson(String strEnvType, String strBearerToken, String
 
     // Your existing code for creating a person...
 }
+
+public Response createContactNote(String strEnvType, String strBearerToken, String strJWTToken, Map<String, String> mapNoteDetails) throws JsonProcessingException {
+    // Use utility methods to get the Authentication header and URL
+    String strAuthentication = ApiHelperUtils.buildAuthenticationHeader(strBearerToken, strJWTToken);
+    String strTYKURL = ApiHelperUtils.buildTYKUrl(strEnvType, "TYK.CONTACTNOTES", testDataConfig);
+
+    // Your existing code for creating a contact note...
+}
+
+public Response getGetContactNotes(String strEnvType, String strBearerToken, String strJWTToken) throws JsonProcessingException {
+    // Use utility methods to get the Authentication header and URL
+    String strAuthentication = ApiHelperUtils.buildAuthenticationHeader(strBearerToken, strJWTToken);
+    String strTYKURL = ApiHelperUtils.buildTYKUrl(strEnvType, "TYK.CONTACTNOTES", testDataConfig);
+
+    // Your existing code for getting contact notes...
+}
