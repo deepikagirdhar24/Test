@@ -18,3 +18,20 @@ String strTYKURL = ApiHelperUtils.buildTYKUrl(strEnvType, "TYK.CONTACTNOTES", te
 
 String strAuthentication = ApiHelperUtils.buildAuthenticationHeader(strBearerToken, strJWTToken);
     String strTYKURL = ApiHelperUtils.buildTYKUrl(strEnvType, "TYK.CONTACTNOTES", testDataConfig);
+
+There is a function in below devHelperLibrary class in main/java/commonLibrary. can we use this, do you know- 
+
+public String getTykToken(String strEnvType, String strAccessToken, String strBearerToken) throws JsonProcessingException {
+        HashMap<String,String> formParams= new HashMap<String,String>();
+        //String strAuthentication=strBearerToken+" "+strAccessToken;
+        //String strTYKURLKey="TYK.ENV."+strEnvType;
+        String strTYKURL=testDataConfig.readApplicationProperty("TYK.ENV."+strEnvType)+testDataConfig.readApplicationProperty("TYK.TOKEN");
+        response = with().spec(rspec)
+                .header("Authorization",strBearerToken+" "+strAccessToken)
+                .header("X-TYK-API-KEY",TYK_KEY)
+                .post(strTYKURL);
+        responseBody = getResponseBody(response);
+        String strTykToken = getResponseValueFromJsonNode(response,"token");
+        objCucumberLogger.PrintStatus("Tyk Token is"+strTykToken);
+        return strTykToken;
+    }
