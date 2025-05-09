@@ -165,3 +165,28 @@ How can we collect the comoon code below in the 3 classes -
         //objCucumberLogger.PrintStatus("authenticationis"+strAuthentication);
         String strTYKURL=testDataConfig.readApplicationProperty("TYK.ENV."+strEnvType)+testDataConfig.readApplicationProperty("This is different");
         //objCucumberLogger.PrintStatus("URL is"+strTYKURL);
+
+
+
+
+public class ApiHelperUtils {
+
+    // Utility method to build the Authorization header
+    public static String buildAuthenticationHeader(String bearer, String jwt) {
+        return bearer + " " + jwt;
+    }
+
+    // Utility method to build the TYK URL from the configuration
+    public static String buildTYKUrl(String envType, String endpointKey, TestDataConfig config) {
+        return config.readApplicationProperty("TYK.ENV." + envType) + config.readApplicationProperty(endpointKey);
+    }
+}
+
+
+public Response createNewPerson(String strEnvType, String strBearerToken, String strJWTToken, Map<String, String> mapPersonDetails) throws JsonProcessingException {
+    // Use utility methods to get the Authentication header and URL
+    String strAuthentication = ApiHelperUtils.buildAuthenticationHeader(strBearerToken, strJWTToken);
+    String strTYKURL = ApiHelperUtils.buildTYKUrl(strEnvType, "TYK.CREATENEWPERSON", testDataConfig);
+
+    // Your existing code for creating a person...
+}
