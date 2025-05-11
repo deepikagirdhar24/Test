@@ -1,0 +1,628 @@
+package commonLibrary;
+
+
+import config.TestConfig;
+import commonLibrary.SQLQueries;
+import utilities.CucumberLogger;
+
+import java.sql.*;
+import java.sql.DriverManager;
+import java.util.ArrayList;
+
+public class DBUtil {
+
+    private Connection connection;
+    private Statement statement;
+    ResultSet rs = null;
+    protected TestConfig testDataConfig= TestConfig.getTestDataConfig();
+    private String strDBInstance;
+    private String strDBURL;
+    private String strUsername;
+    private String strPassword;
+    String username="RBSC$I_TOSCA";
+    String password="";
+    CucumberLogger objCucumberLogger;
+
+
+    public DBUtil() throws Exception {
+        objCucumberLogger= new CucumberLogger();
+
+    }
+
+    //Get the DB Instance
+    public  String getDBInstance(String strDbEnv)
+    {
+        String strDBInstance= testDataConfig.readApplicationProperty(strDbEnv+".DB");
+        return strDBInstance;
+    }
+
+    //Get DB URL
+    public String getDBURL(String strDbEnv)
+    {
+        String strDBURL= testDataConfig.readApplicationProperty(strDbEnv+".URL");
+        return strDBURL;
+    }
+
+    //Get DB Username
+    public String getDBUsername(String strDbEnv)
+    {
+       String strUsername=testDataConfig.readApplicationProperty(strDbEnv+".Username");
+        return strUsername;
+    }
+
+    //Function to create connection
+    public Connection createConnection(String strDbEnv, String strPassword) throws SQLException, ClassNotFoundException {
+        String strDBInstance= getDBInstance(strDbEnv);
+        String strDBURL=getDBURL(strDbEnv);
+        strUsername=getDBUsername(strDbEnv);
+        objCucumberLogger.PrintStatus("Username is"+strUsername);
+        objCucumberLogger.PrintStatus("Password is"+strPassword);
+        objCucumberLogger.PrintStatus("DB instamce is"+strDBInstance);
+        String dbURL="jdbc:oracle:thin:@"+strDBURL+strDBInstance;
+        Class.forName("oracle.jdbc.OracleDriver");
+        connection = DriverManager.getConnection(dbURL, strUsername, strPassword);
+        return connection;
+
+    }
+
+    //Function to get statement
+    public ArrayList<String> selectQuery(String strDbEnv, String strPassword, String strSQLQuery) throws SQLException, ClassNotFoundException {
+        ArrayList<String> strResult = new ArrayList<>();
+        connection = createConnection(strDbEnv, strPassword);
+        statement = connection.createStatement();
+        CallableStatement cs = connection.prepareCall(SQLQueries.openSessionSql);
+        cs.execute();
+        CallableStatement cs1 = connection.prepareCall(strSQLQuery);
+        boolean hasResultSet = cs1.execute();
+        if (hasResultSet) {
+            rs = cs1.getResultSet();
+
+            boolean hasRows = false;
+            // Print column names for debugging
+            ResultSetMetaData metaData = rs.getMetaData();
+            int columnCount = metaData.getColumnCount();
+            for (int i = 1; i <= columnCount; i++) {
+                objCucumberLogger.PrintStatus(metaData.getColumnName(i) + " | ");
+                System.out.print(metaData.getColumnName(i) + " | ");
+            }
+            objCucumberLogger.PrintStatus("");
+            System.out.println();
+            while (rs.next()) {
+                hasRows = true;
+                // Print all columns in the row
+                for (int i = 1; i <= columnCount; i++) {
+                    objCucumberLogger.PrintStatus(rs.getString(i) + " | ");
+                    System.out.print(rs.getString(i) + " | ");
+                    if(i==1)
+                    {
+                        strResult.add(rs.getString(1));
+                    }
+                }
+                objCucumberLogger.PrintStatus("");
+                System.out.println();
+            }
+
+            if (!hasRows) {
+                objCucumberLogger.PrintStatus("Query has no rows");
+                System.out.println("Query returned no rows");
+            }
+
+
+        }
+        connection.close();
+        return strResult;
+
+    }
+
+    public void establishDBConnection() throws SQLException, ClassNotFoundException {
+        //String strDbInstance="tacb41.CBVE";
+        String strDbInstance="tacb40.CBVE";
+       //String dbURL = "jdbc:oracle:thin:@rozrhsvcp10.couttsch.couttsint.net:10182:"+strDbInstance;
+        String dbURL = "jdbc:oracle:thin:@rozrhsvcp10.couttsch.couttsint.net:10781:"+strDbInstance;
+
+
+            Class.forName("oracle.jdbc.OracleDriver");
+            connection = DriverManager.getConnection(dbURL, username, password);
+            statement = connection.createStatement();
+
+        CallableStatement cs = connection.prepareCall(SQLQueries.openSessionSql);
+        cs.execute();
+      //  connection.setSchema("rbsc$r_uk");
+        System.out.println("Connection established");
+
+            CallableStatement cs1 = connection.prepareCall(SQLQueries.queryHubService);
+
+
+
+            boolean hasResultSet = cs1.execute();
+            System.out.println("Result has values"+hasResultSet);
+            if (hasResultSet) {
+                rs = cs1.getResultSet();
+                //while (rs.next()) {
+                    //System.out.println("Inside result set");
+                   // String id = rs.getString(1);
+                   // System.out.println("ID: " + id);
+               // }
+                boolean hasRows = false;
+                // Print column names for debugging
+                ResultSetMetaData metaData = rs.getMetaData();
+                int columnCount = metaData.getColumnCount();
+                for (int i = 1; i <= columnCount; i++) {
+                    System.out.print(metaData.getColumnName(i) + " | ");
+                }
+                System.out.println();
+                while (rs.next()) {
+                    hasRows = true;
+                    // Print all columns in the row
+                    for (int i = 1; i <= columnCount; i++) {
+                        System.out.print(rs.getString(i) + " | ");
+                    }
+                    System.out.println();
+                }
+
+                if (!hasRows) {
+                    System.out.println("Query returned no rows");
+                }
+            }
+
+            while (rs.next()) {
+                    System.out.println(rs);
+                    String id = rs.getString(1);
+                    System.out.println("ID: " + id);
+                }
+
+
+
+    }
+
+
+
+    public static void main(String args[]) throws Exception {
+        DBUtil objDBUtil= new DBUtil();
+        objDBUtil.establishDBConnection();
+    }
+}
+
+
+
+
+
+/*
+
+       // String strAvaloqDB="jdbc:oracle:thin:@sbtcbavaint01.avaloq.couttsint.net:10282:"+strDbInstance;
+ //String username = "RBSC$M_READ_UK";
+      //  String password = "T9SizLC+a#*BPo";
+
+        String sqlStatement="select * from (select us.oracle_user,(select count(*) from k.sec_user_role_cache where role_id = 140457 and sec_user_id = us.id) hub_service_user,(select key_val from k.obj_rel_key where obj_id = user_cache.bu_id and obj_key_id =11) business_unit ,(select oracle_user from k.sec_user where id = user_cache.role_id) role ,(select count(*) from k.obj_rel where obj_rel_type_id = 1 and obj_rel_sub_type_id = 7001 and obj_1_id = us.ref_obj_id) teams from k.sec_user us, k.sec_user_role_cache user_cache where us.close_date is null and us.ref_obj_id is not null and us.oracle_user not like 'AFS%' and length(us.oracle_user) < 10 and user_cache.role_id in (select id from k.sec_user u where u.oracle_user = 'R_OB_SUPP_CENT_COUTTS') and user_cache.sec_user_id = us.id and user_cache.bu_id = 6 /* RBS.CUK *///";
+       // String sqlstatement2="--and exists (select 1 from k.sec_user_role_cache where sec_user_id = us.id and bu_id in (6,12) group by bu_id having count(*)>1)) where teams>0 and HUB_SERVICE_USER=1";
+/*
+Rough code
+
+CallableStatement cs = connection.prepareCall("{call k.RBSC$SESSION_UK#.open_session_uk_bus}");
+ CallableStatement cs = connection.prepareCall("{begin\n" +
+                   "k.session#.open_session(); \n" +
+                   "end;}");
+           cs.execute();
+           connection.setSchema("rbsc$r_uk");
+          System.out.println("Connection established");
+
+           // CallableStatement cs1 = connection.prepareCall("select rbsc$r_uk.script#.eval_expr('obj_cont(6949680).bp.name(9)') from dual");
+           // CallableStatement cs1 = connection.prepareCall("select oracle_user from k.sec_user where id in (select sec_user_id from k.sec_user_role_cache where role_id = 140457) and close_date is null and ref_obj_id is not null");
+
+           //            String sql3 = "select * " +
+//                    "from rbsc$r_uk.pos_serpil serp " +
+//                    "left outer join rbsc$r_uk.obj_class oc on oc.obj_id = serp.asset_id " +
+//                    "left outer join rbsc$r_uk.code_obj_class coc on coc.id = oc.obj_class_id " +
+//                    "where 1=1 " +
+//                    "and cont_id = 6949680 " +
+//                    "and serpil_id in (select max(id) from rbsc$r_uk.serpil where tab = 'POS_SERPIL' and date_type_id = 5) " +
+//                    "and oc.obj_classif_id = 341 " +
+//                    "--and coc.id in (9443,9487,9491,9495,9420,9400,9533,109034) " +
+//                    "order by dbms_random.value";
+
+
+//            ResultSet rs = statement.executeQuery(sql3);
+//            while(rs.next()){
+//                System.out.println(rs.getString(1));
+////                System.out.println(rs.getString("OBJ_KEY_ID"));
+////                System.out.println(rs.getString("KEY_VAL"));
+//            }
+
+
+
+
+ */
+
+package commonLibrary;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import config.TestConfig;
+import io.restassured.RestAssured;
+import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.config.RedirectConfig;
+import io.restassured.filter.log.RequestLoggingFilter;
+import io.restassured.filter.log.ResponseLoggingFilter;
+import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import utilities.CucumberLogger;
+import utilities.EncryptionUtil;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
+import java.io.FileInputStream;
+import java.security.KeyStore;
+import java.util.HashMap;
+import java.util.Map;
+
+import static io.restassured.RestAssured.with;
+
+
+public class devHelperLibrary {
+    public static EncryptionUtil objEncryptionUtil;
+    protected  TestConfig testDataConfig= TestConfig.getTestDataConfig();
+    private static Response response;
+    private static String responseBody;
+    public static RequestSpecification rspec;
+    private String FDSKeystorePassword;
+    public ObjectMapper objectMapper;
+    String CLIENT_ID=System.getenv("ICOS_CLIENT_ID");
+    String CLIENT_SECRET=System.getenv("ICOS_CLIENT_SECRET");
+    String TYK_KEY=System.getenv("X-TYK-API-KEY");
+    CucumberLogger objCucumberLogger;
+
+//Constructor
+    public devHelperLibrary() throws Exception {
+        objEncryptionUtil= new EncryptionUtil();
+        objectMapper = new ObjectMapper();
+        objCucumberLogger= new CucumberLogger();
+        rspec=setup();
+
+    }
+
+
+    // This function is the set up for the setting up Request specification for Dev Helper URLs.
+    public RequestSpecification setup() throws Exception {
+        FDSKeystorePassword= testDataConfig.getFDSKeystorePassword();
+        KeyStore keyStore = KeyStore.getInstance("JKS");
+        try (FileInputStream keyStoreStream = new FileInputStream(System.getProperty("user.dir")+"\\src\\test\\resources\\config\\truststore-intranetIcos.jks")) {
+            keyStore.load(keyStoreStream, FDSKeystorePassword.toCharArray());
+        }
+        TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+        trustManagerFactory.init(keyStore);
+        TrustManager[] trustManagers = trustManagerFactory.getTrustManagers();
+        if (trustManagers.length == 0) {
+            throw new Exception("No TrustManagers found in the TrustManagerFactory.");
+        }
+        X509TrustManager trustManager = (X509TrustManager) trustManagers[0];
+        SSLContext sslContext = SSLContext.getInstance("TLS");
+        sslContext.init(null, new TrustManager[]{trustManager}, null);
+        SSLConnectionSocketFactory sslConnectionSocketFactory = new SSLConnectionSocketFactory(sslContext, SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+        CloseableHttpClient httpClient = HttpClients.custom()
+                .setSSLSocketFactory(sslConnectionSocketFactory)
+                .build();
+
+        RestAssured.useRelaxedHTTPSValidation();
+
+        // Build the RequestSpecification
+        rspec = new RequestSpecBuilder()
+                .addFilter(new RequestLoggingFilter())
+                .addFilter(new ResponseLoggingFilter())
+                .setConfig(RestAssured.config()
+                        .redirect(RedirectConfig.redirectConfig().followRedirects(false))) // Disable following redirects
+                .build();
+        return rspec;
+
+    }
+
+    //Fetch the response Body
+    public static String getResponseBody(Response res) {
+      return res.getBody().asString();
+    }
+
+    //fetch Json Node
+    public String getResponseValueFromJsonNode(Response response,String strResponseID) throws JsonProcessingException {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        String accessToken = rootNode.path(strResponseID).asText();
+        return accessToken;
+    }
+
+
+    //Step 1 - Fetch EIAM Token URL from property file for ICOS
+    public  String getEIAMTokenURL()
+    {
+        String strEIAMURL=testDataConfig.readApplicationProperty("EIAM.ENV");
+        return strEIAMURL;
+    }
+
+
+    //Step 2 generate the EIAM token
+
+    public  HashMap<String,String> getEIAMToken_ICOS(String strEIAMURL) throws JsonProcessingException {
+        HashMap<String,String> formParams= new HashMap<String,String>();
+        HashMap<String,String> responseParams= new HashMap<String,String>();
+        formParams.put("client_id",CLIENT_ID);
+        formParams.put("grant_type","client_credentials");
+        formParams.put("client_secret",CLIENT_SECRET);
+
+        response = with().spec(rspec)
+                .header("Accept","text/xml")
+                .formParams(formParams)
+                .post(strEIAMURL);
+        responseBody = getResponseBody(response);
+
+        String accessToken  = getResponseValueFromJsonNode(response,"access_token");
+        responseParams.put("accessToken",accessToken);
+        responseParams.put("tokenType",getResponseValueFromJsonNode(response,"token_type"));
+        objCucumberLogger.PrintStatus("Access Token is"+accessToken);
+        return responseParams;
+    }
+
+    //Step 3 get the TYK Token
+
+    public String getTykToken(String strEnvType, String strAccessToken, String strBearerToken) throws JsonProcessingException {
+        HashMap<String,String> formParams= new HashMap<String,String>();
+        //String strAuthentication=strBearerToken+" "+strAccessToken;
+        //String strTYKURLKey="TYK.ENV."+strEnvType;
+        String strTYKURL=testDataConfig.readApplicationProperty("TYK.ENV."+strEnvType)+testDataConfig.readApplicationProperty("TYK.TOKEN");
+        response = with().spec(rspec)
+                .header("Authorization",strBearerToken+" "+strAccessToken)
+                .header("X-TYK-API-KEY",TYK_KEY)
+                .post(strTYKURL);
+        responseBody = getResponseBody(response);
+        String strTykToken = getResponseValueFromJsonNode(response,"token");
+        objCucumberLogger.PrintStatus("Tyk Token is"+strTykToken);
+        return strTykToken;
+    }
+
+    public String buildAuthHeader(String strBearerToken, String strJWTToken) {
+        return strBearerToken + " " + strJWTToken;
+    }
+
+    public String getTYKURL(String strEnvType, String strEndpointKey) {
+        return testDataConfig.readApplicationProperty("TYK.ENV." + strEnvType)
+                + testDataConfig.readApplicationProperty(strEndpointKey);
+    }
+    
+
+
+
+    /*
+    public static void main(String args[]) throws Exception {
+        devHelperLibrary objdevHelperLibrary= new devHelperLibrary();
+        String strString= objdevHelperLibrary.getEIAMTokenURL();
+        HashMap<String,String> strEIAMToken=objdevHelperLibrary.getEIAMToken_ICOS(strString);
+        String strAccessToken=strEIAMToken.get("accessToken").trim();
+        String strTokentype=strEIAMToken.get("tokenType").trim();
+       // String strTykToken=objdevHelperLibrary.getTykToken(strAccessToken,strTokentype);
+        System.out.println("Access token is "+strAccessToken);
+        System.out.println("token type is "+strTokentype);
+       // System.out.println("Tyk token is "+strTykToken);
+
+
+
+    }
+    */
+
+}
+
+
+package commonLibrary;
+
+public class SQLQueries {
+
+
+    public static String query="select * from (select us.oracle_user,(select count(*) from k.sec_user_role_cache where role_id = 140457 and sec_user_id = us.id) hub_service_user,(select key_val from k.obj_rel_key where obj_id = user_cache.bu_id and obj_key_id =11) business_unit,(select oracle_user from k.sec_user where id = user_cache.role_id) role,(select count(*) from k.obj_rel where obj_rel_type_id = 1 and obj_rel_sub_type_id = 7001 and obj_1_id = us.ref_obj_id) teams from k.sec_user us,k.sec_user_role_cache user_cache where us.close_date is null and us.ref_obj_id is not null and us.oracle_user not like \'AFS%\' and length(us.oracle_user) < 10 and user_cache.role_id in (select id from k.sec_user u where u.oracle_user = \'R_BANK_COUTTS\') and user_cache.sec_user_id = us.idand user_cache.bu_id = 6) where teams>0 and HUB_SERVICE_USER=0";
+    public static String queryOpenSession="begin k.session#.open_session() end";
+    public static String openSessionSql = "begin k.session#.open_session(); end;";
+    public static String query_HubService = "select * from ("
+            + "  select us.oracle_user, "
+            + "    (select count(*) from k.sec_user_role_cache where role_id = 140457 and sec_user_id = us.id) as hub_service_user, "
+            + "    (select key_val from k.obj_rel_key where obj_id = user_cache.bu_id and obj_key_id = 11) as business_unit, "
+            + "    (select oracle_user from k.sec_user where id = user_cache.role_id) as role, "
+            + "    (select count(*) from k.obj_rel where obj_rel_type_id = 1 and obj_rel_sub_type_id = 7001 and obj_1_id = us.ref_obj_id) as teams "
+            + "  from "
+            + "    k.sec_user us, "
+            + "    k.sec_user_role_cache user_cache "
+            + "  where us.close_date is null "
+            + "    and us.ref_obj_id is not null "
+            + "    and us.oracle_user not like 'AFS%' "
+            + "    and length(us.oracle_user) < 10 "
+            + "    and user_cache.role_id in (select id from k.sec_user u where u.oracle_user = 'R_BANK_COUTTS') "
+            + "    and user_cache.sec_user_id = us.id "
+            + "    and user_cache.bu_id = 6 "
+            + ") subquery "
+            + "where teams > 0 and hub_service_user = 0";
+
+    public static String  queryHubService = "select * from ("
+            + "  select us.oracle_user, "
+            + "    (select count(*) from k.sec_user_role_cache where role_id = 140457 and sec_user_id = us.id) hub_service_user, "
+            + "    (select key_val from k.obj_rel_key where obj_id = user_cache.bu_id and obj_key_id = 11) business_unit, "
+            + "    (select oracle_user from k.sec_user where id = user_cache.role_id) role, "
+            + "    (select count(*) from k.obj_rel where obj_rel_type_id = 1 and obj_rel_sub_type_id = 7001 and obj_1_id = us.ref_obj_id) teams "
+            + "  from "
+            + "    k.sec_user us, "
+            + "    k.sec_user_role_cache user_cache "
+            + "  where us.close_date is null "
+            + "    and us.ref_obj_id is not null "
+            + "    and us.oracle_user not like 'AFS%' "
+            + "    and length(us.oracle_user) < 10 "
+            + "    and user_cache.role_id in (select id from k.sec_user u where u.oracle_user = 'R_OB_SUPP_CENT_COUTTS') "
+            + "    and user_cache.sec_user_id = us.id "
+            + "    and user_cache.bu_id = 6"
+            + ") "
+            + "where teams > 0 and HUB_SERVICE_USER = 1";  /* RBS.CUK */ //Result has valuestrue
+   // ORACLE_USER | HUB_SERVICE_USER | BUSINESS_UNIT | ROLE | TEAMS |
+   // Query returned no rows
+
+
+    public static String queryNonHubService=  "select * from ("
+            + "  select us.oracle_user, "
+            + "    (select count(*) from k.sec_user_role_cache where role_id = 140457 and sec_user_id = us.id) as hub_service_user, "
+            + "    (select key_val from k.obj_rel_key where obj_id = user_cache.bu_id and obj_key_id = 11) as business_unit, "
+            + "    (select oracle_user from k.sec_user where id = user_cache.role_id) as role, "
+            + "    (select count(*) from k.obj_rel where obj_rel_type_id = 1 and obj_rel_sub_type_id = 7001 and obj_1_id = us.ref_obj_id) as teams "
+            + "  from "
+            + "    k.sec_user us, "
+            + "    k.sec_user_role_cache user_cache "
+            + "  where us.close_date is null "
+            + "    and us.ref_obj_id is not null "
+            + "    and us.oracle_user not like 'AFS%' "
+            + "    and length(us.oracle_user) < 10 "
+            + "    and user_cache.role_id in (select id from k.sec_user u where u.oracle_user = 'R_BANK_COUTTS') "
+            + "    and user_cache.sec_user_id = us.id "
+            + "    and user_cache.bu_id = 6 "  // RBS.CUK
+            + ") subquery "  // Added an alias for the subquery
+            + "where teams > 0 and HUB_SERVICE_USER = 0";
+
+    //working returning results
+  public static  String innerQuery = "select us.oracle_user, "
+            + "  (select count(*) from k.sec_user_role_cache where role_id = 140457 and sec_user_id = us.id) as hub_service_user, "
+            + "  (select key_val from k.obj_rel_key where obj_id = user_cache.bu_id and obj_key_id = 11) as business_unit, "
+            + "  (select oracle_user from k.sec_user where id = user_cache.role_id) as role, "
+            + "  (select count(*) from k.obj_rel where obj_rel_type_id = 1 and obj_rel_sub_type_id = 7001 and obj_1_id = us.ref_obj_id) as teams "
+            + "from "
+            + "  k.sec_user us, "
+            + "  k.sec_user_role_cache user_cache "
+            + "where us.close_date is null "
+            + "  and us.ref_obj_id is not null "
+            + "  and us.oracle_user not like 'AFS%' "
+            + "  and length(us.oracle_user) < 10 "
+            + "  and user_cache.role_id in (select id from k.sec_user u where u.oracle_user = 'R_BANK_COUTTS') "
+            + "  and user_cache.sec_user_id = us.id "
+            + "  and user_cache.bu_id = 6";
+
+   public static String checkRoleQuery = "select count(*) from k.sec_user u where u.oracle_user = 'R_BANK_COUTTS'"; // working returning id=1 result
+    public static String checkTeamsQuery = "select count(*) from k.obj_rel where obj_rel_type_id = 1 and obj_rel_sub_type_id = 7001"; //not working
+    public static String checkHubServiceUserQuery = "select count(*) from k.sec_user_role_cache where role_id = 140457";  //one result id =275
+
+    public static String relaxedQuery = "select * from ("
+            + "  select us.oracle_user, "
+            + "    (select count(*) from k.sec_user_role_cache where role_id = 140457 and sec_user_id = us.id) as hub_service_user, "
+            + "    (select count(*) from k.obj_rel where obj_rel_type_id = 1 and obj_rel_sub_type_id = 7001 and obj_1_id = us.ref_obj_id) as teams "
+            + "  from "
+            + "    k.sec_user us "
+            + "  where us.close_date is null "
+            + "    and us.ref_obj_id is not null "
+            + ") subquery "
+            + "where teams > 0"; //Result has valuestrue
+    //ORACLE_USER | HUB_SERVICE_USER | TEAMS |
+    //Query returned no rows
+
+    public static String UserwithMultipleBUsQuery= "select * from ("
+            + "  select us.oracle_user, "
+            + "    (select count(*) from k.sec_user_role_cache where role_id = 140457 and sec_user_id = us.id) as hub_service_user, "
+            + "    (select key_val from k.obj_rel_key where obj_id = user_cache.bu_id and obj_key_id = 11) as business_unit, "
+            + "    user_cache.bu_id, "  // Fixed: removed comma after business_unit
+            + "    (select oracle_user from k.sec_user where id = user_cache.role_id) as role, "
+            + "    (select count(*) from k.obj_rel where obj_rel_type_id = 1 and obj_rel_sub_type_id = 7001 and obj_1_id = us.ref_obj_id) as teams "
+            + "  from "
+            + "    k.sec_user us, "
+            + "    k.sec_user_role_cache user_cache "
+            + "  where us.close_date is null "
+            + "    and us.ref_obj_id is not null "
+            + "    and us.oracle_user not like 'AFS%' "
+            + "    and length(us.oracle_user) < 10 "
+            // + "    and user_cache.role_id in (select id from k.sec_user u where u.oracle_user = 'R_OB_SUPP_CENT_COUTTS') "
+            + "    and user_cache.sec_user_id = us.id "
+            + "    and user_cache.bu_id = 6 "  // Converted SQL comment to Java comment
+            + "    and exists (select 1 from k.sec_user_role_cache where sec_user_id = us.id and bu_id in (12) group by bu_id having count(*) > 1) "
+            + ") subquery "  // Added alias for subquery
+            + "where teams > 0"; //Result has valuestrue
+    //ORACLE_USER | HUB_SERVICE_USER | BUSINESS_UNIT | BU_ID | ROLE | TEAMS |
+   // Query returned no rows
+
+    public static String UserWith1BUQuery= "select * from ("
+            + "  select "
+            + "    oracle_user, "
+            + "    (select count(*) from k.sec_user_role_cache where role_id = 140457 and sec_user_id = sec_user.id) as hub_service_user, "
+            + "    (select count(distinct bu_id) from k.sec_user_role_cache where sec_user_id = sec_user.id) as business_units, "
+            + "    (select count(*) from k.obj_rel where obj_rel_type_id = 1 and obj_rel_sub_type_id = 7001 and obj_1_id = sec_user.ref_obj_id) as teams "
+            + "  from k.sec_user sec_user "  // Added explicit table alias
+            + "  where close_date is null "
+            + "    and ref_obj_id is not null "
+            + "    and oracle_user not like 'AFS%' "
+            + "    and length(oracle_user) < 10 "
+            + ") subquery "  // Added explicit subquery alias
+            + "where business_units = 1";  // this query is returning lots of results
+
+
+    public static String UserWith0TeamsQuery = "select * from ("
+            + "  select oracle_user, "
+            + "    (select count(*) from k.sec_user_role_cache where role_id = 140457 and sec_user_id = sec_user.id) as hub_service_user, "
+            + "    (select count(distinct bu_id) from k.sec_user_role_cache where sec_user_id = sec_user.id) as business_units, "
+            + "    (select count(*) from k.obj_rel where obj_rel_type_id = 1 and obj_rel_sub_type_id = 7001 and obj_1_id = sec_user.ref_obj_id) as teams "
+            + "  from k.sec_user sec_user "
+            + "  where close_date is null "
+            + "    and ref_obj_id is not null "
+            + "    and oracle_user not like 'AFS%' "
+            + "    and length(oracle_user) < 10 "
+            + ") subquery "
+            + "where teams = 0"; // this query is returning results
+
+    public static String UserwithGreaterThan0TeamsQuery= "select * from ("
+            + "  select oracle_user, "
+            + "    (select count(*) from k.sec_user_role_cache where role_id = 140457 and sec_user_id = sec_user.id) hub_service_user, "
+            + "    (select count(distinct bu_id) from k.sec_user_role_cache where sec_user_id = sec_user.id) business_units, "
+            + "    (select count(*) from k.obj_rel where obj_rel_type_id = 1 and obj_rel_sub_type_id = 7001 and obj_1_id = sec_user.ref_obj_id) teams "
+            + "  from k.sec_user sec_user "
+            + "  where close_date is null "
+            + "    and ref_obj_id is not null "
+            + "    and oracle_user not like 'AFS%' "
+            + "    and length(oracle_user) < 10 "
+            + ") subquery "
+            + "where teams > 0"; // no results
+
+    public static String InvalidUserQuery="SELECT oracle_user FROM k.sec_user " +
+            "WHERE id IN (SELECT sec_user_id FROM k.sec_user_role_cache WHERE role_id = 123) " +
+            "AND close_date IS NULL " +
+            "AND ref_obj_id IS NOT NULL;";
+
+        public String ReturnSQLQuery(String strQuery)
+        {
+            String strSQLQuery=null;
+            switch(strQuery)
+            {
+                case "query_HubService":
+                    strSQLQuery=queryHubService;
+                    break;
+                case "queryNonHubService":
+                    strSQLQuery=queryNonHubService;
+                    break;
+
+                case "UserwithMultipleBUsQuery":
+                    strSQLQuery=UserwithMultipleBUsQuery;
+                    break;
+
+                case "UserWith1BUQuery":
+                    strSQLQuery=UserWith1BUQuery;
+                    break;
+
+                case "UserWith0TeamsQuery":
+                    strSQLQuery=UserWith0TeamsQuery;
+                    break;
+
+                case "UserwithGreaterThan0TeamsQuery":
+                    strSQLQuery= UserwithGreaterThan0TeamsQuery;
+                    break;
+
+                case "InvalidUserQuery":
+                     strSQLQuery=InvalidUserQuery;
+                     break;
+            }
+            return strSQLQuery;
+        }
+
+
+
+
+
+
+
+
+}
