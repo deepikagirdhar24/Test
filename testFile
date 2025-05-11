@@ -1,171 +1,521 @@
-[INFO] 
-[INFO] --- maven-surefire-plugin:3.0.0-M5:test (default-test) @ wealth-icos-api ---
-[INFO] 
-[INFO] -------------------------------------------------------
-[INFO]  T E S T S
-[INFO] -------------------------------------------------------
-[INFO] Running testRunner.Runner
-      io.cucumber.core.exception.CompositeCucumberException: There were 2 exceptions. The details are in the stacktrace below.
-	at io.cucumber.core.runtime.RethrowingThrowableCollector.getThrowable(RethrowingThrowableCollector.java:57)
-	at io.cucumber.core.runtime.CucumberExecutionContext.getThrowable(CucumberExecutionContext.java:108)
-	at io.cucumber.core.runtime.CucumberExecutionContext.finishTestRun(CucumberExecutionContext.java:103)
-	at io.cucumber.core.runtime.CucumberExecutionContext.runFeatures(CucumberExecutionContext.java:152)
-	at io.cucumber.junit.Cucumber$StartAndFinishTestRun.evaluate(Cucumber.java:229)
-	at org.junit.runners.ParentRunner$3.evaluate(ParentRunner.java:306)
-	at org.junit.runners.ParentRunner.run(ParentRunner.java:413)
-	at org.junit.runner.JUnitCore.run(JUnitCore.java:137)
-	at org.junit.runner.JUnitCore.run(JUnitCore.java:115)
-	at org.junit.vintage.engine.execution.RunnerExecutor.execute(RunnerExecutor.java:42)
-	at org.junit.vintage.engine.VintageTestEngine.executeAllChildren(VintageTestEngine.java:80)
-	at org.junit.vintage.engine.VintageTestEngine.execute(VintageTestEngine.java:72)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:198)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:169)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:93)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.lambda$execute$0(EngineExecutionOrchestrator.java:58)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.withInterceptedStreams(EngineExecutionOrchestrator.java:141)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:57)
-	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:103)
-	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:85)
-	at org.junit.platform.launcher.core.DelegatingLauncher.execute(DelegatingLauncher.java:47)
-	at org.junit.platform.launcher.core.SessionPerRequestLauncher.execute(SessionPerRequestLauncher.java:63)
-	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.execute(JUnitPlatformProvider.java:188)
-	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invokeAllTests(JUnitPlatformProvider.java:154)
-	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invoke(JUnitPlatformProvider.java:128)
-	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:428)
-	at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:162)
-	at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:562)
-	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:548)
-	Suppressed: io.cucumber.java.InvalidMethodException: You're not allowed to extend classes that define Step Definitions or hooks. class stepDefinations.ContactNotesSteps extends class stepDefinations.BaseStep
-		at io.cucumber.java.InvalidMethodException.createInvalidMethodException(InvalidMethodException.java:16)
-		at io.cucumber.java.MethodScanner.validateMethod(MethodScanner.java:87)
-		at io.cucumber.java.MethodScanner.scan(MethodScanner.java:77)
-		at io.cucumber.java.MethodScanner.scan(MethodScanner.java:69)
-		at io.cucumber.java.MethodScanner.scan(MethodScanner.java:33)
-		at io.cucumber.java.JavaBackend.lambda$loadGlue$2(JavaBackend.java:41)
-		at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:183)
-		at java.base/java.util.stream.DistinctOps$1$2.accept(DistinctOps.java:174)
-		at java.base/java.util.ArrayList$ArrayListSpliterator.forEachRemaining(ArrayList.java:1625)
-		at java.base/java.util.stream.ReferencePipeline$Head.forEach(ReferencePipeline.java:762)
-		at java.base/java.util.stream.ReferencePipeline$7$1.accept(ReferencePipeline.java:276)
-		at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
-		at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
-		at java.base/java.util.stream.ReferencePipeline$2$1.accept(ReferencePipeline.java:179)
-		at java.base/java.util.ArrayList$ArrayListSpliterator.forEachRemaining(ArrayList.java:1625)
-		at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:509)
-		at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:499)
-		at java.base/java.util.stream.ForEachOps$ForEachOp.evaluateSequential(ForEachOps.java:150)
-		at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.evaluateSequential(ForEachOps.java:173)
-		at java.base/java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)
-		at java.base/java.util.stream.ReferencePipeline.forEach(ReferencePipeline.java:596)
-		at io.cucumber.java.JavaBackend.loadGlue(JavaBackend.java:41)
-		at io.cucumber.core.runner.Runner.<init>(Runner.java:56)
-		at io.cucumber.core.runtime.ThreadLocalRunnerSupplier.createRunner(ThreadLocalRunnerSupplier.java:47)
-		at java.base/java.lang.ThreadLocal$SuppliedThreadLocal.initialValue(ThreadLocal.java:305)
-		at java.base/java.lang.ThreadLocal.setInitialValue(ThreadLocal.java:195)
-		at java.base/java.lang.ThreadLocal.get(ThreadLocal.java:172)
-		at io.cucumber.core.runtime.ThreadLocalRunnerSupplier.get(ThreadLocalRunnerSupplier.java:40)
-		at io.cucumber.core.runtime.RethrowingThrowableCollector.executeAndThrow(RethrowingThrowableCollector.java:35)
-		at io.cucumber.core.runtime.CucumberExecutionContext.getRunner(CucumberExecutionContext.java:140)
-		at io.cucumber.core.runtime.CucumberExecutionContext.runBeforeAllHooks(CucumberExecutionContext.java:92)
-		at io.cucumber.core.runtime.CucumberExecutionContext.lambda$runFeatures$6(CucumberExecutionContext.java:146)
-		at io.cucumber.core.runtime.CucumberExecutionContext.execute(CucumberExecutionContext.java:162)
-		at io.cucumber.core.runtime.CucumberExecutionContext.runFeatures(CucumberExecutionContext.java:145)
-		... 25 more
-	Suppressed: io.cucumber.java.InvalidMethodException: You're not allowed to extend classes that define Step Definitions or hooks. class stepDefinations.ContactNotesSteps extends class stepDefinations.BaseStep
-		at io.cucumber.java.InvalidMethodException.createInvalidMethodException(InvalidMethodException.java:16)
-		at io.cucumber.java.MethodScanner.validateMethod(MethodScanner.java:87)
-		at io.cucumber.java.MethodScanner.scan(MethodScanner.java:77)
-		at io.cucumber.java.MethodScanner.scan(MethodScanner.java:69)
-		at io.cucumber.java.MethodScanner.scan(MethodScanner.java:33)
-		at io.cucumber.java.JavaBackend.lambda$loadGlue$2(JavaBackend.java:41)
-		at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:183)
-		at java.base/java.util.stream.DistinctOps$1$2.accept(DistinctOps.java:174)
-		at java.base/java.util.ArrayList$ArrayListSpliterator.forEachRemaining(ArrayList.java:1625)
-		at java.base/java.util.stream.ReferencePipeline$Head.forEach(ReferencePipeline.java:762)
-		at java.base/java.util.stream.ReferencePipeline$7$1.accept(ReferencePipeline.java:276)
-		at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
-		at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
-		at java.base/java.util.stream.ReferencePipeline$2$1.accept(ReferencePipeline.java:179)
-		at java.base/java.util.ArrayList$ArrayListSpliterator.forEachRemaining(ArrayList.java:1625)
-		at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:509)
-		at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:499)
-		at java.base/java.util.stream.ForEachOps$ForEachOp.evaluateSequential(ForEachOps.java:150)
-		at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.evaluateSequential(ForEachOps.java:173)
-		at java.base/java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)
-		at java.base/java.util.stream.ReferencePipeline.forEach(ReferencePipeline.java:596)
-		at io.cucumber.java.JavaBackend.loadGlue(JavaBackend.java:41)
-		at io.cucumber.core.runner.Runner.<init>(Runner.java:56)
-		at io.cucumber.core.runtime.ThreadLocalRunnerSupplier.createRunner(ThreadLocalRunnerSupplier.java:47)
-		at java.base/java.lang.ThreadLocal$SuppliedThreadLocal.initialValue(ThreadLocal.java:305)
-		at java.base/java.lang.ThreadLocal.setInitialValue(ThreadLocal.java:195)
-		at java.base/java.lang.ThreadLocal.get(ThreadLocal.java:172)
-		at io.cucumber.core.runtime.ThreadLocalRunnerSupplier.get(ThreadLocalRunnerSupplier.java:40)
-		at io.cucumber.core.runtime.RethrowingThrowableCollector.executeAndThrow(RethrowingThrowableCollector.java:35)
-		at io.cucumber.core.runtime.CucumberExecutionContext.getRunner(CucumberExecutionContext.java:140)
-		at io.cucumber.core.runtime.CucumberExecutionContext.runAfterAllHooks(CucumberExecutionContext.java:97)
-		at io.cucumber.core.runtime.CucumberExecutionContext.execute(CucumberExecutionContext.java:162)
-		at io.cucumber.core.runtime.CucumberExecutionContext.runFeatures(CucumberExecutionContext.java:150)
-		... 25 more
-May 09, 2025 11:14:13 AM tech.grasshopper.pdf.PDFCucumberReport collectReportConfiguration
-INFO: PDF report configuration YAML file not found. Using default settings.
-May 09, 2025 11:14:13 AM tech.grasshopper.pdf.extent.ExtentPDFCucumberReporter flush
-SEVERE: An exception occurred
-tech.grasshopper.pdf.exception.PdfReportException: No features present in test execution.
-	at tech.grasshopper.pdf.data.ReportData.populateCounts(ReportData.java:58)
-	at tech.grasshopper.pdf.data.ReportData.populateSectionData(ReportData.java:50)
-	at tech.grasshopper.pdf.PDFCucumberReport.<init>(PDFCucumberReport.java:64)
-	at tech.grasshopper.pdf.extent.ExtentPDFCucumberReporter.flush(ExtentPDFCucumberReporter.java:79)
-	at tech.grasshopper.pdf.extent.ExtentPDFCucumberReporter.access$100(ExtentPDFCucumberReporter.java:19)
-	at tech.grasshopper.pdf.extent.ExtentPDFCucumberReporter$1.onNext(ExtentPDFCucumberReporter.java:56)
-	at tech.grasshopper.pdf.extent.ExtentPDFCucumberReporter$1.onNext(ExtentPDFCucumberReporter.java:49)
-	at io.reactivex.rxjava3.subjects.PublishSubject$PublishDisposable.onNext(PublishSubject.java:310)
-	at io.reactivex.rxjava3.subjects.PublishSubject.onNext(PublishSubject.java:226)
-	at com.aventstack.extentreports.ReactiveSubject.onFlush(ReactiveSubject.java:83)
-	at com.aventstack.extentreports.AbstractProcessor.onFlush(AbstractProcessor.java:96)
-	at com.aventstack.extentreports.ExtentReports.flush(ExtentReports.java:279)
-	at com.aventstack.extentreports.service.ExtentService.flush(ExtentService.java:47)
-	at com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter.finishReport(ExtentCucumberAdapter.java:301)
-	at com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter$8.receive(ExtentCucumberAdapter.java:137)
-	at com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter$8.receive(ExtentCucumberAdapter.java:134)
-	at io.cucumber.core.eventbus.AbstractEventPublisher.send(AbstractEventPublisher.java:51)
-	at io.cucumber.core.eventbus.AbstractEventBus.send(AbstractEventBus.java:12)
-	at io.cucumber.core.runtime.SynchronizedEventBus.send(SynchronizedEventBus.java:47)
-	at io.cucumber.core.runtime.CucumberExecutionContext.emitTestRunFinished(CucumberExecutionContext.java:117)
-	at io.cucumber.core.runtime.CucumberExecutionContext.finishTestRun(CucumberExecutionContext.java:104)
-	at io.cucumber.core.runtime.CucumberExecutionContext.runFeatures(CucumberExecutionContext.java:152)
-	at io.cucumber.junit.Cucumber$StartAndFinishTestRun.evaluate(Cucumber.java:229)
-	at org.junit.runners.ParentRunner$3.evaluate(ParentRunner.java:306)
-	at org.junit.runners.ParentRunner.run(ParentRunner.java:413)
-	at org.junit.runner.JUnitCore.run(JUnitCore.java:137)
-	at org.junit.runner.JUnitCore.run(JUnitCore.java:115)
-	at org.junit.vintage.engine.execution.RunnerExecutor.execute(RunnerExecutor.java:42)
-	at org.junit.vintage.engine.VintageTestEngine.executeAllChildren(VintageTestEngine.java:80)
-	at org.junit.vintage.engine.VintageTestEngine.execute(VintageTestEngine.java:72)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:198)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:169)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:93)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.lambda$execute$0(EngineExecutionOrchestrator.java:58)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.withInterceptedStreams(EngineExecutionOrchestrator.java:141)
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:57)
-	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:103)
-	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:85)
-	at org.junit.platform.launcher.core.DelegatingLauncher.execute(DelegatingLauncher.java:47)
-	at org.junit.platform.launcher.core.SessionPerRequestLauncher.execute(SessionPerRequestLauncher.java:63)
-	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.execute(JUnitPlatformProvider.java:188)
-	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invokeAllTests(JUnitPlatformProvider.java:154)
-	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invoke(JUnitPlatformProvider.java:128)
-	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:428)
-	at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:162)
-	at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:562)
-	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:548)
-[ERROR] Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 3.577 s <<< FAILURE! - in testRunner.Runner
-[ERROR] testRunner.Runner  Time elapsed: 3.577 s  <<< ERROR!
-io.cucumber.core.exception.CompositeCucumberException: There were 2 exceptions. The details are in the stacktrace below.
-[INFO] 
-[INFO] Results:
-[INFO] 
-[ERROR] Errors: 
-[ERROR]   Runner » CompositeCucumber There were 2 exceptions. The details are in the sta...
-[INFO] 
-[ERROR] Tests run: 1, Failures: 0, Errors: 1, Skipped: 0
-[INFO] 
+Feature:  Get User API
+
+  Scenario Outline: Verify the Get User API for Hub Service User
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    And I get the Customer ID from Database "<SQLQueries>"
+    Then Send Request to get User Role Information
+    And I verify the BU Name "<BU>"
+    And I verify the Role "<Role>"
+
+    Examples:
+      | SQLQueries         | BU      | Role                  |
+      | query_HubService   | RBS.CUK | R_OB_SUPP_CENT_COUTTS |
+      | queryNonHubService | RBS.CUK | R_BANK_COUTTS         |
+
+
+
+  Scenario Outline: Verify the Get User API for User With 0Teams
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    And I get the Customer ID from Database "<SQLQueries>"
+    Then Send Request to get User Role Information
+    And I verify that Private Banker Status "<Is_PrivateBanker>"
+
+
+    Examples:
+      | SQLQueries          | BU      | Is_PrivateBanker |
+      | UserWith0TeamsQuery | RBS.CUK | false            |
+
+
+  Scenario Outline: Verify the Get User API for Invalid User
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    And I get the Customer ID from Database "<SQLQueries>"
+    Then Send Request to get User Role Information
+    And I verify the Status Code "<StatusCode>"
+
+    Examples:
+      | SQLQueries       | StatusCode |
+      | InvalidUserQuery | 404        |
+
+
+    @Test
+  Scenario Outline: Verify the Get User API for Hub Service User
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    And I get the Customer ID from Database "<SQLQueries>"
+    Then Send Request to get User Role Information
+      And I verify the BU Name "<BU>"
+      And I verify the TeamID "<TeamID>"
+
+
+    Examples:
+      | SQLQueries                     | BU      | TeamID          |
+      | UserwithGreaterThan0TeamsQuery | RBS.CUK | £H6_0_00_00_037 |
+
+
+  Scenario Outline: Verify the Get User API for Hub Service User
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    And I get the Customer ID from Database "<SQLQueries>"
+    Then Send Request to get User Role Information
+    And I verify the BU Name "<BU>"
+    And I verify the Role "<Role>"
+
+    Examples:
+      | SQLQueries               | BU      | Role                  |
+      | UserwithMultipleBUsQuery | RBS.CUK | R_OB_SUPP_CENT_COUTTS |
+
+
+
+
+
+
+package stepDefinations;
+
+import ICOS.getUser;
+import com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import commonLibrary.DBUtil;
+import commonLibrary.SQLQueries;
+import config.JsonExtractor;
+import config.JsonVerifier;
+import config.TestConfig;
+import hooks.CucumberHooks;
+import io.cucumber.core.logging.Logger;
+import io.cucumber.core.logging.LoggerFactory;
+import io.cucumber.java.en.And;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
+import io.restassured.response.Response;
+import org.testng.Assert;
+import utilities.CucumberLogger;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import utilities.ScenarioContext;
+
+public class GetUserSteps extends BaseStep{
+
+
+    protected TestConfig testDataConfig = TestConfig.getTestDataConfig();
+    private static final Logger logger = LoggerFactory.getLogger(CucumberHooks.class);
+    TestConfig testConfig;
+    getUser objgetUser;
+    private static Response response;
+    public static String strToken;
+    public String strMembershipDetails;
+    public int sizeOfPagination;
+    public static String strEnv;
+    public static String strEnvType;
+    public static String strEnvFDSType;
+    public String strFDSHostURL;
+    public String strFDSDevHelperURL;
+    public Object strRes;
+    public String strJWTToken;
+    public String strEIAMTokenURL;
+    CucumberLogger objCucumberLogger;
+    JsonVerifier objJsonVerifier;
+    JsonExtractor objJsonExtractor;
+    //HashMap<String,String> objAccessToken= new HashMap<>();
+    DBUtil objDBUtil;
+    public String strUserid;
+    SQLQueries objSQLQueries;
+    ScenarioContext scenarioContext;
+
+
+    public GetUserSteps() throws Exception {
+        super();
+        testConfig = new TestConfig();
+        objCucumberLogger= new CucumberLogger();
+        objJsonVerifier= new JsonVerifier();
+        objJsonExtractor= new JsonExtractor();
+        objDBUtil= new DBUtil();
+        objSQLQueries= new SQLQueries();
+        objgetUser = new getUser();
+
+        //scenarioContext = new ScenarioContext();
+    }
+
+    public GetUserSteps(ScenarioContext scenarioContext) throws Exception {
+
+
+        super();
+        this.scenarioContext = scenarioContext;
+        testConfig = new TestConfig();
+        objCucumberLogger= new CucumberLogger();
+        objJsonVerifier= new JsonVerifier();
+        objJsonExtractor= new JsonExtractor();
+        objDBUtil= new DBUtil();
+        objSQLQueries= new SQLQueries();
+        objgetUser = new getUser();
+
+    }
+
+
+    @Then("I verify the API Response")
+    public void VerifyResponse()
+    {
+        Map<String, Object> extractedValues = new HashMap<>();
+        objCucumberLogger.PrintStatus("Inside this");
+        objCucumberLogger.PrintStatus("Response",strRes.toString());
+        extractedValues=objJsonExtractor.extractJsonValues(strRes.toString());
+        List<String> ccValues = (List<String>) extractedValues.get("isoCode");
+        ExtentCucumberAdapter.addTestStepLog("Response is" +ccValues);
+        Assert.assertEquals(objJsonVerifier.verifyJson_getCurrency(strRes.toString()),true);
+
+    }
+
+    @Given("I generate EIAM JWT Token")
+    public void iGenerateEIAMJWTToken() {
+    }
+
+    @Given("Send Request to get Authentication Token for ICOS")
+    public void sendRequestToGetAuthenticationTokenForICOS() throws JsonProcessingException {
+        this.strEnvType=testDataConfig.getENVIRONMENT();
+        strEIAMTokenURL= objdevHelperLibrary.getEIAMTokenURL();
+        objAccessToken= objdevHelperLibrary.getEIAMToken_ICOS(strEIAMTokenURL);
+        objCucumberLogger.PrintStatus("Access Token  is"+objAccessToken);
+        ExtentCucumberAdapter.addTestStepLog("Actual value of Access Token is : " +objAccessToken);
+        scenarioContext.setToken("AccessToken",objAccessToken.get("accessToken"));
+        scenarioContext.setToken("strEnvType",strEnvType);
+    }
+
+    @When("I generate the JWT Token")
+    public void iGenerateTheJWTToken() throws JsonProcessingException {
+        String strBearerToken=objAccessToken.get("tokenType");
+        String strAccessToken=objAccessToken.get("accessToken");
+        strJWTToken= objdevHelperLibrary.getTykToken(strEnvType,strAccessToken,strBearerToken);
+        scenarioContext.setToken("JWTToken",strJWTToken);
+    }
+
+    @And("I get the Customer ID from Database {string}")
+    public void iGetTheCustomerIDFromDatabase(String strSQLQuery) throws SQLException, ClassNotFoundException {
+        String strTACBDB=testConfig.getTACBEnv();
+        String strTACBPassword=testConfig.getTACBPassword(strTACBDB);
+        objCucumberLogger.PrintStatus("Password is"+strTACBPassword);
+        ArrayList<String> objUserID=objDBUtil.selectQuery(strTACBDB, strTACBPassword,objSQLQueries.ReturnSQLQuery(strSQLQuery));
+        objCucumberLogger.PrintStatus("UserIDS are:"+objUserID.toString());
+        strUserid=objUserID.get(0);
+
+    }
+
+    @Then("Send Request to get User Role Information")
+    public void sendRequestToGetUserRoleInformation() throws JsonProcessingException {
+        response =objgetUser.getGetUser(strEnvType,objAccessToken.get("tokenType"),strJWTToken,strUserid);
+
+    }
+
+
+    @And("I verify the BU Name {string}")
+    public void iVerifyTheBUName(String strBU) throws JsonProcessingException{
+        boolean boolHasBURole= objgetUser.hasBURole(response,strBU);
+        Assert.assertEquals(true,boolHasBURole);
+    }
+
+
+    @And("I verify the Role {string}")
+    public void iVerifyTheRole(String strRole) throws JsonProcessingException {
+        boolean boolHasRoleName=objgetUser.hasRole(response,strRole);
+        Assert.assertEquals(true,boolHasRoleName);
+    }
+
+    @And("I verify that Private Banker Status {string}")
+    public void iVerifyThatPrivateBankerStatus(String IsPrivateBanker) throws JsonProcessingException {
+        Assert.assertEquals(false,objgetUser.isNotPrivateBanker(response));
+    }
+
+    @And("I verify the Status Code {string}")
+    public void iVerifyTheStatusCode(String strStatusCode) {
+        int responseCode= response.statusCode();
+        Assert.assertEquals(Integer.parseInt(strStatusCode),responseCode);
+    }
+
+    @And("I verify the TeamID {string}")
+    public void iVerifyTheTeamID(String strTeamID) throws JsonProcessingException {
+        Assert.assertEquals(true,objgetUser.hasTeamId(response,strTeamID));
+    }
+}
+
+
+
+
+
+package ICOS;
+
+import com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import commonLibrary.devHelperLibrary;
+import config.TestConfig;
+import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
+import utilities.CucumberLogger;
+import utilities.EncryptionUtil;
+
+import java.util.*;
+
+import static io.restassured.RestAssured.with;
+
+public class getUser {
+    public ObjectMapper objectMapper;
+    public static EncryptionUtil objEncryptionUtil;
+    protected TestConfig testDataConfig= TestConfig.getTestDataConfig();
+
+    CucumberLogger objCucumberLogger;
+    devHelperLibrary objdevHelperLibrary;
+
+    public static RequestSpecification rspec;
+    private static Response response;
+    private static String responseBody;
+    //String TYK_KEY = System.getenv("X-TYK-API-KEY");
+    String TYK_KEY = TestConfig.getTykApiKey();//--> Newly Added
+    String strAuthentication;//--> Newly Added
+    String strTYKURL;//--> Newly Added
+
+    public getUser() throws Exception {
+        objEncryptionUtil= new EncryptionUtil();
+        objectMapper = new ObjectMapper();
+        objCucumberLogger= new CucumberLogger();
+        objdevHelperLibrary= new devHelperLibrary();
+        rspec=objdevHelperLibrary.setup();
+    }
+
+
+
+    //Step4 get the user id
+
+    public Response getGetUser(String strEnvType,String strBearerToken,String strJWTToken, String strUserId) throws JsonProcessingException {
+//        HashMap<String,String> formParams= new HashMap<String,String>();
+//        String strAuthentication=strBearerToken+" "+strJWTToken;
+//        objCucumberLogger.PrintStatus("authenticationis"+strAuthentication);
+//        ExtentCucumberAdapter.addTestStepLog("Actual value of Authentication is : " +strAuthentication);
+//        objCucumberLogger.PrintStatus("user id is"+strUserId);
+//        //String strTYKURLKey="TYK.ENV."+strEnvType;
+//        String strTYKURL=testDataConfig.readApplicationProperty("TYK.ENV."+strEnvType)+testDataConfig.readApplicationProperty("TYK.USERID")+strUserId;
+//        objCucumberLogger.PrintStatus("URL is"+strTYKURL);
+
+        strAuthentication = objdevHelperLibrary.buildAuthHeader(strBearerToken, strJWTToken); //--> Newly Added
+        strTYKURL = objdevHelperLibrary.getTYKURL(strEnvType, "TYK.USERID");//--> Newly Added
+
+        // Logging request details //--> Newly Added
+        ExtentCucumberAdapter.addTestStepLog("Sending request to Create New Person");
+        ExtentCucumberAdapter.addTestStepLog("Request URL: " + strTYKURL);
+        ExtentCucumberAdapter.addTestStepLog("Request Headers: Authorization=" + strAuthentication);
+
+        response = with().spec(rspec)
+                .header("Authorization",strBearerToken+" "+strJWTToken)
+                .header("X-TYK-API-KEY",TYK_KEY)
+                .header("UserID",strUserId)
+                .get(strTYKURL);
+        responseBody = objdevHelperLibrary.getResponseBody(response);
+        //objCucumberLogger.PrintStatus("Status code is"+response.statusCode());
+        objCucumberLogger.PrintStatus("Response is"+responseBody);
+
+        // Logging response details //--> Newly Added
+        ExtentCucumberAdapter.addTestStepLog("Response Code: " + response.getStatusCode());
+        ExtentCucumberAdapter.addTestStepLog("Response Body:\n" + responseBody);
+
+        return response;
+    }
+
+
+    // New method to get name from the JSON
+    public String getName(Response response) throws JsonProcessingException {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        return rootNode.path("name").asText();
+    }
+
+    // New method to get business units as a list
+    public List<String> getBusinessUnits(Response response) throws JsonProcessingException {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode businessUnitsNode = rootNode.path("businessUnits");
+
+        List<String> businessUnits = new ArrayList<>();
+
+        if (businessUnitsNode.isArray()) {
+            for (JsonNode buNode : businessUnitsNode) {
+                businessUnits.add(buNode.path("bu").asText());
+            }
+        }
+
+        return businessUnits;
+    }
+
+    // Method to get all roles across all business units
+    public List<String> getAllRoles(Response response) throws JsonProcessingException {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode businessUnitsNode = rootNode.path("businessUnits");
+
+        List<String> allRoles = new ArrayList<>();
+
+        if (businessUnitsNode.isArray()) {
+            for (JsonNode buNode : businessUnitsNode) {
+                JsonNode rolesNode = buNode.path("roles");
+                if (rolesNode.isArray()) {
+                    for (JsonNode roleNode : rolesNode) {
+                        allRoles.add(roleNode.path("name").asText());
+                    }
+                }
+            }
+        }
+
+        return allRoles;
+    }
+
+    // Method to get teams
+    public List<String> getTeams(Response response) throws JsonProcessingException {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode teamsNode = rootNode.path("privateBanker").path("teams");
+
+        List<String> teams = new ArrayList<>();
+
+        if (teamsNode.isArray()) {
+            for (JsonNode teamNode : teamsNode) {
+                teams.add(teamNode.path("name").asText());
+            }
+        }
+
+        return teams;
+    }
+
+
+    public List<List<String>> processUserData(Response response) throws JsonProcessingException {
+        List<List<String>> strGetUserResponse = new ArrayList<>();
+
+        String name = getName(response);
+        List<String> businessUnits = getBusinessUnits(response);
+        List<String> roles = getAllRoles(response);
+        List<String> teams = getTeams(response);
+        //boolean hasRequiredRole = hasRole(response, "R_OB_SUPP_CENT_COUTTS");
+
+        List<String> nameList = new ArrayList<>();
+        nameList.add(name);
+        strGetUserResponse.add(nameList);
+
+        strGetUserResponse.add(businessUnits);
+        strGetUserResponse.add(teams);
+        strGetUserResponse.add(roles);
+
+
+        return strGetUserResponse;
+    }
+
+
+    public boolean hasRole(Response response, String roleName) throws JsonProcessingException {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode businessUnitsNode = rootNode.path("businessUnits");
+        if (businessUnitsNode.isArray()) {
+            for (JsonNode buNode : businessUnitsNode) {
+                JsonNode rolesNode = buNode.path("roles");
+                if (rolesNode.isArray()) {
+                    for (JsonNode roleNode : rolesNode) {
+                        String currentRole = roleNode.path("name").asText();
+                        if (roleName.equals(currentRole)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+
+    public boolean hasBURole(Response response, String buName) throws JsonProcessingException {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode businessUnitsNode = rootNode.path("businessUnits");
+        if (businessUnitsNode.isArray()) {
+            for (JsonNode buNode : businessUnitsNode) {
+                String currentBU = buNode.path("bu").asText();
+                if (buName.equals(currentBU)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+
+    /**
+     * Checks if the user is NOT a private banker
+     *
+     * @param response The API response containing user data
+     * @return true if the user is NOT a private banker, false if they are
+     * @throws JsonProcessingException if JSON parsing fails
+     */
+    public boolean isNotPrivateBanker(Response response) throws JsonProcessingException {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode privateBankerNode = rootNode.path("privateBanker");
+
+        // Check if privateBanker node is missing or is null/empty
+        if (privateBankerNode.isMissingNode() || privateBankerNode.isNull()) {
+            return true;
+        }
+
+        // Check if teams array is empty
+        JsonNode teamsNode = privateBankerNode.path("teams");
+        if (teamsNode.isArray() && teamsNode.size() == 0) {
+            return true;
+        }
+
+        // If we have a privateBanker node with teams, the user is a private banker
+        return false;
+    }
+
+
+
+    /**
+     * Checks if the specific team ID exists in the user's teams
+     *
+     * @param response The API response containing user data
+     * @param teamId The team ID to check for
+     * @return true if the team ID exists, false otherwise
+     * @throws JsonProcessingException if JSON parsing fails
+     */
+    public boolean hasTeamId(Response response, String teamId) throws JsonProcessingException {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode teamsNode = rootNode.path("privateBanker").path("teams");
+
+        if (teamsNode.isArray()) {
+            for (JsonNode teamNode : teamsNode) {
+                String currentTeamId = teamNode.path("id").asText();
+                if (teamId.equals(currentTeamId)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+
+
+
+    /**
+     * Checks if the user has the specified name
+     *
+     * @param response The API response containing user data
+     * @param userName The name to check for
+     * @return true if the name matches, false otherwise
+     * @throws JsonProcessingException if JSON parsing fails
+     */
+    public boolean hasName(Response response, String userName) throws JsonProcessingException {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        String name = rootNode.path("name").asText();
+        if (!name.equalsIgnoreCase(""))
+            return true;
+        else
+            return false;
+    }
+
+
+
+
+}
