@@ -1,170 +1,41 @@
-I need to give personId as invalid below, can I resue the same step -     Then Send POST ContactNote Request with below details, if so how ?
+public Response createContactNote(String strEnvType, String strBearerToken, String strJWTToken, Map<String, String> mapNoteDetails) throws JsonProcessingException {
+    strAuthentication = objdevHelperLibrary.buildAuthHeader(strBearerToken, strJWTToken);
+    strTYKURL = objdevHelperLibrary.getTYKURL(strEnvType, "TYK.CONTACTNOTES");
 
-Feature: Create Contact Notes API with invalid PersonId
+    ContactNoteRequest noteRequest = new ContactNoteRequest();
 
-  Scenario Outline: Verify the Post Contact Notes API with invalid PersonId
-    Given Send Request to get Authentication Token for ICOS
-    When I generate the JWT Token
-    Then Send POST ContactNote Request with below details
-      | personIds     | ghgf            |
-      | subject      | Testsubject     |
-      | notes        | Testnote        |
-      | hasFollowup  | false           |
-    And I verify the Status Code for Contact Notes "<statusCode>"
-
-    Examples:
-      | statusCode |
-      | 400        |
-
-
-below is the contactNOtesSteps class - 
-
-    @Then("Send POST ContactNote Request with below details")
-    public void sendPOSTContactNoteRequestWithDetails(DataTable dataTable) throws JsonProcessingException {
-        Map<String, String> mapNoteDetails = dataTable.asMap(String.class, String.class);
-        String jwtToken = scenarioContext.getToken("JWTToken");
-        response = objContactNotes.createContactNote(strEnvType, "Bearer", jwtToken, mapNoteDetails);
-    }
-
-below is contactNOtes.java - 
-
-//Function to create a New Person
-    public Response createNewPerson(String strEnvType,String strBearerToken,String strJWTToken, Map<String, String> mapPersonDetails) throws JsonProcessingException {
-
-        strAuthentication = objdevHelperLibrary.buildAuthHeader(strBearerToken, strJWTToken);
-        strTYKURL = objdevHelperLibrary.getTYKURL(strEnvType, "TYK.CREATENEWPERSON");
-
-        NewPersonRequest personRequest = new NewPersonRequest();
-        personRequest.setStrUuid(UUID.randomUUID().toString().substring(0, 7));
-        personRequest.setStrSubType(mapPersonDetails.get("subType"));
-        personRequest.setStrDomiCountry(mapPersonDetails.get("domicileCountry"));
-        personRequest.setStrFirstName(mapPersonDetails.get("firstName"));
-        personRequest.setStrLastName(mapPersonDetails.get("lastName"));
-        personRequest.setStrGender(mapPersonDetails.get("gender"));
-        personRequest.setLstNationalities(Collections.singletonList(mapPersonDetails.get("nationality")));
-
-        strJsonBody = new ObjectMapper().writeValueAsString(personRequest);
-
-        // Logging request details
-        ExtentCucumberAdapter.addTestStepLog("Sending request to Create New Person");
-        ExtentCucumberAdapter.addTestStepLog("Request URL: " + strTYKURL);
-        ExtentCucumberAdapter.addTestStepLog("Request Headers: Authorization=" + strAuthentication);
-        ExtentCucumberAdapter.addTestStepLog("Request Body:\n" + strJsonBody);
-
-        response = with().spec(rspec)
-                .header("Authorization",strBearerToken+" "+strJWTToken)
-                .header("X-TYK-API-KEY",TYK_KEY)
-                .header("Content-Type","application/json")
-                .body(strJsonBody)
-                .post(strTYKURL);
-        strResponseBody = objdevHelperLibrary.getResponseBody(response);
-
-        // Logging response details
-        ExtentCucumberAdapter.addTestStepLog("Response Code: " + response.getStatusCode());
-        ExtentCucumberAdapter.addTestStepLog("Response Body:\n" + strResponseBody);
-
-        strObjectId = response.jsonPath().getString("objectId");
-        strOrderId = response.jsonPath().getString("orderId");
-
-        objCucumberLogger.PrintStatus("Response is"+ strResponseBody);
-
-        ExtentCucumberAdapter.addTestStepLog("Extracted Object Id is : "+ strObjectId);
-        ExtentCucumberAdapter.addTestStepLog("Extracted Order Id is : " + strOrderId);
-        return response;
-    }
-
-    //Function to create a Contact Note
-    public Response createContactNote(String strEnvType, String strBearerToken, String strJWTToken, Map<String, String> mapNoteDetails) throws JsonProcessingException {
-
-        strAuthentication = objdevHelperLibrary.buildAuthHeader(strBearerToken, strJWTToken);
-        strTYKURL = objdevHelperLibrary.getTYKURL(strEnvType, "TYK.CONTACTNOTES");
-
-        ContactNoteRequest noteRequest = new ContactNoteRequest();
+    // Use provided personIds if available, else use strObjectId
+    if (mapNoteDetails.containsKey("personIds") && mapNoteDetails.get("personIds") != null && !mapNoteDetails.get("personIds").isEmpty()) {
+        noteRequest.setLstPersonIds(Collections.singletonList(mapNoteDetails.get("personIds")));
+    } else {
         noteRequest.setLstPersonIds(Collections.singletonList(strObjectId));
-
-        noteRequest.setStrSubject(mapNoteDetails.get("subject"));
-        noteRequest.setStrNotes(mapNoteDetails.get("notes"));
-        noteRequest.setBoolHasFollowup(Boolean.parseBoolean(mapNoteDetails.get("hasFollowup")));
-
-        strJsonBody = objectMapper.writeValueAsString(noteRequest);
-
-        // Logging request details
-        ExtentCucumberAdapter.addTestStepLog("Sending request to Create Contact Note");
-        ExtentCucumberAdapter.addTestStepLog("Request URL: " + strTYKURL);
-        ExtentCucumberAdapter.addTestStepLog("Request Headers: Authorization=" + strAuthentication);
-        ExtentCucumberAdapter.addTestStepLog("Request Body:\n" + strJsonBody);
-
-        response = with().spec(rspec)
-                .header("Authorization",strBearerToken+" "+strJWTToken)
-                .header("X-TYK-API-KEY",TYK_KEY)
-                .header("Content-Type","application/json")
-                .body(strJsonBody)
-                .post(strTYKURL);
-        strResponseBody = objdevHelperLibrary.getResponseBody(response);
-
-        // Logging response details
-        ExtentCucumberAdapter.addTestStepLog("Response Code: " + response.getStatusCode());
-        ExtentCucumberAdapter.addTestStepLog("Response Body:\n" + strResponseBody);
-
-        objCucumberLogger.PrintStatus("Response is"+ strResponseBody);
-        return response;
     }
 
-this is pojo - 
+    noteRequest.setStrSubject(mapNoteDetails.get("subject"));
+    noteRequest.setStrNotes(mapNoteDetails.get("notes"));
+    noteRequest.setBoolHasFollowup(Boolean.parseBoolean(mapNoteDetails.get("hasFollowup")));
 
-package ICOS.pojo;
+    strJsonBody = objectMapper.writeValueAsString(noteRequest);
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+    // Logging request details
+    ExtentCucumberAdapter.addTestStepLog("Sending request to Create Contact Note");
+    ExtentCucumberAdapter.addTestStepLog("Request URL: " + strTYKURL);
+    ExtentCucumberAdapter.addTestStepLog("Request Headers: Authorization=" + strAuthentication);
+    ExtentCucumberAdapter.addTestStepLog("Request Body:\n" + strJsonBody);
 
-import java.util.List;
+    response = with().spec(rspec)
+            .header("Authorization", strBearerToken + " " + strJWTToken)
+            .header("X-TYK-API-KEY", TYK_KEY)
+            .header("Content-Type", "application/json")
+            .body(strJsonBody)
+            .post(strTYKURL);
 
-public class ContactNoteRequest {
+    strResponseBody = objdevHelperLibrary.getResponseBody(response);
 
-    @JsonProperty("personIds")
-    private List<String> lstPersonIds;
+    ExtentCucumberAdapter.addTestStepLog("Response Code: " + response.getStatusCode());
+    ExtentCucumberAdapter.addTestStepLog("Response Body:\n" + strResponseBody);
 
-    @JsonProperty("subject")
-    private String strSubject;
+    objCucumberLogger.PrintStatus("Response is" + strResponseBody);
 
-    @JsonProperty("notes")
-    private String strNotes;
-
-    @JsonProperty("hasFollowup")
-    private boolean boolHasFollowup;
-
-    // Getters and Setters
-    public List<String> getLstPersonIds() {
-        return lstPersonIds;
-    }
-
-    public void setLstPersonIds(List<String> lstPersonIds) {
-        this.lstPersonIds = lstPersonIds;
-    }
-
-    public String getStrSubject() {
-        return strSubject;
-    }
-
-    public void setStrSubject(String strSubject) {
-        this.strSubject = strSubject;
-    }
-
-    public String getStrNotes() {
-        return strNotes;
-    }
-
-    public void setStrNotes(String strNotes) {
-        this.strNotes = strNotes;
-    }
-
-    public boolean isBoolHasFollowup() {
-        return boolHasFollowup;
-    }
-
-    public void setBoolHasFollowup(boolean boolHasFollowup) {
-        this.boolHasFollowup = boolHasFollowup;
-    }
-
+    return response;
 }
-
-
