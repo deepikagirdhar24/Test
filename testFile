@@ -1,71 +1,61 @@
-Feature: Create Contact Notes API with valid inputs
-
-  Scenario Outline: Verify the Post Contact Notes API with two persons
-    Given Send Request to get Authentication Token for ICOS
-    When I generate the JWT Token
-    And Send request to generate New Persons with below details
-      | firstName     | lastName | subType        | domicileCountry | gender | nationality |
-      | <firstName1>  | Lastname | pers_form_ass  | CH              | male   | CH          |
-      | <firstName2>  | Lastname | pers_form_ass  | CH              | male   | CH          |
-    Then Send POST ContactNote Request with below details
-      | subject     | <subject>     |
-      | notes       | <notes>       |
-      | hasFollowup | <hasFollowup> |
-    And I verify the Status Code for Contact Notes "<statusCode>"
-    And I verify the OrderId
-
-    Examples:
-      | firstName1  | firstName2  | subject     | notes     | hasFollowup | statusCode |
-      | FirstName_1 | FirstName_2 | Testsubject | Testnote  | false       | 200        |
-
-
-@And("Send request to generate New Person with below details")
-public void sendRequestToGenerateNewPersonWithDetails(DataTable dataTable) throws JsonProcessingException {
-    List<Map<String, String>> personList = dataTable.asMaps(String.class, String.class);
-    List<String> generatedPersonIds = new ArrayList<>();
-
-    for (Map<String, String> personDetails : personList) {
-        String jwtToken = scenarioContext.getToken("JWTToken");
-        Response personResponse = objContactNotes.createNewPerson(strEnvType, "Bearer", jwtToken, personDetails);
-
-        String personId = personResponse.jsonPath().getString("objectId");
-        generatedPersonIds.add(personId);
-    }
-
-    // Save generated personIds in scenarioContext for later use in ContactNote request
-    scenarioContext.setContext("GeneratedPersonIds", generatedPersonIds);
+[INFO] 
+[INFO] --- maven-surefire-plugin:3.0.0-M5:test (default-test) @ wealth-icos-api ---
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running testRunner.Runner
+Scenario Outline: Verify the Post Contact Notes API with valid inputs # src/test/resources/Features/CreateContactNotes-ValidInputs.feature:24
+Before All
+May 12, 2025 7:37:03 PM hooks.CucumberHooks beforeScenario
+INFO: Before Scenario: Test is starting!
+May 12, 2025 7:37:08 PM utilities.CucumberLogger PrintStatus
+INFO: Value is: Access Token is51kgOayaMkObSq5hhrcrgd6T3JBl
+May 12, 2025 7:37:08 PM utilities.CucumberLogger PrintStatus
+INFO: Value is: Access Token  is{accessToken=51kgOayaMkObSq5hhrcrgd6T3JBl, tokenType=Bearer}
+  Given Send Request to get Authentication Token for ICOS             # stepDefinations.GetUserSteps.sendRequestToGetAuthenticationTokenForICOS()
+May 12, 2025 7:37:09 PM utilities.CucumberLogger PrintStatus
+INFO: Value is: Tyk Token iseyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzdXAtYW1pd3Mtand0LWdlbmVyYXRvciIsInN1YiI6IlJCU0MkQ0xNX09OQk9BUkRJTkciLCJhdWQiOiJBTUlXZWJTZXJ2aWNlcyIsImV4cCI6MTc0NzA3NTkyOSwiaWF0IjoxNzQ3MDc1MDI5LCJhdmFsb3FfYnVfaWQiOiI2In0.LBa36NGLCepmDsbPyEyQCB_Ky801rWYgSsutPOZGL9lWpN3ExiLLPDr_tJWmklwh5ikW81j99sh7o8Eqyjw_gDowG4b003FhE4ErhxyR9GV9yC_qyei8WjN0py9PB5S1hMqKBKIcPRtCRFavwq4H-aRGxbn2mVEYS9zSKLiYFJfgIgxW2tOl3uq5wZ0srbsFyzO7XDApSeeV_l4Badbm7bRONvPlK8aJm3AnFzCFjy9ZqKRI3TnKpAp3UwIiKqzf51QAUeVAvLM-RgBZ9kVAksSjuYtFecYVSuH2EUEaS0pzAZ1qTl4SB5Q1TmImM-O0-CKIgY4jgwKDZ5NQViepJw
+  When I generate the JWT Token                                       # stepDefinations.GetUserSteps.iGenerateTheJWTToken()
+May 12, 2025 7:37:21 PM utilities.CucumberLogger PrintStatus
+INFO: Value is: Response is{
+    "error": "There was a problem proxying the request"
 }
-
-@Then("Send POST ContactNote Request with below details")
-public void sendPOSTContactNoteRequestWithDetails(DataTable dataTable) throws JsonProcessingException {
-    Map<String, String> mapNoteDetails = dataTable.asMap(String.class, String.class);
-    String jwtToken = scenarioContext.getToken("JWTToken");
-
-    List<String> personIds;
-
-    // CASE 1: Check if 'personIds' key exists in the DataTable (for negative test case)
-    if (mapNoteDetails.containsKey("personIds") && mapNoteDetails.get("personIds") != null && !mapNoteDetails.get("personIds").isEmpty()) {
-        // Support comma-separated multiple IDs if needed
-        String[] ids = mapNoteDetails.get("personIds").split(",");
-        personIds = Arrays.stream(ids).map(String::trim).collect(Collectors.toList());
-    }
-    // CASE 2: If 'GeneratedPersonIds' are stored from previous steps
-    else if (scenarioContext.getContext("GeneratedPersonIds") != null) {
-        personIds = (List<String>) scenarioContext.getContext("GeneratedPersonIds");
-    }
-    // CASE 3: Fallback to a single strObjectId (used in older tests)
-    else if (strObjectId != null) {
-        personIds = Collections.singletonList(strObjectId);
-    }
-    // CASE 4: Fail-safe to prevent NPEs
-    else {
-        throw new IllegalStateException("No valid personIds found for ContactNote request.");
-    }
-
-    response = objContactNotes.createContactNote(strEnvType, "Bearer", jwtToken, mapNoteDetails, personIds);
+  And Send request to generate New Person with below details          # stepDefinations.ContactNotesSteps.sendRequestToGenerateNewPersonWithDetails(io.cucumber.datatable.DataTable)
+    | firstName   | lastName | subType       | domicileCountry | gender | nationality |
+    | FirstName_1 | Lastname | pers_form_ass | CH              | male   | CH          |
+May 12, 2025 7:37:31 PM utilities.CucumberLogger PrintStatus
+INFO: Value is: Response is{
+    "error": "There was a problem proxying the request"
 }
-
-
-
-    // Use the personIds passed to this method
-    noteRequest.setLstPersonIds(personIds);
+May 12, 2025 7:37:31 PM utilities.CucumberLogger PrintStatus
+INFO: Value is: Response Code: 500
+  Then Send POST ContactNote Request with below details               # stepDefinations.ContactNotesSteps.sendPOSTContactNoteRequestWithDetails(io.cucumber.datatable.DataTable)
+    | subject     | Testsubject |
+    | notes       | Testnote    |
+    | hasFollowup | false       |
+  And I verify the Status Code for Contact Notes "200"                # stepDefinations.ContactNotesSteps.iVerifyTheStatusCodeForContactNotes(java.lang.String)
+      java.lang.AssertionError: expected [500] but found [200]
+	at org.testng.Assert.fail(Assert.java:111)
+	at org.testng.Assert.failNotEquals(Assert.java:1578)
+	at org.testng.Assert.assertEqualsImpl(Assert.java:150)
+	at org.testng.Assert.assertEquals(Assert.java:132)
+	at org.testng.Assert.assertEquals(Assert.java:1419)
+	at org.testng.Assert.assertEquals(Assert.java:1383)
+	at org.testng.Assert.assertEquals(Assert.java:1429)
+	at stepDefinations.ContactNotesSteps.iVerifyTheStatusCodeForContactNotes(ContactNotesSteps.java:77)
+	at âœ½.I verify the Status Code for Contact Notes "200"(file:///C:/Users/girdd/IdeaProjects/icosapitests/src/test/resources/Features/CreateContactNotes-ValidInputs.feature:19)
+  And I verify the OrderId                                            # stepDefinations.ContactNotesSteps.iVerifyTheOrderId()
+May 12, 2025 7:37:33 PM tech.grasshopper.pdf.PDFCucumberReport collectReportConfiguration
+INFO: PDF report configuration YAML file not found. Using default settings.
+[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 34.023 s <<< FAILURE! - in testRunner.Runner
+[ERROR] Create Contact Notes API with valid inputs.Verify the Post Contact Notes API with valid inputs  Time elapsed: 28.983 s  <<< FAILURE!
+java.lang.AssertionError: expected [500] but found [200]
+[INFO] 
+[INFO] Results:
+[INFO] 
+[ERROR] Failures: 
+[ERROR]   expected [500] but found [200]
+[INFO] 
+[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0
+[INFO] 
