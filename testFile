@@ -1,3 +1,16 @@
+Theer are 2 request with firstName 1 and FirstNae2, then in   Then Send POST ContactNote Request with below details request, we need to pass personIds as an array of 2 strObjectIds, how can we implement this in exsiting functions below - 2 
+
+ like in postman the request payload is - 
+{
+    "personIds": [
+        "665078425",
+        "665078988"
+    ],
+    "subject": "subject",
+    "notes": "notes",
+    "hasFollowup": null
+}
+
 Feature: Create Contact Notes API with valid inputs
 
   Scenario Outline: Verify the Post Contact Notes API with valid inputs
@@ -18,12 +31,104 @@ Feature: Create Contact Notes API with valid inputs
     And I verify the OrderId
 
     Examples:
-      | firstName   | subject          | notes     | hasFollowup | statusCode | Comments     |
-      | FirstName_1 | Testsubject      | Testnote  | false       | 200        | Valid Inputs |
-      | FirstName_2 | Testsubject      | Testnote  | false       | 200        | Valid Inputs |
-      | FirstName_1 | RANDOM_LESS_250  | Testnote  | false       | 200        | Subject Less than 250 chars |
-      | FirstName_1 | RANDOM_EXACT_250 | Testnote  | false       | 200        | Subject equal to 250 chars |
-      | FirstName_1 | Testsubject      |           | false       | 200        | Notes as Empty String      |
-      | FirstName_1 | Testsubject      | Testnote  | true        | 200        | hasFollowup as 'Yes'       |
-      | FirstName_1 | Testsubject      | Testnote  | null        | 200        | hasFollowup as null     |
+      | firstName   | subject          | notes     | hasFollowup | statusCode | Comments           |
+      | FirstName_1 | Testsubject      | Testnote  | false       | 200        | Multiple PersonIds |
+      | FirstName_2 | Testsubject      | Testnote  | false       | 200        | Multiple PersonIds |
 
+
+//Function to create a New Person
+    public Response createNewPerson(String strEnvType,String strBearerToken,String strJWTToken, Map<String, String> mapPersonDetails) throws JsonProcessingException {
+
+        strAuthentication = objdevHelperLibrary.buildAuthHeader(strBearerToken, strJWTToken);
+        strTYKURL = objdevHelperLibrary.getTYKURL(strEnvType, "TYK.CREATENEWPERSON");
+
+        NewPersonRequest personRequest = new NewPersonRequest();
+        personRequest.setStrUuid(UUID.randomUUID().toString().substring(0, 7));
+        personRequest.setStrSubType(mapPersonDetails.get("subType"));
+        personRequest.setStrDomiCountry(mapPersonDetails.get("domicileCountry"));
+        personRequest.setStrFirstName(mapPersonDetails.get("firstName"));
+        personRequest.setStrLastName(mapPersonDetails.get("lastName"));
+        personRequest.setStrGender(mapPersonDetails.get("gender"));
+        personRequest.setLstNationalities(Collections.singletonList(mapPersonDetails.get("nationality")));
+
+        strJsonBody = new ObjectMapper().writeValueAsString(personRequest);
+
+        // Logging request details
+        ExtentCucumberAdapter.addTestStepLog("Sending request to Create New Person");
+        ExtentCucumberAdapter.addTestStepLog("Request URL: " + strTYKURL);
+        ExtentCucumberAdapter.addTestStepLog("Request Headers: Authorization=" + strAuthentication);
+        ExtentCucumberAdapter.addTestStepLog("Request Body:\n" + strJsonBody);
+
+        response = with().spec(rspec)
+                .header("Authorization",strBearerToken+" "+strJWTToken)
+                .header("X-TYK-API-KEY",TYK_KEY)
+                .header("Content-Type","application/json")
+                .body(strJsonBody)
+                .post(strTYKURL);
+        strResponseBody = objdevHelperLibrary.getResponseBody(response);
+
+        // Logging response details
+        ExtentCucumberAdapter.addTestStepLog("Response Code: " + response.getStatusCode());
+        ExtentCucumberAdapter.addTestStepLog("Response Body:\n" + strResponseBody);
+
+        strObjectId = response.jsonPath().getString("objectId");
+        strOrderId = response.jsonPath().getString("orderId");
+
+        objCucumberLogger.PrintStatus("Response is"+ strResponseBody);
+
+        ExtentCucumberAdapter.addTestStepLog("Extracted Object Id is : "+ strObjectId);
+        ExtentCucumberAdapter.addTestStepLog("Extracted Order Id is : " + strOrderId);
+        return response;
+    }
+
+    //Function to create a Contact Note
+    public Response createContactNote(String strEnvType, String strBearerToken, String strJWTToken, Map<String, String> mapNoteDetails) throws JsonProcessingException {
+
+        strAuthentication = objdevHelperLibrary.buildAuthHeader(strBearerToken, strJWTToken);
+        strTYKURL = objdevHelperLibrary.getTYKURL(strEnvType, "TYK.CONTACTNOTES");
+
+        ContactNoteRequest noteRequest = new ContactNoteRequest();
+
+        //Set PersonIds: Use provided personIds if available, else use strObjectId
+        if (mapNoteDetails.containsKey("personIds") && mapNoteDetails.get("personIds") != null && !mapNoteDetails.get("personIds").isEmpty()) {
+            noteRequest.setLstPersonIds(Collections.singletonList(mapNoteDetails.get("personIds")));
+        } else {
+            noteRequest.setLstPersonIds(Collections.singletonList(strObjectId));
+        }
+
+        // Set subject: generate based on the subject type
+        noteRequest.setStrSubject(
+                mapNoteDetails.get("subject") != null ?
+                        TestDataGenerator.generateRandomSubject(mapNoteDetails.get("subject")) : "" // use the subject type from feature file
+        );
+
+        noteRequest.setStrNotes(
+                mapNoteDetails.get("notes") != null ? mapNoteDetails.get("notes") : ""
+        );
+
+        noteRequest.setBoolHasFollowup(Boolean.parseBoolean(mapNoteDetails.get("hasFollowup")));
+
+        strJsonBody = objectMapper.writeValueAsString(noteRequest);
+
+        // Logging request details
+        ExtentCucumberAdapter.addTestStepLog("Sending request to Create Contact Note");
+        ExtentCucumberAdapter.addTestStepLog("Request URL: " + strTYKURL);
+        ExtentCucumberAdapter.addTestStepLog("Request Headers: Authorization=" + strAuthentication);
+        ExtentCucumberAdapter.addTestStepLog("Request Body:\n" + strJsonBody);
+
+        response = with().spec(rspec)
+                .header("Authorization",strBearerToken+" "+strJWTToken)
+                .header("X-TYK-API-KEY",TYK_KEY)
+                .header("Content-Type","application/json")
+                .body(strJsonBody)
+                .post(strTYKURL);
+        strResponseBody = objdevHelperLibrary.getResponseBody(response);
+
+        // Logging response details
+        ExtentCucumberAdapter.addTestStepLog("Response Code: " + response.getStatusCode());
+        ExtentCucumberAdapter.addTestStepLog("Response Body:\n" + strResponseBody);
+
+        objCucumberLogger.PrintStatus("Response is"+ strResponseBody);
+        objCucumberLogger.PrintStatus("Response Code: " + response.getStatusCode());
+        return response;
+    }
