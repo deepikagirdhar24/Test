@@ -1,25 +1,22 @@
-Feature: Create Contact Notes API - Invalid Subject Values
+@And("I verify the validation error response with below details")
+    public void iVerifyTheValidationErrorResponse(DataTable dataTable) throws Exception {
+        Map<String, String> mapResponsedata = dataTable.asMap(String.class, String.class);
+        String strExpDescription = mapResponsedata.get("description");
+        String strExpErrorMessage = mapResponsedata.get("error message");
 
-  Scenario Outline: Verify the Post Contact Notes API with empty or overly long subject
-    Given Send Request to get Authentication Token for ICOS
-    When I generate the JWT Token
-    And Send request to generate New Person with below details
-      | firstName       | <firstName>    |
-      | lastName        | Lastname       |
-      | subType         | pers_form_ass  |
-      | domicileCountry | CH             |
-      | gender          | male           |
-      | nationality     | CH             |
-    Then Send POST ContactNote Request with below details
-      | subject      | <subject>     |
-      | notes        | <notes>       |
-      | hasFollowup  | <hasFollowup> |
-    And I verify the Status Code for Contact Notes "<statusCode>"
-    And I verify the <errorType> with below details
-      | description   | <description> |
-      | error message | <error>       |
+        String strActualDescription = JsonHelper.extractStringField(response, "description");
+        ExtentCucumberAdapter.addTestStepLog("Actual description: " + strActualDescription);
+        Assert.assertEquals(strActualDescription, strExpDescription, "Mismatch in description");
 
-  Examples:
-    | firstName   | subject            | notes    | hasFollowup | statusCode | errorType        | description        | error                                            |
-    | FirstName_1 | EMPTY_SUBJECT      | Testnote | false       | 500        | error response   |                    | Mandatory field: Subject\nPlease enter a subject |
-    | FirstName_1 | RANDOM_GREATER_250 | Testnote | false       | 400        | validation error | Validation Errors  | subject too long (max 250)                       |
+        String strActualErrorMessage = JsonHelper.extractStringFieldFromArray(response, "validationErrors", 0, "error");
+        ExtentCucumberAdapter.addTestStepLog("Actual error message: " + strActualErrorMessage);
+        Assert.assertEquals(strActualErrorMessage, strExpErrorMessage, "Mismatch in error message");
+    }
+
+    @And("I verify the error response {string}")
+    public void iVerifyTheErrorResponse(String strExpError) throws Exception {
+        String strActualError = JsonHelper.extractStringField(response, "error");
+        ExtentCucumberAdapter.addTestStepLog("Actual error: " + strActualError);
+
+        Assert.assertEquals(strActualError, strExpError, "Mismatch in error message");
+    }
