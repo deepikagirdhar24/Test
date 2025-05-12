@@ -1,41 +1,9 @@
-public Response createContactNote(String strEnvType, String strBearerToken, String strJWTToken, Map<String, String> mapNoteDetails) throws JsonProcessingException {
-    strAuthentication = objdevHelperLibrary.buildAuthHeader(strBearerToken, strJWTToken);
-    strTYKURL = objdevHelperLibrary.getTYKURL(strEnvType, "TYK.CONTACTNOTES");
+Verification										
+	VERIFY: Error Message_Reference									
+		VERIFY: Validation Error								
+			StatusCode		400 Bad Request		Verify		String	
+			description		Validation Errors		Verify		String	
+			error_1		Person not found		Verify		String	
+			error_2						String	
 
-    ContactNoteRequest noteRequest = new ContactNoteRequest();
-
-    // Use provided personIds if available, else use strObjectId
-    if (mapNoteDetails.containsKey("personIds") && mapNoteDetails.get("personIds") != null && !mapNoteDetails.get("personIds").isEmpty()) {
-        noteRequest.setLstPersonIds(Collections.singletonList(mapNoteDetails.get("personIds")));
-    } else {
-        noteRequest.setLstPersonIds(Collections.singletonList(strObjectId));
-    }
-
-    noteRequest.setStrSubject(mapNoteDetails.get("subject"));
-    noteRequest.setStrNotes(mapNoteDetails.get("notes"));
-    noteRequest.setBoolHasFollowup(Boolean.parseBoolean(mapNoteDetails.get("hasFollowup")));
-
-    strJsonBody = objectMapper.writeValueAsString(noteRequest);
-
-    // Logging request details
-    ExtentCucumberAdapter.addTestStepLog("Sending request to Create Contact Note");
-    ExtentCucumberAdapter.addTestStepLog("Request URL: " + strTYKURL);
-    ExtentCucumberAdapter.addTestStepLog("Request Headers: Authorization=" + strAuthentication);
-    ExtentCucumberAdapter.addTestStepLog("Request Body:\n" + strJsonBody);
-
-    response = with().spec(rspec)
-            .header("Authorization", strBearerToken + " " + strJWTToken)
-            .header("X-TYK-API-KEY", TYK_KEY)
-            .header("Content-Type", "application/json")
-            .body(strJsonBody)
-            .post(strTYKURL);
-
-    strResponseBody = objdevHelperLibrary.getResponseBody(response);
-
-    ExtentCucumberAdapter.addTestStepLog("Response Code: " + response.getStatusCode());
-    ExtentCucumberAdapter.addTestStepLog("Response Body:\n" + strResponseBody);
-
-    objCucumberLogger.PrintStatus("Response is" + strResponseBody);
-
-    return response;
-}
+I need to validate this description and error also, how to do ?
