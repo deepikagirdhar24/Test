@@ -1,72 +1,28 @@
-@And("Send request to generate multiple Persons with below details")
-public void generateMultiplePersons(DataTable dataTable) throws JsonProcessingException {
-    List<Map<String, String>> persons = dataTable.asMaps(String.class, String.class);
-    List<String> personIds = new ArrayList<>();
-    String jwtToken = scenarioContext.getToken("JWTToken");
+Feature: Create Contact Notes API with valid inputs
 
-    for (Map<String, String> personData : persons) {
-        Response response = objContactNotes.createNewPerson(strEnvType, "Bearer", jwtToken, personData);
-        String objectId = response.jsonPath().getString("objectId");
-        personIds.add(objectId);
-    }
+  Scenario Outline: Verify the Post Contact Notes API with valid inputs
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    And Send request to generate New Person with below details
+      | firstName       | <firstName>    |
+      | lastName        | Lastname       |
+      | subType         | pers_form_ass  |
+      | domicileCountry | CH             |
+      | gender          | male           |
+      | nationality     | CH             |
+    Then Send POST ContactNote Request with below details
+      | subject      | <subject>     |
+      | notes        | <notes>       |
+      | hasFollowup  | <hasFollowup> |
+    And I verify the Status Code for Contact Notes "<statusCode>"
+    And I verify the OrderId
 
-    scenarioContext.setContext("GeneratedPersonIds", personIds);
-}
+    Examples:
+      | firstName   | subject          | notes     | hasFollowup | statusCode | Comments                    |
+      | FirstName_1 | Testsubject      | Testnote  | false       | 200        | Valid Inputs                |
+      | FirstName_1 | RANDOM_LESS_250  | Testnote  | false       | 200        | Subject Less than 250 chars |
+      | FirstName_1 | RANDOM_EXACT_250 | Testnote  | false       | 200        | Subject equal to 250 chars  |
+      | FirstName_1 | Testsubject      |           | false       | 200        | Notes as Empty String       |
+      | FirstName_1 | Testsubject      | Testnote  | true        | 200        | hasFollowup as 'Yes'        |
+      | FirstName_1 | Testsubject      | Testnote  | null        | 200        | hasFollowup as null         |
 
-@Then("Send POST ContactNote Request with below details")
-public void sendPostContactNoteWithMultiplePersons(DataTable dataTable) throws JsonProcessingException {
-    Map<String, String> noteDetails = dataTable.asMap(String.class, String.class);
-    String jwtToken = scenarioContext.getToken("JWTToken");
-    List<String> personIds = (List<String>) scenarioContext.getContext("GeneratedPersonIds");
-
-    response = objContactNotes.createContactNote(strEnvType, "Bearer", jwtToken, noteDetails, personIds);
-    scenarioContext.setContext("ContactNoteResponse", response);
-}
-
-
-// Overloaded method to support multiple PersonIds
-public Response createContactNote(String strEnvType, String strBearerToken, String strJWTToken,
-                                  Map<String, String> mapNoteDetails, List<String> lstPersonIds) throws JsonProcessingException {
-
-    strAuthentication = objdevHelperLibrary.buildAuthHeader(strBearerToken, strJWTToken);
-    strTYKURL = objdevHelperLibrary.getTYKURL(strEnvType, "TYK.CONTACTNOTES");
-
-    ContactNoteRequest noteRequest = new ContactNoteRequest();
-
-    // Set multiple PersonIds directly
-    noteRequest.setLstPersonIds(lstPersonIds);
-
-    // Set subject, notes, follow-up
-    noteRequest.setStrSubject(
-            mapNoteDetails.get("subject") != null ?
-            TestDataGenerator.generateRandomSubject(mapNoteDetails.get("subject")) : ""
-    );
-    noteRequest.setStrNotes(mapNoteDetails.get("notes") != null ? mapNoteDetails.get("notes") : "");
-    noteRequest.setBoolHasFollowup(Boolean.parseBoolean(mapNoteDetails.get("hasFollowup")));
-
-    strJsonBody = objectMapper.writeValueAsString(noteRequest);
-
-    // Logging request details
-    ExtentCucumberAdapter.addTestStepLog("Sending request to Create Contact Note");
-    ExtentCucumberAdapter.addTestStepLog("Request URL: " + strTYKURL);
-    ExtentCucumberAdapter.addTestStepLog("Request Headers: Authorization=" + strAuthentication);
-    ExtentCucumberAdapter.addTestStepLog("Request Body:\n" + strJsonBody);
-
-    response = with().spec(rspec)
-            .header("Authorization", strBearerToken + " " + strJWTToken)
-            .header("X-TYK-API-KEY", TYK_KEY)
-            .header("Content-Type", "application/json")
-            .body(strJsonBody)
-            .post(strTYKURL);
-
-    strResponseBody = objdevHelperLibrary.getResponseBody(response);
-
-    // Logging response
-    ExtentCucumberAdapter.addTestStepLog("Response Code: " + response.getStatusCode());
-    ExtentCucumberAdapter.addTestStepLog("Response Body:\n" + strResponseBody);
-
-    objCucumberLogger.PrintStatus("Response is" + strResponseBody);
-    objCucumberLogger.PrintStatus("Response Code: " + response.getStatusCode());
-
-    return response;
-}
