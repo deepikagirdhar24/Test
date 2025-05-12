@@ -1,14 +1,30 @@
-@And("I verify the validation error response with below details")
-public void iVerifyTheValidationErrorResponse(DataTable dataTable) throws Exception {
-    Map<String, String> data = dataTable.asMap(String.class, String.class);
-    String strExpDescription = data.get("description");
-    String strExpErrorMessage = data.get("error message");
+Feature: Create Contact Notes API
 
-    String strActualDescription = JsonHelper.extractStringField(response, "description");
-    ExtentCucumberAdapter.addTestStepLog("Actual description: " + strActualDescription);
-    Assert.assertEquals(strActualDescription, strExpDescription, "Mismatch in description");
+  Scenario Outline: Verify the Post Contact Notes API
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    And Send request to generate New Person with below details
+      | firstName       | <firstName>    |
+      | lastName        | Lastname       |
+      | subType         | pers_form_ass  |
+      | domicileCountry | CH             |
+      | gender          | male           |
+      | nationality     | CH             |
+    Then Send POST ContactNote Request with below details
+      | subject      | Testsubject     |
+      | notes        | Testnote        |
+      | hasFollowup  | false           |
+    And I verify the Status Code for Contact Notes "<statusCode>"
+    And I verify the OrderId
 
-    String strActualErrorMessage = JsonHelper.extractStringFieldFromArray(response, "validationErrors", 0, "error");
-    ExtentCucumberAdapter.addTestStepLog("Actual error message: " + strActualErrorMessage);
-    Assert.assertEquals(strActualErrorMessage, strExpErrorMessage, "Mismatch in error message");
-}
+    Examples:
+      | firstName   | statusCode |
+      | FirstName_1 | 200        |
+      | FirstName_2 | 200        |
+
+update the above feature file above with similar to the previous one where we have used ike this - 
+    Then Send POST ContactNote Request with below details
+      | personIds    | <personIds>   |
+      | subject      | <subject>     |
+      | notes        | <notes>       |
+      | hasFollowup  | <hasFollowup> |
