@@ -1,45 +1,80 @@
-Examples:
-  | firstName   | subject       | notes     | hasFollowup | statusCode |
-  | FirstName_1 | RANDOM_250    | Testnote  | false       | 200        |
-  | FirstName_2 | Testsubject   | Testnote  | false       | 200        |
+Test case for generating subject less than 250 chars -
 
-CreateCOntactNotes - 
+Feature: Create Contact Notes API
 
-noteRequest.setStrSubject(
-    "RANDOM_250".equalsIgnoreCase(mapNoteDetails.get("subject"))
-        ? generateRandomSubject(249) // use 249 to be safely under 250
-        : mapNoteDetails.get("subject")
-);
+  Scenario Outline: Verify the Post Contact Notes API
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    And Send request to generate New Person with below details
+      | firstName       | <firstName>    |
+      | lastName        | Lastname       |
+      | subType         | pers_form_ass  |
+      | domicileCountry | CH             |
+      | gender          | male           |
+      | nationality     | CH             |
+    Then Send POST ContactNote Request with below details
+      | subject      | <subject>     |
+      | notes        | <notes>       |
+      | hasFollowup  | <hasFollowup> |
+    And I verify the Status Code for Contact Notes "<statusCode>"
+    And I verify the OrderId
 
-private String generateRandomSubject(int length) {
-    int leftLimit = 97; // 'a'
-    int rightLimit = 122; // 'z'
-    Random random = new Random();
-    return random.ints(leftLimit, rightLimit + 1)
-                 .limit(length)
-                 .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-                 .toString();
-}
+    Examples:
+      | firstName   | subject      | notes     | hasFollowup | statusCode |
+#      | FirstName_1 | Testsubject  | Testnote  | false       | 200        |
+#      | FirstName_2 | Testsubject  | Testnote  | false       | 200        |
+      | FirstName_1 | RANDOM_250   | Testnote  | false       | 200        |
 
 
+//Function to create a Contact Note
+    public Response createContactNote(String strEnvType, String strBearerToken, String strJWTToken, Map<String, String> mapNoteDetails) throws JsonProcessingException {
 
+        strAuthentication = objdevHelperLibrary.buildAuthHeader(strBearerToken, strJWTToken);
+        strTYKURL = objdevHelperLibrary.getTYKURL(strEnvType, "TYK.CONTACTNOTES");
 
+        ContactNoteRequest noteRequest = new ContactNoteRequest();
 
-package com.icos.ContactNotes.utilities;
+        //Set PersonIds: Use provided personIds if available, else use strObjectId
+        if (mapNoteDetails.containsKey("personIds") && mapNoteDetails.get("personIds") != null && !mapNoteDetails.get("personIds").isEmpty()) {
+            noteRequest.setLstPersonIds(Collections.singletonList(mapNoteDetails.get("personIds")));
+        } else {
+            noteRequest.setLstPersonIds(Collections.singletonList(strObjectId));
+        }
+        //noteRequest.setLstPersonIds(Collections.singletonList(strObjectId));
 
-import java.util.Random;
+        //Set subject: generate random if value is RANDOM_250, else use provided value
+        noteRequest.setStrSubject(
+                "RANDOM_250".equalsIgnoreCase(mapNoteDetails.get("subject"))
+                        ? TestDataGenerator.generateRandomSubject(249) // use 249 to be safely under 250
+                        : mapNoteDetails.get("subject")
+        );
+        //noteRequest.setStrSubject(mapNoteDetails.get("subject"));
 
-public class TestDataGenerator {
+        noteRequest.setStrNotes(mapNoteDetails.get("notes"));
+        noteRequest.setBoolHasFollowup(Boolean.parseBoolean(mapNoteDetails.get("hasFollowup")));
 
-    public static String generateRandomSubject(int length) {
-        int leftLimit = 97; // 'a'
-        int rightLimit = 122; // 'z'
-        Random random = new Random();
-        return random.ints(leftLimit, rightLimit + 1)
-                     .limit(length)
-                     .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-                     .toString();
+        strJsonBody = objectMapper.writeValueAsString(noteRequest);
+
+        // Logging request details
+        ExtentCucumberAdapter.addTestStepLog("Sending request to Create Contact Note");
+        ExtentCucumberAdapter.addTestStepLog("Request URL: " + strTYKURL);
+        ExtentCucumberAdapter.addTestStepLog("Request Headers: Authorization=" + strAuthentication);
+        ExtentCucumberAdapter.addTestStepLog("Request Body:\n" + strJsonBody);
+
+        response = with().spec(rspec)
+                .header("Authorization",strBearerToken+" "+strJWTToken)
+                .header("X-TYK-API-KEY",TYK_KEY)
+                .header("Content-Type","application/json")
+                .body(strJsonBody)
+                .post(strTYKURL);
+        strResponseBody = objdevHelperLibrary.getResponseBody(response);
+
+        // Logging response details
+        ExtentCucumberAdapter.addTestStepLog("Response Code: " + response.getStatusCode());
+        ExtentCucumberAdapter.addTestStepLog("Response Body:\n" + strResponseBody);
+
+        objCucumberLogger.PrintStatus("Response is"+ strResponseBody);
+        return response;
     }
-}
 
-TestDataGenerator.generateRandomSubject(249);
+how to implement test case for subject equal to 250 chars ?
