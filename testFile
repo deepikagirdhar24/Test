@@ -1,128 +1,84 @@
-@And("Send request to generate New Person with below details")
-    public void sendRequestToGenerateNewPersonWithDetails(DataTable dataTable) throws JsonProcessingException {
-        Map<String, String> mapPersonDetails = dataTable.asMap(String.class, String.class);
-        String jwtToken = scenarioContext.getToken("JWTToken");
-        response = objContactNotes.createNewPerson(strEnvType, "Bearer", jwtToken, mapPersonDetails);
-
-        // Store the created objectId from the response
-        String strRespObjectId = response.jsonPath().getString("objectId");
-        strPersonIdList.add(strRespObjectId);
-
-    }
-
-    @Then("Send POST ContactNote Request with below details")
-    public void sendPOSTContactNoteRequestWithDetails(DataTable dataTable) throws JsonProcessingException {
-        Map<String, String> mapNoteDetails = dataTable.asMap(String.class, String.class);
-        String jwtToken = scenarioContext.getToken("JWTToken");
-
-        // Join the personId list as a comma-separated string
-        if (!strPersonIdList.isEmpty()) {
-            mapNoteDetails.put("personIds", String.join(",", strPersonIdList));
-        }
-
-        response = objContactNotes.createContactNote(strEnvType, "Bearer", jwtToken, mapNoteDetails);
-    }
-
-  //Function to create a New Person
-    public Response createNewPerson(String strEnvType,String strBearerToken,String strJWTToken, Map<String, String> mapPersonDetails) throws JsonProcessingException {
-
-        strAuthentication = objdevHelperLibrary.buildAuthHeader(strBearerToken, strJWTToken);
-        strTYKURL = objdevHelperLibrary.getTYKURL(strEnvType, "TYK.CREATENEWPERSON");
-
-        NewPersonRequest personRequest = new NewPersonRequest();
-        personRequest.setStrUuid(UUID.randomUUID().toString().substring(0, 7));
-        personRequest.setStrSubType(mapPersonDetails.get("subType"));
-        personRequest.setStrDomiCountry(mapPersonDetails.get("domicileCountry"));
-        personRequest.setStrFirstName(mapPersonDetails.get("firstName"));
-        personRequest.setStrLastName(mapPersonDetails.get("lastName"));
-        personRequest.setStrGender(mapPersonDetails.get("gender"));
-        personRequest.setLstNationalities(Collections.singletonList(mapPersonDetails.get("nationality")));
-
-        strJsonBody = new ObjectMapper().writeValueAsString(personRequest);
-
-        // Logging request details
-        ExtentCucumberAdapter.addTestStepLog("Sending request to Create New Person");
-        ExtentCucumberAdapter.addTestStepLog("Request URL: " + strTYKURL);
-        ExtentCucumberAdapter.addTestStepLog("Request Headers: Authorization=" + strAuthentication);
-        ExtentCucumberAdapter.addTestStepLog("Request Body:\n" + strJsonBody);
-
-        response = with().spec(rspec)
-                .header("Authorization",strBearerToken+" "+strJWTToken)
-                .header("X-TYK-API-KEY",TYK_KEY)
-                .header("Content-Type","application/json")
-                .body(strJsonBody)
-                .post(strTYKURL);
-        strResponseBody = objdevHelperLibrary.getResponseBody(response);
-
-        // Logging response details
-        ExtentCucumberAdapter.addTestStepLog("Response Code: " + response.getStatusCode());
-        ExtentCucumberAdapter.addTestStepLog("Response Body:\n" + strResponseBody);
-
-        strObjectId = response.jsonPath().getString("objectId");
-        strOrderId = response.jsonPath().getString("orderId");
-
-        objCucumberLogger.PrintStatus("Response is"+ strResponseBody);
-
-        ExtentCucumberAdapter.addTestStepLog("Extracted Object Id is : "+ strObjectId);
-        ExtentCucumberAdapter.addTestStepLog("Extracted Order Id is : " + strOrderId);
-        return response;
-    }
-
-    //Function to create a Contact Note
-    public Response createContactNote(String strEnvType, String strBearerToken, String strJWTToken, Map<String, String> mapNoteDetails) throws JsonProcessingException {
-
-        strAuthentication = objdevHelperLibrary.buildAuthHeader(strBearerToken, strJWTToken);
-        strTYKURL = objdevHelperLibrary.getTYKURL(strEnvType, "TYK.CONTACTNOTES");
-
-        ContactNoteRequest noteRequest = new ContactNoteRequest();
-
-        //Set PersonIds: Use provided personIds if available, else use strObjectId
-//        if (mapNoteDetails.containsKey("personIds") && mapNoteDetails.get("personIds") != null && !mapNoteDetails.get("personIds").isEmpty()) {
-//            noteRequest.setLstPersonIds(Collections.singletonList(mapNoteDetails.get("personIds")));
-//        } else {
-//            noteRequest.setLstPersonIds(Collections.singletonList(strObjectId));
-//        }
-
-        if (mapNoteDetails.containsKey("personIds") && mapNoteDetails.get("personIds") != null && !mapNoteDetails.get("personIds").isEmpty()) {
-            List<String> lstpersonIdsList = Arrays.asList(mapNoteDetails.get("personIds").split(","));
-            noteRequest.setLstPersonIds(lstpersonIdsList);
-        } else {
-            noteRequest.setLstPersonIds(Collections.singletonList(strObjectId));
-        }
-
-        // Set subject: generate based on the subject type
-        noteRequest.setStrSubject(
-                mapNoteDetails.get("subject") != null ?
-                        TestDataGenerator.generateRandomSubject(mapNoteDetails.get("subject")) : "" // use the subject type from feature file
-        );
-
-        noteRequest.setStrNotes(
-                mapNoteDetails.get("notes") != null ? mapNoteDetails.get("notes") : ""
-        );
-
-        noteRequest.setBoolHasFollowup(Boolean.parseBoolean(mapNoteDetails.get("hasFollowup")));
-
-        strJsonBody = objectMapper.writeValueAsString(noteRequest);
-
-        // Logging request details
-        ExtentCucumberAdapter.addTestStepLog("Sending request to Create Contact Note");
-        ExtentCucumberAdapter.addTestStepLog("Request URL: " + strTYKURL);
-        ExtentCucumberAdapter.addTestStepLog("Request Headers: Authorization=" + strAuthentication);
-        ExtentCucumberAdapter.addTestStepLog("Request Body:\n" + strJsonBody);
-
-        response = with().spec(rspec)
-                .header("Authorization",strBearerToken+" "+strJWTToken)
-                .header("X-TYK-API-KEY",TYK_KEY)
-                .header("Content-Type","application/json")
-                .body(strJsonBody)
-                .post(strTYKURL);
-        strResponseBody = objdevHelperLibrary.getResponseBody(response);
-
-        // Logging response details
-        ExtentCucumberAdapter.addTestStepLog("Response Code: " + response.getStatusCode());
-        ExtentCucumberAdapter.addTestStepLog("Response Body:\n" + strResponseBody);
-
-        objCucumberLogger.PrintStatus("Response is"+ strResponseBody);
-        objCucumberLogger.PrintStatus("Response Code: " + response.getStatusCode());
-        return response;
-    }
+[INFO] 
+[INFO] --- maven-surefire-plugin:3.0.0-M5:test (default-test) @ wealth-icos-api ---
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running testRunner.Runner
+Scenario Outline: Verify the Post Contact Notes API with valid inputs # src/test/resources/Features/CreateContactNotes-MultiplePersonIds.feature:22
+Before All
+May 12, 2025 2:17:07 PM hooks.CucumberHooks beforeScenario
+INFO: Before Scenario: Test is starting!
+May 12, 2025 2:17:16 PM utilities.CucumberLogger PrintStatus
+INFO: Value is: Access Token is51kgMQ5Pc8VIPfw9KU2ij1IqCJTz
+May 12, 2025 2:17:16 PM utilities.CucumberLogger PrintStatus
+INFO: Value is: Access Token  is{accessToken=51kgMQ5Pc8VIPfw9KU2ij1IqCJTz, tokenType=Bearer}
+  Given Send Request to get Authentication Token for ICOS             # stepDefinations.GetUserSteps.sendRequestToGetAuthenticationTokenForICOS()
+May 12, 2025 2:17:17 PM utilities.CucumberLogger PrintStatus
+INFO: Value is: Tyk Token iseyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzdXAtYW1pd3Mtand0LWdlbmVyYXRvciIsInN1YiI6IlJCU0MkQ0xNX09OQk9BUkRJTkciLCJhdWQiOiJBTUlXZWJTZXJ2aWNlcyIsImV4cCI6MTc0NzA1NjczNywiaWF0IjoxNzQ3MDU1ODM3LCJhdmFsb3FfYnVfaWQiOiI2In0.u8rtn-zeupc14lZNZE5Z76kDncfHd6n6LbjBS8uDQdWDJfl8Jf6muKYfIxepWmI2bt4XS5C0LutQQRtmeoKrP7rzPa6iTwH-94roGc2EupY_JwnpwbskMrQQQqEEop5GUgXww88fe70RQ9ZvYRKjB4MXTNkkTOSLigjOECH06QAEcwwvLkrn0eFjWP5Q0ycUPIo8R4qsNfmBRga2kvj6jGMy02V2MRJ6z_vYaHWj5i7tqqJxFZmSvMvp1hAw9ewK0lcbvGiKHLuescoo6f0CzOO8bF_TIl_OsfhE5tELhfN9W_gezOuOpV_odBBO2cIKq9YLdwPCLoTPbfJJE_FQGA
+  When I generate the JWT Token                                       # stepDefinations.GetUserSteps.iGenerateTheJWTToken()
+May 12, 2025 2:17:24 PM utilities.CucumberLogger PrintStatus
+INFO: Value is: Response is{"objectId":"665078994","orderId":"2864880614"}
+  And Send request to generate New Person with below details          # stepDefinations.ContactNotesSteps.sendRequestToGenerateNewPersonWithDetails(io.cucumber.datatable.DataTable)
+    | firstName       | FirstName_1   |
+    | lastName        | Lastname      |
+    | subType         | pers_form_ass |
+    | domicileCountry | CH            |
+    | gender          | male          |
+    | nationality     | CH            |
+  Then Send POST ContactNote Request with below details               # stepDefinations.ContactNotesSteps.sendPOSTContactNoteRequestWithDetails(io.cucumber.datatable.DataTable)
+    | subject     | Testsubject |
+    | notes       | Testnote    |
+    | hasFollowup | false       |
+      java.lang.UnsupportedOperationException
+	at java.base/java.util.Collections$UnmodifiableMap.put(Collections.java:1505)
+	at stepDefinations.ContactNotesSteps.sendPOSTContactNoteRequestWithDetails(ContactNotesSteps.java:122)
+	at âœ½.Send POST ContactNote Request with below details(file:///C:/Users/girdd/IdeaProjects/icosapitests/src/test/resources/Features/CreateContactNotes-MultiplePersonIds.feature:13)
+  And I verify the Status Code for Contact Notes "200"                # stepDefinations.ContactNotesSteps.iVerifyTheStatusCodeForContactNotes(java.lang.String)
+  And I verify the OrderId                                            # stepDefinations.ContactNotesSteps.iVerifyTheOrderId()
+Scenario Outline: Verify the Post Contact Notes API with valid inputs # src/test/resources/Features/CreateContactNotes-MultiplePersonIds.feature:23
+May 12, 2025 2:17:25 PM hooks.CucumberHooks beforeScenario
+INFO: Before Scenario: Test is starting!
+May 12, 2025 2:17:26 PM utilities.CucumberLogger PrintStatus
+INFO: Value is: Access Token is51kgZDjnVCD7jRVmpE6cbp9nCpHm
+May 12, 2025 2:17:26 PM utilities.CucumberLogger PrintStatus
+INFO: Value is: Access Token  is{accessToken=51kgZDjnVCD7jRVmpE6cbp9nCpHm, tokenType=Bearer}
+  Given Send Request to get Authentication Token for ICOS             # stepDefinations.GetUserSteps.sendRequestToGetAuthenticationTokenForICOS()
+May 12, 2025 2:17:26 PM utilities.CucumberLogger PrintStatus
+INFO: Value is: Tyk Token iseyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzdXAtYW1pd3Mtand0LWdlbmVyYXRvciIsInN1YiI6IlJCU0MkQ0xNX09OQk9BUkRJTkciLCJhdWQiOiJBTUlXZWJTZXJ2aWNlcyIsImV4cCI6MTc0NzA1Njc0NiwiaWF0IjoxNzQ3MDU1ODQ2LCJhdmFsb3FfYnVfaWQiOiI2In0.ajzpZpUByGMks-pJ_MECEbUl-REsAWQuFvksrwarnj6pBVlAsbQc9OpPpv3lwUu-WW6tY58d1GG9-7HwgtsQTX5BML_2Cibq0OhmqdGJxA1EV4-_Djn4ZXytjEneL34uS3MHinxPamgyEHT-HZA8PHbCUZfjKCHSggcAOIQcnffHepCXo9fa5N1Pp1FiDkRN8rXcLFQR6ZPx8M1lIy_7kThAQww-S5CiKXrkrRwv2pOLYfKcWl7M5FBRi2YoYwWTxcMVcm3_1y9Slmx5MkMBD8u9rL2Y3Tyhjk1ozW_daSG2j2vvnL3XINzQxAfdbjs2S8mWKW_iReostldavhPe0g
+  When I generate the JWT Token                                       # stepDefinations.GetUserSteps.iGenerateTheJWTToken()
+May 12, 2025 2:17:31 PM utilities.CucumberLogger PrintStatus
+INFO: Value is: Response is{"objectId":"665078995","orderId":"2864880679"}
+  And Send request to generate New Person with below details          # stepDefinations.ContactNotesSteps.sendRequestToGenerateNewPersonWithDetails(io.cucumber.datatable.DataTable)
+    | firstName       | FirstName_2   |
+    | lastName        | Lastname      |
+    | subType         | pers_form_ass |
+    | domicileCountry | CH            |
+    | gender          | male          |
+    | nationality     | CH            |
+  Then Send POST ContactNote Request with below details               # stepDefinations.ContactNotesSteps.sendPOSTContactNoteRequestWithDetails(io.cucumber.datatable.DataTable)
+    | subject     | Testsubject |
+    | notes       | Testnote    |
+    | hasFollowup | false       |
+      java.lang.UnsupportedOperationException
+	at java.base/java.util.Collections$UnmodifiableMap.put(Collections.java:1505)
+	at stepDefinations.ContactNotesSteps.sendPOSTContactNoteRequestWithDetails(ContactNotesSteps.java:122)
+	at âœ½.Send POST ContactNote Request with below details(file:///C:/Users/girdd/IdeaProjects/icosapitests/src/test/resources/Features/CreateContactNotes-MultiplePersonIds.feature:13)
+  And I verify the Status Code for Contact Notes "200"                # stepDefinations.ContactNotesSteps.iVerifyTheStatusCodeForContactNotes(java.lang.String)
+  And I verify the OrderId                                            # stepDefinations.ContactNotesSteps.iVerifyTheOrderId()
+May 12, 2025 2:17:33 PM tech.grasshopper.pdf.PDFCucumberReport collectReportConfiguration
+INFO: PDF report configuration YAML file not found. Using default settings.
+[ERROR] Tests run: 2, Failures: 0, Errors: 2, Skipped: 0, Time elapsed: 31.806 s <<< FAILURE! - in testRunner.Runner
+[ERROR] Create Contact Notes API with valid inputs.Verify the Post Contact Notes API with valid inputs #1  Time elapsed: 17.995 s  <<< ERROR!
+java.lang.UnsupportedOperationException
+[ERROR] Create Contact Notes API with valid inputs.Verify the Post Contact Notes API with valid inputs #2  Time elapsed: 5.928 s  <<< ERROR!
+java.lang.UnsupportedOperationException
+[INFO] 
+[INFO] Results:
+[INFO] 
+[ERROR] Errors: 
+[ERROR]   null
+[ERROR]   null
+[INFO] 
+[ERROR] Tests run: 2, Failures: 0, Errors: 2, Skipped: 0
+[INFO] 
