@@ -1,13 +1,29 @@
-Verification										
-	VERIFY: Error Message_Reference									
-		VERIFY: Validation Error								
-			StatusCode		400 Bad Request		Verify		String	
-			description		Validation Errors		Verify		String	
-			error_1		Person not found		Verify		String	
-			error_2						String	
+And I verify the validation error message for Contact Notes:
+  | description | Validation Errors |
+  | value       | ghgf              |
+  | error       | Person not found  |
 
-I need to validate this description and error also, how to do ?
+@And("I verify the validation error message for Contact Notes:")
+public void verifyValidationErrorMessage(DataTable dataTable) {
+    Map<String, String> expectedValues = dataTable.asMap(String.class, String.class);
+    String responseBody = response.getBody().asString();
+    JsonPath jsonPath = new JsonPath(responseBody);
 
-This is the response - 
+    // Verify 'description'
+    String actualDescription = jsonPath.getString("description");
+    Assert.assertEquals("Mismatch in description", expectedValues.get("description"), actualDescription);
 
-INFO: Value is: Response is{"description":"Validation Errors","validationErrors":[{"value":"ghgf","error":"Person not found"}]}
+    // Verify error in 'validationErrors'
+    List<Map<String, String>> validationErrors = jsonPath.getList("validationErrors");
+
+    boolean matchFound = false;
+    for (Map<String, String> errorItem : validationErrors) {
+        if (expectedValues.get("value").equals(errorItem.get("value")) &&
+            expectedValues.get("error").equals(errorItem.get("error"))) {
+            matchFound = true;
+            break;
+        }
+    }
+
+    Assert.assertTrue("Expected validation error not found", matchFound);
+}
