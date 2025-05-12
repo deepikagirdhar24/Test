@@ -1,150 +1,30 @@
 @And("I verify the error response with below details")
-    public void iVerifyTheErrorResponseWithDetails(DataTable dataTable) throws Exception {
-        Map<String, String> mapResponsedata = dataTable.asMap(String.class, String.class);
+public void iVerifyTheErrorResponseWithDetails(DataTable dataTable) throws Exception {
+    Map<String, String> mapResponsedata = dataTable.asMap(String.class, String.class);
 
-        if (mapResponsedata.containsKey("description") && mapResponsedata.containsKey("error message")) {
-            // Validation error structure (400)
-            String strExpDescription = mapResponsedata.get("description");
-            String strExpErrorMessage = mapResponsedata.get("error message");
+    // Check if the map is empty or description is null or empty
+    if (mapResponsedata.containsKey("description") && mapResponsedata.containsKey("error message") &&
+        !(mapResponsedata.get("description") == null || mapResponsedata.get("description").isEmpty())) {
 
-            String strActualDescription = JsonHelper.extractStringField(response, "description");
-            ExtentCucumberAdapter.addTestStepLog("Actual description: " + strActualDescription);
-            Assert.assertEquals(strActualDescription, strExpDescription, "Mismatch in description");
+        // Validation error structure (400)
+        String strExpDescription = mapResponsedata.get("description");
+        String strExpErrorMessage = mapResponsedata.get("error message");
 
-            String strActualErrorMessage = JsonHelper.extractStringFieldFromArray(response, "validationErrors", 0, "error");
-            ExtentCucumberAdapter.addTestStepLog("Actual error message: " + strActualErrorMessage);
-            Assert.assertEquals(strActualErrorMessage, strExpErrorMessage, "Mismatch in error message");
-        } else if (mapResponsedata.containsKey("error message")) {
-            // Simple error response (500 or others)
-            String strExpError = mapResponsedata.get("error message");
-            String strActualError = JsonHelper.extractStringField(response, "error");
-            ExtentCucumberAdapter.addTestStepLog("Actual error: " + strActualError);
-            Assert.assertEquals(strActualError, strExpError, "Mismatch in error message");
-        } else {
-            throw new IllegalArgumentException("Unsupported error format in DataTable");
-        }
+        String strActualDescription = JsonHelper.extractStringField(response, "description");
+        ExtentCucumberAdapter.addTestStepLog("Actual description: " + strActualDescription);
+        Assert.assertEquals(strActualDescription, strExpDescription, "Mismatch in description");
+
+        String strActualErrorMessage = JsonHelper.extractStringFieldFromArray(response, "validationErrors", 0, "error");
+        ExtentCucumberAdapter.addTestStepLog("Actual error message: " + strActualErrorMessage);
+        Assert.assertEquals(strActualErrorMessage, strExpErrorMessage, "Mismatch in error message");
+
+    } else if (mapResponsedata.containsKey("error message")) {
+        // Simple error response (500 or others)
+        String strExpError = mapResponsedata.get("error message");
+        String strActualError = JsonHelper.extractStringField(response, "error");
+        ExtentCucumberAdapter.addTestStepLog("Actual error: " + strActualError);
+        Assert.assertEquals(strActualError, strExpError, "Mismatch in error message");
+    } else {
+        throw new IllegalArgumentException("Unsupported error format in DataTable");
+    }
 }
-
-Feature: Create Contact Notes API - Invalid Subject Values
-
-  Scenario Outline: Verify the Post Contact Notes API with empty or overly long subject
-    Given Send Request to get Authentication Token for ICOS
-    When I generate the JWT Token
-    And Send request to generate New Person with below details
-      | firstName       | <firstName>    |
-      | lastName        | Lastname       |
-      | subType         | pers_form_ass  |
-      | domicileCountry | CH             |
-      | gender          | male           |
-      | nationality     | CH             |
-    Then Send POST ContactNote Request with below details
-      | subject      | <subject>     |
-      | notes        | <notes>       |
-      | hasFollowup  | <hasFollowup> |
-    And I verify the Status Code for Contact Notes "<statusCode>"
-    And I verify the error response with below details
-      | description   | <description> |
-      | error message | <error>       |
-
-    Examples:
-      | firstName   | subject            | notes    | hasFollowup | statusCode |  description        | error                                            |
-      | FirstName_1 | EMPTY_SUBJECT      | Testnote | false       | 500        |                     | Mandatory field: Subject\nPlease enter a subject |
-      | FirstName_1 | RANDOM_GREATER_250 | Testnote | false       | 400        |  Validation Errors  | subject too long (max 250)                       |
-
-error is - 
-
-[INFO] 
-[INFO] --- maven-surefire-plugin:3.0.0-M5:test (default-test) @ wealth-icos-api ---
-[INFO] 
-[INFO] -------------------------------------------------------
-[INFO]  T E S T S
-[INFO] -------------------------------------------------------
-[INFO] Running testRunner.Runner
-Scenario Outline: Verify the Post Contact Notes API with empty or overly long subject # src/test/resources/Features/CreateContactNotes-InvalidSubject.feature:24
-Before All
-May 12, 2025 12:16:05 PM hooks.CucumberHooks beforeScenario
-INFO: Before Scenario: Test is starting!
-May 12, 2025 12:16:09 PM utilities.CucumberLogger PrintStatus
-INFO: Value is: Access Token is51kg2x5xq0qTt3YCHlX431WOU2Os
-May 12, 2025 12:16:09 PM utilities.CucumberLogger PrintStatus
-INFO: Value is: Access Token  is{accessToken=51kg2x5xq0qTt3YCHlX431WOU2Os, tokenType=Bearer}
-  Given Send Request to get Authentication Token for ICOS                             # stepDefinations.GetUserSteps.sendRequestToGetAuthenticationTokenForICOS()
-May 12, 2025 12:16:09 PM utilities.CucumberLogger PrintStatus
-INFO: Value is: Tyk Token iseyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzdXAtYW1pd3Mtand0LWdlbmVyYXRvciIsInN1YiI6IlJCU0MkQ0xNX09OQk9BUkRJTkciLCJhdWQiOiJBTUlXZWJTZXJ2aWNlcyIsImV4cCI6MTc0NzA0OTQ3MCwiaWF0IjoxNzQ3MDQ4NTcwLCJhdmFsb3FfYnVfaWQiOiI2In0.e5JPkWZ6XPxnZWn-c0mU_mhA-nYYh9Nm0EsKQL7SlQIQZFQWoLY4hmHPoTxJjwSVWFlejwnAp3zAAJbFmHB4A1fj8DwpwU4H25gxQlt38P-W2hDHf868d8tmYtlzSC844SBaPzxsRTlUcV5jS7INP76UkhzIwKXRbb0t0zriPXC1bzzovidPX-G8TTL2g6kLWk6q4xXygOZYc1a1jOGyd52LtM01EkQ8nNjZDNHYhIYnIVbePLgDGJLtZ1BfP6OVTWy0ZvhfUhrpbD68zR_W5HSTdh6yVF8b9rxzZ85btM9IIEQ36rAvMtB37bBCuCTmLiKrvkVV2ksgS431GSV8fg
-  When I generate the JWT Token                                                       # stepDefinations.GetUserSteps.iGenerateTheJWTToken()
-May 12, 2025 12:16:13 PM utilities.CucumberLogger PrintStatus
-INFO: Value is: Response is{"objectId":"665078955","orderId":"2864876072"}
-  And Send request to generate New Person with below details                          # stepDefinations.ContactNotesSteps.sendRequestToGenerateNewPersonWithDetails(io.cucumber.datatable.DataTable)
-    | firstName       | FirstName_1   |
-    | lastName        | Lastname      |
-    | subType         | pers_form_ass |
-    | domicileCountry | CH            |
-    | gender          | male          |
-    | nationality     | CH            |
-May 12, 2025 12:16:13 PM utilities.CucumberLogger PrintStatus
-INFO: Value is: Response is{"error":"Mandatory field: Subject\nPlease enter a subject"}
-May 12, 2025 12:16:13 PM utilities.CucumberLogger PrintStatus
-INFO: Value is: Response Code: 500
-  Then Send POST ContactNote Request with below details                               # stepDefinations.ContactNotesSteps.sendPOSTContactNoteRequestWithDetails(io.cucumber.datatable.DataTable)
-    | subject     | EMPTY_SUBJECT |
-    | notes       | Testnote      |
-    | hasFollowup | false         |
-  And I verify the Status Code for Contact Notes "500"                                # stepDefinations.ContactNotesSteps.iVerifyTheStatusCodeForContactNotes(java.lang.String)
-  And I verify the error response with below details                                  # stepDefinations.ContactNotesSteps.iVerifyTheErrorResponseWithDetails(io.cucumber.datatable.DataTable)
-    | description   | [empty]                                         |
-    | error message | Mandatory field: Subject
-Please enter a subject |
-      java.lang.AssertionError: Mismatch in description expected [null] but found []
-	at org.testng.Assert.fail(Assert.java:111)
-	at org.testng.Assert.failNotEquals(Assert.java:1578)
-	at org.testng.Assert.assertEqualsImpl(Assert.java:150)
-	at org.testng.Assert.assertEquals(Assert.java:132)
-	at org.testng.Assert.assertEquals(Assert.java:656)
-	at stepDefinations.ContactNotesSteps.iVerifyTheErrorResponseWithDetails(ContactNotesSteps.java:163)
-	at âœ½.I verify the error response with below details(file:///C:/Users/girdd/IdeaProjects/icosapitests/src/test/resources/Features/CreateContactNotes-InvalidSubject.feature:18)
-Scenario Outline: Verify the Post Contact Notes API with empty or overly long subject # src/test/resources/Features/CreateContactNotes-InvalidSubject.feature:25
-May 12, 2025 12:16:14 PM hooks.CucumberHooks beforeScenario
-INFO: Before Scenario: Test is starting!
-May 12, 2025 12:16:15 PM utilities.CucumberLogger PrintStatus
-INFO: Value is: Access Token is51kgV0Mw9uGwE9eJkKbamMh9ErhX
-May 12, 2025 12:16:15 PM utilities.CucumberLogger PrintStatus
-INFO: Value is: Access Token  is{accessToken=51kgV0Mw9uGwE9eJkKbamMh9ErhX, tokenType=Bearer}
-  Given Send Request to get Authentication Token for ICOS                             # stepDefinations.GetUserSteps.sendRequestToGetAuthenticationTokenForICOS()
-May 12, 2025 12:16:15 PM utilities.CucumberLogger PrintStatus
-INFO: Value is: Tyk Token iseyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzdXAtYW1pd3Mtand0LWdlbmVyYXRvciIsInN1YiI6IlJCU0MkQ0xNX09OQk9BUkRJTkciLCJhdWQiOiJBTUlXZWJTZXJ2aWNlcyIsImV4cCI6MTc0NzA0OTQ3NSwiaWF0IjoxNzQ3MDQ4NTc1LCJhdmFsb3FfYnVfaWQiOiI2In0.GayHST3gRZOCa5DgbswlJFv0jQ-rL96Zpw4c--43nTSlzxJiKJgXODUrlwI7MzHSvdAdzTJ137Fa6YnJy5R8ZiUa7QzgmepMDTbfiUWSaivxHxDnn74MxEYDtKPe0wfI-NIfI-ROSYcPjcpgPsjEZqGpCXvTUfz3klkapWJgrQIz5PBL8U6vEBxXsd181OXLhCgjr2FE6at4YMqgXl3nq53veLpROBBLH0zXckKaC8z3bYCgxLqdKkffXp-UoM8mDMt-uEFKut8-e3qBTu1wSyfE6qmtfX5gH1aO16FDMTwdTH97GlmGp524sIV6HVGbCv7Bo0Q-R-PLPPzz8PTk0Q
-  When I generate the JWT Token                                                       # stepDefinations.GetUserSteps.iGenerateTheJWTToken()
-May 12, 2025 12:16:20 PM utilities.CucumberLogger PrintStatus
-INFO: Value is: Response is{"objectId":"665078956","orderId":"2864876075"}
-  And Send request to generate New Person with below details                          # stepDefinations.ContactNotesSteps.sendRequestToGenerateNewPersonWithDetails(io.cucumber.datatable.DataTable)
-    | firstName       | FirstName_1   |
-    | lastName        | Lastname      |
-    | subType         | pers_form_ass |
-    | domicileCountry | CH            |
-    | gender          | male          |
-    | nationality     | CH            |
-May 12, 2025 12:16:20 PM utilities.CucumberLogger PrintStatus
-INFO: Value is: Response is{"description":"Validation Errors","validationErrors":[{"value":"rslspvdedmrcktrkgjvhtqsncebeijwnqxfiybdqqpkpbbmiykopgdrdazvsxgtipsuajxygabctxoikgdudjfobnxptklgtncigpuslurmcqyyvtjhxcyphqtxkvzmsqsryabqaeeucdjcamvoehjuuqgwottakdievsarmbikkiczgqjhmubmleyhtowcvqekdumiuewakgfahkjcjlbadpqqbenodkhjdrozuzhpqprngpauwwgmlpshhrorxczbdbtkqunercjsumiwxlknbzsbhiioajlodgemhucprhqqtljyspsqlrcfntsjzcubxuyoinoxaxvlyjjakolsswqhdhdjpyfxhmzcyvnwaiyqgkohtttkbspnhrabmediwmogstgojxyqvhkhxepnfgbbuhudcloaqbowga","error":"subject too long (max 250)"}]}
-May 12, 2025 12:16:20 PM utilities.CucumberLogger PrintStatus
-INFO: Value is: Response Code: 400
-  Then Send POST ContactNote Request with below details                               # stepDefinations.ContactNotesSteps.sendPOSTContactNoteRequestWithDetails(io.cucumber.datatable.DataTable)
-    | subject     | RANDOM_GREATER_250 |
-    | notes       | Testnote           |
-    | hasFollowup | false              |
-  And I verify the Status Code for Contact Notes "400"                                # stepDefinations.ContactNotesSteps.iVerifyTheStatusCodeForContactNotes(java.lang.String)
-  And I verify the error response with below details                                  # stepDefinations.ContactNotesSteps.iVerifyTheErrorResponseWithDetails(io.cucumber.datatable.DataTable)
-    | description   | Validation Errors          |
-    | error message | subject too long (max 250) |
-May 12, 2025 12:16:21 PM tech.grasshopper.pdf.PDFCucumberReport collectReportConfiguration
-INFO: PDF report configuration YAML file not found. Using default settings.
-[ERROR] Tests run: 2, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 19.8 s <<< FAILURE! - in testRunner.Runner
-[ERROR] Create Contact Notes API - Invalid Subject Values.Verify the Post Contact Notes API with empty or overly long subject #1  Time elapsed: 9.617 s  <<< FAILURE!
-java.lang.AssertionError: Mismatch in description expected [null] but found []
-[INFO] 
-[INFO] Results:
-[INFO] 
-[ERROR] Failures: 
-[ERROR]   Mismatch in description expected [null] but found []
-[INFO] 
-[ERROR] Tests run: 2, Failures: 1, Errors: 0, Skipped: 0
-[INFO] 
-
