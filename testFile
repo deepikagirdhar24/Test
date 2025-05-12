@@ -14,3 +14,6 @@ public void iVerifyTheValidationErrorResponse(String expectedDescription, String
 public static String extractStringFieldFromArray(Response response, String arrayField, int index, String fieldName) {
     return response.jsonPath().getString(arrayField + "[" + index + "]." + fieldName);
 }
+
+And I verify the validation error response with description "Validation Errors" and error message "Person not found"
+
