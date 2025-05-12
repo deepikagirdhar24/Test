@@ -70,30 +70,20 @@ Feature: Create Contact Notes API with valid inputs
   Scenario Outline: Verify the Post Contact Notes API with valid inputs
     Given Send Request to get Authentication Token for ICOS
     When I generate the JWT Token
-    And Send request to generate New Person with below details
-      | firstName       | <firstName1>    |
-      | lastName        | Lastname       |
-      | subType         | pers_form_ass  |
-      | domicileCountry | CH             |
-      | gender          | male           |
-      | nationality     | CH             |
-    And Send request to generate New Person with below details
-      | firstName       | <firstName2>    |
-      | lastName        | Lastname       |
-      | subType         | pers_form_ass  |
-      | domicileCountry | CH             |
-      | gender          | male           |
-      | nationality     | CH             |
+      And Send request to generate New Person with below details
+      | firstName  | lastName | subType        | domicileCountry | gender | nationality |
+      | <firstName1> | Lastname | pers_form_ass | CH              | male   | CH          |
+      | <firstName2> | Lastname | pers_form_ass | CH              | male   | CH          |
     Then Send POST ContactNote Request with below details
-      | subject      | <subject>     |
-      | notes        | <notes>       |
-      | hasFollowup  | <hasFollowup> |
+      | subject     | <subject>     |
+      | notes       | <notes>       |
+      | hasFollowup | <hasFollowup> |
     And I verify the Status Code for Contact Notes "<statusCode>"
     And I verify the OrderId
 
     Examples:
-      | firstName1  | firstName2  | subject      | notes     | hasFollowup | statusCode | Comments           |
-      | FirstName_1 | FirstName_2 | Testsubject  | Testnote  | false       | 200        | Multiple PersonIds |
+      | firstName1  | firstName2  | subject     | notes     | hasFollowup | statusCode |
+      | FirstName_1 | FirstName_2 | Testsubject | Testnote  | false       | 200        |
 
 ContactNotesSteps - 
 
