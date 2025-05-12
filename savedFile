@@ -1,30 +1,79 @@
-        Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("uuid", UUID.randomUUID().toString().substring(0,7));
-        requestBody.put("subType", "pers_form_ass");
-        requestBody.put("domiCountry", "CH");
-        requestBody.put("firstName", firstName);
-        requestBody.put("lastName", "Lastname");
-        requestBody.put("gender", "male");
+@And("I verify the error response with below details")
+public void iVerifyTheErrorResponseWithDetails(DataTable dataTable) throws Exception {
+    Map<String, String> mapResponsedata = dataTable.asMap(String.class, String.class);
 
-        List<String> nationalities = new ArrayList<>();
-        nationalities.add("CH");
+    // Check if the map is empty or description is null or empty
+    if (mapResponsedata.containsKey("description") && mapResponsedata.containsKey("error message") &&
+        !(mapResponsedata.get("description") == null || mapResponsedata.get("description").isEmpty())) {
 
-        requestBody.put("nationalities", nationalities);
+        // Validation error structure (400)
+        String strExpDescription = mapResponsedata.get("description");
+        String strExpErrorMessage = mapResponsedata.get("error message");
 
-        String jsonBody = new ObjectMapper().writeValueAsString(requestBody);
-        
+        String strActualDescription = JsonHelper.extractStringField(response, "description");
+        ExtentCucumberAdapter.addTestStepLog("Actual description: " + strActualDescription);
+        Assert.assertEquals(strActualDescription, strExpDescription, "Mismatch in description");
 
-        *****************************************************************************
-        Map<String, Object> requestBody = new HashMap<>();
+        String strActualErrorMessage = JsonHelper.extractStringFieldFromArray(response, "validationErrors", 0, "error");
+        ExtentCucumberAdapter.addTestStepLog("Actual error message: " + strActualErrorMessage);
+        Assert.assertEquals(strActualErrorMessage, strExpErrorMessage, "Mismatch in error message");
 
-        List<String> personIds = new ArrayList<>();
-        personIds.add(objectId);
+    } else if (mapResponsedata.containsKey("error message")) {
+        // Simple error response (500 or others)
+        String strExpError = mapResponsedata.get("error message");
+        String strActualError = JsonHelper.extractStringField(response, "error");
+        ExtentCucumberAdapter.addTestStepLog("Actual error: " + strActualError);
+        Assert.assertEquals(strActualError, strExpError, "Mismatch in error message");
+    } else {
+        throw new IllegalArgumentException("Unsupported error format in DataTable");
+    }
+}
 
-        requestBody.put("personIds", personIds);
-        requestBody.put("subject", "Testsubject");
-        requestBody.put("notes", "Testnote");
-        requestBody.put("hasFollowup", false);
+Feature: Create Contact Notes API with Subject as Empty
 
-        String jsonBody = new ObjectMapper().writeValueAsString(requestBody);
+  Scenario Outline: Verify the Post Contact Notes API with Subject as Empty
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    And Send request to generate New Person with below details
+      | firstName       | <firstName>    |
+      | lastName        | Lastname       |
+      | subType         | pers_form_ass  |
+      | domicileCountry | CH             |
+      | gender          | male           |
+      | nationality     | CH             |
+    Then Send POST ContactNote Request with below details
+      | subject      | <subject>     |
+      | notes        | <notes>       |
+      | hasFollowup  | <hasFollowup> |
+    And I verify the Status Code for Contact Notes "<statusCode>"
+    And I verify the error response "<error>"
 
-        
+    Examples:
+      | firstName   | subject            | notes    | hasFollowup | statusCode | error                                            |
+      | FirstName_1 | EMPTY_SUBJECT      | Testnote  | false      | 500        | Mandatory field: Subject\nPlease enter a subject |
+
+Feature: Create Contact Notes API with Subject greater than 250 characters
+
+  Scenario Outline: Verify the Post Contact Notes API with Subject greater than 250 characters
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    And Send request to generate New Person with below details
+      | firstName       | <firstName>    |
+      | lastName        | Lastname       |
+      | subType         | pers_form_ass  |
+      | domicileCountry | CH             |
+      | gender          | male           |
+      | nationality     | CH             |
+    Then Send POST ContactNote Request with below details
+      | subject      | <subject>     |
+      | notes        | <notes>       |
+      | hasFollowup  | <hasFollowup> |
+    And I verify the Status Code for Contact Notes "<statusCode>"
+    And I verify the validation error response with below details
+      | description   | <description> |
+      | error message | <error>       |
+
+    Examples:
+      | firstName   | subject            | notes    | hasFollowup | statusCode | description       | error                      |
+      | FirstName_1 | RANDOM_GREATER_250 | Testnote | false       | 400        | Validation Errors | subject too long (max 250) |
+
