@@ -11,20 +11,14 @@ Feature: Create Contact Notes API
       | gender          | male           |
       | nationality     | CH             |
     Then Send POST ContactNote Request with below details
-      | subject      | Testsubject     |
-      | notes        | Testnote        |
-      | hasFollowup  | false           |
-    And I verify the Status Code for Contact Notes "<statusCode>"
-    And I verify the OrderId
-
-    Examples:
-      | firstName   | statusCode |
-      | FirstName_1 | 200        |
-      | FirstName_2 | 200        |
-
-update the above feature file above with similar to the previous one where we have used ike this - 
-    Then Send POST ContactNote Request with below details
       | personIds    | <personIds>   |
       | subject      | <subject>     |
       | notes        | <notes>       |
       | hasFollowup  | <hasFollowup> |
+    And I verify the Status Code for Contact Notes "<statusCode>"
+    And I verify the OrderId
+
+  Examples:
+      | firstName   | personIds   | subject      | notes     | hasFollowup | statusCode |
+      | FirstName_1 | <to-be-set> | Testsubject  | Testnote  | false       | 200        |
+      | FirstName_2 | <to-be-set> | Testsubject  | Testnote  | false       | 200        |
