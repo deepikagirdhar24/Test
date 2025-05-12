@@ -1,77 +1,45 @@
-Feature: Create Contact Notes API
+Examples:
+  | firstName   | subject       | notes     | hasFollowup | statusCode |
+  | FirstName_1 | RANDOM_250    | Testnote  | false       | 200        |
+  | FirstName_2 | Testsubject   | Testnote  | false       | 200        |
 
-  Scenario Outline: Verify the Post Contact Notes API
-    Given Send Request to get Authentication Token for ICOS
-    When I generate the JWT Token
-    And Send request to generate New Person with below details
-      | firstName       | <firstName>    |
-      | lastName        | Lastname       |
-      | subType         | pers_form_ass  |
-      | domicileCountry | CH             |
-      | gender          | male           |
-      | nationality     | CH             |
-    Then Send POST ContactNote Request with below details
-      | subject      | <subject>     |
-      | notes        | <notes>       |
-      | hasFollowup  | <hasFollowup> |
-    And I verify the Status Code for Contact Notes "<statusCode>"
-    And I verify the OrderId
+CreateCOntactNotes - 
 
-    Examples:
-      | firstName   | subject      | notes     | hasFollowup | statusCode |
-      | FirstName_1 | Testsubject  | Testnote  | false       | 200        |
-      | FirstName_2 | Testsubject  | Testnote  | false       | 200        |
+noteRequest.setStrSubject(
+    "RANDOM_250".equalsIgnoreCase(mapNoteDetails.get("subject"))
+        ? generateRandomSubject(249) // use 249 to be safely under 250
+        : mapNoteDetails.get("subject")
+);
 
-Thsi feature file is for creating contact notes, now I have another case where we need to pass SUbject value as Random of less than 250 chars. can I implement this in same feature file and how we need to modfiy below  
+private String generateRandomSubject(int length) {
+    int leftLimit = 97; // 'a'
+    int rightLimit = 122; // 'z'
+    Random random = new Random();
+    return random.ints(leftLimit, rightLimit + 1)
+                 .limit(length)
+                 .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                 .toString();
+}
 
-    @Then("Send POST ContactNote Request with below details")
-    public void sendPOSTContactNoteRequestWithDetails(DataTable dataTable) throws JsonProcessingException {
-        Map<String, String> mapNoteDetails = dataTable.asMap(String.class, String.class);
-        String jwtToken = scenarioContext.getToken("JWTToken");
-        response = objContactNotes.createContactNote(strEnvType, "Bearer", jwtToken, mapNoteDetails);
+
+
+
+
+package com.icos.ContactNotes.utilities;
+
+import java.util.Random;
+
+public class TestDataGenerator {
+
+    public static String generateRandomSubject(int length) {
+        int leftLimit = 97; // 'a'
+        int rightLimit = 122; // 'z'
+        Random random = new Random();
+        return random.ints(leftLimit, rightLimit + 1)
+                     .limit(length)
+                     .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                     .toString();
     }
+}
 
-//Function to create a Contact Note
-    public Response createContactNote(String strEnvType, String strBearerToken, String strJWTToken, Map<String, String> mapNoteDetails) throws JsonProcessingException {
-
-        strAuthentication = objdevHelperLibrary.buildAuthHeader(strBearerToken, strJWTToken);
-        strTYKURL = objdevHelperLibrary.getTYKURL(strEnvType, "TYK.CONTACTNOTES");
-
-        ContactNoteRequest noteRequest = new ContactNoteRequest();
-
-        // Use provided personIds if available, else use strObjectId
-        if (mapNoteDetails.containsKey("personIds") && mapNoteDetails.get("personIds") != null && !mapNoteDetails.get("personIds").isEmpty()) {
-            noteRequest.setLstPersonIds(Collections.singletonList(mapNoteDetails.get("personIds")));
-        } else {
-            noteRequest.setLstPersonIds(Collections.singletonList(strObjectId));
-        }
-
-        //noteRequest.setLstPersonIds(Collections.singletonList(strObjectId));
-
-        noteRequest.setStrSubject(mapNoteDetails.get("subject"));
-        noteRequest.setStrNotes(mapNoteDetails.get("notes"));
-        noteRequest.setBoolHasFollowup(Boolean.parseBoolean(mapNoteDetails.get("hasFollowup")));
-
-        strJsonBody = objectMapper.writeValueAsString(noteRequest);
-
-        // Logging request details
-        ExtentCucumberAdapter.addTestStepLog("Sending request to Create Contact Note");
-        ExtentCucumberAdapter.addTestStepLog("Request URL: " + strTYKURL);
-        ExtentCucumberAdapter.addTestStepLog("Request Headers: Authorization=" + strAuthentication);
-        ExtentCucumberAdapter.addTestStepLog("Request Body:\n" + strJsonBody);
-
-        response = with().spec(rspec)
-                .header("Authorization",strBearerToken+" "+strJWTToken)
-                .header("X-TYK-API-KEY",TYK_KEY)
-                .header("Content-Type","application/json")
-                .body(strJsonBody)
-                .post(strTYKURL);
-        strResponseBody = objdevHelperLibrary.getResponseBody(response);
-
-        // Logging response details
-        ExtentCucumberAdapter.addTestStepLog("Response Code: " + response.getStatusCode());
-        ExtentCucumberAdapter.addTestStepLog("Response Body:\n" + strResponseBody);
-
-        objCucumberLogger.PrintStatus("Response is"+ strResponseBody);
-        return response;
-    }
+TestDataGenerator.generateRandomSubject(249);
