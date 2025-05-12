@@ -43,22 +43,28 @@ public void sendPOSTContactNoteRequestWithDetails(DataTable dataTable) throws Js
 
     List<String> personIds;
 
-    // CASE 1: If 'personIds' explicitly provided in the DataTable (e.g., invalid or test-specific)
+    // CASE 1: Check if 'personIds' key exists in the DataTable (for negative test case)
     if (mapNoteDetails.containsKey("personIds") && mapNoteDetails.get("personIds") != null && !mapNoteDetails.get("personIds").isEmpty()) {
+        // Support comma-separated multiple IDs if needed
         String[] ids = mapNoteDetails.get("personIds").split(",");
         personIds = Arrays.stream(ids).map(String::trim).collect(Collectors.toList());
     }
-    // CASE 2: Use previously stored generated personIds
+    // CASE 2: If 'GeneratedPersonIds' are stored from previous steps
     else if (scenarioContext.getContext("GeneratedPersonIds") != null) {
         personIds = (List<String>) scenarioContext.getContext("GeneratedPersonIds");
     }
-    // Failsafe: throw exception if no personIds found
+    // CASE 3: Fallback to a single strObjectId (used in older tests)
+    else if (strObjectId != null) {
+        personIds = Collections.singletonList(strObjectId);
+    }
+    // CASE 4: Fail-safe to prevent NPEs
     else {
         throw new IllegalStateException("No valid personIds found for ContactNote request.");
     }
 
     response = objContactNotes.createContactNote(strEnvType, "Bearer", jwtToken, mapNoteDetails, personIds);
 }
+
 
 
     // Use the personIds passed to this method
