@@ -1,6 +1,9 @@
-@And("I verify the validation error response with below details")
-    public void iVerifyTheValidationErrorResponse(DataTable dataTable) throws Exception {
-        Map<String, String> mapResponsedata = dataTable.asMap(String.class, String.class);
+@And("I verify the error response with below details")
+public void iVerifyTheErrorResponseWithDetails(DataTable dataTable) throws Exception {
+    Map<String, String> mapResponsedata = dataTable.asMap(String.class, String.class);
+
+    if (mapResponsedata.containsKey("description") && mapResponsedata.containsKey("error message")) {
+        // Validation error structure (400)
         String strExpDescription = mapResponsedata.get("description");
         String strExpErrorMessage = mapResponsedata.get("error message");
 
@@ -11,12 +14,13 @@
         String strActualErrorMessage = JsonHelper.extractStringFieldFromArray(response, "validationErrors", 0, "error");
         ExtentCucumberAdapter.addTestStepLog("Actual error message: " + strActualErrorMessage);
         Assert.assertEquals(strActualErrorMessage, strExpErrorMessage, "Mismatch in error message");
-    }
-
-    @And("I verify the error response {string}")
-    public void iVerifyTheErrorResponse(String strExpError) throws Exception {
+    } else if (mapResponsedata.containsKey("error")) {
+        // Simple error response (500 or others)
+        String strExpError = mapResponsedata.get("error");
         String strActualError = JsonHelper.extractStringField(response, "error");
         ExtentCucumberAdapter.addTestStepLog("Actual error: " + strActualError);
-
         Assert.assertEquals(strActualError, strExpError, "Mismatch in error message");
+    } else {
+        throw new IllegalArgumentException("Unsupported error format in DataTable");
     }
+}
