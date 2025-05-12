@@ -1,6 +1,6 @@
 Feature: Create Contact Notes API with valid inputs
 
-  Scenario Outline: Verify the Post Contact Notes API with valid inputs
+  Scenario Outline: Verify the Post Contact Notes API with "<Comments>"
     Given Send Request to get Authentication Token for ICOS
     When I generate the JWT Token
     And Send request to generate New Person with below details
