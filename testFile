@@ -1,5 +1,5 @@
-There is a test case to pass notes as empty. below is the feature file and the function used, but is giving some error - 
 
+This has various kinds of testcases , test cases with valid fields, subject less than 250 chars, subject equal to 250, and notes is empty and hasfollowup is tru and hasfollowup is null, best way for readability ?
 Feature: Create Contact Notes API
 
   Scenario Outline: Verify the Post Contact Notes API
@@ -21,118 +21,11 @@ Feature: Create Contact Notes API
 
     Examples:
       | firstName   | subject          | notes     | hasFollowup | statusCode |
-#      | FirstName_1 | Testsubject      | Testnote  | false       | 200        |
-#      | FirstName_2 | Testsubject      | Testnote  | false       | 200        |
-#      | FirstName_1 | RANDOM_LESS_250  | Testnote  | false       | 200        |
-#      | FirstName_1 | RANDOM_EXACT_250 | Testnote  | false       | 200        |
+      | FirstName_1 | Testsubject      | Testnote  | false       | 200        | 
+      | FirstName_2 | Testsubject      | Testnote  | false       | 200        |
+      | FirstName_1 | RANDOM_LESS_250  | Testnote  | false       | 200        |
+      | FirstName_1 | RANDOM_EXACT_250 | Testnote  | false       | 200        |
       | FirstName_1 | Testsubject      |           | false       | 200        |
-
-public Response createContactNote(String strEnvType, String strBearerToken, String strJWTToken, Map<String, String> mapNoteDetails) throws JsonProcessingException {
-
-        strAuthentication = objdevHelperLibrary.buildAuthHeader(strBearerToken, strJWTToken);
-        strTYKURL = objdevHelperLibrary.getTYKURL(strEnvType, "TYK.CONTACTNOTES");
-
-        ContactNoteRequest noteRequest = new ContactNoteRequest();
-
-        //Set PersonIds: Use provided personIds if available, else use strObjectId
-        if (mapNoteDetails.containsKey("personIds") && mapNoteDetails.get("personIds") != null && !mapNoteDetails.get("personIds").isEmpty()) {
-            noteRequest.setLstPersonIds(Collections.singletonList(mapNoteDetails.get("personIds")));
-        } else {
-            noteRequest.setLstPersonIds(Collections.singletonList(strObjectId));
-        }
-        //noteRequest.setLstPersonIds(Collections.singletonList(strObjectId));
-
-        // Set subject: generate based on the subject type
-        noteRequest.setStrSubject(TestDataGenerator.generateRandomSubject(mapNoteDetails.get("subject")));
-        //noteRequest.setStrSubject(mapNoteDetails.get("subject"));
-
-        noteRequest.setStrNotes(mapNoteDetails.get("notes"));
-        noteRequest.setBoolHasFollowup(Boolean.parseBoolean(mapNoteDetails.get("hasFollowup")));
-
-        strJsonBody = objectMapper.writeValueAsString(noteRequest);
-
-        // Logging request details
-        ExtentCucumberAdapter.addTestStepLog("Sending request to Create Contact Note");
-        ExtentCucumberAdapter.addTestStepLog("Request URL: " + strTYKURL);
-        ExtentCucumberAdapter.addTestStepLog("Request Headers: Authorization=" + strAuthentication);
-        ExtentCucumberAdapter.addTestStepLog("Request Body:\n" + strJsonBody);
-
-        response = with().spec(rspec)
-                .header("Authorization",strBearerToken+" "+strJWTToken)
-                .header("X-TYK-API-KEY",TYK_KEY)
-                .header("Content-Type","application/json")
-                .body(strJsonBody)
-                .post(strTYKURL);
-        strResponseBody = objdevHelperLibrary.getResponseBody(response);
-
-        // Logging response details
-        ExtentCucumberAdapter.addTestStepLog("Response Code: " + response.getStatusCode());
-        ExtentCucumberAdapter.addTestStepLog("Response Body:\n" + strResponseBody);
-
-        objCucumberLogger.PrintStatus("Response is"+ strResponseBody);
-        objCucumberLogger.PrintStatus("Response Code: " + response.getStatusCode());
-        return response;
-    }
-
-[INFO] 
-[INFO] --- maven-surefire-plugin:3.0.0-M5:test (default-test) @ wealth-icos-api ---
-[INFO] 
-[INFO] -------------------------------------------------------
-[INFO]  T E S T S
-[INFO] -------------------------------------------------------
-[INFO] Running testRunner.Runner
-Scenario Outline: Verify the Post Contact Notes API          # src/test/resources/Features/CreateContactNotes.feature:26
-Before All
-May 12, 2025 10:22:50 AM hooks.CucumberHooks beforeScenario
-INFO: Before Scenario: Test is starting!
-May 12, 2025 10:22:55 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Access Token is51kg0AWPZo7jRCjeeKa7mKib1Jdf
-May 12, 2025 10:22:55 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Access Token  is{accessToken=51kg0AWPZo7jRCjeeKa7mKib1Jdf, tokenType=Bearer}
-  Given Send Request to get Authentication Token for ICOS    # stepDefinations.GetUserSteps.sendRequestToGetAuthenticationTokenForICOS()
-May 12, 2025 10:22:56 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Tyk Token iseyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzdXAtYW1pd3Mtand0LWdlbmVyYXRvciIsInN1YiI6IlJCU0MkQ0xNX09OQk9BUkRJTkciLCJhdWQiOiJBTUlXZWJTZXJ2aWNlcyIsImV4cCI6MTc0NzA0MjY3NiwiaWF0IjoxNzQ3MDQxNzc2LCJhdmFsb3FfYnVfaWQiOiI2In0.IsDvUUZPjkd2tKAvs65Mq3YohQP4tAzXoZLU9EdPLG3aZ02Z23uOGYHkpSDuYEYfjV7j55FdHpHxdc9Zh4-wnFey0Fe2A2z1h9c-1ZJrwjfqWQNaTa42bov6D42LG7LzI7DZmFpytWSt-Vgv4QZaPkoaRpANxRFbucxw9LjoiKe0q36l6Mf5pcfNCEP-UNy76EsRxZAAvupJPUPPQSkhuMb9zMqjG2tB2kYOU4wIIkOc3MO1wtlr24CPhbjZgiwuo_waubS00tx5Sctz73qOYqy2PFI5TRTHdV81GKUFLuf1U0HrLFgR1HwKkBnC9S2g-crbD8fDrLketyigPcqLBg
-  When I generate the JWT Token                              # stepDefinations.GetUserSteps.iGenerateTheJWTToken()
-May 12, 2025 10:23:01 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Response is{"objectId":"665078929","orderId":"2864874990"}
-  And Send request to generate New Person with below details # stepDefinations.ContactNotesSteps.sendRequestToGenerateNewPersonWithDetails(io.cucumber.datatable.DataTable)
-    | firstName       | FirstName_1   |
-    | lastName        | Lastname      |
-    | subType         | pers_form_ass |
-    | domicileCountry | CH            |
-    | gender          | male          |
-    | nationality     | CH            |
-May 12, 2025 10:23:01 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Response is{"status":400,"type":"/aws/validation_error","detail":"A validation error has occurred","title":"Validation Error","stackTrace":["com.avaloq.aws.server.acpwsservice.ValidationErrorException: A validation error has occurred","at deployment.aws.war//gen.rbsc$sas_contact_note.$36bdc6b.SasContactNote.createContactNote(SasContactNote.java:229)","at deployment.aws.war//gen.rbsc$sas_contact_note.$36bdc6b.SasContactNoteREST.postcreateContactNote(SasContactNoteREST.java:246)","at deployment.aws.war//gen.rbsc$sas_contact_note.$36bdc6b.SasContactNoteREST$Proxy$_$$_WeldSubclass.postcreateContactNote$$super(Unknown Source)","at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)","at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)","at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)","at java.base/java.lang.reflect.Method.invoke(Method.java:569)","at org.jboss.weld.core@5.1.2.Final//org.jboss.weld.interceptor.proxy.TerminalAroundInvokeInvocationContext.proceedInternal(TerminalAroundInvokeInvocationContext.java:55)","at org.jboss.weld.core@5.1.2.Final//org.jboss.weld.interceptor.proxy.AroundInvokeInvocationContext.proceed(AroundInvokeInvocationContext.java:86)","at org.hibernate.validator.cdi@8.0.1.Final//org.hibernate.validator.cdi.internal.interceptor.ValidationInterceptor.validateMethodInvocation(ValidationInterceptor.java:79)","at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)","at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)","at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)","at java.base/java.lang.reflect.Method.invoke(Method.java:569)","at org.jboss.weld.core@5.1.2.Final//org.jboss.weld.interceptor.reader.SimpleInterceptorInvocation$SimpleMethodInvocation.invoke(SimpleInterceptorInvocation.java:75)","at org.jboss.weld.core@5.1.2.Final//org.jboss.weld.interceptor.proxy.InterceptorMethodHandler.executeAroundInvoke(InterceptorMethodHandler.java:90)","at org.jboss.weld.core@5.1.2.Final//org.jboss.weld.interceptor.proxy.InterceptorMethodHandler.executeInterception(InterceptorMethodHandler.java:73)","at org.jboss.weld.core@5.1.2.Final//org.jboss.weld.interceptor.proxy.InterceptorMethodHandler.invoke(InterceptorMethodHandler.java:56)","at org.jboss.weld.core@5.1.2.Final//org.jboss.weld.bean.proxy.CombinedInterceptorAndDecoratorStackMethodHandler.invoke(CombinedInterceptorAndDecoratorStackMethodHandler.java:80)","at org.jboss.weld.core@5.1.2.Final//org.jboss.weld.bean.proxy.CombinedInterceptorAndDecoratorStackMethodHandler.invoke(CombinedInterceptorAndDecoratorStackMethodHandler.java:68)","at deployment.aws.war//gen.rbsc$sas_contact_note.$36bdc6b.SasContactNoteREST$Proxy$_$$_WeldSubclass.postcreateContactNote(Unknown Source)","at deployment.aws.war//gen.rbsc$sas_contact_note.$36bdc6b.SasContactNoteREST$Proxy$_$$_WeldClientProxy.postcreateContactNote(Unknown Source)","at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)","at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)","at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)","at java.base/java.lang.reflect.Method.invoke(Method.java:569)","at deployment.avaloq-amiwebservices-appl.ear//org.jboss.resteasy.core.MethodInjectorImpl.invoke(MethodInjectorImpl.java:154)","at deployment.avaloq-amiwebservices-appl.ear//org.jboss.resteasy.core.MethodInjectorImpl.invoke(MethodInjectorImpl.java:118)","at deployment.avaloq-amiwebservices-appl.ear//org.jboss.resteasy.core.ResourceMethodInvoker.internalInvokeOnTarget(ResourceMethodInvoker.java:560)","at deployment.avaloq-amiwebservices-appl.ear//org.jboss.resteasy.core.ResourceMethodInvoker.invokeOnTargetAfterFilter(ResourceMethodInvoker.java:452)","at deployment.avaloq-amiwebservices-appl.ear//org.jboss.resteasy.core.ResourceMethodInvoker.lambda$invokeOnTarget$2(ResourceMethodInvoker.java:413)","at deployment.avaloq-amiwebservices-appl.ear//org.jboss.resteasy.core.interception.jaxrs.PreMatchContainerRequestContext.filter(PreMatchContainerRequestContext.java:321)","at deployment.avaloq-amiwebservices-appl.ear//org.jboss.resteasy.core.ResourceMethodInvoker.invokeOnTarget(ResourceMethodInvoker.java:415)","at deployment.avaloq-amiwebservices-appl.ear//org.jboss.resteasy.core.ResourceMethodInvoker.invoke(ResourceMethodInvoker.java:378)","at deployment.avaloq-amiwebservices-appl.ear//org.jboss.resteasy.core.ResourceMethodInvoker.invoke(ResourceMethodInvoker.java:356)","at deployment.avaloq-amiwebservices-appl.ear//org.jboss.resteasy.core.ResourceMethodInvoker.invoke(ResourceMethodInvoker.java:70)","at deployment.avaloq-amiwebservices-appl.ear//org.jboss.resteasy.core.SynchronousDispatcher.invoke(SynchronousDispatcher.java:429)","at deployment.avaloq-amiwebservices-appl.ear//org.jboss.resteasy.core.SynchronousDispatcher.lambda$invoke$4(SynchronousDispatcher.java:240)","at deployment.avaloq-amiwebservices-appl.ear//org.jboss.resteasy.core.SynchronousDispatcher.lambda$preprocess$0(SynchronousDispatcher.java:154)","at deployment.avaloq-amiwebservices-appl.ear//org.jboss.resteasy.core.interception.jaxrs.PreMatchContainerRequestContext.filter(PreMatchContainerRequestContext.java:321)","at deployment.avaloq-amiwebservices-appl.ear//org.jboss.resteasy.core.SynchronousDispatcher.preprocess(SynchronousDispatcher.java:157)","at deployment.avaloq-amiwebservices-appl.ear//org.jboss.resteasy.core.SynchronousDispatcher.invoke(SynchronousDispatcher.java:229)","at deployment.avaloq-amiwebservices-appl.ear//org.jboss.resteasy.plugins.server.servlet.ServletContainerDispatcher.service(ServletContainerDispatcher.java:222)","at deployment.avaloq-amiwebservices-appl.ear//org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher.service(HttpServletDispatcher.java:55)","at deployment.avaloq-amiwebservices-appl.ear//org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher.service(HttpServletDispatcher.java:51)","at jakarta.servlet.api@6.0.0//jakarta.servlet.http.HttpServlet.service(HttpServlet.java:614)","at io.undertow.servlet@2.3.15.Final//io.undertow.servlet.handlers.ServletHandler.handleRequest(ServletHandler.java:74)","at io.undertow.servlet@2.3.15.Final//io.undertow.servlet.handlers.FilterHandler$FilterChainImpl.doFilter(FilterHandler.java:129)","at deployment.aws.war//com.avaloq.aws.server.security.InitializeUserContextFromTokenFilter.doFilter(InitializeUserContextFromTokenFilter.java:59)","at io.undertow.servlet@2.3.15.Final//io.undertow.servlet.core.ManagedFilter.doFilter(ManagedFilter.java:67)","at io.undertow.servlet@2.3.15.Final//io.undertow.servlet.handlers.FilterHandler$FilterChainImpl.doFilter(FilterHandler.java:131)","at io.undertow.servlet@2.3.15.Final//io.undertow.servlet.handlers.FilterHandler.handleRequest(FilterHandler.java:84)","at io.undertow.servlet@2.3.15.Final//io.undertow.servlet.handlers.security.ServletSecurityRoleHandler.handleRequest(ServletSecurityRoleHandler.java:62)","at io.undertow.servlet@2.3.15.Final//io.undertow.servlet.handlers.ServletChain$1.handleRequest(ServletChain.java:68)","at io.undertow.servlet@2.3.15.Final//io.undertow.servlet.handlers.ServletDispatchingHandler.handleRequest(ServletDispatchingHandler.java:36)","at org.wildfly.security.elytron-web.undertow-server@4.1.0.Final//org.wildfly.elytron.web.undertow.server.ElytronRunAsHandler.lambda$handleRequest$1(ElytronRunAsHandler.java:68)","at org.wildfly.security.elytron-base@2.5.1.Final//org.wildfly.security.auth.server.FlexibleIdentityAssociation.runAsFunctionEx(FlexibleIdentityAssociation.java:103)","at org.wildfly.security.elytron-base@2.5.1.Final//org.wildfly.security.auth.server.Scoped.runAsFunctionEx(Scoped.java:161)","at org.wildfly.security.elytron-base@2.5.1.Final//org.wildfly.security.auth.server.Scoped.runAs(Scoped.java:73)","at org.wildfly.security.elytron-web.undertow-server@4.1.0.Final//org.wildfly.elytron.web.undertow.server.ElytronRunAsHandler.handleRequest(ElytronRunAsHandler.java:67)","at io.undertow.servlet@2.3.15.Final//io.undertow.servlet.handlers.RedirectDirHandler.handleRequest(RedirectDirHandler.java:68)","at io.undertow.servlet@2.3.15.Final//io.undertow.servlet.handlers.security.SSLInformationAssociationHandler.handleRequest(SSLInformationAssociationHandler.java:117)","at io.undertow.servlet@2.3.15.Final//io.undertow.servlet.handlers.security.ServletAuthenticationCallHandler.handleRequest(ServletAuthenticationCallHandler.java:57)","at io.undertow.core@2.3.15.Final//io.undertow.server.handlers.PredicateHandler.handleRequest(PredicateHandler.java:43)","at io.undertow.core@2.3.15.Final//io.undertow.security.handlers.AbstractConfidentialityHandler.handleRequest(AbstractConfidentialityHandler.java:46)","at io.undertow.servlet@2.3.15.Final//io.undertow.servlet.handlers.security.ServletConfidentialityConstraintHandler.handleRequest(ServletConfidentialityConstraintHandler.java:64)","at io.undertow.core@2.3.15.Final//io.undertow.security.handlers.AbstractSecurityContextAssociationHandler.handleRequest(AbstractSecurityContextAssociationHandler.java:43)","at org.wildfly.security.elytron-web.undertow-server-servlet@4.1.0.Final//org.wildfly.elytron.web.undertow.server.servlet.CleanUpHandler.handleRequest(CleanUpHandler.java:38)","at io.undertow.core@2.3.15.Final//io.undertow.server.handlers.PredicateHandler.handleRequest(PredicateHandler.java:43)","at org.wildfly.extension.undertow@33.0.1.Final//org.wildfly.extension.undertow.security.jacc.JACCContextIdHandler.handleRequest(JACCContextIdHandler.java:44)","at io.undertow.core@2.3.15.Final//io.undertow.server.handlers.PredicateHandler.handleRequest(PredicateHandler.java:43)","at org.wildfl  Then Send POST ContactNote Request with below details      # stepDefinations.ContactNotesSteps.sendPOSTContactNoteRequestWithDetails(io.cucumber.datatable.DataTable)
-    | subject     | Testsubject |
-    | notes       | [empty]     |
-    | hasFollowup | false       |
-  And I verify the Status Code for Contact Notes "200"       # stepDefinations.ContactNotesSteps.iVerifyTheStatusCodeForContactNotes(java.lang.String)
-y.extension.undertow@33.0.1.Final//org.wildfly.extension.undertow.deployment.GlobalRequestControllerHandler.handleRequest(GlobalRequestControllerHandler.java:51)","at io.undertow.servlet@2.3.15.Final//io.undertow.servlet.handlers.SendErrorPageHandler.handleRequest(SendErrorPageHandler.java:52)","at io.undertow.core@2.3.15.Final//io.undertow.server.handlers.PredicateHandler.handleRequest(PredicateHandler.java:43)","at io.undertow.core@2.3.15.Final//io.undertow.server.handlers.MetricsHandler.handleRequest(MetricsHandler.java:64)","at io.undertow.servlet@2.3.15.Final//io.undertow.servlet.core.MetricsChainHandler.handleRequest(MetricsChainHandler.java:59)","at io.undertow.servlet@2.3.15.Final//io.undertow.servlet.handlers.ServletInitialHandler.handleFirstRequest(ServletInitialHandler.java:276)","at io.undertow.servlet@2.3.15.Final//io.undertow.servlet.handlers.ServletInitialHandler$2.call(ServletInitialHandler.java:135)","at io.undertow.servlet@2.3.15.Final//io.undertow.servlet.handlers.ServletInitialHandler$2.call(ServletInitialHandler.java:132)","at io.undertow.servlet@2.3.15.Final//io.undertow.servlet.core.ServletRequestContextThreadSetupAction$1.call(ServletRequestContextThreadSetupAction.java:48)","at io.undertow.servlet@2.3.15.Final//io.undertow.servlet.core.ContextClassLoaderSetupAction$1.call(ContextClassLoaderSetupAction.java:43)","at org.wildfly.extension.undertow@33.0.1.Final//org.wildfly.extension.undertow.deployment.UndertowDeploymentInfoService$UndertowThreadSetupAction.lambda$create$0(UndertowDeploymentInfoService.java:1421)","at org.wildfly.extension.undertow@33.0.1.Final//org.wildfly.extension.undertow.deployment.UndertowDeploymentInfoService$UndertowThreadSetupAction.lambda$create$0(UndertowDeploymentInfoService.java:1421)","at org.wildfly.extension.undertow@33.0.1.Final//org.wildfly.extension.undertow.deployment.UndertowDeploymentInfoService$UndertowThreadSetupAction.lambda$create$0(UndertowDeploymentInfoService.java:1421)","at org.wildfly.extension.undertow@33.0.1.Final//org.wildfly.extension.undertow.deployment.UndertowDeploymentInfoService$UndertowThreadSetupAction.lambda$create$0(UndertowDeploymentInfoService.java:1421)","at io.undertow.servlet@2.3.15.Final//io.undertow.servlet.handlers.ServletInitialHandler.dispatchRequest(ServletInitialHandler.java:256)","at io.undertow.servlet@2.3.15.Final//io.undertow.servlet.handlers.ServletInitialHandler$1.handleRequest(ServletInitialHandler.java:101)","at io.undertow.core@2.3.15.Final//io.undertow.server.Connectors.executeRootHandler(Connectors.java:393)","at io.undertow.core@2.3.15.Final//io.undertow.server.HttpServerExchange$1.run(HttpServerExchange.java:859)","at org.jboss.threads@2.4.0.Final//org.jboss.threads.ContextClassLoaderSavingRunnable.run(ContextClassLoaderSavingRunnable.java:35)","at org.jboss.threads@2.4.0.Final//org.jboss.threads.EnhancedQueueExecutor.safeRun(EnhancedQueueExecutor.java:1990)","at org.jboss.threads@2.4.0.Final//org.jboss.threads.EnhancedQueueExecutor$ThreadBody.doRunTask(EnhancedQueueExecutor.java:1486)","at org.jboss.threads@2.4.0.Final//org.jboss.threads.EnhancedQueueExecutor$ThreadBody.run(EnhancedQueueExecutor.java:1377)","at org.jboss.xnio@3.8.16.Final//org.xnio.XnioWorker$WorkerThreadFactory$1$1.run(XnioWorker.java:1282)","at java.base/java.lang.Thread.run(Thread.java:840)"],"errorDetails":[{"title":"Validation","field":"Body notes","detail":"Field must not be null"}]}
-May 12, 2025 10:23:01 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Response Code: 400
-      java.lang.AssertionError: expected [400] but found [200]
-	at org.testng.Assert.fail(Assert.java:111)
-	at org.testng.Assert.failNotEquals(Assert.java:1578)
-	at org.testng.Assert.assertEqualsImpl(Assert.java:150)
-	at org.testng.Assert.assertEquals(Assert.java:132)
-	at org.testng.Assert.assertEquals(Assert.java:1419)
-	at org.testng.Assert.assertEquals(Assert.java:1383)
-	at org.testng.Assert.assertEquals(Assert.java:1429)
-	at stepDefinations.ContactNotesSteps.iVerifyTheStatusCodeForContactNotes(ContactNotesSteps.java:76)
-	at âœ½.I verify the Status Code for Contact Notes "200"(file:///C:/Users/girdd/IdeaProjects/icosapitests/src/test/resources/Features/CreateContactNotes.feature:17)
-  And I verify the OrderId                                   # stepDefinations.ContactNotesSteps.iVerifyTheOrderId()
-May 12, 2025 10:23:04 AM tech.grasshopper.pdf.PDFCucumberReport collectReportConfiguration
-INFO: PDF report configuration YAML file not found. Using default settings.
-[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 19.266 s <<< FAILURE! - in testRunner.Runner
-[ERROR] Create Contact Notes API.Verify the Post Contact Notes API  Time elapsed: 13.639 s  <<< FAILURE!
-java.lang.AssertionError: expected [400] but found [200]
-[INFO] 
-[INFO] Results:
-[INFO] 
-[ERROR] Failures: 
-[ERROR]   expected [400] but found [200]
-[INFO] 
-[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0
-[INFO] 
+      | FirstName_1 | Testsubject      | Testnote  | true        | 200        |
+      | FirstName_1 | Testsubject      | Testnote  | null        | 200        |
 
