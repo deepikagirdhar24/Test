@@ -28,3 +28,28 @@ public void sendRequestToGenerateNewPersonWithDetails(DataTable dataTable) throw
     } else {
         noteRequest.setLstPersonIds(personIds); // Use the list of generated person IDs
     }
+
+package utilities;
+
+import java.util.HashMap;
+
+public class ScenarioContext {
+
+    private HashMap<String, String> tokenMap = new HashMap<>();
+
+    public void setToken(String key, String value)
+    {
+        tokenMap.put(key, value);
+    }
+
+    public String getToken(String key)
+    {
+        return tokenMap.get(key);
+    }
+
+    public HashMap<String, String> getAllTokens()
+    {
+        return tokenMap;
+    }
+}
+
