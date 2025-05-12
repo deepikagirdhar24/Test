@@ -23,7 +23,7 @@ Feature: Create Contact Notes API
       | firstName   | subject      | notes     | hasFollowup | statusCode |
 #      | FirstName_1 | Testsubject  | Testnote  | false       | 200        |
 #      | FirstName_2 | Testsubject  | Testnote  | false       | 200        |
-      | FirstName_1 | RANDOM_250   | Testnote  | false       | 200        |
+      | FirstName_1 | RANDOM_249   | Testnote  | false       | 200        |
 
 
 //Function to create a Contact Note
@@ -44,7 +44,7 @@ Feature: Create Contact Notes API
 
         //Set subject: generate random if value is RANDOM_250, else use provided value
         noteRequest.setStrSubject(
-                "RANDOM_250".equalsIgnoreCase(mapNoteDetails.get("subject"))
+                "RANDOM_249".equalsIgnoreCase(mapNoteDetails.get("subject"))
                         ? TestDataGenerator.generateRandomSubject(249) // use 249 to be safely under 250
                         : mapNoteDetails.get("subject")
         );
@@ -76,5 +76,24 @@ Feature: Create Contact Notes API
         objCucumberLogger.PrintStatus("Response is"+ strResponseBody);
         return response;
     }
+
+package utilities;
+
+import java.util.Random;
+
+public class TestDataGenerator {
+
+    public static String generateRandomSubject(int length) {
+        int leftLimit = 97; // 'a'
+        int rightLimit = 122; // 'z'
+        Random random = new Random();
+        return random.ints(leftLimit, rightLimit + 1)
+                .limit(length)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
+    }
+
+}
+
 
 how to implement test case for subject equal to 250 chars ?
