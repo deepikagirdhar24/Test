@@ -53,3 +53,33 @@ public class ScenarioContext {
     }
 }
 
+package utilities;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class ScenarioContext {
+
+    private Map<String, Object> contextMap = new HashMap<>();
+
+    // Generic setter
+    public void setContext(String key, Object value) {
+        contextMap.put(key, value);
+    }
+
+    // Generic getter
+    @SuppressWarnings("unchecked")
+    public <T> T getContext(String key) {
+        return (T) contextMap.get(key);
+    }
+
+    public boolean containsKey(String key) {
+        return contextMap.containsKey(key);
+    }
+
+    public void clearContext() {
+        contextMap.clear();
+    }
+}
+
+
