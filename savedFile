@@ -44,3 +44,8 @@
 public Response createContactNote(String strEnvType, String strBearerToken, String strJWTToken, Map<String, String> mapNoteDetails, List<String personIds)
 
 noteRequest.setLstPersonIds(personIds);
+
+
+    And Send request to generate New Person with below details
+      | firstName     | lastName | subType        | domicileCountry | gender | nationality |
+      | <firstName>   | Lastname | pers_form_ass  | CH              | male   | CH          |
