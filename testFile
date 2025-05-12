@@ -15,5 +15,22 @@ public static String extractStringFieldFromArray(Response response, String array
     return response.jsonPath().getString(arrayField + "[" + index + "]." + fieldName);
 }
 
-And I verify the validation error response with description "Validation Errors" and error message "Person not found"
+Feature: Create Contact Notes API with invalid PersonId
+
+  Scenario Outline: Verify the Post Contact Notes API with invalid PersonId
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    Then Send POST ContactNote Request with below details
+      | personIds    | ghgf            |
+      | subject      | Testsubject     |
+      | notes        | Testnote        |
+      | hasFollowup  | false           |
+    And I verify the Status Code for Contact Notes "<statusCode>"
+    And And I verify the validation error response with below details
+      | description   | Validation Errors |
+      | error message | Person not found  |
+
+    Examples:
+      | statusCode |
+      | 400        |
 
