@@ -1,9 +1,6 @@
+Feature: Create Contact Notes API - Invalid Subject Values
 
-Can you help me group test cases into various feature files - 
-
-1st feature file is - CerateContactNotes.feature
-
-  Scenario Outline: Verify the Post Contact Notes API
+  Scenario Outline: Verify the Post Contact Notes API with empty or overly long subject
     Given Send Request to get Authentication Token for ICOS
     When I generate the JWT Token
     And Send request to generate New Person with below details
@@ -18,109 +15,11 @@ Can you help me group test cases into various feature files -
       | notes        | <notes>       |
       | hasFollowup  | <hasFollowup> |
     And I verify the Status Code for Contact Notes "<statusCode>"
-    And I verify the OrderId
-
-    Examples:
-      | firstName   | subject          | notes     | hasFollowup | statusCode |
-      | FirstName_1 | Testsubject      | Testnote  | false       | 200        | 
-      | FirstName_2 | Testsubject      | Testnote  | false       | 200        |
-      | FirstName_1 | RANDOM_LESS_250  | Testnote  | false       | 200        |
-      | FirstName_1 | RANDOM_EXACT_250 | Testnote  | false       | 200        |
-      | FirstName_1 | Testsubject      |           | false       | 200        |
-      | FirstName_1 | Testsubject      | Testnote  | true        | 200        |
-      | FirstName_1 | Testsubject      | Testnote  | null        | 200        |
-
-
-feature file - CreateContactNotes-SUbjectEMpty - 
-
-Feature: Create Contact Notes API with invalid PersonId OR Subject Greater than 250 characters
-
-  Scenario Outline: Verify the Post Contact Notes API with invalid PersonId OR Subject Greater than 250 characters
-    Given Send Request to get Authentication Token for ICOS
-    When I generate the JWT Token
-    And Send request to generate New Person with below details
-      | firstName       | <firstName>    |
-      | lastName        | Lastname       |
-      | subType         | pers_form_ass  |
-      | domicileCountry | CH             |
-      | gender          | male           |
-      | nationality     | CH             |
-    Then Send POST ContactNote Request with below details
-      | subject      | <subject>     |
-      | notes        | <notes>       |
-      | hasFollowup  | <hasFollowup> |
-    And I verify the Status Code for Contact Notes "<statusCode>"
-    And I verify the error response "<error>"
-
-    Examples:
-      | firstName   | subject            | notes    | hasFollowup | statusCode | error                                            |
-      | FirstName_1 | EMPTY_SUBJECT      | Testnote  | false      | 500        | Mandatory field: Subject\nPlease enter a subject |
-
-
-feature file - CreateContactNotes-SubjectGrThan250 - 
-
-Feature: Create Contact Notes API with Subject greater than 250 characters
-
-  Scenario Outline: Verify the Post Contact Notes API with Subject greater than 250 characters
-    Given Send Request to get Authentication Token for ICOS
-    When I generate the JWT Token
-    And Send request to generate New Person with below details
-      | firstName       | <firstName>    |
-      | lastName        | Lastname       |
-      | subType         | pers_form_ass  |
-      | domicileCountry | CH             |
-      | gender          | male           |
-      | nationality     | CH             |
-    Then Send POST ContactNote Request with below details
-      | subject      | <subject>     |
-      | notes        | <notes>       |
-      | hasFollowup  | <hasFollowup> |
-    And I verify the Status Code for Contact Notes "<statusCode>"
-    And I verify the validation error response with below details
+    And I verify the <errorType> with below details
       | description   | <description> |
       | error message | <error>       |
 
-    Examples:
-      | firstName   | subject            | notes    | hasFollowup | statusCode | description       | error                      |
-      | FirstName_1 | RANDOM_GREATER_250 | Testnote | false       | 400        | Validation Errors | subject too long (max 250) |
-
-
-Feature file - CreateContactNotes-WrongPersonId - 
-
-Feature: Create Contact Notes API with invalid PersonId
-
-  Scenario Outline: Verify the Post Contact Notes API with invalid PersonId
-    Given Send Request to get Authentication Token for ICOS
-    When I generate the JWT Token
-    Then Send POST ContactNote Request with below details
-      | personIds    | <personIds>   |
-      | subject      | <subject>     |
-      | notes        | <notes>       |
-      | hasFollowup  | <hasFollowup> |
-    And I verify the Status Code for Contact Notes "<statusCode>"
-    And I verify the validation error response with below details
-      | description   | <description> |
-      | error message | <error>       |
-
-    Examples:
-      | personIds   | subject            | notes    | hasFollowup | statusCode | description       | error            |
-      | ghgf        | Testsubject        | Testnote | false       | 400        | Validation Errors | Person not found |
-
-
-Feature file - GetContactNotes - 
-
-Feature: Get Contact Notes API
-
-  Scenario Outline: Verify the Get Contact Notes API
-    Given Send Request to get Authentication Token for ICOS
-    When I generate the JWT Token
-    Then Send Request to get Contact Note Information
-    And I verify the Status Code for Contact Notes "<StatusCode>"
-    And I verify the Person Item "<Item>"
-    And I verify the Subject "<Subject>"
-    And I verify the Notes "<Notes>"
-    And I verify the HasFollowup "<HasFollowup>"
-
-    Examples:
-      | StatusCode | Item      | Subject | Notes | HasFollowup |
-      |  200       | 665321701 | Subject | Notes | true        |
+  Examples:
+    | firstName   | subject            | notes    | hasFollowup | statusCode | errorType        | description        | error                                            |
+    | FirstName_1 | EMPTY_SUBJECT      | Testnote | false       | 500        | error response   |                    | Mandatory field: Subject\nPlease enter a subject |
+    | FirstName_1 | RANDOM_GREATER_250 | Testnote | false       | 400        | validation error | Validation Errors  | subject too long (max 250)                       |
