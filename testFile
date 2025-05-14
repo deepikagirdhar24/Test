@@ -1,28 +1,232 @@
-Feature: Create Contact Notes API with valid inputs
+New scenario to create natural persons
 
-  Scenario Outline: Verify the Post Contact Notes API with "<Comments>"
+Feature: Create Natural Persons API with valid inputs
+
+  Scenario Outline: Verify the Post Natural Persons API with <Comments>
     Given Send Request to get Authentication Token for ICOS
     When I generate the JWT Token
     And Send request to generate New Person with below details
       | firstName       | <firstName>    |
       | lastName        | Lastname       |
       | subType         | pers_form_ass  |
-      | domicileCountry | CH             |
+      | domicileCountry | GB            |
       | gender          | male           |
       | nationality     | CH             |
-    Then Send POST ContactNote Request with below details
-      | subject      | <subject>     |
-      | notes        | <notes>       |
-      | hasFollowup  | <hasFollowup> |
-    And I verify the Status Code for Contact Notes "<statusCode>"
+    And I verify the Status Code for Natural Persons "<statusCode>"
+    And I verify the ObjectId
     And I verify the OrderId
 
     Examples:
-      | firstName   | subject          | notes     | hasFollowup | statusCode | Comments                    |
-      | FirstName_1 | Testsubject      | Testnote  | false       | 200        | Valid Inputs                |
-      | FirstName_1 | RANDOM_LESS_250  | Testnote  | false       | 200        | Subject Less than 250 chars |
-      | FirstName_1 | RANDOM_EXACT_250 | Testnote  | false       | 200        | Subject equal to 250 chars  |
-      | FirstName_1 | Testsubject      |           | false       | 200        | Notes as Empty String       |
-      | FirstName_1 | Testsubject      | Testnote  | true        | 200        | hasFollowup as 'Yes'        |
-      | FirstName_1 | Testsubject      | Testnote  | null        | 200        | hasFollowup as null         |
+      | firstName   | statusCode | Comments     |
+      | FirstName   | 200        | Valid Inputs |
+
+NaturalPersonSteps - 
+
+package stepDefinations;
+
+import ICOS.ContactNotes;
+import com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import commonLibrary.DBUtil;
+import commonLibrary.SQLQueries;
+import config.JsonExtractor;
+import config.JsonVerifier;
+import config.TestConfig;
+import hooks.CucumberHooks;
+import io.cucumber.core.logging.Logger;
+import io.cucumber.core.logging.LoggerFactory;
+import io.cucumber.datatable.DataTable;
+import io.cucumber.java.en.And;
+import io.cucumber.java.en.Then;
+import io.restassured.response.Response;
+import org.testng.Assert;
+import utilities.CucumberLogger;
+import utilities.JsonHelper;
+import utilities.ScenarioContext;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+public class NaturalPersonSteps extends BaseStep{
+
+
+    protected TestConfig testDataConfig = TestConfig.getTestDataConfig();
+    private static final Logger logger = LoggerFactory.getLogger(CucumberHooks.class);
+    TestConfig testConfig;
+    ContactNotes objContactNotes;
+    private static Response response;
+    public static String strToken;
+    public String strMembershipDetails;
+    public int sizeOfPagination;
+    public static String strEnv;
+    public static String strEnvType;
+    public static String strEnvFDSType;
+    public String strFDSHostURL;
+    public String strFDSDevHelperURL;
+    public Object strRes;
+    public String strJWTToken;
+    public String strEIAMTokenURL;
+    CucumberLogger objCucumberLogger;
+    JsonVerifier objJsonVerifier;
+    JsonExtractor objJsonExtractor;
+    DBUtil objDBUtil;
+    public String strUserid;
+    SQLQueries objSQLQueries;
+    protected ScenarioContext scenarioContext;
+
+    public NaturalPersonSteps(ScenarioContext scenarioContext) throws Exception {
+        super();
+        this.scenarioContext = scenarioContext;
+        testConfig = new TestConfig();
+        objCucumberLogger= new CucumberLogger();
+        objJsonVerifier= new JsonVerifier();
+        objJsonExtractor= new JsonExtractor();
+        objDBUtil= new DBUtil();
+        objSQLQueries= new SQLQueries();
+        objContactNotes = new ContactNotes();
+        this.strEnvType = scenarioContext.getToken("strEnvType");
+    }
+
+    @And("I verify the Status Code for Natural Persons {string}")
+    public void iVerifyTheStatusCodeForNaturalPersons(String strStatusCode) {
+        int responseCode= response.statusCode();
+        ExtentCucumberAdapter.addTestStepLog("Actual value of Status code is : " +responseCode);
+        Assert.assertEquals(Integer.parseInt(strStatusCode),responseCode);
+    }
+
+    @And("I verify the ObjectId")
+    public void iVerifyTheObjectId() throws Exception {
+        String strActualObjectId = JsonHelper.extractStringField(response, "objectId");
+        ExtentCucumberAdapter.addTestStepLog("Actual value of Object Id is: " + strActualObjectId);
+
+        Assert.assertNotNull(strActualObjectId, "Object Id should not be null");
+        Assert.assertFalse(strActualObjectId.isEmpty(), "Object Id should not be empty");
+    }
+}
+
+There is another SD - ContactNotesSteps from which we are picking one step - 
+
+package stepDefinations;
+
+import ICOS.ContactNotes;
+import com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import commonLibrary.DBUtil;
+import commonLibrary.SQLQueries;
+import config.JsonExtractor;
+import config.JsonVerifier;
+import config.TestConfig;
+import hooks.CucumberHooks;
+import io.cucumber.core.logging.Logger;
+import io.cucumber.core.logging.LoggerFactory;
+import io.cucumber.datatable.DataTable;
+import io.cucumber.java.en.And;
+import io.cucumber.java.en.Then;
+import io.restassured.response.Response;
+import org.testng.Assert;
+import utilities.CucumberLogger;
+import utilities.JsonHelper;
+import utilities.ScenarioContext;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+public class ContactNotesSteps extends BaseStep{
+
+
+    protected TestConfig testDataConfig = TestConfig.getTestDataConfig();
+    private static final Logger logger = LoggerFactory.getLogger(CucumberHooks.class);
+    TestConfig testConfig;
+    ContactNotes objContactNotes;
+    private static Response response;
+    public static String strToken;
+    public String strMembershipDetails;
+    public int sizeOfPagination;
+    public static String strEnv;
+    public static String strEnvType;
+    public static String strEnvFDSType;
+    public String strFDSHostURL;
+    public String strFDSDevHelperURL;
+    public Object strRes;
+    public String strJWTToken;
+    public String strEIAMTokenURL;
+    CucumberLogger objCucumberLogger;
+    JsonVerifier objJsonVerifier;
+    JsonExtractor objJsonExtractor;
+    DBUtil objDBUtil;
+    public String strUserid;
+    SQLQueries objSQLQueries;
+    protected ScenarioContext scenarioContext;
+
+    public ContactNotesSteps(ScenarioContext scenarioContext) throws Exception {
+        super();
+        this.scenarioContext = scenarioContext;
+        testConfig = new TestConfig();
+        objCucumberLogger= new CucumberLogger();
+        objJsonVerifier= new JsonVerifier();
+        objJsonExtractor= new JsonExtractor();
+        objDBUtil= new DBUtil();
+        objSQLQueries= new SQLQueries();
+        objContactNotes = new ContactNotes();
+        this.strEnvType = scenarioContext.getToken("strEnvType");
+    }
+
+
+    @And("Send request to generate New Person with below details")
+    public void sendRequestToGenerateNewPersonWithDetails(DataTable dataTable) throws JsonProcessingException {
+        Map<String, String> mapPersonDetails = dataTable.asMap(String.class, String.class);
+        String jwtToken = scenarioContext.getToken("JWTToken");
+        response = objContactNotes.createNewPerson(strEnvType, "Bearer", jwtToken, mapPersonDetails);
+    }
+
+now it is showing this error - 
+
+[INFO] 
+[INFO] --- maven-surefire-plugin:3.0.0-M5:test (default-test) @ wealth-icos-api ---
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running testRunner.Runner
+Scenario Outline: Verify the Post Natural Persons API with Valid Inputs # src/test/resources/Features/CreateNaturalPerson-ValidInputs.feature:19
+Before All
+May 14, 2025 9:31:24 AM hooks.CucumberHooks beforeScenario
+INFO: Before Scenario: Test is starting!
+May 14, 2025 9:31:29 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: Access Token is51kgPY0ebom6RSbZtQziSwDIOGeK
+May 14, 2025 9:31:29 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: Access Token  is{accessToken=51kgPY0ebom6RSbZtQziSwDIOGeK, tokenType=Bearer}
+  Given Send Request to get Authentication Token for ICOS               # stepDefinations.GetUserSteps.sendRequestToGetAuthenticationTokenForICOS()
+May 14, 2025 9:31:29 AM utilities.CucumberLogger   When I generate the JWT Token                                         # stepDefinations.GetUserSteps.iGenerateTheJWTToken()
+  And Send request to generate New Person with below details            # stepDefinations.ContactNotesSteps.sendRequestToGenerateNewPersonWithDetails(io.cucumber.datatable.DataTable)
+    | firstName       | FirstName     |
+    | lastName        | Lastname      |
+    | subType         | pers_form_ass |
+    | domicileCountry | GB            |
+    | gender          | male          |
+    | nationality     | CH            |
+  And I verify the Status Code for Natural Persons "200"                # stepDefinations.NaturalPersonSteps.iVerifyTheStatusCodeForNaturalPersons(java.lang.String)
+      java.lang.NullPointerException: Cannot invoke "io.restassured.response.Response.statusCode()" because "stepDefinations.NaturalPersonSteps.response" is null
+	at stepDefinations.NaturalPersonSteps.iVerifyTheStatusCodeForNaturalPersons(NaturalPersonSteps.java:69)
+	at âœ½.I verify the Status Code for Natural Persons "200"(file:///C:/Users/girdd/IdeaProjects/icosapitests/src/test/resources/Features/CreateNaturalPerson-ValidInputs.feature:13)
+  And I verify the ObjectId                                             # stepDefinations.NaturalPersonSteps.iVerifyTheObjectId()
+  And I verify the OrderId                                              # stepDefinations.ContactNotesSteps.iVerifyTheOrderId()
+PrintStatus
+INFO: Value is: Tyk Token iseyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzdXAtYW1pd3Mtand0LWdlbmVyYXRvciIsInN1YiI6IlJCU0MkQ0xNX09OQk9BUkRJTkciLCJhdWQiOiJBTUlXZWJTZXJ2aWNlcyIsImV4cCI6MTc0NzIxMjM5MCwiaWF0IjoxNzQ3MjExNDkwLCJhdmFsb3FfYnVfaWQiOiI2In0.B8h1olhSeZytUvcA74nCnyBA3NOGxHEY0EkIAG-c-75Vkv0wm1PXJNetDsRHjDMRIIftzJm49RV-t3mM9dc8CUZ2PjKHjYYrZCSQrJCGmlwBRkonguOkqQ3_0aSt9MQA9Z3Hqyiy34t2dNUwm_01odVzbG3-jUxLRiQQgxzHMPiJ4fXYgtjuT5jXwRBNlAtGUPd1Mc3f_A8LGhpKclqF4YERd0lbWIhtBhKuHpskp2rxhv3XC-Gk7pMIHuEaZ0UGpXphCs4emzD-s-U_zdBh0S33LoTsb5DzDZST4DH0mmu6H5aSKv7w5ZQN2G6I-3qgvMR_RxQW8YHI_eR99OFs1Q
+May 14, 2025 9:31:35 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: Response is{"objectId":"665095461","orderId":"2858201159"}
+May 14, 2025 9:31:38 AM tech.grasshopper.pdf.PDFCucumberReport collectReportConfiguration
+INFO: PDF report configuration YAML file not found. Using default settings.
+[ERROR] Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 17.282 s <<< FAILURE! - in testRunner.Runner
+[ERROR] Create Natural Persons API with valid inputs.Verify the Post Natural Persons API with Valid Inputs  Time elapsed: 12.017 s  <<< ERROR!
+java.lang.NullPointerException: Cannot invoke "io.restassured.response.Response.statusCode()" because "stepDefinations.NaturalPersonSteps.response" is null
+[INFO] 
+[INFO] Results:
+[INFO] 
+[ERROR] Errors: 
+[ERROR]   Cannot invoke "io.restassured.response.Response.statusCode()" because "stepDefinations.NaturalPersonSteps.response" is null
+[INFO] 
+[ERROR] Tests run: 1, Failures: 0, Errors: 1, Skipped: 0
+[INFO] 
 
