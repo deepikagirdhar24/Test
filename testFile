@@ -1,20 +1,75 @@
-public static void validateFieldExistsInArray(Response response, String arrayPath, String fieldName) throws Exception {
-    JsonNode rootNode = objectMapper.readTree(response.asString());
-    JsonNode arrayNode = rootNode.at(arrayPath); // Must start with '/'
+This is my feature file. I need to pass diffrent parmeters in subType, gender, nationality etc., also we can pass multiple parameters in nationality as that is an array - 
 
-    if (!arrayNode.isArray()) {
-        throw new Exception("Expected an array at path: " + arrayPath);
+See payload and feature file below - 
+
+{
+    "uuid": "12345",
+    "subType": "pers_form_ass",
+    "domiCountry": "GB",
+    "firstName": "Firstname",
+    "lastName": "Lastname",
+    "gender": "male",
+    "nationalities": [
+        "GB"
+    ]
+} 
+
+Feature: Create Natural Persons API with valid inputs
+
+  Scenario Outline: Verify the Post Natural Persons API with <Comments>
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    And Send request to generate New Person with below details
+      | firstName       | <firstName>    |
+      | lastName        | Lastname       |
+      | subType         | pers_form_ass  |
+      | domicileCountry | GB            |
+      | gender          | male           |
+      | nationality     | CH             |
+    And I verify the Status Code for Natural Persons "<statusCode>"
+    And I verify the ObjectId
+    And I verify the OrderId
+
+    Examples:
+      | firstName   | statusCode | Comments     |
+      | FirstName   | 200        | Valid Inputs |
+
+
+Bleow is the implemented code. Please do modfications to incorporate the aboev test cases as well - 
+
+The first 2 SD are in different SD so used scenarioCOnext here.
+
+ @And("Send request to generate New Person with below details")
+    public void sendRequestToGenerateNewPersonWithDetails(DataTable dataTable) throws JsonProcessingException {
+        Map<String, String> mapPersonDetails = dataTable.asMap(String.class, String.class);
+        String jwtToken = scenarioContext.getContext("JWTToken");
+        response = objContactNotes.createNewPerson(strEnvType, "Bearer", jwtToken, mapPersonDetails);
+        scenarioContext.setContext("NaturalPersonResponse", response);
     }
 
-    for (JsonNode element : arrayNode) {
-        JsonNode fieldNode = element.get(fieldName);
-        if (fieldNode == null || fieldNode.asText().isEmpty()) {
-            throw new AssertionError("Missing or empty '" + fieldName + "' in one of the elements at: " + arrayPath);
-        }
+    @And("I verify the OrderId")
+    public void iVerifyTheOrderId() throws Exception {
+        String actualOrderId = JsonHelper.extractStringField(response, "orderId");
+        ExtentCucumberAdapter.addTestStepLog("Actual value of Order Id is: " + actualOrderId);
+
+        Assert.assertNotNull(actualOrderId, "Order Id should not be null");
+        Assert.assertFalse(actualOrderId.isEmpty(), "Order Id should not be empty");
     }
 
-    ExtentCucumberAdapter.addTestStepLog("All elements in array " + arrayPath + " contain a valid '" + fieldName + "'");
-}
+@And("I verify the Status Code for Natural Persons {string}")
+    public void iVerifyTheStatusCodeForNaturalPersons(String strStatusCode) {
+        response = (Response) scenarioContext.getContext("NaturalPersonResponse");
+        int responseCode= response.statusCode();
+        ExtentCucumberAdapter.addTestStepLog("Actual value of Status code is : " +responseCode);
+        Assert.assertEquals(Integer.parseInt(strStatusCode),responseCode);
+    }
 
+    @And("I verify the ObjectId")
+    public void iVerifyTheObjectId() throws Exception {
+        response = (Response) scenarioContext.getContext("NaturalPersonResponse");
+        String strActualObjectId = JsonHelper.extractStringField(response, "objectId");
+        ExtentCucumberAdapter.addTestStepLog("Actual value of Object Id is: " + strActualObjectId);
 
-JsonHelper.validateFieldExistsInArray(response, "/privateBanker/teams", "id");
+        Assert.assertNotNull(strActualObjectId, "Object Id should not be null");
+        Assert.assertFalse(strActualObjectId.isEmpty(), "Object Id should not be empty");
+    }
