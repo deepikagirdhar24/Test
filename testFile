@@ -1,122 +1,75 @@
-This is my feature file. I need to pass diffrent parmeters in subType, gender, nationality etc., also we can pass multiple parameters in nationality as that is an array - 
+public Response createNewPerson(String strEnvType, String strBearerToken, String strJWTToken, Map<String, String> mapPersonDetails) throws JsonProcessingException {
 
-See payload and feature file below - 
+    strAuthentication = objdevHelperLibrary.buildAuthHeader(strBearerToken, strJWTToken);
+    strTYKURL = objdevHelperLibrary.getTYKURL(strEnvType, "TYK.CREATENEWPERSON");
 
-{
-    "uuid": "12345",
-    "subType": "pers_form_ass",
-    "domiCountry": "GB",
-    "firstName": "Firstname",
-    "lastName": "Lastname",
-    "gender": "male",
-    "nationalities": [
-        "GB"
-    ]
-} 
+    NewPersonRequest personRequest = new NewPersonRequest();
+    personRequest.setStrUuid(UUID.randomUUID().toString().substring(0, 7));
+    personRequest.setStrSubType(mapPersonDetails.get("subType"));
+    personRequest.setStrDomiCountry(mapPersonDetails.get("domicileCountry"));
+    personRequest.setStrFirstName(mapPersonDetails.get("firstName"));
+    personRequest.setStrLastName(mapPersonDetails.get("lastName"));
+    personRequest.setStrGender(mapPersonDetails.get("gender"));
 
-Feature: Create Natural Persons API with valid inputs
-
-  Scenario Outline: Verify the Post Natural Persons API with <Comments>
-    Given Send Request to get Authentication Token for ICOS
-    When I generate the JWT Token
-    And Send request to generate New Person with below details
-      | firstName       | <firstName>    |
-      | lastName        | Lastname       |
-      | subType         | pers_form_ass  |
-      | domicileCountry | GB            |
-      | gender          | male           |
-      | nationality     | CH             |
-    And I verify the Status Code for Natural Persons "<statusCode>"
-    And I verify the ObjectId
-    And I verify the OrderId
-
-    Examples:
-      | firstName   | statusCode | Comments     |
-      | FirstName   | 200        | Valid Inputs |
-
-
-Bleow is the implemented code. Please do modfications to incorporate the aboev test cases as well - 
-
-The first 2 SD are in different SD so used scenarioCOnext here.
-
- @And("Send request to generate New Person with below details")
-    public void sendRequestToGenerateNewPersonWithDetails(DataTable dataTable) throws JsonProcessingException {
-        Map<String, String> mapPersonDetails = dataTable.asMap(String.class, String.class);
-        String jwtToken = scenarioContext.getContext("JWTToken");
-        response = objContactNotes.createNewPerson(strEnvType, "Bearer", jwtToken, mapPersonDetails);
-        scenarioContext.setContext("NaturalPersonResponse", response);
+    // Handle multiple nationalities (comma-separated)
+    String nationalitiesRaw = mapPersonDetails.get("nationalities");
+    List<String> nationalityList = new ArrayList<>();
+    if (nationalitiesRaw != null && !nationalitiesRaw.trim().isEmpty()) {
+        nationalityList = Arrays.stream(nationalitiesRaw.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.toList());
     }
+    personRequest.setLstNationalities(nationalityList);
 
-    @And("I verify the OrderId")
-    public void iVerifyTheOrderId() throws Exception {
-        String actualOrderId = JsonHelper.extractStringField(response, "orderId");
-        ExtentCucumberAdapter.addTestStepLog("Actual value of Order Id is: " + actualOrderId);
+    strJsonBody = new ObjectMapper().writeValueAsString(personRequest);
 
-        Assert.assertNotNull(actualOrderId, "Order Id should not be null");
-        Assert.assertFalse(actualOrderId.isEmpty(), "Order Id should not be empty");
-    }
+    // Logging
+    ExtentCucumberAdapter.addTestStepLog("Sending request to Create New Person");
+    ExtentCucumberAdapter.addTestStepLog("Request URL: " + strTYKURL);
+    ExtentCucumberAdapter.addTestStepLog("Request Headers: Authorization=" + strAuthentication);
+    ExtentCucumberAdapter.addTestStepLog("Request Body:\n" + strJsonBody);
 
-@And("I verify the Status Code for Natural Persons {string}")
-    public void iVerifyTheStatusCodeForNaturalPersons(String strStatusCode) {
-        response = (Response) scenarioContext.getContext("NaturalPersonResponse");
-        int responseCode= response.statusCode();
-        ExtentCucumberAdapter.addTestStepLog("Actual value of Status code is : " +responseCode);
-        Assert.assertEquals(Integer.parseInt(strStatusCode),responseCode);
-    }
+    response = with().spec(rspec)
+            .header("Authorization", strBearerToken + " " + strJWTToken)
+            .header("X-TYK-API-KEY", TYK_KEY)
+            .header("Content-Type", "application/json")
+            .body(strJsonBody)
+            .post(strTYKURL);
+    
+    strResponseBody = objdevHelperLibrary.getResponseBody(response);
 
-    @And("I verify the ObjectId")
-    public void iVerifyTheObjectId() throws Exception {
-        response = (Response) scenarioContext.getContext("NaturalPersonResponse");
-        String strActualObjectId = JsonHelper.extractStringField(response, "objectId");
-        ExtentCucumberAdapter.addTestStepLog("Actual value of Object Id is: " + strActualObjectId);
+    // Logging response
+    ExtentCucumberAdapter.addTestStepLog("Response Code: " + response.getStatusCode());
+    ExtentCucumberAdapter.addTestStepLog("Response Body:\n" + strResponseBody);
 
-        Assert.assertNotNull(strActualObjectId, "Object Id should not be null");
-        Assert.assertFalse(strActualObjectId.isEmpty(), "Object Id should not be empty");
-    }
+    strObjectId = response.jsonPath().getString("objectId");
+    strOrderId = response.jsonPath().getString("orderId");
 
-This is already created function createNewPerson - please do amendmenets here in the function and SD again pls - 
+    objCucumberLogger.PrintStatus("Response is" + strResponseBody);
 
-//Function to create a New Person
-    public Response createNewPerson(String strEnvType,String strBearerToken,String strJWTToken, Map<String, String> mapPersonDetails) throws JsonProcessingException {
+    ExtentCucumberAdapter.addTestStepLog("Extracted Object Id is : " + strObjectId);
+    ExtentCucumberAdapter.addTestStepLog("Extracted Order Id is : " + strOrderId);
 
-        strAuthentication = objdevHelperLibrary.buildAuthHeader(strBearerToken, strJWTToken);
-        strTYKURL = objdevHelperLibrary.getTYKURL(strEnvType, "TYK.CREATENEWPERSON");
+    return response;
+}
 
-        NewPersonRequest personRequest = new NewPersonRequest();
-        personRequest.setStrUuid(UUID.randomUUID().toString().substring(0, 7));
-        personRequest.setStrSubType(mapPersonDetails.get("subType"));
-        personRequest.setStrDomiCountry(mapPersonDetails.get("domicileCountry"));
-        personRequest.setStrFirstName(mapPersonDetails.get("firstName"));
-        personRequest.setStrLastName(mapPersonDetails.get("lastName"));
-        personRequest.setStrGender(mapPersonDetails.get("gender"));
-        personRequest.setLstNationalities(Collections.singletonList(mapPersonDetails.get("nationality")));
 
-        strJsonBody = new ObjectMapper().writeValueAsString(personRequest);
+Scenario Outline: Verify the Post Natural Persons API with <Comments>
+  Given Send Request to get Authentication Token for ICOS
+  When I generate the JWT Token
+  And Send request to generate New Person with below details
+    | firstName       | <firstName>     |
+    | lastName        | <lastName>      |
+    | subType         | <subType>       |
+    | domicileCountry | <domiCountry>   |
+    | gender          | <gender>        |
+    | nationalities   | <nationalities> |
+  And I verify the Status Code for Natural Persons "<statusCode>"
+  And I verify the ObjectId
+  And I verify the OrderId
 
-        // Logging request details
-        ExtentCucumberAdapter.addTestStepLog("Sending request to Create New Person");
-        ExtentCucumberAdapter.addTestStepLog("Request URL: " + strTYKURL);
-        ExtentCucumberAdapter.addTestStepLog("Request Headers: Authorization=" + strAuthentication);
-        ExtentCucumberAdapter.addTestStepLog("Request Body:\n" + strJsonBody);
-
-        response = with().spec(rspec)
-                .header("Authorization",strBearerToken+" "+strJWTToken)
-                .header("X-TYK-API-KEY",TYK_KEY)
-                .header("Content-Type","application/json")
-                .body(strJsonBody)
-                .post(strTYKURL);
-        strResponseBody = objdevHelperLibrary.getResponseBody(response);
-
-        // Logging response details
-        ExtentCucumberAdapter.addTestStepLog("Response Code: " + response.getStatusCode());
-        ExtentCucumberAdapter.addTestStepLog("Response Body:\n" + strResponseBody);
-
-        strObjectId = response.jsonPath().getString("objectId");
-        strOrderId = response.jsonPath().getString("orderId");
-
-        objCucumberLogger.PrintStatus("Response is"+ strResponseBody);
-
-        ExtentCucumberAdapter.addTestStepLog("Extracted Object Id is : "+ strObjectId);
-        ExtentCucumberAdapter.addTestStepLog("Extracted Order Id is : " + strOrderId);
-        return response;
-    }
+Examples:
+  | firstName | lastName | subType        | domiCountry | gender | nationalities | statusCode | Comments     |
+  | John      | Doe      | pers_form_ass  | GB          | male   | GB,CH         | 200        | Valid Inputs |
+  | Alice     | Smith    | pers_form_ass  | US          | female | US            | 200        | Valid Inputs |
