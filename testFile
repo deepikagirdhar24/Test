@@ -7,17 +7,17 @@
 [INFO] Running testRunner.Runner
 Scenario Outline: Verify the Post Natural Persons API with Valid Inputs # src/test/resources/Features/CreateNaturalPerson-ValidInputs.feature:19
 Before All
-May 15, 2025 7:49:28 AM hooks.CucumberHooks beforeScenario
+May 15, 2025 9:46:30 AM hooks.CucumberHooks beforeScenario
 INFO: Before Scenario: Test is starting!
-May 15, 2025 7:49:32 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Access Token is51kgDtTaynR21VM3e1fJRuMlykDm
-May 15, 2025 7:49:32 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Access Token  is{accessToken=51kgDtTaynR21VM3e1fJRuMlykDm, tokenType=Bearer}
+May 15, 2025 9:46:34 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: Access Token is51kgIjdqV9XxRv0MP6rhrnGNqJ7c
+May 15, 2025 9:46:34 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: Access Token  is{accessToken=51kgIjdqV9XxRv0MP6rhrnGNqJ7c, tokenType=Bearer}
   Given Send Request to get Authentication Token for ICOS               # stepDefinations.GetUserSteps.sendRequestToGetAuthenticationTokenForICOS()
-May 15, 2025 7:49:33 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Tyk Token iseyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzdXAtYW1pd3Mtand0LWdlbmVyYXRvciIsInN1YiI6IlJCU0MkQ0xNX09OQk9BUkRJTkciLCJhdWQiOiJBTUlXZWJTZXJ2aWNlcyIsImV4cCI6MTc0NzI5MjY3MywiaWF0IjoxNzQ3MjkxNzczLCJhdmFsb3FfYnVfaWQiOiI2In0.KIyCL5QvJySrAgn-caq4eeqeaT1N2IfTBj52ej0FQ9waQInwcyY-b7CQ9--X5pWEWn6CRq-9upf6c-nwtDngTVt_TtNwCsvk9RHXHYk6ihuywz598wOEz8gpkV2IEUTxwVFwk13GvHhjez-vg_CCGNTtP7lpP1uSL2t56LPgbvOc4TLUUnJGePcaDB6Y-fv6p_PjyiHLIFifG3sWOUtRDH2cN07dAciRhy-AxOFpyYEmUepyGut0XCKorl116biVh2VD8w7GgJGnDM1YbM782B4OBQ5YqS4VRcPLUQAa1ocqoc2tjZ6qL0Gvn1o18Q1ZlUaKmH8ejXo1gMByytT1Fw
+May 15, 2025 9:46:35 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: Tyk Token iseyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzdXAtYW1pd3Mtand0LWdlbmVyYXRvciIsInN1YiI6IlJCU0MkQ0xNX09OQk9BUkRJTkciLCJhdWQiOiJBTUlXZWJTZXJ2aWNlcyIsImV4cCI6MTc0NzI5OTY5NiwiaWF0IjoxNzQ3Mjk4Nzk2LCJhdmFsb3FfYnVfaWQiOiI2In0.jSNm7f2ydEnW33oWiQw3vgXOudlEwEqsDu5RUkh5ijckVnC9eIxPIgbacgYv3SIM_EzL9qLFWqhZvxbj7b_d46T6vgdbzUKPGM0kbEodArLxzUlANMV-ecZ6qeOdLfi0ovqsHHiONlkk8OkSZ_t8f6RDLDkfNuJ-tvB2IPfE5h8RV21sB7-6qeQRmoDH9v36u9wdSG9t8AN_W0-iaki4BZUh_3tMdhTctWxrEnKVpYpsC9Ng8cKuDmGhhx8N_NM8qGzPe2TKjlFtTlKRKk-KLyfdLtp6P5H2PAiXK2UBPh5p2adqalipaZ2NQGYg86hyfRtGI81LBQb_juVfWqzNEQ
   When I generate the JWT Token                                         # stepDefinations.GetUserSteps.iGenerateTheJWTToken()
-May 15, 2025 7:49:34 AM utilities.CucumberLogger PrintStatus
+May 15, 2025 9:46:36 AM utilities.CucumberLogger PrintStatus
 INFO: Value is: Response is<html>
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -114,7 +114,7 @@ INFO: Value is: Response is<html>
     | subType         | pers_form_ass |
     | domicileCountry | GB            |
     | gender          | male          |
-    | nationalities   | CH            |
+    | nationality     | CH            |
       io.restassured.path.json.exception.JsonPathException: Failed to parse the JSON document
 	at io.restassured.path.json.JsonPath$ExceptionCatcher.invoke(JsonPath.java:1002)
 	at io.restassured.path.json.JsonPath$4.doParseWith(JsonPath.java:967)
@@ -213,10 +213,10 @@ Caused by: groovy.json.JsonException: Lexing failed on line: 1, column: 1, while
   And I verify the Status Code for Natural Persons "200"                # stepDefinations.NaturalPersonSteps.iVerifyTheStatusCodeForNaturalPersons(java.lang.String)
   And I verify the ObjectId                                             # stepDefinations.NaturalPersonSteps.iVerifyTheObjectId()
   And I verify the OrderId                                              # stepDefinations.ContactNotesSteps.iVerifyTheOrderId()
-May 15, 2025 7:49:36 AM tech.grasshopper.pdf.PDFCucumberReport collectReportConfiguration
+May 15, 2025 9:46:39 AM tech.grasshopper.pdf.PDFCucumberReport collectReportConfiguration
 INFO: PDF report configuration YAML file not found. Using default settings.
-[ERROR] Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 12.51 s <<< FAILURE! - in testRunner.Runner
-[ERROR] Create Natural Persons API with valid inputs.Verify the Post Natural Persons API with Valid Inputs  Time elapsed: 7.017 s  <<< ERROR!
+[ERROR] Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 12.171 s <<< FAILURE! - in testRunner.Runner
+[ERROR] Create Natural Persons API with valid inputs.Verify the Post Natural Persons API with Valid Inputs  Time elapsed: 7.083 s  <<< ERROR!
 io.restassured.path.json.exception.JsonPathException: Failed to parse the JSON document
 Caused by: groovy.json.JsonException: Lexing failed on line: 1, column: 1, while reading '<', no possible valid JSON value or punctuation could be recognized.
 [INFO] 
