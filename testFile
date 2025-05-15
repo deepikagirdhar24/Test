@@ -224,3 +224,22 @@ Feature: Create Natural Persons API with valid inputs
         return response;
     }
 
+
+I have tested in postman, beow is teh request body and response - 
+
+{
+    "uuid": "123456",
+    "subType": "pers_form_ass",
+    "domiCountry": "GB",
+    "firstName": "Firstname2",
+    "lastName": "Lastname",
+    "gender": "male",
+    "nationalities": [
+        "GB"
+    ]
+} 
+
+{
+    "objectId": "665078988",
+    "orderId": "2864877090"
+}
