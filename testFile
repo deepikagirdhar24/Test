@@ -73,3 +73,50 @@ The first 2 SD are in different SD so used scenarioCOnext here.
         Assert.assertNotNull(strActualObjectId, "Object Id should not be null");
         Assert.assertFalse(strActualObjectId.isEmpty(), "Object Id should not be empty");
     }
+
+This is already created function createNewPerson - please do amendmenets here in the function and SD again pls - 
+
+//Function to create a New Person
+    public Response createNewPerson(String strEnvType,String strBearerToken,String strJWTToken, Map<String, String> mapPersonDetails) throws JsonProcessingException {
+
+        strAuthentication = objdevHelperLibrary.buildAuthHeader(strBearerToken, strJWTToken);
+        strTYKURL = objdevHelperLibrary.getTYKURL(strEnvType, "TYK.CREATENEWPERSON");
+
+        NewPersonRequest personRequest = new NewPersonRequest();
+        personRequest.setStrUuid(UUID.randomUUID().toString().substring(0, 7));
+        personRequest.setStrSubType(mapPersonDetails.get("subType"));
+        personRequest.setStrDomiCountry(mapPersonDetails.get("domicileCountry"));
+        personRequest.setStrFirstName(mapPersonDetails.get("firstName"));
+        personRequest.setStrLastName(mapPersonDetails.get("lastName"));
+        personRequest.setStrGender(mapPersonDetails.get("gender"));
+        personRequest.setLstNationalities(Collections.singletonList(mapPersonDetails.get("nationality")));
+
+        strJsonBody = new ObjectMapper().writeValueAsString(personRequest);
+
+        // Logging request details
+        ExtentCucumberAdapter.addTestStepLog("Sending request to Create New Person");
+        ExtentCucumberAdapter.addTestStepLog("Request URL: " + strTYKURL);
+        ExtentCucumberAdapter.addTestStepLog("Request Headers: Authorization=" + strAuthentication);
+        ExtentCucumberAdapter.addTestStepLog("Request Body:\n" + strJsonBody);
+
+        response = with().spec(rspec)
+                .header("Authorization",strBearerToken+" "+strJWTToken)
+                .header("X-TYK-API-KEY",TYK_KEY)
+                .header("Content-Type","application/json")
+                .body(strJsonBody)
+                .post(strTYKURL);
+        strResponseBody = objdevHelperLibrary.getResponseBody(response);
+
+        // Logging response details
+        ExtentCucumberAdapter.addTestStepLog("Response Code: " + response.getStatusCode());
+        ExtentCucumberAdapter.addTestStepLog("Response Body:\n" + strResponseBody);
+
+        strObjectId = response.jsonPath().getString("objectId");
+        strOrderId = response.jsonPath().getString("orderId");
+
+        objCucumberLogger.PrintStatus("Response is"+ strResponseBody);
+
+        ExtentCucumberAdapter.addTestStepLog("Extracted Object Id is : "+ strObjectId);
+        ExtentCucumberAdapter.addTestStepLog("Extracted Order Id is : " + strOrderId);
+        return response;
+    }
