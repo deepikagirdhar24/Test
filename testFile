@@ -7,6 +7,95 @@ public void iVerifyThatOrderIdIsNull() throws Exception {
     Assert.assertNull(actualOrderId, "Expected Order Id to be null");
 }
 
-public static Object extractRawField(Response response, String fieldName) {
-    return response.jsonPath().get(fieldName);
+is jsonhelper fine, or we should maintain consistency to extract raw field -
+
+package utilities;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.restassured.response.Response;
+import com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+public class JsonHelper {
+
+    static ObjectMapper objectMapper = new ObjectMapper();
+
+    public static Object extractRawField(Response response, String fieldName) {
+        return response.jsonPath().get(fieldName);
+    }
+
+    public static String extractStringField(Response response, String key) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        return rootNode.path(key).asText();
+    }
+
+    public static Boolean extractBooleanField(Response response, String key) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        return rootNode.path(key).asBoolean();
+    }
+
+    public static boolean valueExistsInJsonArray(Response response, String jsonPath, String targetValue) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode arrayNode = rootNode.path(jsonPath);
+        if (arrayNode.isArray()) {
+            return iterateAndCheckArray(arrayNode, targetValue);
+        }
+        return false;
+    }
+
+    private static boolean iterateAndCheckArray(JsonNode arrayNode, String targetValue) {
+        for (JsonNode itemNode : arrayNode) {
+            String currentValue = itemNode.asText();
+            System.out.println("Checking item: " + currentValue);
+            if (targetValue.equals(currentValue)) {
+                logMatchFound(currentValue);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static void logMatchFound(String value) {
+        System.out.println("Match found: " + value);
+        ExtentCucumberAdapter.addTestStepLog("Actual value found: " + value);
+    }
+
+//    public static String extractStringFieldFromArray(Response response, String arrayField, int index, String fieldName) {
+//        return response.jsonPath().getString(arrayField + "[" + index + "]." + fieldName);
+//    }
+
+    public static List<String> extractListOfStringFieldsFromArray(Response response, String arrayField, String subField) {
+        List<Map<String, Object>> errorList = response.jsonPath().getList(arrayField);
+        List<String> result = new ArrayList<>();
+        for (Map<String, Object> errorMap : errorList) {
+            Object value = errorMap.get(subField);
+            if (value != null) {
+                result.add(value.toString());
+            }
+        }
+        return result;
+    }
+
+    public static void validateFieldExistsInArray(Response response, String arrayPath, String fieldName) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode arrayNode = rootNode.at(arrayPath); // Must start with '/'
+
+        if (!arrayNode.isArray()) {
+            throw new Exception("Expected an array at path: " + arrayPath);
+        }
+
+        for (JsonNode element : arrayNode) {
+            JsonNode fieldNode = element.get(fieldName);
+            if (fieldNode == null || fieldNode.asText().isEmpty()) {
+                throw new AssertionError("Missing or empty '" + fieldName + "' in one of the elements at: " + arrayPath);
+            }
+        }
+
+        ExtentCucumberAdapter.addTestStepLog("All elements in array " + arrayPath + " contain a valid '" + fieldName + "'");
+    }
+
 }
