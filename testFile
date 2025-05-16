@@ -1,21 +1,10 @@
-@And("I verify the OrderId")
-public void iVerifyTheOrderId() throws Exception {
-    int statusCode = response.getStatusCode();
+And I verify that OrderId is null
+
+@And("I verify that OrderId is null")
+public void iVerifyThatOrderIdIsNull() throws Exception {
     Object actualOrderId = JsonHelper.extractRawField(response, "orderId");
-
-    ExtentCucumberAdapter.addTestStepLog("Status Code: " + statusCode);
     ExtentCucumberAdapter.addTestStepLog("Actual value of Order Id is: " + actualOrderId);
-
-    if (statusCode >= 200 && statusCode < 300) {
-        // Success: OrderId must be present
-        Assert.assertNotNull(actualOrderId, "Order Id should not be null for success responses");
-
-        String orderIdStr = actualOrderId.toString();
-        Assert.assertFalse(orderIdStr.isEmpty(), "Order Id should not be empty for success responses");
-    } else {
-        // Error: OrderId must be null
-        Assert.assertNull(actualOrderId, "Order Id should be null for error responses");
-    }
+    Assert.assertNull(actualOrderId, "Expected Order Id to be null");
 }
 
 public static Object extractRawField(Response response, String fieldName) {
