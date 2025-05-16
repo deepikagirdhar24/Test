@@ -1,11 +1,71 @@
-// Handle multiple nationalities (comma-separated)
-    String nationalitiesRaw = mapPersonDetails.get("nationalities");
-    List<String> nationalityList = new ArrayList<>();
-    if (nationalitiesRaw != null && !nationalitiesRaw.trim().isEmpty()) {
-        nationalityList = Arrays.stream(nationalitiesRaw.split(","))
-                .map(String::trim)
-                .filter(s -> !s.isEmpty())
-                .collect(Collectors.toList());
-    }
-    personRequest.setLstNationalities(nationalityList);
+Thsi is the response if we give invalid country and invliad gender and sttaus code is 400
+{
+    "description": "Validation Errors",
+    "validationErrors": [
+        {
+            "value": "XX",
+            "error": "Country not found"
+        },
+        {
+            "value": "xxx",
+            "error": "Gender not found"
+        }
+    ]
+}
 
+Can you let me know updates in beow to incorportae this - 
+
+Feature: Create Natural Persons API with invalid inputs
+
+  Scenario Outline: Verify the Post Natural Persons API with <Comments>
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    And Send request to generate New Person with below details
+      | firstName       | <firstName>     |
+      | lastName        | <lastName>      |
+      | subType         | <subType>       |
+      | domicileCountry | <domiCountry>   |
+      | gender          | <gender>        |
+      | nationalities   | <nationalities> |
+    And I verify the Status Code for Natural Persons "<statusCode>"
+    And I verify the error response with below details
+      | description   | <description> |
+      | error message | <error>       |
+
+    Examples:
+      | firstName | lastName | subType        | domiCountry | gender | nationalities | statusCode | description | error  | Comments                       |
+      | Firstname | Lastname | pers_form_ass  | GB          | xxx    | XX            | 400        |             |        |invalid gender and nationality |
+
+ALready existing SD - 
+
+@And("I verify the error response with below details")
+    public void iVerifyTheErrorResponseWithDetails(DataTable dataTable) throws Exception {
+        Map<String, String> mapResponsedata = dataTable.asMap(String.class, String.class);
+
+        // Check if the map is empty or description is null or empty
+        if (mapResponsedata.containsKey("description") && mapResponsedata.containsKey("error message") &&
+                !(mapResponsedata.get("description") == null || mapResponsedata.get("description").isEmpty())) {
+
+            // Validation error structure (400)
+            String strExpDescription = mapResponsedata.get("description");
+            String strExpErrorMessage = mapResponsedata.get("error message");
+
+            String strActualDescription = JsonHelper.extractStringField(response, "description");
+            ExtentCucumberAdapter.addTestStepLog("Actual description: " + strActualDescription);
+            Assert.assertEquals(strActualDescription, strExpDescription, "Mismatch in description");
+
+            String strActualErrorMessage = JsonHelper.extractStringFieldFromArray(response, "validationErrors", 0, "error");
+            ExtentCucumberAdapter.addTestStepLog("Actual error message: " + strActualErrorMessage);
+            Assert.assertEquals(strActualErrorMessage, strExpErrorMessage, "Mismatch in error message");
+
+        } else if (mapResponsedata.containsKey("error message")) {
+            // Simple error response (500 or others)
+            String strExpError = mapResponsedata.get("error message");
+            String strActualError = JsonHelper.extractStringField(response, "error");
+            ExtentCucumberAdapter.addTestStepLog("Actual error: " + strActualError);
+            Assert.assertEquals(strActualError, strExpError, "Mismatch in error message");
+        } else {
+            throw new IllegalArgumentException("Unsupported error format in DataTable");
+        }
+    }
+         |
