@@ -1,5 +1,137 @@
-public static Object extractRawField(Response response, String fieldName) throws Exception {
-    JsonNode rootNode = objectMapper.readTree(response.asString());
-    JsonNode node = rootNode.path(fieldName);
-    return node.isMissingNode() || node.isNull() ? null : node;
-}
+why this error although on postman it is working as expected.
+
+Feature: Create Natural Persons API with invalid inputs
+
+#  Scenario Outline: Verify the Post Natural Persons API with <Comments>
+#    Given Send Request to get Authentication Token for ICOS
+#    When I generate the JWT Token
+#    And Send request to generate New Person with below details
+#      | firstName       | <firstName>     |
+#      | lastName        | <lastName>      |
+#      | subType         | <subType>       |
+#      | domicileCountry | <domiCountry>   |
+#      | gender          | <gender>        |
+#      | nationalities   | <nationalities> |
+#    And I verify the Status Code for Natural Persons "<statusCode>"
+#    And I verify the error response with below details
+#      | description   | <description> |
+#      | error message | <error>       |
+#
+#    Examples:
+#      | firstName | lastName | subType        | domiCountry | gender | nationalities | statusCode | description       | error                               | Comments                       |
+#      | Firstname | Lastname | xxx            | CH          | male   | CH            | 400        | Validation Errors | Class not found                     | invalid personSubType          |
+#      | Firstname | Lastname | pers_form_ass  | XX          | male   | CH            | 400        | Validation Errors | Country not found                   | country not in codeTable       |
+#      | Firstname | Lastname | pers_form_ass  | CH          | xxx    | CH            | 400        | Validation Errors | Gender not found                    | invalid gender                 |
+#      | Firstname | Lastname | pers_form_ass  | CH          | male   | XX            | 400        | Validation Errors | Country not found                   | invalid nationality            |
+#      | Firstname | Lastname | pers_form_ass  | CH          | xxx    | XX            | 400        | Validation Errors | Country not found, Gender not found | invalid gender and nationality |
+
+  Scenario Outline: Verify the Post Natural Persons API with <Comments>
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    And Send request to generate New Person with below details
+      | firstName       | <firstName>     |
+      | lastName        | <lastName>      |
+      | subType         | <subType>       |
+      | domicileCountry | <domiCountry>   |
+      | gender          | <gender>        |
+      | nationalities   | <nationalities> |
+    And I verify the Status Code for Natural Persons "<statusCode>"
+    And I verify the error response with below details
+      | description   | <description> |
+      | error message | <error>       |
+    And I verify that OrderId is null
+
+    Examples:
+      | firstName | lastName | subType        | domiCountry | gender | nationalities | statusCode | description       | error                                                 | Comments                       |
+      | Firstname | Lastname |                | CH          | male   | CH            | 500        |                   | The following fields are mandatory :  Person Sub Type | personSubType as empty  |
+      |           | Lastname | pers_form_ass  | CH          | male   | CH            | 500        |                   | Mandatory: Name                                       | firstName as empty      |
+      | Firstname |          | pers_form_ass  | CH          | male   | CH            | 500        |                   | Mandatory: Name                                       | lastName as empty       |
+      | Firstname | Lastname | pers_form_ass  | CH          |        | CH            | 500        |                   | The following fields are mandatory :  Sex             | gender as empty         |
+      | Firstname | Lastname | pers_form_ass  | CH          | male   |               | 500        |                   | The following fields are mandatory :  Nationality     | nationalities as empty  |
+
+COntactNotesSteps - 
+
+    @And("Send request to generate New Person with below details")
+    public void sendRequestToGenerateNewPersonWithDetails(DataTable dataTable) throws JsonProcessingException {
+        Map<String, String> mapPersonDetails = dataTable.asMap(String.class, String.class);
+        String jwtToken = scenarioContext.getContext("JWTToken");
+        response = objContactNotes.createNewPerson(strEnvType, "Bearer", jwtToken, mapPersonDetails);
+        scenarioContext.setContext("NaturalPersonResponse", response);
+    }
+
+COntactNotes.java - 
+
+//Function to create a New Person
+    public Response createNewPerson(String strEnvType,String strBearerToken,String strJWTToken, Map<String, String> mapPersonDetails) throws JsonProcessingException {
+
+        strAuthentication = objdevHelperLibrary.buildAuthHeader(strBearerToken, strJWTToken);
+        strTYKURL = objdevHelperLibrary.getTYKURL(strEnvType, "TYK.CREATENEWPERSON");
+
+        NewPersonRequest personRequest = new NewPersonRequest();
+        personRequest.setStrUuid(UUID.randomUUID().toString().substring(0, 7));
+        personRequest.setStrSubType(mapPersonDetails.get("subType"));
+        personRequest.setStrDomiCountry(mapPersonDetails.get("domicileCountry"));
+        personRequest.setStrFirstName(mapPersonDetails.get("firstName"));
+        personRequest.setStrLastName(mapPersonDetails.get("lastName"));
+        personRequest.setStrGender(mapPersonDetails.get("gender"));
+
+        // Handle multiple nationalities (comma-separated)
+        String strNationalities = mapPersonDetails.get("nationalities");
+        List<String> lstNationality = new ArrayList<>();
+        if (strNationalities != null && !strNationalities.trim().isEmpty()) {
+            lstNationality = Arrays.stream(strNationalities.split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .collect(Collectors.toList());
+        }
+        personRequest.setLstNationalities(lstNationality);
+
+        strJsonBody = new ObjectMapper().writeValueAsString(personRequest);
+
+        // Logging request details
+        ExtentCucumberAdapter.addTestStepLog("Sending request to Create New Person");
+        ExtentCucumberAdapter.addTestStepLog("Request URL: " + strTYKURL);
+        ExtentCucumberAdapter.addTestStepLog("Request Headers: Authorization=" + strAuthentication);
+        ExtentCucumberAdapter.addTestStepLog("Request Body:\n" + strJsonBody);
+
+        response = with().spec(rspec)
+                .header("Authorization",strBearerToken+" "+strJWTToken)
+                .header("X-TYK-API-KEY",TYK_KEY)
+                .header("Content-Type","application/json")
+                .body(strJsonBody)
+                .post(strTYKURL);
+        strResponseBody = objdevHelperLibrary.getResponseBody(response);
+
+        // Logging response details
+        ExtentCucumberAdapter.addTestStepLog("Response Code: " + response.getStatusCode());
+        ExtentCucumberAdapter.addTestStepLog("Response Body:\n" + strResponseBody);
+
+        objCucumberLogger.PrintStatus("Response is"+ strResponseBody);
+
+        strObjectId = response.jsonPath().getString("objectId");
+        strOrderId = response.jsonPath().getString("orderId");
+
+        //objCucumberLogger.PrintStatus("Response is"+ strResponseBody);
+
+        ExtentCucumberAdapter.addTestStepLog("Extracted Object Id is : "+ strObjectId);
+        ExtentCucumberAdapter.addTestStepLog("Extracted Order Id is : " + strOrderId);
+        return response;
+    }
+
+NaturalPersonsSteps.java - 
+
+    @And("I verify the Status Code for Natural Persons {string}")
+    public void iVerifyTheStatusCodeForNaturalPersons(String strStatusCode) {
+        response = (Response) scenarioContext.getContext("NaturalPersonResponse");
+        int responseCode= response.statusCode();
+        ExtentCucumberAdapter.addTestStepLog("Actual value of Status code is : " +responseCode);
+        Assert.assertEquals(Integer.parseInt(strStatusCode),responseCode);
+    }
+
+    @And("I verify that OrderId is null")
+    public void iVerifyThatOrderIdIsNull() throws Exception {
+        response = (Response) scenarioContext.getContext("NaturalPersonResponse");
+        Object strActualOrderId = JsonHelper.extractRawField(response, "orderId");
+        ExtentCucumberAdapter.addTestStepLog("Actual value of Order Id is: " + strActualOrderId);
+        Assert.assertNull(strActualOrderId, "Expected Order Id to be null");
+    }
