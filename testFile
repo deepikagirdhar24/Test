@@ -69,3 +69,9 @@ ALready existing SD -
         }
     }
          |
+
+THe existing fuction is already there. pelase make change sin this - 
+
+    public static String extractStringFieldFromArray(Response response, String arrayField, int index, String fieldName) {
+        return response.jsonPath().getString(arrayField + "[" + index + "]." + fieldName);
+    }
