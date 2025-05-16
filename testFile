@@ -68,3 +68,14 @@ Feature: Create Natural Persons API with invalid inputs
         }
     }
 
+Can we cerate a separate SD and then similar to below function - 
+
+    @And("I verify the OrderId")
+    public void iVerifyTheOrderId() throws Exception {
+        String actualOrderId = JsonHelper.extractStringField(response, "orderId");
+        ExtentCucumberAdapter.addTestStepLog("Actual value of Order Id is: " + actualOrderId);
+
+        Assert.assertNotNull(actualOrderId, "Order Id should not be null");
+        Assert.assertFalse(actualOrderId.isEmpty(), "Order Id should not be empty");
+    }
+
