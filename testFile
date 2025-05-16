@@ -1,46 +1,70 @@
-@And("I verify the error response with below details")
-public void iVerifyTheErrorResponseWithDetails(DataTable dataTable) throws Exception {
-    Map<String, String> mapResponsedata = dataTable.asMap(String.class, String.class);
+I want to validate the below 2 fields - orderId as null and error as the below msg
 
-    if (mapResponsedata.containsKey("description") && mapResponsedata.containsKey("error message")) {
-        String strExpDescription = mapResponsedata.get("description");
-        String strExpErrorMessages = mapResponsedata.get("error message");
-
-        // Assert description
-        String strActualDescription = JsonHelper.extractStringField(response, "description");
-        ExtentCucumberAdapter.addTestStepLog("Actual description: " + strActualDescription);
-        Assert.assertEquals(strActualDescription, strExpDescription, "Mismatch in description");
-
-        // Handle multiple error messages
-        String[] expectedErrors = strExpErrorMessages.split("\\s*,\\s*");
-        List<String> actualErrors = JsonHelper.extractListOfStringFieldsFromArray(response, "validationErrors", "error");
-
-        ExtentCucumberAdapter.addTestStepLog("Actual validation errors: " + actualErrors.toString());
-
-        for (String expectedError : expectedErrors) {
-            Assert.assertTrue(actualErrors.contains(expectedError), 
-                "Expected error message not found: " + expectedError);
-        }
-
-    } else if (mapResponsedata.containsKey("error message")) {
-        // For other errors like 500
-        String strExpError = mapResponsedata.get("error message");
-        String strActualError = JsonHelper.extractStringField(response, "error");
-        ExtentCucumberAdapter.addTestStepLog("Actual error: " + strActualError);
-        Assert.assertEquals(strActualError, strExpError, "Mismatch in error message");
-    } else {
-        throw new IllegalArgumentException("Unsupported error format in DataTable");
-    }
+{
+    "orderId": null,
+    "error": "Mandatory: Name"
 }
 
-public static List<String> extractListOfStringFieldsFromArray(Response response, String arrayField, String subField) {
-    List<Map<String, Object>> errorList = response.jsonPath().getList(arrayField);
-    List<String> result = new ArrayList<>();
-    for (Map<String, Object> errorMap : errorList) {
-        Object value = errorMap.get(subField);
-        if (value != null) {
-            result.add(value.toString());
+Update the below codes - 
+
+Feature: Create Natural Persons API with invalid inputs
+
+  Scenario Outline: Verify the Post Natural Persons API with <Comments>
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    And Send request to generate New Person with below details
+      | firstName       | <firstName>     |
+      | lastName        | <lastName>      |
+      | subType         | <subType>       |
+      | domicileCountry | <domiCountry>   |
+      | gender          | <gender>        |
+      | nationalities   | <nationalities> |
+    And I verify the Status Code for Natural Persons "<statusCode>"
+    And I verify the error response for Natural Person with below details
+      | description   | <description> |
+      | error message | <error>       |
+      | orderId       | <orderId>     |
+
+    Examples:
+      | firstName | lastName | subType        | domiCountry | gender | nationalities | statusCode | description       | error                               | orderId | Comments                       |
+      | Firstname | Lastname | pers_form_ass  | CH          | xxx    | XX            | 400        | Validation Errors | Country not found, Gender not found |         | invalid gender and nationality |
+      |           | Lastname | pers_form_ass  | CH          | male   | CH            | 500        |                   | Mandatory: Name                     | null    | invalid gender and nationality |
+
+@And("I verify the error response for Natural Person with below details")
+    public void iVerifyTheErrorResponseForNaturalPersonWithDetails(DataTable dataTable) throws Exception {
+        Map<String, String> mapResponsedata = dataTable.asMap(String.class, String.class);
+
+        // Check if the map is empty or description is null or empty
+        if (mapResponsedata.containsKey("description") && mapResponsedata.containsKey("error message") &&
+                !(mapResponsedata.get("description") == null || mapResponsedata.get("description").isEmpty())) {
+
+            // Validation error structure (400)
+            String strExpDescription = mapResponsedata.get("description");
+            String strExpErrorMessages = mapResponsedata.get("error message");
+
+            String strActualDescription = JsonHelper.extractStringField(response, "description");
+            ExtentCucumberAdapter.addTestStepLog("Actual description: " + strActualDescription);
+            Assert.assertEquals(strActualDescription, strExpDescription, "Mismatch in description");
+
+            // Handle multiple error messages
+            String[] strArrExpErrors = strExpErrorMessages.split("\\s*,\\s*");
+            List<String> lstStrActualErrors = JsonHelper.extractListOfStringFieldsFromArray(response, "validationErrors", "error");
+
+            ExtentCucumberAdapter.addTestStepLog("Actual error messages: " + lstStrActualErrors.toString());
+
+            for (String strExpectedError : strArrExpErrors) {
+                Assert.assertTrue(lstStrActualErrors.contains(strExpectedError),
+                        "Expected error message not found: " + strExpectedError);
+            }
+
+        } else if (mapResponsedata.containsKey("error message")) {
+            // Simple error response (500 or others)
+            String strExpError = mapResponsedata.get("error message");
+            String strActualError = JsonHelper.extractStringField(response, "error");
+            ExtentCucumberAdapter.addTestStepLog("Actual error: " + strActualError);
+            Assert.assertEquals(strActualError, strExpError, "Mismatch in error message");
+        } else {
+            throw new IllegalArgumentException("Unsupported error format in DataTable");
         }
     }
-    return result;
-}
+
