@@ -1,81 +1,23 @@
-I want to validate the below 2 fields - orderId as null and error as the below msg
+@And("I verify the OrderId")
+public void iVerifyTheOrderId() throws Exception {
+    int statusCode = response.getStatusCode();
+    Object actualOrderId = JsonHelper.extractRawField(response, "orderId");
 
-{
-    "orderId": null,
-    "error": "Mandatory: Name"
+    ExtentCucumberAdapter.addTestStepLog("Status Code: " + statusCode);
+    ExtentCucumberAdapter.addTestStepLog("Actual value of Order Id is: " + actualOrderId);
+
+    if (statusCode >= 200 && statusCode < 300) {
+        // Success: OrderId must be present
+        Assert.assertNotNull(actualOrderId, "Order Id should not be null for success responses");
+
+        String orderIdStr = actualOrderId.toString();
+        Assert.assertFalse(orderIdStr.isEmpty(), "Order Id should not be empty for success responses");
+    } else {
+        // Error: OrderId must be null
+        Assert.assertNull(actualOrderId, "Order Id should be null for error responses");
+    }
 }
 
-Update the below codes - 
-
-Feature: Create Natural Persons API with invalid inputs
-
-  Scenario Outline: Verify the Post Natural Persons API with <Comments>
-    Given Send Request to get Authentication Token for ICOS
-    When I generate the JWT Token
-    And Send request to generate New Person with below details
-      | firstName       | <firstName>     |
-      | lastName        | <lastName>      |
-      | subType         | <subType>       |
-      | domicileCountry | <domiCountry>   |
-      | gender          | <gender>        |
-      | nationalities   | <nationalities> |
-    And I verify the Status Code for Natural Persons "<statusCode>"
-    And I verify the error response for Natural Person with below details
-      | description   | <description> |
-      | error message | <error>       |
-      | orderId       | <orderId>     |
-
-    Examples:
-      | firstName | lastName | subType        | domiCountry | gender | nationalities | statusCode | description       | error                               | orderId | Comments                       |
-      | Firstname | Lastname | pers_form_ass  | CH          | xxx    | XX            | 400        | Validation Errors | Country not found, Gender not found |         | invalid gender and nationality |
-      |           | Lastname | pers_form_ass  | CH          | male   | CH            | 500        |                   | Mandatory: Name                     | null    | invalid gender and nationality |
-
-@And("I verify the error response for Natural Person with below details")
-    public void iVerifyTheErrorResponseForNaturalPersonWithDetails(DataTable dataTable) throws Exception {
-        Map<String, String> mapResponsedata = dataTable.asMap(String.class, String.class);
-
-        // Check if the map is empty or description is null or empty
-        if (mapResponsedata.containsKey("description") && mapResponsedata.containsKey("error message") &&
-                !(mapResponsedata.get("description") == null || mapResponsedata.get("description").isEmpty())) {
-
-            // Validation error structure (400)
-            String strExpDescription = mapResponsedata.get("description");
-            String strExpErrorMessages = mapResponsedata.get("error message");
-
-            String strActualDescription = JsonHelper.extractStringField(response, "description");
-            ExtentCucumberAdapter.addTestStepLog("Actual description: " + strActualDescription);
-            Assert.assertEquals(strActualDescription, strExpDescription, "Mismatch in description");
-
-            // Handle multiple error messages
-            String[] strArrExpErrors = strExpErrorMessages.split("\\s*,\\s*");
-            List<String> lstStrActualErrors = JsonHelper.extractListOfStringFieldsFromArray(response, "validationErrors", "error");
-
-            ExtentCucumberAdapter.addTestStepLog("Actual error messages: " + lstStrActualErrors.toString());
-
-            for (String strExpectedError : strArrExpErrors) {
-                Assert.assertTrue(lstStrActualErrors.contains(strExpectedError),
-                        "Expected error message not found: " + strExpectedError);
-            }
-
-        } else if (mapResponsedata.containsKey("error message")) {
-            // Simple error response (500 or others)
-            String strExpError = mapResponsedata.get("error message");
-            String strActualError = JsonHelper.extractStringField(response, "error");
-            ExtentCucumberAdapter.addTestStepLog("Actual error: " + strActualError);
-            Assert.assertEquals(strActualError, strExpError, "Mismatch in error message");
-        } else {
-            throw new IllegalArgumentException("Unsupported error format in DataTable");
-        }
-    }
-
-Can we cerate a separate SD and then similar to below function - 
-
-    @And("I verify the OrderId")
-    public void iVerifyTheOrderId() throws Exception {
-        String actualOrderId = JsonHelper.extractStringField(response, "orderId");
-        ExtentCucumberAdapter.addTestStepLog("Actual value of Order Id is: " + actualOrderId);
-
-        Assert.assertNotNull(actualOrderId, "Order Id should not be null");
-        Assert.assertFalse(actualOrderId.isEmpty(), "Order Id should not be empty");
-    }
-
+public static Object extractRawField(Response response, String fieldName) {
+    return response.jsonPath().get(fieldName);
+}
