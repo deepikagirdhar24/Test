@@ -1,65 +1,28 @@
-Feature: Get Contact Notes API
+@And("I verify the {string} is {string}")
+public void iVerifyTheKeyValue(String key, String expectedValue) throws Exception {
+    String actualValue = JsonHelper.extractStringField(response, key);
+    ExtentCucumberAdapter.addTestStepLog("Expected " + key + ": " + expectedValue + ", Actual: " + actualValue);
+    Assert.assertEquals(expectedValue, actualValue);
+}
 
-  Scenario Outline: Verify the Get Contact Notes API
-    Given Send Request to get Authentication Token for ICOS
-    When I generate the JWT Token
-    Then Send Request to get Contact Note Information
-    And I verify the Status Code for Contact Notes "<StatusCode>"
-    And I verify the Person Item "<Item>"
-    And I verify the Subject "<Subject>"
-    And I verify the Notes "<Notes>"
-    And I verify the HasFollowup "<HasFollowup>"
+@And("I verify the boolean {string} is {string}")
+public void iVerifyBooleanValue(String key, String expectedValue) throws Exception {
+    boolean actualValue = JsonHelper.extractBooleanField(response, key);
+    boolean expectedBool = Boolean.parseBoolean(expectedValue);
+    ExtentCucumberAdapter.addTestStepLog("Expected " + key + ": " + expectedBool + ", Actual: " + actualValue);
+    Assert.assertEquals(expectedBool, actualValue);
+}
 
-    Examples:
-      | StatusCode | Item      | Subject | Notes | HasFollowup |
-      |  200       | 665321701 | Subject | Notes | true        |
 
-There are 4 functions for this - 
+@And("I verify the {string} array contains {string}")
+public void iVerifyArrayContainsValue(String arrayKey, String expectedValue) throws Exception {
+    boolean exists = JsonHelper.valueExistsInJsonArray(response, arrayKey, expectedValue);
+    ExtentCucumberAdapter.addTestStepLog("Checking if " + expectedValue + " exists in array " + arrayKey + ": " + exists);
+    Assert.assertTrue("Expected value not found in array: " + expectedValue, exists);
+}
 
-COntactNotesSTeps.java - 
 
-   @And("I verify the Person Item {string}")
-    public void iVerifyThePersonItem(String personItem) throws Exception {
-        boolean boolIsPersonPresent = objContactNotes.personIdExists(response, personItem);
-        Assert.assertEquals(true, boolIsPersonPresent);
-    }
-
-    @And("I verify the Subject {string}")
-    public void iVerifyTheSubject(String subject) throws Exception {
-        String stringValueSubject= JsonHelper.extractStringField(response, "subject");
-        ExtentCucumberAdapter.addTestStepLog("Actual value of Subject is : " +stringValueSubject);
-        Assert.assertEquals(subject,stringValueSubject);
-    }
-
-    @And("I verify the Notes {string}")
-    public void iVerifyTheNotes(String notes) throws Exception {
-        String stringValueNotes=JsonHelper.extractStringField(response, "notes");
-        ExtentCucumberAdapter.addTestStepLog("Actual value of Notes is : " +stringValueNotes);
-        Assert.assertEquals(notes,stringValueNotes);
-    }
-
-    @And("I verify the HasFollowup {string}")
-    public void iVerifyTheHasFollowup(String hasFollowup) throws Exception {
-        Boolean boolValuehasFollowup=JsonHelper.extractBooleanField(response, "hasFollowup");
-        ExtentCucumberAdapter.addTestStepLog("Actual value of HasFollowUp is : " +boolValuehasFollowup);
-        Assert.assertEquals(true,boolValuehasFollowup);
-    }
-
-COntactSteps.java - 
-
-    // Specific usage example: Check if a personId exists
-    public boolean personIdExists(Response response, String personId) throws Exception {
-        return JsonHelper.valueExistsInJsonArray(response, "personIds", personId);
-    }
-
-Can we make them generaic as similar to below - 
-
-    @And("I verify the {string}")
-    public void iVerifyTheKeyValue(String key) throws Exception {
-        String strActualKeyValue = JsonHelper.extractStringField(response, key);
-        ExtentCucumberAdapter.addTestStepLog("Actual value of "+key+" is: " + strActualKeyValue);
-
-        Assert.assertNotNull(strActualKeyValue, key+" should not be null");
-        Assert.assertFalse(strActualKeyValue.isEmpty(), key+" should not be empty");
-    }
-
+  And I verify the personIds array contains "<Item>"
+  And I verify the subject is "<Subject>"
+  And I verify the notes is "<Notes>"
+  And I verify the boolean hasFollowup is "<HasFollowup>"
