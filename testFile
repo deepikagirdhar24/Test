@@ -1,6 +1,58 @@
-Is anything wrong with this function below - 
+Feature: Get Contact Notes API
 
-COntactNotesSetps - The below function is in COntactNotes Steps - 
+  Scenario Outline: Verify the Get Contact Notes API
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    Then Send Request to get Contact Note Information
+    And I verify the Status Code for Contact Notes "<StatusCode>"
+    And I verify the Person Item "<Item>"
+    And I verify the Subject "<Subject>"
+    And I verify the Notes "<Notes>"
+    And I verify the HasFollowup "<HasFollowup>"
+
+    Examples:
+      | StatusCode | Item      | Subject | Notes | HasFollowup |
+      |  200       | 665321701 | Subject | Notes | true        |
+
+There are 4 functions for this - 
+
+COntactNotesSTeps.java - 
+
+   @And("I verify the Person Item {string}")
+    public void iVerifyThePersonItem(String personItem) throws Exception {
+        boolean boolIsPersonPresent = objContactNotes.personIdExists(response, personItem);
+        Assert.assertEquals(true, boolIsPersonPresent);
+    }
+
+    @And("I verify the Subject {string}")
+    public void iVerifyTheSubject(String subject) throws Exception {
+        String stringValueSubject= JsonHelper.extractStringField(response, "subject");
+        ExtentCucumberAdapter.addTestStepLog("Actual value of Subject is : " +stringValueSubject);
+        Assert.assertEquals(subject,stringValueSubject);
+    }
+
+    @And("I verify the Notes {string}")
+    public void iVerifyTheNotes(String notes) throws Exception {
+        String stringValueNotes=JsonHelper.extractStringField(response, "notes");
+        ExtentCucumberAdapter.addTestStepLog("Actual value of Notes is : " +stringValueNotes);
+        Assert.assertEquals(notes,stringValueNotes);
+    }
+
+    @And("I verify the HasFollowup {string}")
+    public void iVerifyTheHasFollowup(String hasFollowup) throws Exception {
+        Boolean boolValuehasFollowup=JsonHelper.extractBooleanField(response, "hasFollowup");
+        ExtentCucumberAdapter.addTestStepLog("Actual value of HasFollowUp is : " +boolValuehasFollowup);
+        Assert.assertEquals(true,boolValuehasFollowup);
+    }
+
+COntactSteps.java - 
+
+    // Specific usage example: Check if a personId exists
+    public boolean personIdExists(Response response, String personId) throws Exception {
+        return JsonHelper.valueExistsInJsonArray(response, "personIds", personId);
+    }
+
+Can we make them generaic as similar to below - 
 
     @And("I verify the {string}")
     public void iVerifyTheKeyValue(String key) throws Exception {
@@ -11,206 +63,3 @@ COntactNotesSetps - The below function is in COntactNotes Steps -
         Assert.assertFalse(strActualKeyValue.isEmpty(), key+" should not be empty");
     }
 
-Feature: Create Natural Persons API with valid inputs
-
-  Scenario Outline: Verify the Post Natural Persons API with <Comments>
-    Given Send Request to get Authentication Token for ICOS
-    When I generate the JWT Token
-    And Send request to generate New Person with below details
-      | firstName       | <firstName>     |
-      | lastName        | <lastName>      |
-      | subType         | <subType>       |
-      | domicileCountry | <domiCountry>   |
-      | gender          | <gender>        |
-      | nationalities   | <nationalities> |
-    And I verify the Status Code for Natural Persons "<statusCode>"
-    And I verify the "<objectId>"
-    And I verify the "<orderId>"
-
-    Examples:
-      | firstName | lastName | subType        | domiCountry | gender | nationalities | statusCode | Comments                           |
-      | Firstname | Lastname | pers_form_ass  | GB          | male   | CH            | 200        | country as GB                      |
-      | Firstname | Lastname | pers_form_ass  | CH          | female | CH            | 200        | gender as female                   |
-      | Firstname | Lastname | pers_form_ass  | CH          | male   | GB            | 200        | nationality as GB                  |
-      | Firstname | Lastname | pers_form_ass  | CH          | male   | CH,GB         | 200        | with two nationalities (CH and GB) |
-      | Firstname | Lastname | pers_form_ass  | CH          | male   | CH            | 200        | with all valid inputs              |
-
-
-[INFO] 
-[INFO] --- maven-surefire-plugin:3.0.0-M5:test (default-test) @ wealth-icos-api ---
-[INFO] 
-[INFO] -------------------------------------------------------
-[INFO]  T E S T S
-[INFO] -------------------------------------------------------
-[INFO] Running testRunner.Runner
-Scenario Outline: Verify the Post Natural Persons API with country as GB # src/test/resources/Features/CreateNaturalPerson-ValidInputs.feature:19
-Before All
-May 17, 2025 10:11:20 AM hooks.CucumberHooks beforeScenario
-INFO: Before Scenario: Test is starting!
-May 17, 2025 10:11:24 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Access Token is93c6ttPJubJBn1gzMg2RMhiKQ4cs
-May 17, 2025 10:11:24 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Access Token  is{accessToken=93c6ttPJubJBn1gzMg2RMhiKQ4cs, tokenType=Bearer}
-  Given Send Request to get Authentication Token for ICOS                # stepDefinations.GetUserSteps.sendRequestToGetAuthenticationTokenForICOS()
-May 17, 2025 10:11:25 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Tyk Token iseyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzdXAtYW1pd3Mtand0LWdlbmVyYXRvciIsInN1YiI6IlJCU0MkQ0xNX09OQk9BUkRJTkciLCJhdWQiOiJBTUlXZWJTZXJ2aWNlcyIsImV4cCI6MTc0NzQ3Mzk4NSwiaWF0IjoxNzQ3NDczMDg1LCJhdmFsb3FfYnVfaWQiOiI2In0.m-Z33HSmAva9bUq5Cqyvvfc8FxX0EL2gNpiJVpnpEiJbARmj2fZTL4T4aNkcsLMhKjG8yA6dgVehhpq90_r6A8L4b4T_5umynPQNMVxq9dLKtIogqMP7-ZxCpFBKuZwZU5Kpm6Y5VeGB3h9f3KGsYo1UiqyZ0FaSq7gKDAF6VbKgR9GtSIrLY6iUCLna8JHrCV1g9qOpR9xnLw7z30Djal4gmG-7u_cAMGXXbjk0Q30lTUQ-h39JdFsqvqZ3DuxZb_pjmXG6XRfBQsOONdYG0NIltt3W7mMYU-MBw0OV1skjcvU-7dBhblnbV4xS9obP4f6S0BydWM3-hazJpY0rtQ
-  When I generate the JWT Token                                          # stepDefinations.GetUserSteps.iGenerateTheJWTToken()
-May 17, 2025 10:11:41 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Response is{"objectId":"665080100","orderId":"2866163266"}
-  And Send request to generate New Person with below details             # stepDefinations.ContactNotesSteps.sendRequestToGenerateNewPersonWithDetails(io.cucumber.datatable.DataTable)
-    | firstName       | Firstname     |
-    | lastName        | Lastname      |
-    | subType         | pers_form_ass |
-    | domicileCountry | GB            |
-    | gender          | male          |
-    | nationalities   | CH            |
-  And I verify the Status Code for Natural Persons "200"                 # stepDefinations.NaturalPersonSteps.iVerifyTheStatusCodeForNaturalPersons(java.lang.String)
-  And I verify the "<objectId>"                                          # stepDefinations.ContactNotesSteps.iVerifyTheKeyValue(java.lang.String)
-      java.lang.AssertionError: <objectId> should not be empty expected [false] but found [true]
-	at org.testng.Assert.fail(Assert.java:111)
-	at org.testng.Assert.failNotEquals(Assert.java:1578)
-	at org.testng.Assert.assertFalse(Assert.java:79)
-	at stepDefinations.ContactNotesSteps.iVerifyTheKeyValue(ContactNotesSteps.java:136)
-	at âœ½.I verify the "<objectId>"(file:///C:/Users/girdd/IdeaProjects/icosapitests/src/test/resources/Features/CreateNaturalPerson-ValidInputs.feature:14)
-  And I verify the "<orderId>"                                           # stepDefinations.ContactNotesSteps.iVerifyTheKeyValue(java.lang.String)
-Scenario Outline: Verify the Post Natural Persons API with gender as female # src/test/resources/Features/CreateNaturalPerson-ValidInputs.feature:20
-May 17, 2025 10:11:43 AM hooks.CucumberHooks beforeScenario
-INFO: Before Scenario: Test is starting!
-May 17, 2025 10:11:44 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Access Token is93c6RTUoar2ttcCttdOALDLPsl9j
-May 17, 2025 10:11:44 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Access Token  is{accessToken=93c6RTUoar2ttcCttdOALDLPsl9j, tokenType=Bearer}
-  Given Send Request to get Authentication Token for ICOS                   # stepDefinations.GetUserSteps.sendRequestToGetAuthenticationTokenForICOS()
-May 17, 2025 10:11:44 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Tyk Token iseyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzdXAtYW1pd3Mtand0LWdlbmVyYXRvciIsInN1YiI6IlJCU0MkQ0xNX09OQk9BUkRJTkciLCJhdWQiOiJBTUlXZWJTZXJ2aWNlcyIsImV4cCI6MTc0NzQ3NDAwNSwiaWF0IjoxNzQ3NDczMTA1LCJhdmFsb3FfYnVfaWQiOiI2In0.w5YD3olqMQuQ9q1X2yIrW_2ySEHXQta9On-N0JTx1ojRbAMuYiuvwRG4X0hT2EXrnGZMLXGsRMvrzEqKhAmu7dEAfXrtx_jxUamp9JIITJLCATQrjssAXWcPEA1IN_28xXjAzvGwNGPSDxxaeuOu9fG4U1IeNWEYKrDjNTGVjcGn3LDT0-ryFj_pD7gHiSaeG1zcudNiAZTw_oF7086aaXyj-w6JXSF5rknvYA1VwD2oZJnEa0wLRaqtQACOck3nCencyzEofciuzeHqmJLO3ptoScsvo8DeUIePfaeBlHQ_dH32o6lN6k3PZWbZKf3dnNtVP4dTRuGlMUsQbSsAdQ
-  When I generate the JWT Token                                             # stepDefinations.GetUserSteps.iGenerateTheJWTToken()
-May 17, 2025 10:11:54 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Response is{"objectId":"665080101","orderId":"2866163283"}
-  And Send request to generate New Person with below details                # stepDefinations.ContactNotesSteps.sendRequestToGenerateNewPersonWithDetails(io.cucumber.datatable.DataTable)
-    | firstName       | Firstname     |
-    | lastName        | Lastname      |
-    | subType         | pers_form_ass |
-    | domicileCountry | CH            |
-    | gender          | female        |
-    | nationalities   | CH            |
-  And I verify the Status Code for Natural Persons "200"                    # stepDefinations.NaturalPersonSteps.iVerifyTheStatusCodeForNaturalPersons(java.lang.String)
-  And I verify the "<objectId>"                                             # stepDefinations.ContactNotesSteps.iVerifyTheKeyValue(java.lang.String)
-      java.lang.AssertionError: <objectId> should not be empty expected [false] but found [true]
-	at org.testng.Assert.fail(Assert.java:111)
-	at org.testng.Assert.failNotEquals(Assert.java:1578)
-	at org.testng.Assert.assertFalse(Assert.java:79)
-	at stepDefinations.ContactNotesSteps.iVerifyTheKeyValue(ContactNotesSteps.java:136)
-	at âœ½.I verify the "<objectId>"(file:///C:/Users/girdd/IdeaProjects/icosapitests/src/test/resources/Features/CreateNaturalPerson-ValidInputs.feature:14)
-  And I verify the "<orderId>"                                              # stepDefinations.ContactNotesSteps.iVerifyTheKeyValue(java.lang.String)
-Scenario Outline: Verify the Post Natural Persons API with nationality as GB # src/test/resources/Features/CreateNaturalPerson-ValidInputs.feature:21
-May 17, 2025 10:11:54 AM hooks.CucumberHooks beforeScenario
-INFO: Before Scenario: Test is starting!
-May 17, 2025 10:11:54 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Access Token is93c67o0UKNzKkjL16CqXP8HkouJ6
-May 17, 2025 10:11:54 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Access Token  is{accessToken=93c67o0UKNzKkjL16CqXP8HkouJ6, tokenType=Bearer}
-  Given Send Request to get Authentication Token for ICOS                    # stepDefinations.GetUserSteps.sendRequestToGetAuthenticationTokenForICOS()
-May 17, 2025 10:11:55 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Tyk Token iseyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzdXAtYW1pd3Mtand0LWdlbmVyYXRvciIsInN1YiI6IlJCU0MkQ0xNX09OQk9BUkRJTkciLCJhdWQiOiJBTUlXZWJTZXJ2aWNlcyIsImV4cCI6MTc0NzQ3NDAxNSwiaWF0IjoxNzQ3NDczMTE1LCJhdmFsb3FfYnVfaWQiOiI2In0.eQtZUOK7h95k7z49ffh2er-yeRnATMbDCdGiWOVP9pjggC6z2AOKeSPGeVdcADjxAYWQ2qhmHbXhcLyZRy75ixpzSC5Yk3umPBdO5ZmiK3mINgjq4_fwa2wPA3sLi91_6RmyLfnUOJ49dIcYOKydnZngVvgg2CzDOYJEhd9BoVDU7iNRSyIoBxdwWxaWBq0aEJnzkfmf50DapIkQJz7KgvA6MXkeKMy1ntgpgf7p0G-d_8aMoVsBfmCRnBNpVe5jMlB9w3mNEDHxF2wGSvQSZrjEYpjqzqDyEndaKZHGOkbX-weRdhdV2OeDbYMEmOzyaV21mov6dUwf30lMmTtszg
-  When I generate the JWT Token                                              # stepDefinations.GetUserSteps.iGenerateTheJWTToken()
-May 17, 2025 10:12:08 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Response is{"objectId":"665080103","orderId":"2866163290"}
-  And Send request to generate New Person with below details                 # stepDefinations.ContactNotesSteps.sendRequestToGenerateNewPersonWithDetails(io.cucumber.datatable.DataTable)
-    | firstName       | Firstname     |
-    | lastName        | Lastname      |
-    | subType         | pers_form_ass |
-    | domicileCountry | CH            |
-    | gender          | male          |
-    | nationalities   | GB            |
-  And I verify the Status Code for Natural Persons "200"                     # stepDefinations.NaturalPersonSteps.iVerifyTheStatusCodeForNaturalPersons(java.lang.String)
-  And I verify the "<objectId>"                                              # stepDefinations.ContactNotesSteps.iVerifyTheKeyValue(java.lang.String)
-      java.lang.AssertionError: <objectId> should not be empty expected [false] but found [true]
-	at org.testng.Assert.fail(Assert.java:111)
-	at org.testng.Assert.failNotEquals(Assert.java:1578)
-	at org.testng.Assert.assertFalse(Assert.java:79)
-	at stepDefinations.ContactNotesSteps.iVerifyTheKeyValue(ContactNotesSteps.java:136)
-	at âœ½.I verify the "<objectId>"(file:///C:/Users/girdd/IdeaProjects/icosapitests/src/test/resources/Features/CreateNaturalPerson-ValidInputs.feature:14)
-  And I verify the "<orderId>"                                               # stepDefinations.ContactNotesSteps.iVerifyTheKeyValue(java.lang.String)
-Scenario Outline: Verify the Post Natural Persons API with with two nationalities (CH and GB) # src/test/resources/Features/CreateNaturalPerson-ValidInputs.feature:22
-May 17, 2025 10:12:08 AM hooks.CucumberHooks beforeScenario
-INFO: Before Scenario: Test is starting!
-May 17, 2025 10:12:08 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Access Token is93c6LYWoqeWfyzCaLTxrM6iKxRwm
-May 17, 2025 10:12:08 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Access Token  is{accessToken=93c6LYWoqeWfyzCaLTxrM6iKxRwm, tokenType=Bearer}
-  Given Send Request to get Authentication Token for ICOS                                     # stepDefinations.GetUserSteps.sendRequestToGetAuthenticationTokenForICOS()
-May 17, 2025 10:12:08 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Tyk Token iseyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzdXAtYW1pd3Mtand0LWdlbmVyYXRvciIsInN1YiI6IlJCU0MkQ0xNX09OQk9BUkRJTkciLCJhdWQiOiJBTUlXZWJTZXJ2aWNlcyIsImV4cCI6MTc0NzQ3NDAyOSwiaWF0IjoxNzQ3NDczMTI5LCJhdmFsb3FfYnVfaWQiOiI2In0.HHJuBm61rUFsw8BPWAjxVIiZspSMpwOOHtpZrCsC49xAnE0p_Dv_6ETqdEzipMy-D1qUsnuYd428ph3v8XgLrcMoxIfEcFwBBXBsinaks22uzfot_x012rjzEuWzc5aEyC6fdTNeHQCA2mFLohAvLRSXE141shM_xzTWg-H5e6imH1oQBwBva9M9qwmQR-ft8Ah8RwL1aO_lvjXgBIDetDlWNTlJ6mvFSzI9tLUN0UYw9XGzDY4NLvfIR_Qd6FuiEFiKXJxF5U47Dgrr89vzouX0Kxr1E_XsZ__1l6JAfaHy2dJLSXorKFdrxbDfSGBEgHD3NuzOg4IAjvOmhCgABw
-  When I generate the JWT Token                                                               # stepDefinations.GetUserSteps.iGenerateTheJWTToken()
-May 17, 2025 10:12:13 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Response is{"objectId":"665080104","orderId":"2866163297"}
-  And Send request to generate New Person with below details                                  # stepDefinations.ContactNotesSteps.sendRequestToGenerateNewPersonWithDetails(io.cucumber.datatable.DataTable)
-    | firstName       | Firstname     |
-    | lastName        | Lastname      |
-    | subType         | pers_form_ass |
-    | domicileCountry | CH            |
-    | gender          | male          |
-    | nationalities   | CH,GB         |
-  And I verify the Status Code for Natural Persons "200"                                      # stepDefinations.NaturalPersonSteps.iVerifyTheStatusCodeForNaturalPersons(java.lang.String)
-  And I verify the "<objectId>"                                                               # stepDefinations.ContactNotesSteps.iVerifyTheKeyValue(java.lang.String)
-      java.lang.AssertionError: <objectId> should not be empty expected [false] but found [true]
-	at org.testng.Assert.fail(Assert.java:111)
-	at org.testng.Assert.failNotEquals(Assert.java:1578)
-	at org.testng.Assert.assertFalse(Assert.java:79)
-	at stepDefinations.ContactNotesSteps.iVerifyTheKeyValue(ContactNotesSteps.java:136)
-	at âœ½.I verify the "<objectId>"(file:///C:/Users/girdd/IdeaProjects/icosapitests/src/test/resources/Features/CreateNaturalPerson-ValidInputs.feature:14)
-  And I verify the "<orderId>"                                                                # stepDefinations.ContactNotesSteps.iVerifyTheKeyValue(java.lang.String)
-Scenario Outline: Verify the Post Natural Persons API with with all valid inputs # src/test/resources/Features/CreateNaturalPerson-ValidInputs.feature:23
-ay 17, 2025 10:12:13 AM hooks.CucumberHooks beforeScenario
-INFO: Before Scenario: Test is starting!
-May 17, 2025 10:12:14 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Access Token is93c6uUUL5EsmsIP9dLCkKugSAdwz
-May 17, 2025 10:12:14 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Access Token  is{accessToken=93c6uUUL5EsmsIP9dLCkKugSAdwz, tokenType=Bearer}
-  Given Send Request to get Authentication Token for ICOS                        # stepDefinations.GetUserSteps.sendRequestToGetAuthenticationTokenForICOS()
-May 17, 2025 10:12:14 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Tyk Token iseyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzdXAtYW1pd3Mtand0LWdlbmVyYXRvciIsInN1YiI6IlJCU0MkQ0xNX09OQk9BUkRJTkciLCJhdWQiOiJBTUlXZWJTZXJ2aWNlcyIsImV4cCI6MTc0NzQ3NDAzNCwiaWF0IjoxNzQ3NDczMTM0LCJhdmFsb3FfYnVfaWQiOiI2In0.SPMHOgE6U_T-lYKXj_y9in8lHRhmntD7v7o5M9tLLUK0YB6_j7GkvDCl6N3fdeP0PrDkIB8LVmPIutoAi1oGUn0DhgbUoAlE38oi_-6YmsY1lCb6uBLXcL3dj47FhD7K-9-56H6RRWs7U5OciGpS7gUqSUBE_ntDtZ028vOgp5cRjqs4mDH3kf7Yi8rag3kow7SwaSREWzu3VX4jknqsfdlmQKEaPI5tq14N3w6yPgAnnS-K7DzzUYrteFfrTHHXO82DVGkWP7Ro_MB9lmtYuVJGWVgkTtj2kameSTcI03DDAiGJoLifzpucnCoFWFpiSk12xNRQ8pD2DvWxV1Rk9g
-  When I generate the JWT Token                                                  # stepDefinations.GetUserSteps.iGenerateTheJWTToken()
-May 17, 2025 10:12:18 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Response is{"objectId":"665080105","orderId":"2866163301"}
-  And Send request to generate New Person with below details                     # stepDefinations.ContactNotesSteps.sendRequestToGenerateNewPersonWithDetails(io.cucumber.datatable.DataTable)
-    | firstName       | Firstname     |
-    | lastName        | Lastname      |
-    | subType         | pers_form_ass |
-    | domicileCountry | CH            |
-    | gender          | male          |
-    | nationalities   | CH            |
-  And I verify the Status Code for Natural Persons "200"                         # stepDefinations.NaturalPersonSteps.iVerifyTheStatusCodeForNaturalPersons(java.lang.String)
-  And I verify the "<objectId>"                                                  # stepDefinations.ContactNotesSteps.iVerifyTheKeyValue(java.lang.String)
-      java.lang.AssertionError: <objectId> should not be empty expected [false] but found [true]
-	at org.testng.Assert.fail(Assert.java:111)
-	at org.testng.Assert.failNotEquals(Assert.java:1578)
-	at org.testng.Assert.assertFalse(Assert.java:79)
-	at stepDefinations.ContactNotesSteps.iVerifyTheKeyValue(ContactNotesSteps.java:136)
-	at âœ½.I verify the "<objectId>"(file:///C:/Users/girdd/IdeaProjects/icosapitests/src/test/resources/Features/CreateNaturalPerson-ValidInputs.feature:14)
-  And I verify the "<orderId>"                                                   # stepDefinations.ContactNotesSteps.iVerifyTheKeyValue(java.lang.String)
-May 17, 2025 10:12:20 AM tech.grasshopper.pdf.PDFCucumberReport collectReportConfiguration
-INFO: PDF report configuration YAML file not found. Using default settings.
-[ERROR] Tests run: 5, Failures: 5, Errors: 0, Skipped: 0, Time elapsed: 65.487 s <<< FAILURE! - in testRunner.Runner
-[ERROR] Create Natural Persons API with valid inputs.Verify the Post Natural Persons API with country as GB  Time elapsed: 24.105 s  <<< FAILURE!
-java.lang.AssertionError: <objectId> should not be empty expected [false] but found [true]
-[ERROR] Create Natural Persons API with valid inputs.Verify the Post Natural Persons API with gender as female  Time elapsed: 10.602 s  <<< FAILURE!
-java.lang.AssertionError: <objectId> should not be empty expected [false] but found [true]
-[ERROR] Create Natural Persons API with valid inputs.Verify the Post Natural Persons API with nationality as GB  Time elapsed: 13.722 s  <<< FAILURE!
-java.lang.AssertionError: <objectId> should not be empty expected [false] but found [true]
-[ERROR] Create Natural Persons API with valid inputs.Verify the Post Natural Persons API with with two nationalities (CH and GB)  Time elapsed: 5.749 s  <<< FAILURE!
-java.lang.AssertionError: <objectId> should not be empty expected [false] but found [true]
-[ERROR] Create Natural Persons API with valid inputs.Verify the Post Natural Persons API with with all valid inputs  Time elapsed: 5.027 s  <<< FAILURE!
-java.lang.AssertionError: <objectId> should not be empty expected [false] but found [true]
-[INFO] 
-[INFO] Results:
-[INFO] 
-[ERROR] Failures: 
-[ERROR]   <objectId> should not be empty expected [false] but found [true]
-[ERROR]   <objectId> should not be empty expected [false] but found [true]
-[ERROR]   <objectId> should not be empty expected [false] but found [true]
-[ERROR]   <objectId> should not be empty expected [false] but found [true]
-[ERROR]   <objectId> should not be empty expected [false] but found [true]
-[INFO] 
-[ERROR] Tests run: 5, Failures: 5, Errors: 0, Skipped: 0
-[INFO] 
