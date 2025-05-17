@@ -19,6 +19,8 @@ public void iVerifyArrayContainsValue(String arrayKey, String expectedValue) thr
     boolean exists = JsonHelper.valueExistsInJsonArray(response, arrayKey, expectedValue);
     ExtentCucumberAdapter.addTestStepLog("Checking if " + expectedValue + " exists in array " + arrayKey + ": " + exists);
     Assert.assertTrue("Expected value not found in array: " + expectedValue, exists);
+Assert.assertTrue(exists, "Expected value not found in array: " + expectedValue);
+
 }
 
 
