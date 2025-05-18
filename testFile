@@ -1,91 +1,41 @@
-Feature: Create Natural Persons API with valid inputs
-
-  Scenario Outline: Verify the Post Natural Persons API with <Comments>
-    Given Send Request to get Authentication Token for ICOS
-    When I generate the JWT Token
-    And Send request to generate New Person with below details
-      | firstName       | <firstName>     |
-      | lastName        | <lastName>      |
-      | subType         | <subType>       |
-      | domicileCountry | <domiCountry>   |
-      | gender          | <gender>        |
-      | nationalities   | <nationalities> |
-    And I verify the Status Code for Natural Persons "<statusCode>"
-    And I verify the "objectId" exists
-    And I verify the "orderId" exists
-
-    Examples:
-      | firstName | lastName | subType        | domiCountry | gender | nationalities | statusCode | Comments                           |
-      | Firstname | Lastname | pers_form_ass  | GB          | male   | CH            | 200        | country as GB  
-
-below is one function in ContactNOtesSteps.java - 
-
-
+@Autowired
+ScenarioContext scenarioContext; // if using dependency injection, or initialize manually
 
 @And("I verify the {string} exists")
-    public void iVerifyTheKeyExists(String key) throws Exception {
-        String strActualKeyValue = JsonHelper.extractStringField(response, key);
-        ExtentCucumberAdapter.addTestStepLog("Actual value of "+key+" is: " + strActualKeyValue);
+public void iVerifyTheKeyExists(String key) throws Exception {
+    String strActualKeyValue = JsonHelper.extractStringField(response, key);
+    ExtentCucumberAdapter.addTestStepLog("Actual value of " + key + " is: " + strActualKeyValue);
 
-        Assert.assertNotNull(strActualKeyValue, key+" should not be null");
-        Assert.assertFalse(strActualKeyValue.isEmpty(), key+" should not be empty");
-    }
+    Assert.assertNotNull(strActualKeyValue, key + " should not be null");
+    Assert.assertFalse(strActualKeyValue.isEmpty(), key + " should not be empty");
 
-I want to extract objectId from this function. is it possible and how to do it ?
-
-and then want to Get Natural Persons using below function - Add following query and patah params to below function  - 
-
-strTYKURL/{id}?uuid=1278576&minimal=yes
-
-// New method to get Natural Person
-    public Response getNaturalPerson(String strEnvType,String strBearerToken,String strJWTToken) throws JsonProcessingException {
-
-        strAuthentication = objdevHelperLibrary.buildAuthHeader(strBearerToken, strJWTToken);
-        strTYKURL = objdevHelperLibrary.getTYKURL(strEnvType, "TYK.CREATENEWPERSON");
-
-
-        // Logging request details
-        ExtentCucumberAdapter.addTestStepLog("Sending request to Create New Person");
-        ExtentCucumberAdapter.addTestStepLog("Request URL: " + strTYKURL);
-        ExtentCucumberAdapter.addTestStepLog("Request Headers: Authorization=" + strAuthentication);
-        ExtentCucumberAdapter.addTestStepLog("Request Body:\n" + strJsonBody);
-
-        response = with().spec(rspec)
-                .header("Authorization",strBearerToken+" "+strJWTToken)
-                .header("X-TYK-API-KEY",TYK_KEY)
-                .header("Content-Type","application/json")
-                .body(strJsonBody)
-                .get(strTYKURL);
-        strResponseBody = objdevHelperLibrary.getResponseBody(response);
-
-I already have ScenarioCOntext in my frmework. can we use this only ?
-
-package utilities;
-
-import java.util.HashMap;
-import java.util.Map;
-
-public class ScenarioContext {
-
-    private Map<String, Object> contextMap = new HashMap<>();
-
-    // Generic setter
-    public void setContext(String key, Object value) {
-        contextMap.put(key, value);
-    }
-
-    // Generic getter
-    @SuppressWarnings("unchecked")
-    public <T> T getContext(String key) {
-        return (T) contextMap.get(key);
-    }
-
-    public boolean containsKey(String key) {
-        return contextMap.containsKey(key);
-    }
-
-    public void clearContext() {
-        contextMap.clear();
-    }
+    scenarioContext.setContext(key, strActualKeyValue); // store objectId, orderId etc.
 }
 
+public Response getNaturalPerson(String strEnvType, String strBearerToken, String strJWTToken, ScenarioContext scenarioContext) throws JsonProcessingException {
+    strAuthentication = objdevHelperLibrary.buildAuthHeader(strBearerToken, strJWTToken);
+    
+    String objectId = scenarioContext.getContext("objectId"); // Path param
+    String uuid = "1278576";  // Query param
+    String minimal = "yes";   // Query param
+
+    // Base URL without path or query params
+    strTYKURL = objdevHelperLibrary.getTYKURL(strEnvType, "TYK.GETNATURALPERSON"); // example: https://api.com/person
+
+    ExtentCucumberAdapter.addTestStepLog("Sending GET request for Natural Person");
+    ExtentCucumberAdapter.addTestStepLog("Base URL: " + strTYKURL);
+    ExtentCucumberAdapter.addTestStepLog("Path Param - objectId: " + objectId);
+    ExtentCucumberAdapter.addTestStepLog("Query Params - uuid: " + uuid + ", minimal: " + minimal);
+
+    response = with().spec(rspec)
+            .header("Authorization", strBearerToken + " " + strJWTToken)
+            .header("X-TYK-API-KEY", TYK_KEY)
+            .header("Content-Type", "application/json")
+            .pathParam("id", objectId)
+            .queryParam("uuid", uuid)
+            .queryParam("minimal", minimal)
+            .get(strTYKURL + "/{id}");
+
+    strResponseBody = objdevHelperLibrary.getResponseBody(response);
+    return response;
+}
