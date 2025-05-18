@@ -1,30 +1,60 @@
-@And("I verify the {string} is {string}")
-public void iVerifyTheKeyValue(String key, String expectedValue) throws Exception {
-    String actualValue = JsonHelper.extractStringField(response, key);
-    ExtentCucumberAdapter.addTestStepLog("Expected " + key + ": " + expectedValue + ", Actual: " + actualValue);
-    Assert.assertEquals(expectedValue, actualValue);
-}
+Feature: Create Natural Persons API with valid inputs
 
-@And("I verify the boolean {string} is {string}")
-public void iVerifyBooleanValue(String key, String expectedValue) throws Exception {
-    boolean actualValue = JsonHelper.extractBooleanField(response, key);
-    boolean expectedBool = Boolean.parseBoolean(expectedValue);
-    ExtentCucumberAdapter.addTestStepLog("Expected " + key + ": " + expectedBool + ", Actual: " + actualValue);
-    Assert.assertEquals(expectedBool, actualValue);
-}
+  Scenario Outline: Verify the Post Natural Persons API with <Comments>
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    And Send request to generate New Person with below details
+      | firstName       | <firstName>     |
+      | lastName        | <lastName>      |
+      | subType         | <subType>       |
+      | domicileCountry | <domiCountry>   |
+      | gender          | <gender>        |
+      | nationalities   | <nationalities> |
+    And I verify the Status Code for Natural Persons "<statusCode>"
+    And I verify the "objectId" exists
+    And I verify the "orderId" exists
 
+    Examples:
+      | firstName | lastName | subType        | domiCountry | gender | nationalities | statusCode | Comments                           |
+      | Firstname | Lastname | pers_form_ass  | GB          | male   | CH            | 200        | country as GB  
 
-@And("I verify the {string} array contains {string}")
-public void iVerifyArrayContainsValue(String arrayKey, String expectedValue) throws Exception {
-    boolean exists = JsonHelper.valueExistsInJsonArray(response, arrayKey, expectedValue);
-    ExtentCucumberAdapter.addTestStepLog("Checking if " + expectedValue + " exists in array " + arrayKey + ": " + exists);
-    Assert.assertTrue("Expected value not found in array: " + expectedValue, exists);
-Assert.assertTrue(exists, "Expected value not found in array: " + expectedValue);
-
-}
+below is one function in ContactNOtesSteps.java - 
 
 
-  And I verify the personIds array contains "<Item>"
-  And I verify the subject is "<Subject>"
-  And I verify the notes is "<Notes>"
-  And I verify the boolean hasFollowup is "<HasFollowup>"
+
+@And("I verify the {string} exists")
+    public void iVerifyTheKeyExists(String key) throws Exception {
+        String strActualKeyValue = JsonHelper.extractStringField(response, key);
+        ExtentCucumberAdapter.addTestStepLog("Actual value of "+key+" is: " + strActualKeyValue);
+
+        Assert.assertNotNull(strActualKeyValue, key+" should not be null");
+        Assert.assertFalse(strActualKeyValue.isEmpty(), key+" should not be empty");
+    }
+
+I want to extract objectId from this function. is it possible and how to do it ?
+
+and then want to Get Natural Persons using below function - Add following query and patah params to below function  - 
+
+strTYKURL/{id}?uuid=1278576&minimal=yes
+
+// New method to get Natural Person
+    public Response getNaturalPerson(String strEnvType,String strBearerToken,String strJWTToken) throws JsonProcessingException {
+
+        strAuthentication = objdevHelperLibrary.buildAuthHeader(strBearerToken, strJWTToken);
+        strTYKURL = objdevHelperLibrary.getTYKURL(strEnvType, "TYK.CREATENEWPERSON");
+
+
+        // Logging request details
+        ExtentCucumberAdapter.addTestStepLog("Sending request to Create New Person");
+        ExtentCucumberAdapter.addTestStepLog("Request URL: " + strTYKURL);
+        ExtentCucumberAdapter.addTestStepLog("Request Headers: Authorization=" + strAuthentication);
+        ExtentCucumberAdapter.addTestStepLog("Request Body:\n" + strJsonBody);
+
+        response = with().spec(rspec)
+                .header("Authorization",strBearerToken+" "+strJWTToken)
+                .header("X-TYK-API-KEY",TYK_KEY)
+                .header("Content-Type","application/json")
+                .body(strJsonBody)
+                .get(strTYKURL);
+        strResponseBody = objdevHelperLibrary.getResponseBody(response);
+
