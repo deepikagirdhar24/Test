@@ -58,3 +58,34 @@ strTYKURL/{id}?uuid=1278576&minimal=yes
                 .get(strTYKURL);
         strResponseBody = objdevHelperLibrary.getResponseBody(response);
 
+I already have ScenarioCOntext in my frmework. can we use this only ?
+
+package utilities;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class ScenarioContext {
+
+    private Map<String, Object> contextMap = new HashMap<>();
+
+    // Generic setter
+    public void setContext(String key, Object value) {
+        contextMap.put(key, value);
+    }
+
+    // Generic getter
+    @SuppressWarnings("unchecked")
+    public <T> T getContext(String key) {
+        return (T) contextMap.get(key);
+    }
+
+    public boolean containsKey(String key) {
+        return contextMap.containsKey(key);
+    }
+
+    public void clearContext() {
+        contextMap.clear();
+    }
+}
+
