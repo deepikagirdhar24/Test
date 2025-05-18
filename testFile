@@ -39,3 +39,24 @@ public Response getNaturalPerson(String strEnvType, String strBearerToken, Strin
     strResponseBody = objdevHelperLibrary.getResponseBody(response);
     return response;
 }
+
+If you are using scenarioCOnext in the function declaration, then how to apss parameters in SD - 
+
+    public NaturalPersonSteps(ScenarioContext scenarioContext) throws Exception {
+        super();
+        this.scenarioContext = scenarioContext;
+        testConfig = new TestConfig();
+        objCucumberLogger= new CucumberLogger();
+        objJsonVerifier= new JsonVerifier();
+        objJsonExtractor= new JsonExtractor();
+        objDBUtil= new DBUtil();
+        objSQLQueries= new SQLQueries();
+        objNaturalPerson = new NaturalPerson();
+        this.strEnvType = scenarioContext.getContext("strEnvType");
+    }
+
+    @Then("Send Request to get Natural Person")
+    public void sendRequestToGetNaturalPerson() throws JsonProcessingException {
+        String jwtToken = scenarioContext.getContext("JWTToken");
+        response =objNaturalPerson.getNaturalPerson(strEnvType,"Bearer",jwtToken);
+    }
