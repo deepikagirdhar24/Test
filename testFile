@@ -1,67 +1,7 @@
-Feature: Get Natural Persons API
-
-  Scenario Outline: Verify the Get Natural Persons API
-    Given Send Request to get Authentication Token for ICOS
-    When I generate the JWT Token
-    And Send request to generate New Person with below details
-      | firstName       | <firstName>     |
-      | lastName        | <lastName>      |
-      | subType         | <subType>       |
-      | domicileCountry | <domiCountry>   |
-      | gender          | <gender>        |
-      | nationalities   | <nationalities> |
-    And I verify the Status Code for Natural Persons "<statusCode>"
-    And Send Request to get Natural Person
-    And I verify the firstName is "<firstName>"
-    And I verify the lastName is "<lastName>"
-    And I verify the subType key is "<subType>"
-    And I verify the gender key is "<gender>"
-    And I verify the domiCountry is "<domiCountry>"
-    And I verify the nationalities array contains "<nationalities>"
-
-    Examples:
-      | firstName | lastName | subType        | domiCountry | gender | nationalities | statusCode |
-      | Firstname | Lastname | pers_form_ass  | GB          | male   | GB            | 200        |
-
-
-@And("I verify the firstName is {string}")
-public void iVerifyFirstName(String strExpectedFirstName) {
-    String strActualFirstName = JsonHelper.extractStringField(response, "firstName");
-    ExtentCucumberAdapter.addTestStepLog("Expected firstName: " + strExpectedFirstName + ", Actual: " + strActualFirstName);
-    Assert.assertEquals(strExpectedFirstName, strActualFirstName);
-}
-
-@And("I verify the lastName is {string}")
-public void iVerifyLastName(String strExpectedLastName) {
-    String strActualLastName = JsonHelper.extractStringField(response, "lastName");
-    ExtentCucumberAdapter.addTestStepLog("Expected lastName: " + strExpectedLastName + ", Actual: " + strActualLastName);
-    Assert.assertEquals(strExpectedLastName, strActualLastName);
-}
-
-@And("I verify the subType key is {string}")
-public void iVerifySubTypeKey(String strExpectedSubType) {
-    String strActualSubType = JsonHelper.extractStringField(response, "subType.key");
-    ExtentCucumberAdapter.addTestStepLog("Expected subType.key: " + strExpectedSubType + ", Actual: " + strActualSubType);
-    Assert.assertEquals(strExpectedSubType, strActualSubType);
-}
-
-@And("I verify the gender key is {string}")
-public void iVerifyGenderKey(String strExpectedGender) {
-    String strActualGender = JsonHelper.extractStringField(response, "gender.key");
-    ExtentCucumberAdapter.addTestStepLog("Expected gender.key: " + strExpectedGender + ", Actual: " + strActualGender);
-    Assert.assertEquals(strExpectedGender, strActualGender);
-}
-
-@And("I verify the domiCountry is {string}")
-public void iVerifyDomiCountry(String strExpectedDomiCountry) {
-    String strActualDomiCountry = JsonHelper.extractStringField(response, "domiCountry");
-    ExtentCucumberAdapter.addTestStepLog("Expected domiCountry: " + strExpectedDomiCountry + ", Actual: " + strActualDomiCountry);
-    Assert.assertEquals(strExpectedDomiCountry, strActualDomiCountry);
-}
-
-@And("I verify the nationalities array contains {string}")
-public void iVerifyNationalitiesArrayContains(String strExpectedNationality) {
-    boolean blnNationalityExists = JsonHelper.valueExistsInJsonArray(response, "nationalities", strExpectedNationality);
-    ExtentCucumberAdapter.addTestStepLog("Checking if nationalities array contains: " + strExpectedNationality + " -> " + blnNationalityExists);
-    Assert.assertTrue(blnNationalityExists, "Expected nationality not found in array: " + strExpectedNationality);
-}
+✅ Summary of Usage:
+Method	Handles Nested?	Return Type	Typical Input
+extractStringField	✅	String	"person.subType.key"
+extractBooleanField	✅	Boolean	"isActive"
+extractRawField	✅	JsonNode	"meta.status"
+valueExistsInJsonArray	✅	boolean	"roles"
+extractListOfStringFieldsFromArray	❌ (flat arrays only)	List<String>	"errors", "field"
