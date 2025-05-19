@@ -52,53 +52,6 @@ public class CommonSteps {
         }
     }
 
-    @And("I verify the Status Code is {string} for response {string}")
-    public void iVerifyStatusCode(String expectedStatusCode, String responseKey) {
-        Response response = getResponseFromContext(responseKey);
-        int actualStatusCode = response.statusCode();
-
-        ExtentCucumberAdapter.addTestStepLog("Actual value of Status code is : " + actualStatusCode);
-        Assert.assertEquals(actualStatusCode, Integer.parseInt(expectedStatusCode));
-    }
-
-    @And("I verify the {string} exists in response {string}")
-    public void iVerifyKeyExists(String key, String responseKey) throws Exception {
-        Response response = getResponseFromContext(responseKey);
-
-        String actualValue = JsonHelper.extractStringField(response, key);
-        ExtentCucumberAdapter.addTestStepLog("Actual value of " + key + " is: " + actualValue);
-
-        Assert.assertNotNull(actualValue, key + " should not be null");
-        Assert.assertFalse(actualValue.isEmpty(), key + " should not be empty");
-    }
-
-    @And("I verify the {string} is {string}")
-    public void iVerifyTheKeyValue(String key, String expectedValue, String responseKey) throws Exception {
-        Response response = getResponseFromContext(responseKey);
-
-        String actualValue = JsonHelper.extractStringField(response, key);
-        ExtentCucumberAdapter.addTestStepLog("Expected " + key + ": " + expectedValue + ", Actual: " + actualValue);
-        Assert.assertEquals(expectedValue, actualValue);
-    }
-
-    @And("I verify the boolean {string} is {string}")
-    public void iVerifyBooleanValue(String key, String expectedValue, String responseKey) throws Exception {
-        Response response = getResponseFromContext(responseKey);
-
-        boolean actualValue = JsonHelper.extractBooleanField(response, key);
-        boolean expectedBool = Boolean.parseBoolean(expectedValue);
-        ExtentCucumberAdapter.addTestStepLog("Expected " + key + ": " + expectedBool + ", Actual: " + actualValue);
-        Assert.assertEquals(expectedBool, actualValue);
-    }
-
-    @And("I verify the {string} array contains {string}")
-    public void iVerifyArrayContainsValue(String arrayKey, String expectedValue, String responseKey) throws Exception {
-        Response response = getResponseFromContext(responseKey);
-
-        boolean exists = JsonHelper.valueExistsInJsonArray(response, arrayKey, expectedValue);
-        ExtentCucumberAdapter.addTestStepLog("Checking if " + expectedValue + " exists in array " + arrayKey + ": " + exists);
-        Assert.assertTrue(exists, "Expected value not found in array: " + expectedValue);
-    }
 
     @And("I verify the error details for response {string}")
     public void iVerifyTheErrorResponseDetails(DataTable dataTable, String responseKey) throws Exception {
@@ -138,13 +91,6 @@ public class CommonSteps {
         }
     }
 
-    @And("I verify that {string} is null")
-    public void iVerifyThatKeyValueIsNull(String key, String responseKey) throws Exception {
-        Response response = getResponseFromContext(responseKey);
-        Object strActualKeyValue = JsonHelper.extractRawField(response, key);
-        ExtentCucumberAdapter.addTestStepLog("Actual value of "+key+" is: " + strActualKeyValue);
-        Assert.assertNull(strActualKeyValue, "Expected "+key+" to be null");
-    }
 
 }
 
