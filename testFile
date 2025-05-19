@@ -1,16 +1,46 @@
-    @And("I verify the Status Code for Natural Persons {string}")
-    public void iVerifyTheStatusCodeForNaturalPersons(String strStatusCode) {
-       // response = (Response) scenarioContext.getContext("NaturalPersonResponse");
-        int responseCode= response.statusCode();
-        ExtentCucumberAdapter.addTestStepLog("Actual value of Status code is : " +responseCode);
-        Assert.assertEquals(Integer.parseInt(strStatusCode),responseCode);
+package stepdefinitions.common;
+
+import io.cucumber.java.en.And;
+import io.restassured.response.Response;
+import org.testng.Assert;
+import utilities.JsonHelper;
+import utilities.ScenarioContext;
+import com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter;
+
+public class CommonSteps {
+
+    ScenarioContext scenarioContext;
+
+    public CommonSteps(ScenarioContext scenarioContext) {
+        this.scenarioContext = scenarioContext;
     }
 
-    @And("I verify the {string} exists in Natural Person response")
-    public void iVerifyTheKeyExistsInNaturalPersonResponse(String key) throws Exception {
-        String strActualKeyValue = JsonHelper.extractStringField(response, key);
-        ExtentCucumberAdapter.addTestStepLog("Actual value of " + key + " is: " + strActualKeyValue);
+    @And("I verify the Status Code is {string} for response {string}")
+    public void iVerifyStatusCode(String expectedStatusCode, String responseKey) {
+        Response response = getResponseFromContext(responseKey);
+        int actualStatusCode = response.statusCode();
 
-        Assert.assertNotNull(strActualKeyValue, key + " should not be null");
-        Assert.assertFalse(strActualKeyValue.isEmpty(), key + " should not be empty");
+        ExtentCucumberAdapter.addTestStepLog("Actual value of Status code is : " + actualStatusCode);
+        Assert.assertEquals(actualStatusCode, Integer.parseInt(expectedStatusCode));
     }
+
+    @And("I verify the {string} exists in response {string}")
+    public void iVerifyKeyExists(String key, String responseKey) throws Exception {
+        Response response = getResponseFromContext(responseKey);
+
+        String actualValue = JsonHelper.extractStringField(response, key);
+        ExtentCucumberAdapter.addTestStepLog("Actual value of " + key + " is: " + actualValue);
+
+        Assert.assertNotNull(actualValue, key + " should not be null");
+        Assert.assertFalse(actualValue.isEmpty(), key + " should not be empty");
+    }
+
+    private Response getResponseFromContext(String responseKey) {
+        Object obj = scenarioContext.getContext(responseKey);
+        if (obj instanceof Response) {
+            return (Response) obj;
+        } else {
+            throw new IllegalArgumentException("No valid Response object found in ScenarioContext for key: " + responseKey);
+        }
+    }
+}
