@@ -1,13 +1,16 @@
-@And("I verify the {string} exists in {string} response")
-public void iVerifyTheKeyExistsInResponse(String key, String responseKey) throws Exception {
-    Response response = (Response) scenarioContext.getContext(responseKey);
+    @And("I verify the Status Code for Natural Persons {string}")
+    public void iVerifyTheStatusCodeForNaturalPersons(String strStatusCode) {
+       // response = (Response) scenarioContext.getContext("NaturalPersonResponse");
+        int responseCode= response.statusCode();
+        ExtentCucumberAdapter.addTestStepLog("Actual value of Status code is : " +responseCode);
+        Assert.assertEquals(Integer.parseInt(strStatusCode),responseCode);
+    }
 
-    String strActualKeyValue = JsonHelper.extractStringField(response, key);
-    ExtentCucumberAdapter.addTestStepLog("Actual value of " + key + " is: " + strActualKeyValue);
+    @And("I verify the {string} exists in Natural Person response")
+    public void iVerifyTheKeyExistsInNaturalPersonResponse(String key) throws Exception {
+        String strActualKeyValue = JsonHelper.extractStringField(response, key);
+        ExtentCucumberAdapter.addTestStepLog("Actual value of " + key + " is: " + strActualKeyValue);
 
-    Assert.assertNotNull(strActualKeyValue, key + " should not be null");
-    Assert.assertFalse(strActualKeyValue.isEmpty(), key + " should not be empty");
-}
-
-And I verify the "objectId" exists in "NaturalPersonResponse" response
-And I verify the "orderId" exists in "NaturalPersonResponse" response
+        Assert.assertNotNull(strActualKeyValue, key + " should not be null");
+        Assert.assertFalse(strActualKeyValue.isEmpty(), key + " should not be empty");
+    }
