@@ -1,15 +1,13 @@
-    @And("I verify the {string} exists")
-    public void iVerifyTheKeyExists(String key) throws Exception {
+@And("I verify the {string} exists in {string} response")
+public void iVerifyTheKeyExistsInResponse(String key, String responseKey) throws Exception {
+    Response response = (Response) scenarioContext.getContext(responseKey);
 
-        response = (Response) scenarioContext.getContext("NaturalPersonResponse");
-        
-        String strActualKeyValue = JsonHelper.extractStringField(response, key);
-        ExtentCucumberAdapter.addTestStepLog("Actual value of "+key+" is: " + strActualKeyValue);
+    String strActualKeyValue = JsonHelper.extractStringField(response, key);
+    ExtentCucumberAdapter.addTestStepLog("Actual value of " + key + " is: " + strActualKeyValue);
 
-        Assert.assertNotNull(strActualKeyValue, key+" should not be null");
-        Assert.assertFalse(strActualKeyValue.isEmpty(), key+" should not be empty");
-    }
+    Assert.assertNotNull(strActualKeyValue, key + " should not be null");
+    Assert.assertFalse(strActualKeyValue.isEmpty(), key + " should not be empty");
+}
 
-How to make this line generic - 
-
-        response = (Response) scenarioContext.getContext("NaturalPersonResponse");
+And I verify the "objectId" exists in "NaturalPersonResponse" response
+And I verify the "orderId" exists in "NaturalPersonResponse" response
