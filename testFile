@@ -1,20 +1,182 @@
-Feature: Get Contact Notes API
+I need to validate below JSON response for Get Natural persons and need to validate that -
+firstname matches with the firstName given in payload while creating the Natural person
+lastName should be lastname
+nationalities contains GB
+subType key has "pers_form_ass"
+gendear has key as "male"
+domicountry is GB
 
-  Scenario Outline: Verify the Get Contact Notes API
+{
+    "id": "665080169",
+    "firstName": "firstname",
+    "middleName": null,
+    "lastName": "lastname",
+    "birthDate": "1900-01-01",
+    "nationalities": [
+        "GB"
+    ],
+    "subType": {
+        "key": "pers_form_ass",
+        "value": "Associated (not documented) (02)"
+    },
+    "gender": {
+        "key": "male",
+        "value": "male"
+    },
+    "birthPlace": null,
+    "birthCountry": null,
+    "domiCountry": "GB",
+    "residenceAddress": {
+        "id": "665765708",
+        "firstName": "firstname",
+        "middleName": null,
+        "lastName": "lastname",
+        "firm": null,
+        "residency": null,
+        "streetNr": null,
+        "street": null,
+        "streetAdd": null,
+        "poBox": null,
+        "city": null,
+        "state": null,
+        "zip": null,
+        "country": "GB"
+    },
+    "isEmployee": false,
+    "employmentKind": {
+        "key": "employee",
+        "value": "Employed"
+    },
+    "ukTaxResidenceFromDate": "",
+    "taxChgDomiStatusDate": null,
+    "hasTravelProtection": false,
+    "hasCouttsOnline": false,
+    "pepCategory": {
+        "key": null,
+        "value": null
+    },
+    "dueDillegence": {
+        "key": null,
+        "value": null
+    },
+    "coreDv": {
+        "key": null,
+        "value": null
+    },
+    "income": null
+}
+
+belo are the functions and SD used - 
+let me know what all modfications are needed here - 
+
+Feature: Get Natural Persons API
+
+  Scenario Outline: Verify the Get Natural Persons API
     Given Send Request to get Authentication Token for ICOS
     When I generate the JWT Token
-    Then Send Request to get Contact Note Information
-    And I verify the Status Code for Contact Notes "<StatusCode>"
-    And I verify the personIds array contains "<Item>"
-    And I verify the subject is "<Subject>"
-    And I verify the notes is "<Notes>"
-    And I verify the boolean hasFollowup is "<HasFollowup>"
+    And Send request to generate New Person with below details
+      | firstName       | <firstName>     |
+      | lastName        | <lastName>      |
+      | subType         | <subType>       |
+      | domicileCountry | <domiCountry>   |
+      | gender          | <gender>        |
+      | nationalities   | <nationalities> |
+    And I verify the Status Code is "<statusCode>" for response "NaturalPersonResponse"
+    And I verify the "objectId" exists in response "NaturalPersonResponse"
+    And I verify the "orderId" exists in response "NaturalPersonResponse"
+    And Send Request to get Natural Person
+    And I verify the Status Code is "<statusCode>" for response "NaturalPersonResponse"
+    And I verify the "firstName" is "<firstName>" 
+    And I verify the "lastName" is "<lastName>" for response "NaturalPersonResponse"
+    And I verify the "domiCountry" is "<domiCountry>"
+    And I verify the "nationalities" is "<nationalities>"
 
     Examples:
-      | StatusCode | Item      | Subject | Notes | HasFollowup |
-      |  200       | 665321701 | Subject | Notes | true        |
+      | firstName | lastName | subType        | domiCountry | gender | nationalities | statusCode |                           |
+      | Firstname | Lastname | pers_form_ass  | CH          | male   | CH            | 200        |                       |
 
-In COomon steps - the functions are - 
+
+NewPersonSteps.java - 
+
+    @And("Send request to generate New Person with below details")
+    public void sendRequestToGenerateNewPersonWithDetails(DataTable dataTable) throws JsonProcessingException {
+        Map<String, String> mapPersonDetails = dataTable.asMap(String.class, String.class);
+        String jwtToken = scenarioContext.getContext("JWTToken");
+        response = objNaturalPerson.createNewPerson(strEnvType, "Bearer", jwtToken, mapPersonDetails, scenarioContext);
+        scenarioContext.setContext("NaturalPersonResponse", response);
+    }
+
+//Function to create a New Person
+    public Response createNewPerson(String strEnvType, String strBearerToken, String strJWTToken, Map<String, String> mapPersonDetails, ScenarioContext scenarioContext) throws JsonProcessingException {
+
+        strAuthentication = objdevHelperLibrary.buildAuthHeader(strBearerToken, strJWTToken);
+        strTYKURL = objdevHelperLibrary.getTYKURL(strEnvType, "TYK.CREATENEWPERSON");
+
+        NewPersonRequest personRequest = new NewPersonRequest();
+
+        String uuid = UUID.randomUUID().toString().substring(0, 7);
+        personRequest.setStrUuid(uuid);
+//        personRequest.setStrUuid(UUID.randomUUID().toString().substring(0, 7));
+
+        personRequest.setStrSubType(mapPersonDetails.get("subType"));
+        personRequest.setStrDomiCountry(mapPersonDetails.get("domicileCountry"));
+
+        String firstName = mapPersonDetails.get("firstName");
+        personRequest.setStrFirstName(firstName);
+//        personRequest.setStrFirstName(mapPersonDetails.get("firstName"));
+
+        personRequest.setStrLastName(mapPersonDetails.get("lastName"));
+        personRequest.setStrGender(mapPersonDetails.get("gender"));
+
+        // Handle multiple nationalities (comma-separated)
+        String strNationalities = mapPersonDetails.get("nationalities");
+        List<String> lstNationality = new ArrayList<>();
+        if (strNationalities != null && !strNationalities.trim().isEmpty()) {
+            lstNationality = Arrays.stream(strNationalities.split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .collect(Collectors.toList());
+        }
+        personRequest.setLstNationalities(lstNationality);
+
+        strJsonBody = new ObjectMapper().writeValueAsString(personRequest);
+
+        // Logging request details
+        ExtentCucumberAdapter.addTestStepLog("Sending request to Create New Person");
+        ExtentCucumberAdapter.addTestStepLog("Request URL: " + strTYKURL);
+        ExtentCucumberAdapter.addTestStepLog("Request Headers: Authorization=" + strAuthentication);
+        ExtentCucumberAdapter.addTestStepLog("Request Body:\n" + strJsonBody);
+
+        response = with().spec(rspec)
+                .header("Authorization",strBearerToken+" "+strJWTToken)
+                .header("X-TYK-API-KEY",TYK_KEY)
+                .header("Content-Type","application/json")
+                .body(strJsonBody)
+                .post(strTYKURL);
+        strResponseBody = objdevHelperLibrary.getResponseBody(response);
+
+        // Logging response details
+        ExtentCucumberAdapter.addTestStepLog("Response Code: " + response.getStatusCode());
+        ExtentCucumberAdapter.addTestStepLog("Response Body:\n" + strResponseBody);
+
+        objCucumberLogger.PrintStatus("Response is"+ strResponseBody);
+
+        strObjectId = response.jsonPath().getString("objectId");
+        strOrderId = response.jsonPath().getString("orderId");
+
+        ExtentCucumberAdapter.addTestStepLog("Extracted Object Id is : "+ strObjectId);
+        ExtentCucumberAdapter.addTestStepLog("Extracted Order Id is : " + strOrderId);
+
+        //Store in ScenarioContext
+        scenarioContext.setContext("objectId", strObjectId);
+        scenarioContext.setContext("orderId", strOrderId);
+        scenarioContext.setContext("uuid", uuid);
+        scenarioContext.setContext("firstName", firstName);
+
+        return response;
+}
+
+CommonSTeps.java - 
 
 package stepDefinations;
 
@@ -66,7 +228,7 @@ public class CommonSteps {
         Assert.assertFalse(actualValue.isEmpty(), key + " should not be empty");
     }
 
-    @And("I verify the {string} is {string}")
+    @And("I verify the {string} is {string} for response {string}")
     public void iVerifyTheKeyValue(String key, String expectedValue, String responseKey) throws Exception {
         Response response = getResponseFromContext(responseKey);
 
@@ -75,7 +237,7 @@ public class CommonSteps {
         Assert.assertEquals(expectedValue, actualValue);
     }
 
-    @And("I verify the boolean {string} is {string}")
+    @And("I verify the boolean {string} is {string} for response {string}")
     public void iVerifyBooleanValue(String key, String expectedValue, String responseKey) throws Exception {
         Response response = getResponseFromContext(responseKey);
 
@@ -85,7 +247,7 @@ public class CommonSteps {
         Assert.assertEquals(expectedBool, actualValue);
     }
 
-    @And("I verify the {string} array contains {string}")
+    @And("I verify the {string} array contains {string} for response {string}")
     public void iVerifyArrayContainsValue(String arrayKey, String expectedValue, String responseKey) throws Exception {
         Response response = getResponseFromContext(responseKey);
 
@@ -142,4 +304,4 @@ public class CommonSteps {
 
 }
 
-what all modifications to do in feature file to match these ?
+
