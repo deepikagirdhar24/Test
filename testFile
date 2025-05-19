@@ -1,98 +1,67 @@
-package utilities;
+Feature: Get Natural Persons API
 
-import com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.restassured.response.Response;
+  Scenario Outline: Verify the Get Natural Persons API
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    And Send request to generate New Person with below details
+      | firstName       | <firstName>     |
+      | lastName        | <lastName>      |
+      | subType         | <subType>       |
+      | domicileCountry | <domiCountry>   |
+      | gender          | <gender>        |
+      | nationalities   | <nationalities> |
+    And I verify the Status Code for Natural Persons "<statusCode>"
+    And Send Request to get Natural Person
+    And I verify the firstName is "<firstName>"
+    And I verify the lastName is "<lastName>"
+    And I verify the subType key is "<subType>"
+    And I verify the gender key is "<gender>"
+    And I verify the domiCountry is "<domiCountry>"
+    And I verify the nationalities array contains "<nationalities>"
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+    Examples:
+      | firstName | lastName | subType        | domiCountry | gender | nationalities | statusCode |
+      | Firstname | Lastname | pers_form_ass  | GB          | male   | GB            | 200        |
 
-public class JsonHelper {
 
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+@And("I verify the firstName is {string}")
+public void iVerifyFirstName(String strExpectedFirstName) {
+    String strActualFirstName = JsonHelper.extractStringField(response, "firstName");
+    ExtentCucumberAdapter.addTestStepLog("Expected firstName: " + strExpectedFirstName + ", Actual: " + strActualFirstName);
+    Assert.assertEquals(strExpectedFirstName, strActualFirstName);
+}
 
-    private static JsonNode getNodeByPath(JsonNode rootNode, String path) {
-        String[] keys = path.split("\\.");
-        for (String key : keys) {
-            if (rootNode == null) break;
-            rootNode = rootNode.path(key);
-        }
-        return rootNode;
-    }
+@And("I verify the lastName is {string}")
+public void iVerifyLastName(String strExpectedLastName) {
+    String strActualLastName = JsonHelper.extractStringField(response, "lastName");
+    ExtentCucumberAdapter.addTestStepLog("Expected lastName: " + strExpectedLastName + ", Actual: " + strActualLastName);
+    Assert.assertEquals(strExpectedLastName, strActualLastName);
+}
 
-    public static Object extractRawField(Response response, String fieldPath) throws Exception {
-        JsonNode rootNode = objectMapper.readTree(response.asString());
-        JsonNode node = getNodeByPath(rootNode, fieldPath);
-        return node.isMissingNode() || node.isNull() ? null : node;
-    }
+@And("I verify the subType key is {string}")
+public void iVerifySubTypeKey(String strExpectedSubType) {
+    String strActualSubType = JsonHelper.extractStringField(response, "subType.key");
+    ExtentCucumberAdapter.addTestStepLog("Expected subType.key: " + strExpectedSubType + ", Actual: " + strActualSubType);
+    Assert.assertEquals(strExpectedSubType, strActualSubType);
+}
 
-    public static String extractStringField(Response response, String fieldPath) throws Exception {
-        JsonNode rootNode = objectMapper.readTree(response.asString());
-        JsonNode node = getNodeByPath(rootNode, fieldPath);
-        return node.isMissingNode() || node.isNull() ? null : node.asText();
-    }
+@And("I verify the gender key is {string}")
+public void iVerifyGenderKey(String strExpectedGender) {
+    String strActualGender = JsonHelper.extractStringField(response, "gender.key");
+    ExtentCucumberAdapter.addTestStepLog("Expected gender.key: " + strExpectedGender + ", Actual: " + strActualGender);
+    Assert.assertEquals(strExpectedGender, strActualGender);
+}
 
-    public static Boolean extractBooleanField(Response response, String fieldPath) throws Exception {
-        JsonNode rootNode = objectMapper.readTree(response.asString());
-        JsonNode node = getNodeByPath(rootNode, fieldPath);
-        return node.isMissingNode() || node.isNull() ? null : node.asBoolean();
-    }
+@And("I verify the domiCountry is {string}")
+public void iVerifyDomiCountry(String strExpectedDomiCountry) {
+    String strActualDomiCountry = JsonHelper.extractStringField(response, "domiCountry");
+    ExtentCucumberAdapter.addTestStepLog("Expected domiCountry: " + strExpectedDomiCountry + ", Actual: " + strActualDomiCountry);
+    Assert.assertEquals(strExpectedDomiCountry, strActualDomiCountry);
+}
 
-    public static boolean valueExistsInJsonArray(Response response, String jsonPath, String targetValue) throws Exception {
-        JsonNode rootNode = objectMapper.readTree(response.asString());
-        JsonNode arrayNode = getNodeByPath(rootNode, jsonPath);
-        if (arrayNode != null && arrayNode.isArray()) {
-            return iterateAndCheckArray(arrayNode, targetValue);
-        }
-        return false;
-    }
-
-    private static boolean iterateAndCheckArray(JsonNode arrayNode, String targetValue) {
-        for (JsonNode itemNode : arrayNode) {
-            String currentValue = itemNode.asText();
-            System.out.println("Checking item: " + currentValue);
-            if (targetValue.equals(currentValue)) {
-                logMatchFound(currentValue);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private static void logMatchFound(String value) {
-        System.out.println("Match found: " + value);
-        ExtentCucumberAdapter.addTestStepLog("Actual value found: " + value);
-    }
-
-    public static List<String> extractListOfStringFieldsFromArray(Response response, String arrayField, String subField) {
-        List<Map<String, Object>> itemList = response.jsonPath().getList(arrayField);
-        List<String> result = new ArrayList<>();
-        for (Map<String, Object> item : itemList) {
-            Object value = item.get(subField);
-            if (value != null) {
-                result.add(value.toString());
-            }
-        }
-        return result;
-    }
-
-    public static void validateFieldExistsInArray(Response response, String arrayPath, String fieldName) throws Exception {
-        JsonNode rootNode = objectMapper.readTree(response.asString());
-        JsonNode arrayNode = rootNode.at(arrayPath); // Path should start with '/' for root level
-
-        if (!arrayNode.isArray()) {
-            throw new Exception("Expected an array at path: " + arrayPath);
-        }
-
-        for (JsonNode element : arrayNode) {
-            JsonNode fieldNode = element.get(fieldName);
-            if (fieldNode == null || fieldNode.asText().isEmpty()) {
-                throw new AssertionError("Missing or empty '" + fieldName + "' in one of the elements at: " + arrayPath);
-            }
-        }
-
-        ExtentCucumberAdapter.addTestStepLog("All elements in array " + arrayPath + " contain a valid '" + fieldName + "'");
-    }
+@And("I verify the nationalities array contains {string}")
+public void iVerifyNationalitiesArrayContains(String strExpectedNationality) {
+    boolean blnNationalityExists = JsonHelper.valueExistsInJsonArray(response, "nationalities", strExpectedNationality);
+    ExtentCucumberAdapter.addTestStepLog("Checking if nationalities array contains: " + strExpectedNationality + " -> " + blnNationalityExists);
+    Assert.assertTrue(blnNationalityExists, "Expected nationality not found in array: " + strExpectedNationality);
 }
