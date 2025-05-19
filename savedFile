@@ -1,51 +1,92 @@
-@And("Send request to generate New Person with below details")
-    public void sendRequestToGenerateNewPersonWithDetails(DataTable dataTable) throws JsonProcessingException {
-        List<Map<String, String>> lstPersonList = dataTable.asMaps(String.class, String.class);
-        List<String> lstGeneratedPersonIds = new ArrayList<>();
+package utilities;
 
-        for (Map<String, String> personDetails : lstPersonList) {
-            String jwtToken = scenarioContext.getToken("JWTToken");
-            Response personResponse = objContactNotes.createNewPerson(strEnvType, "Bearer", jwtToken, personDetails);
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.restassured.response.Response;
+import com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter;
 
-            String personId = personResponse.jsonPath().getString("objectId");
-            lstGeneratedPersonIds.add(personId);
-        }
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
-        // Save generated personIds in scenarioContext for later use in ContactNote request
-        scenarioContext.setToken("GeneratedPersonIds", lstGeneratedPersonIds);
+public class JsonHelper {
+
+    static ObjectMapper objectMapper = new ObjectMapper();
+
+    public static Object extractRawField(Response response, String fieldName) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode node = rootNode.path(fieldName);
+        return node.isMissingNode() || node.isNull() ? null : node;
     }
 
-@Then("Send POST ContactNote Request with below details")
-    public void sendPOSTContactNoteRequestWithDetails(DataTable dataTable) throws JsonProcessingException {
-        Map<String, String> mapNoteDetails = dataTable.asMap(String.class, String.class);
-        String jwtToken = scenarioContext.getToken("JWTToken");
-
-        List<String> lstpersonIds;
-
-        // CASE 1: Check if 'personIds' key exists in the DataTable (for negative test case)
-        if (mapNoteDetails.containsKey("personIds") && mapNoteDetails.get("personIds") != null && !mapNoteDetails.get("personIds").isEmpty()) {
-            // Support comma-separated multiple IDs if needed
-            String[] strArrIds = mapNoteDetails.get("personIds").split(",");
-            lstpersonIds = Arrays.stream(strArrIds).map(String::trim).collect(Collectors.toList());
-        }
-        // CASE 2: If 'GeneratedPersonIds' are stored from previous steps
-        else if (scenarioContext.getToken("GeneratedPersonIds") != null) {
-            lstpersonIds = (List<String>) scenarioContext.getToken("GeneratedPersonIds");
-        }
-
-        // CASE 3: Fail-safe to prevent NPEs
-        else {
-            throw new IllegalStateException("No valid personIds found for ContactNote request.");
-        }
-
-        response = objContactNotes.createContactNote(strEnvType, "Bearer", jwtToken, mapNoteDetails, lstpersonIds);
+    public static String extractStringField(Response response, String key) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        return rootNode.path(key).asText();
     }
 
-public Response createContactNote(String strEnvType, String strBearerToken, String strJWTToken, Map<String, String> mapNoteDetails, List<String personIds)
+    public static Boolean extractBooleanField(Response response, String key) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        return rootNode.path(key).asBoolean();
+    }
 
-noteRequest.setLstPersonIds(personIds);
+    public static boolean valueExistsInJsonArray(Response response, String jsonPath, String targetValue) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode arrayNode = rootNode.path(jsonPath);
+        if (arrayNode.isArray()) {
+            return iterateAndCheckArray(arrayNode, targetValue);
+        }
+        return false;
+    }
 
+    private static boolean iterateAndCheckArray(JsonNode arrayNode, String targetValue) {
+        for (JsonNode itemNode : arrayNode) {
+            String currentValue = itemNode.asText();
+            System.out.println("Checking item: " + currentValue);
+            if (targetValue.equals(currentValue)) {
+                logMatchFound(currentValue);
+                return true;
+            }
+        }
+        return false;
+    }
 
-    And Send request to generate New Person with below details
-      | firstName     | lastName | subType        | domicileCountry | gender | nationality |
-      | <firstName>   | Lastname | pers_form_ass  | CH              | male   | CH          |
+    private static void logMatchFound(String value) {
+        System.out.println("Match found: " + value);
+        ExtentCucumberAdapter.addTestStepLog("Actual value found: " + value);
+    }
+
+//    public static String extractStringFieldFromArray(Response response, String arrayField, int index, String fieldName) {
+//        return response.jsonPath().getString(arrayField + "[" + index + "]." + fieldName);
+//    }
+
+    public static List<String> extractListOfStringFieldsFromArray(Response response, String arrayField, String subField) {
+        List<Map<String, Object>> errorList = response.jsonPath().getList(arrayField);
+        List<String> result = new ArrayList<>();
+        for (Map<String, Object> errorMap : errorList) {
+            Object value = errorMap.get(subField);
+            if (value != null) {
+                result.add(value.toString());
+            }
+        }
+        return result;
+    }
+
+    public static void validateFieldExistsInArray(Response response, String arrayPath, String fieldName) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode arrayNode = rootNode.at(arrayPath); // Must start with '/'
+
+        if (!arrayNode.isArray()) {
+            throw new Exception("Expected an array at path: " + arrayPath);
+        }
+
+        for (JsonNode element : arrayNode) {
+            JsonNode fieldNode = element.get(fieldName);
+            if (fieldNode == null || fieldNode.asText().isEmpty()) {
+                throw new AssertionError("Missing or empty '" + fieldName + "' in one of the elements at: " + arrayPath);
+            }
+        }
+
+        ExtentCucumberAdapter.addTestStepLog("All elements in array " + arrayPath + " contain a valid '" + fieldName + "'");
+    }
+
+}
