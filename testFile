@@ -1,117 +1,289 @@
-COntactNotesSteps.java - 
+I have to validate following fields in JSON - firstName which should match with fristname in createnew person
+lastName = lastname
+nationalities = GB
+subType key is pers_form_ass
+gender key is male
+domiCOuntry is GB
 
-package stepDefinations;
+{
+    "id": "665080169",
+    "firstName": "firstname",
+    "middleName": null,
+    "lastName": "lastname",
+    "birthDate": "1900-01-01",
+    "nationalities": [
+        "GB"
+    ],
+    "subType": {
+        "key": "pers_form_ass",
+        "value": "Associated (not documented) (02)"
+    },
+    "gender": {
+        "key": "male",
+        "value": "male"
+    },
+    "birthPlace": null,
+    "birthCountry": null,
+    "domiCountry": "GB",
+    "residenceAddress": {
+        "id": "665765708",
+        "firstName": "firstname",
+        "middleName": null,
+        "lastName": "lastname",
+        "firm": null,
+        "residency": null,
+        "streetNr": null,
+        "street": null,
+        "streetAdd": null,
+        "poBox": null,
+        "city": null,
+        "state": null,
+        "zip": null,
+        "country": "GB"
+    },
+    "isEmployee": false,
+    "employmentKind": {
+        "key": "employee",
+        "value": "Employed"
+    },
+    "ukTaxResidenceFromDate": "",
+    "taxChgDomiStatusDate": null,
+    "hasTravelProtection": false,
+    "hasCouttsOnline": false,
+    "pepCategory": {
+        "key": null,
+        "value": null
+    },
+    "dueDillegence": {
+        "key": null,
+        "value": null
+    },
+    "coreDv": {
+        "key": null,
+        "value": null
+    },
+    "income": null
+}
 
-import ICOS.ContactNotes;
-import com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import commonLibrary.DBUtil;
-import commonLibrary.SQLQueries;
-import config.JsonExtractor;
-import config.JsonVerifier;
-import config.TestConfig;
-import hooks.CucumberHooks;
-import io.cucumber.core.logging.Logger;
-import io.cucumber.core.logging.LoggerFactory;
-import io.cucumber.datatable.DataTable;
-import io.cucumber.java.en.And;
-import io.cucumber.java.en.Then;
-import io.restassured.response.Response;
-import org.testng.Assert;
-import utilities.CucumberLogger;
-import utilities.JsonHelper;
-import utilities.ScenarioContext;
+COntactNotes.java - 
 
-import java.util.*;
+    //Function to create a New Person
+    public Response createNewPerson(String strEnvType, String strBearerToken, String strJWTToken, Map<String, String> mapPersonDetails, ScenarioContext scenarioContext) throws JsonProcessingException {
 
-public class ContactNotesSteps extends BaseStep{
+        strAuthentication = objdevHelperLibrary.buildAuthHeader(strBearerToken, strJWTToken);
+        strTYKURL = objdevHelperLibrary.getTYKURL(strEnvType, "TYK.CREATENEWPERSON");
 
+        NewPersonRequest personRequest = new NewPersonRequest();
 
-    protected TestConfig testDataConfig = TestConfig.getTestDataConfig();
-    private static final Logger logger = LoggerFactory.getLogger(CucumberHooks.class);
-    TestConfig testConfig;
-    ContactNotes objContactNotes;
-    private static Response response;
-    public static String strToken;
-    public String strMembershipDetails;
-    public int sizeOfPagination;
-    public static String strEnv;
-    public static String strEnvType;
-    public static String strEnvFDSType;
-    public String strFDSHostURL;
-    public String strFDSDevHelperURL;
-    public Object strRes;
-    public String strJWTToken;
-    public String strEIAMTokenURL;
-    CucumberLogger objCucumberLogger;
-    JsonVerifier objJsonVerifier;
-    JsonExtractor objJsonExtractor;
-    DBUtil objDBUtil;
-    public String strUserid;
-    SQLQueries objSQLQueries;
-    protected ScenarioContext scenarioContext;
+        String uuid = UUID.randomUUID().toString().substring(0, 7);
+        personRequest.setStrUuid(uuid);
+//        personRequest.setStrUuid(UUID.randomUUID().toString().substring(0, 7));
 
-    public ContactNotesSteps(ScenarioContext scenarioContext) throws Exception {
-        super();
-        this.scenarioContext = scenarioContext;
-        testConfig = new TestConfig();
-        objCucumberLogger= new CucumberLogger();
-        objJsonVerifier= new JsonVerifier();
-        objJsonExtractor= new JsonExtractor();
-        objDBUtil= new DBUtil();
-        objSQLQueries= new SQLQueries();
-        objContactNotes = new ContactNotes();
-        this.strEnvType = scenarioContext.getContext("strEnvType");
+        personRequest.setStrSubType(mapPersonDetails.get("subType"));
+        personRequest.setStrDomiCountry(mapPersonDetails.get("domicileCountry"));
+
+        String firstName = mapPersonDetails.get("firstName");
+        personRequest.setStrFirstName(firstName);
+//        personRequest.setStrFirstName(mapPersonDetails.get("firstName"));
+
+        personRequest.setStrLastName(mapPersonDetails.get("lastName"));
+        personRequest.setStrGender(mapPersonDetails.get("gender"));
+
+        // Handle multiple nationalities (comma-separated)
+        String strNationalities = mapPersonDetails.get("nationalities");
+        List<String> lstNationality = new ArrayList<>();
+        if (strNationalities != null && !strNationalities.trim().isEmpty()) {
+            lstNationality = Arrays.stream(strNationalities.split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .collect(Collectors.toList());
+        }
+        personRequest.setLstNationalities(lstNationality);
+
+        strJsonBody = new ObjectMapper().writeValueAsString(personRequest);
+
+        // Logging request details
+        ExtentCucumberAdapter.addTestStepLog("Sending request to Create New Person");
+        ExtentCucumberAdapter.addTestStepLog("Request URL: " + strTYKURL);
+        ExtentCucumberAdapter.addTestStepLog("Request Headers: Authorization=" + strAuthentication);
+        ExtentCucumberAdapter.addTestStepLog("Request Body:\n" + strJsonBody);
+
+        response = with().spec(rspec)
+                .header("Authorization",strBearerToken+" "+strJWTToken)
+                .header("X-TYK-API-KEY",TYK_KEY)
+                .header("Content-Type","application/json")
+                .body(strJsonBody)
+                .post(strTYKURL);
+        strResponseBody = objdevHelperLibrary.getResponseBody(response);
+
+        // Logging response details
+        ExtentCucumberAdapter.addTestStepLog("Response Code: " + response.getStatusCode());
+        ExtentCucumberAdapter.addTestStepLog("Response Body:\n" + strResponseBody);
+
+        objCucumberLogger.PrintStatus("Response is"+ strResponseBody);
+
+        strObjectId = response.jsonPath().getString("objectId");
+        strOrderId = response.jsonPath().getString("orderId");
+
+        ExtentCucumberAdapter.addTestStepLog("Extracted Object Id is : "+ strObjectId);
+        ExtentCucumberAdapter.addTestStepLog("Extracted Order Id is : " + strOrderId);
+
+        //Store in ScenarioContext
+        scenarioContext.setContext("objectId", strObjectId);
+        scenarioContext.setContext("orderId", strOrderId);
+        scenarioContext.setContext("uuid", uuid);
+        scenarioContext.setContext("firstName", firstName);
+
+        return response;
     }
 
-and in COntactNtes, there is no scenarioCOntext defined - 
+Reusable functions in getCOntactNotes - 
 
-package ICOS;
+@And("I verify the {string} is {string}")
+    public void iVerifyTheKeyValue(String key, String expectedValue) throws Exception {
+        String actualValue = JsonHelper.extractStringField(response, key);
+        ExtentCucumberAdapter.addTestStepLog("Expected " + key + ": " + expectedValue + ", Actual: " + actualValue);
+        Assert.assertEquals(expectedValue, actualValue);
+    }
 
-import ICOS.pojo.ContactNoteRequest;
-import ICOS.pojo.NewPersonRequest;
-import com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter;
-import com.fasterxml.jackson.core.JsonProcessingException;
+    @And("I verify the boolean {string} is {string}")
+    public void iVerifyBooleanValue(String key, String expectedValue) throws Exception {
+        boolean actualValue = JsonHelper.extractBooleanField(response, key);
+        boolean expectedBool = Boolean.parseBoolean(expectedValue);
+        ExtentCucumberAdapter.addTestStepLog("Expected " + key + ": " + expectedBool + ", Actual: " + actualValue);
+        Assert.assertEquals(expectedBool, actualValue);
+    }
+
+    @And("I verify the {string} array contains {string}")
+    public void iVerifyArrayContainsValue(String arrayKey, String expectedValue) throws Exception {
+        boolean exists = JsonHelper.valueExistsInJsonArray(response, arrayKey, expectedValue);
+        ExtentCucumberAdapter.addTestStepLog("Checking if " + expectedValue + " exists in array " + arrayKey + ": " + exists);
+        Assert.assertTrue(exists, "Expected value not found in array: " + expectedValue);
+    }
+
+JsonHelper is - 
+
+package utilities;
+
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import commonLibrary.devHelperLibrary;
-import config.TestConfig;
 import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
-import utilities.CucumberLogger;
-import utilities.EncryptionUtil;
-import utilities.JsonHelper;
-import utilities.TestDataGenerator;
+import com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
-import static io.restassured.RestAssured.with;
+public class JsonHelper {
 
-public class ContactNotes {
-    public ObjectMapper objectMapper;
-    public static EncryptionUtil objEncryptionUtil;
-    protected TestConfig testDataConfig= TestConfig.getTestDataConfig();
+    static ObjectMapper objectMapper = new ObjectMapper();
 
-    CucumberLogger objCucumberLogger;
-    devHelperLibrary objdevHelperLibrary;
-
-    public static RequestSpecification rspec;
-    private static Response response;
-    private static String strResponseBody;
-    String TYK_KEY = TestConfig.getTykApiKey();
-    String strObjectId;
-    String strOrderId;
-    String strJsonBody;
-    String strAuthentication;
-    String strTYKURL;
-
-
-    public ContactNotes() throws Exception {
-        objEncryptionUtil= new EncryptionUtil();
-        objectMapper = new ObjectMapper();
-        objCucumberLogger= new CucumberLogger();
-        objdevHelperLibrary= new devHelperLibrary();
-        rspec=objdevHelperLibrary.setup();
+    public static Object extractRawField(Response response, String fieldName) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode node = rootNode.path(fieldName);
+        return node.isMissingNode() || node.isNull() ? null : node;
     }
 
-how to use scnearioconext here ?
+    public static String extractStringField(Response response, String key) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        return rootNode.path(key).asText();
+    }
+
+    public static Boolean extractBooleanField(Response response, String key) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        return rootNode.path(key).asBoolean();
+    }
+
+    public static boolean valueExistsInJsonArray(Response response, String jsonPath, String targetValue) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode arrayNode = rootNode.path(jsonPath);
+        if (arrayNode.isArray()) {
+            return iterateAndCheckArray(arrayNode, targetValue);
+        }
+        return false;
+    }
+
+    private static boolean iterateAndCheckArray(JsonNode arrayNode, String targetValue) {
+        for (JsonNode itemNode : arrayNode) {
+            String currentValue = itemNode.asText();
+            System.out.println("Checking item: " + currentValue);
+            if (targetValue.equals(currentValue)) {
+                logMatchFound(currentValue);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static void logMatchFound(String value) {
+        System.out.println("Match found: " + value);
+        ExtentCucumberAdapter.addTestStepLog("Actual value found: " + value);
+    }
+
+//    public static String extractStringFieldFromArray(Response response, String arrayField, int index, String fieldName) {
+//        return response.jsonPath().getString(arrayField + "[" + index + "]." + fieldName);
+//    }
+
+    public static List<String> extractListOfStringFieldsFromArray(Response response, String arrayField, String subField) {
+        List<Map<String, Object>> errorList = response.jsonPath().getList(arrayField);
+        List<String> result = new ArrayList<>();
+        for (Map<String, Object> errorMap : errorList) {
+            Object value = errorMap.get(subField);
+            if (value != null) {
+                result.add(value.toString());
+            }
+        }
+        return result;
+    }
+
+    public static void validateFieldExistsInArray(Response response, String arrayPath, String fieldName) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode arrayNode = rootNode.at(arrayPath); // Must start with '/'
+
+        if (!arrayNode.isArray()) {
+            throw new Exception("Expected an array at path: " + arrayPath);
+        }
+
+        for (JsonNode element : arrayNode) {
+            JsonNode fieldNode = element.get(fieldName);
+            if (fieldNode == null || fieldNode.asText().isEmpty()) {
+                throw new AssertionError("Missing or empty '" + fieldName + "' in one of the elements at: " + arrayPath);
+            }
+        }
+
+        ExtentCucumberAdapter.addTestStepLog("All elements in array " + arrayPath + " contain a valid '" + fieldName + "'");
+    }
+
+}
+
+feature file is - 
+
+Feature: Get Natural Persons API
+
+  Scenario Outline: Verify the Get Natural Persons API
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    And Send request to generate New Person with below details
+      | firstName       | <firstName>     |
+      | lastName        | <lastName>      |
+      | subType         | <subType>       |
+      | domicileCountry | <domiCountry>   |
+      | gender          | <gender>        |
+      | nationalities   | <nationalities> |
+    And I verify the Status Code for Natural Persons "<statusCode>"
+    And I verify the "objectId" exists
+    And I verify the "orderId" exists
+    And Send Request to get Natural Person
+    And I verify the Status Code for Natural Persons "<statusCode>"
+    And I verify the "firstName"
+    And I verify the "lastName" is "<lastName>"
+    And I verify the "domiCountry" is "<domiCountry>"
+    And I verify the "nationalities" is "<nationalities>"
+
+
+
+    Examples:
+      | firstName | lastName | subType        | domiCountry | gender | nationalities | statusCode |                           |
+      | Firstname | Lastname | pers_form_ass  | CH          | male   | CH            | 200        |                       |
+
+Modufy the code wherever required.
