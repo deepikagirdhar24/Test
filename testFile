@@ -1,9 +1,9 @@
 package utilities;
 
+import com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.response.Response;
-import com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,28 +11,39 @@ import java.util.Map;
 
 public class JsonHelper {
 
-    static ObjectMapper objectMapper = new ObjectMapper();
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public static Object extractRawField(Response response, String fieldName) throws Exception {
+    private static JsonNode getNodeByPath(JsonNode rootNode, String path) {
+        String[] keys = path.split("\\.");
+        for (String key : keys) {
+            if (rootNode == null) break;
+            rootNode = rootNode.path(key);
+        }
+        return rootNode;
+    }
+
+    public static Object extractRawField(Response response, String fieldPath) throws Exception {
         JsonNode rootNode = objectMapper.readTree(response.asString());
-        JsonNode node = rootNode.path(fieldName);
+        JsonNode node = getNodeByPath(rootNode, fieldPath);
         return node.isMissingNode() || node.isNull() ? null : node;
     }
 
-    public static String extractStringField(Response response, String key) throws Exception {
+    public static String extractStringField(Response response, String fieldPath) throws Exception {
         JsonNode rootNode = objectMapper.readTree(response.asString());
-        return rootNode.path(key).asText();
+        JsonNode node = getNodeByPath(rootNode, fieldPath);
+        return node.isMissingNode() || node.isNull() ? null : node.asText();
     }
 
-    public static Boolean extractBooleanField(Response response, String key) throws Exception {
+    public static Boolean extractBooleanField(Response response, String fieldPath) throws Exception {
         JsonNode rootNode = objectMapper.readTree(response.asString());
-        return rootNode.path(key).asBoolean();
+        JsonNode node = getNodeByPath(rootNode, fieldPath);
+        return node.isMissingNode() || node.isNull() ? null : node.asBoolean();
     }
 
     public static boolean valueExistsInJsonArray(Response response, String jsonPath, String targetValue) throws Exception {
         JsonNode rootNode = objectMapper.readTree(response.asString());
-        JsonNode arrayNode = rootNode.path(jsonPath);
-        if (arrayNode.isArray()) {
+        JsonNode arrayNode = getNodeByPath(rootNode, jsonPath);
+        if (arrayNode != null && arrayNode.isArray()) {
             return iterateAndCheckArray(arrayNode, targetValue);
         }
         return false;
@@ -55,15 +66,11 @@ public class JsonHelper {
         ExtentCucumberAdapter.addTestStepLog("Actual value found: " + value);
     }
 
-//    public static String extractStringFieldFromArray(Response response, String arrayField, int index, String fieldName) {
-//        return response.jsonPath().getString(arrayField + "[" + index + "]." + fieldName);
-//    }
-
     public static List<String> extractListOfStringFieldsFromArray(Response response, String arrayField, String subField) {
-        List<Map<String, Object>> errorList = response.jsonPath().getList(arrayField);
+        List<Map<String, Object>> itemList = response.jsonPath().getList(arrayField);
         List<String> result = new ArrayList<>();
-        for (Map<String, Object> errorMap : errorList) {
-            Object value = errorMap.get(subField);
+        for (Map<String, Object> item : itemList) {
+            Object value = item.get(subField);
             if (value != null) {
                 result.add(value.toString());
             }
@@ -73,7 +80,7 @@ public class JsonHelper {
 
     public static void validateFieldExistsInArray(Response response, String arrayPath, String fieldName) throws Exception {
         JsonNode rootNode = objectMapper.readTree(response.asString());
-        JsonNode arrayNode = rootNode.at(arrayPath); // Must start with '/'
+        JsonNode arrayNode = rootNode.at(arrayPath); // Path should start with '/' for root level
 
         if (!arrayNode.isArray()) {
             throw new Exception("Expected an array at path: " + arrayPath);
@@ -88,5 +95,4 @@ public class JsonHelper {
 
         ExtentCucumberAdapter.addTestStepLog("All elements in array " + arrayPath + " contain a valid '" + fieldName + "'");
     }
-
 }
