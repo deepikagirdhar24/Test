@@ -1,98 +1,51 @@
-This is the POJO of new person - 
-
 package ICOS.pojo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.List;
-
-public class NewPersonRequest {
+public class NewLegalPersonRequest {
 
     @JsonProperty("uuid")
-    private String strUuid;
+    private String uuid;
 
     @JsonProperty("subType")
-    private String strSubType;
+    private String subType;
 
     @JsonProperty("domiCountry")
-    private String strDomiCountry;
+    private String domiCountry;
 
-    @JsonProperty("firstName")
-    private String strFirstName;
-
-    @JsonProperty("lastName")
-    private String strLastName;
-
-    @JsonProperty("gender")
-    private String strGender;
-
-    @JsonProperty("nationalities")
-    private List<String> lstNationalities;
+    @JsonProperty("name")
+    private String name;
 
     // Getters and Setters
-    public String getStrUuid() {
-        return strUuid;
+    public String getUuid() {
+        return uuid;
     }
 
-    public void setStrUuid(String strUuid) {
-        this.strUuid = strUuid;
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
-    public String getStrSubType() {
-        return strSubType;
+    public String getSubType() {
+        return subType;
     }
 
-    public void setStrSubType(String strSubType) {
-        this.strSubType = strSubType;
+    public void setSubType(String subType) {
+        this.subType = subType;
     }
 
-    public String getStrDomiCountry() {
-        return strDomiCountry;
+    public String getDomiCountry() {
+        return domiCountry;
     }
 
-    public void setStrDomiCountry(String strDomiCountry) {
-        this.strDomiCountry = strDomiCountry;
+    public void setDomiCountry(String domiCountry) {
+        this.domiCountry = domiCountry;
     }
 
-    public String getStrFirstName() {
-        return strFirstName;
+    public String getName() {
+        return name;
     }
 
-    public void setStrFirstName(String strFirstName) {
-        this.strFirstName = strFirstName;
+    public void setName(String name) {
+        this.name = name;
     }
-
-    public String getStrLastName() {
-        return strLastName;
-    }
-
-    public void setStrLastName(String strLastName) {
-        this.strLastName = strLastName;
-    }
-
-    public String getStrGender() {
-        return strGender;
-    }
-
-    public void setStrGender(String strGender) {
-        this.strGender = strGender;
-    }
-
-    public List<String> getLstNationalities() {
-        return lstNationalities;
-    }
-
-    public void setLstNationalities(List<String> lstNationalities) {
-        this.lstNationalities = lstNationalities;
-    }
-
-}
-
-Similarly, create POJO for this one also - 
-
-{
-    "uuid": "12345",
-    "subType": "pers_form_ass",
-    "domiCountry": "GB",
-    "name": "Company Name Ltd"
 }
