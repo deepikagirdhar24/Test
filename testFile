@@ -1,68 +1,98 @@
-@Then("Send request to update New Person with below details and orderId {string}")
-public void sendRequestToUpdatePersonWithOrderId(String validSubType, DataTable dataTable) throws JsonProcessingException {
-    Map<String, String> updatedPersonDetails = dataTable.asMap(String.class, String.class);
+This is the POJO of new person - 
 
-    // Set the correct (non-empty) personSubType to update
-    updatedPersonDetails.put("subType", validSubType);
+package ICOS.pojo;
 
-    // Retrieve token from context
-    String jwtToken = scenarioContext.getContext("JWTToken");
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-    // Call the update method (no need to pass orderId/objectId now)
-    response = objNaturalPerson.updateNaturalPerson(
-        strEnvType,
-        "Bearer",
-        jwtToken,
-        updatedPersonDetails,
-        scenarioContext
-    );
+import java.util.List;
+
+public class NewPersonRequest {
+
+    @JsonProperty("uuid")
+    private String strUuid;
+
+    @JsonProperty("subType")
+    private String strSubType;
+
+    @JsonProperty("domiCountry")
+    private String strDomiCountry;
+
+    @JsonProperty("firstName")
+    private String strFirstName;
+
+    @JsonProperty("lastName")
+    private String strLastName;
+
+    @JsonProperty("gender")
+    private String strGender;
+
+    @JsonProperty("nationalities")
+    private List<String> lstNationalities;
+
+    // Getters and Setters
+    public String getStrUuid() {
+        return strUuid;
+    }
+
+    public void setStrUuid(String strUuid) {
+        this.strUuid = strUuid;
+    }
+
+    public String getStrSubType() {
+        return strSubType;
+    }
+
+    public void setStrSubType(String strSubType) {
+        this.strSubType = strSubType;
+    }
+
+    public String getStrDomiCountry() {
+        return strDomiCountry;
+    }
+
+    public void setStrDomiCountry(String strDomiCountry) {
+        this.strDomiCountry = strDomiCountry;
+    }
+
+    public String getStrFirstName() {
+        return strFirstName;
+    }
+
+    public void setStrFirstName(String strFirstName) {
+        this.strFirstName = strFirstName;
+    }
+
+    public String getStrLastName() {
+        return strLastName;
+    }
+
+    public void setStrLastName(String strLastName) {
+        this.strLastName = strLastName;
+    }
+
+    public String getStrGender() {
+        return strGender;
+    }
+
+    public void setStrGender(String strGender) {
+        this.strGender = strGender;
+    }
+
+    public List<String> getLstNationalities() {
+        return lstNationalities;
+    }
+
+    public void setLstNationalities(List<String> lstNationalities) {
+        this.lstNationalities = lstNationalities;
+    }
+
 }
 
-public Response updateNaturalPerson(String strEnvType, String strBearerToken, String strJWTToken,
-                                    Map<String, String> mapPersonDetails, ScenarioContext scenarioContext) throws JsonProcessingException {
+Similarly, create POJO for this one also - 
 
-    String orderId = scenarioContext.getContext("orderId");
-
-    strAuthentication = objdevHelperLibrary.buildAuthHeader(strBearerToken, strJWTToken);
-    strTYKURL = objdevHelperLibrary.getTYKURL(strEnvType, "TYK.UPDATENATURALPERSON");
-
-    NewPersonRequest personRequest = new NewPersonRequest();
-    personRequest.setStrSubType(mapPersonDetails.get("subType"));
-    personRequest.setStrDomiCountry(mapPersonDetails.get("domicileCountry"));
-    personRequest.setStrFirstName(mapPersonDetails.get("firstName"));
-    personRequest.setStrLastName(mapPersonDetails.get("lastName"));
-    personRequest.setStrGender(mapPersonDetails.get("gender"));
-
-    // Handle nationalities
-    String strNationalities = mapPersonDetails.get("nationalities");
-    List<String> lstNationality = new ArrayList<>();
-    if (strNationalities != null && !strNationalities.trim().isEmpty()) {
-        lstNationality = Arrays.stream(strNationalities.split(","))
-                .map(String::trim)
-                .filter(s -> !s.isEmpty())
-                .collect(Collectors.toList());
-    }
-    personRequest.setLstNationalities(lstNationality);
-
-    strJsonBody = new ObjectMapper().writeValueAsString(personRequest);
-
-    ExtentCucumberAdapter.addTestStepLog("Sending request to Update Natural Person");
-    ExtentCucumberAdapter.addTestStepLog("Request URL: " + strTYKURL);
-    ExtentCucumberAdapter.addTestStepLog("Query Param: order=" + orderId);
-    ExtentCucumberAdapter.addTestStepLog("Request Body:\n" + strJsonBody);
-
-    response = with().spec(rspec)
-            .header("Authorization", strBearerToken + " " + strJWTToken)
-            .header("X-TYK-API-KEY", TYK_KEY)
-            .header("Content-Type", "application/json")
-            .queryParam("order", orderId)  // ✅ cleaner query param usage
-            .body(strJsonBody)
-            .put(strTYKURL);
-
-    strResponseBody = objdevHelperLibrary.getResponseBody(response);
-
-    ExtentCucumberAdapter.addTestStepLog("Response Code: " + response.getStatusCode());
-    ExtentCucumberAdapter.addTestStepLog("Response Body:\n" + strResponseBody);
-
-    return response;
+{
+    "uuid": "12345",
+    "subType": "pers_form_ass",
+    "domiCountry": "GB",
+    "name": "Company Name Ltd"
 }
