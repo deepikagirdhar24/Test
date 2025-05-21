@@ -5,47 +5,47 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class NewLegalPersonRequest {
 
     @JsonProperty("uuid")
-    private String uuid;
+    private String strUuid;
 
     @JsonProperty("subType")
-    private String subType;
+    private String strSubType;
 
     @JsonProperty("domiCountry")
-    private String domiCountry;
+    private String strDomiCountry;
 
     @JsonProperty("name")
-    private String name;
+    private String strName;
 
     // Getters and Setters
-    public String getUuid() {
-        return uuid;
+    public String getStrUuid() {
+        return strUuid;
     }
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
+    public void setStrUuid(String strUuid) {
+        this.strUuid = strUuid;
     }
 
-    public String getSubType() {
-        return subType;
+    public String getStrSubType() {
+        return strSubType;
     }
 
-    public void setSubType(String subType) {
-        this.subType = subType;
+    public void setStrSubType(String strSubType) {
+        this.strSubType = strSubType;
     }
 
-    public String getDomiCountry() {
-        return domiCountry;
+    public String getStrDomiCountry() {
+        return strDomiCountry;
     }
 
-    public void setDomiCountry(String domiCountry) {
-        this.domiCountry = domiCountry;
+    public void setStrDomiCountry(String strDomiCountry) {
+        this.strDomiCountry = strDomiCountry;
     }
 
-    public String getName() {
-        return name;
+    public String getStrName() {
+        return strName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setStrName(String strName) {
+        this.strName = strName;
     }
 }
