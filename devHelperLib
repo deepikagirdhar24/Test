@@ -1,0 +1,204 @@
+package commonLibrary;
+
+import com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import config.TestConfig;
+import io.restassured.RestAssured;
+import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.config.RedirectConfig;
+import io.restassured.filter.log.RequestLoggingFilter;
+import io.restassured.filter.log.ResponseLoggingFilter;
+import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import utilities.CucumberLogger;
+import utilities.EncryptionUtil;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
+import java.io.FileInputStream;
+import java.security.KeyStore;
+import java.util.HashMap;
+import java.util.Map;
+
+import static io.restassured.RestAssured.given;
+import static io.restassured.RestAssured.with;
+
+
+public class devHelperLibrary {
+    public static EncryptionUtil objEncryptionUtil;
+    protected  TestConfig testDataConfig= TestConfig.getTestDataConfig();
+    private static Response response;
+    private static String responseBody;
+    public static RequestSpecification rspec;
+    private String FDSKeystorePassword;
+    public ObjectMapper objectMapper;
+    String CLIENT_ID=System.getenv("ICOS_CLIENT_ID");
+    String CLIENT_SECRET=System.getenv("ICOS_CLIENT_SECRET");
+    String TYK_KEY=System.getenv("X-TYK-API-KEY");
+    CucumberLogger objCucumberLogger;
+
+//Constructor
+    public devHelperLibrary() throws Exception {
+        objEncryptionUtil= new EncryptionUtil();
+        objectMapper = new ObjectMapper();
+        objCucumberLogger= new CucumberLogger();
+        rspec=setup();
+
+    }
+
+
+    // This function is the set up for the setting up Request specification for Dev Helper URLs.
+    public RequestSpecification setup() throws Exception {
+        FDSKeystorePassword= testDataConfig.getFDSKeystorePassword();
+        KeyStore keyStore = KeyStore.getInstance("JKS");
+        try (FileInputStream keyStoreStream = new FileInputStream(System.getProperty("user.dir")+"\\src\\test\\resources\\config\\truststore-intranetIcos.jks")) {
+            keyStore.load(keyStoreStream, FDSKeystorePassword.toCharArray());
+        }
+        TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+        trustManagerFactory.init(keyStore);
+        TrustManager[] trustManagers = trustManagerFactory.getTrustManagers();
+        if (trustManagers.length == 0) {
+            throw new Exception("No TrustManagers found in the TrustManagerFactory.");
+        }
+        X509TrustManager trustManager = (X509TrustManager) trustManagers[0];
+        SSLContext sslContext = SSLContext.getInstance("TLS");
+        sslContext.init(null, new TrustManager[]{trustManager}, null);
+        SSLConnectionSocketFactory sslConnectionSocketFactory = new SSLConnectionSocketFactory(sslContext, SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+        CloseableHttpClient httpClient = HttpClients.custom()
+                .setSSLSocketFactory(sslConnectionSocketFactory)
+                .build();
+
+        RestAssured.useRelaxedHTTPSValidation();
+
+        // Build the RequestSpecification
+        rspec = new RequestSpecBuilder()
+                .addFilter(new RequestLoggingFilter())
+                .addFilter(new ResponseLoggingFilter())
+                .setConfig(RestAssured.config()
+                        .redirect(RedirectConfig.redirectConfig().followRedirects(false))) // Disable following redirects
+                .build();
+        return rspec;
+
+    }
+
+    //Fetch the response Body
+    public static String getResponseBody(Response res) {
+      return res.getBody().asString();
+    }
+
+    //fetch Json Node
+    public String getResponseValueFromJsonNode(Response response,String strResponseID) throws JsonProcessingException {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        String accessToken = rootNode.path(strResponseID).asText();
+        return accessToken;
+    }
+
+
+    //Step 1 - Fetch EIAM Token URL from property file for ICOS
+    public  String getEIAMTokenURL()
+    {
+        String strEIAMURL=testDataConfig.readApplicationProperty("EIAM.ENV");
+        return strEIAMURL;
+    }
+
+
+    //Step 2 generate the EIAM token
+
+    public  HashMap<String,String> getEIAMToken_ICOS(String strEIAMURL) throws JsonProcessingException {
+        HashMap<String,String> formParams= new HashMap<String,String>();
+        HashMap<String,String> responseParams= new HashMap<String,String>();
+        formParams.put("client_id",CLIENT_ID);
+        formParams.put("grant_type","client_credentials");
+        formParams.put("client_secret",CLIENT_SECRET);
+
+        response = with().spec(rspec)
+                .header("Accept","text/xml")
+                .formParams(formParams)
+                .post(strEIAMURL);
+        responseBody = getResponseBody(response);
+
+        String accessToken  = getResponseValueFromJsonNode(response,"access_token");
+        responseParams.put("accessToken",accessToken);
+        responseParams.put("tokenType",getResponseValueFromJsonNode(response,"token_type"));
+        objCucumberLogger.PrintStatus("Access Token is"+accessToken);
+        return responseParams;
+    }
+
+    //Step 3 get the TYK Token
+
+    public String getTykToken(String strEnvType, String strAccessToken, String strBearerToken) throws JsonProcessingException {
+        HashMap<String,String> formParams= new HashMap<String,String>();
+        //String strAuthentication=strBearerToken+" "+strAccessToken;
+        //String strTYKURLKey="TYK.ENV."+strEnvType;
+        String strTYKURL=testDataConfig.readApplicationProperty("TYK.ENV."+strEnvType)+testDataConfig.readApplicationProperty("TYK.TOKEN");
+        response = with().spec(rspec)
+                .header("Authorization",strBearerToken+" "+strAccessToken)
+                .header("X-TYK-API-KEY",TYK_KEY)
+                .post(strTYKURL);
+        responseBody = getResponseBody(response);
+        String strTykToken = getResponseValueFromJsonNode(response,"token");
+        objCucumberLogger.PrintStatus("Tyk Token is"+strTykToken);
+        return strTykToken;
+    }
+
+    public String buildAuthHeader(String strBearerToken, String strJWTToken) {
+        return strBearerToken + " " + strJWTToken;
+    }
+
+    public String getTYKURL(String strEnvType, String strEndpointKey) {
+        return testDataConfig.readApplicationProperty("TYK.ENV." + strEnvType)
+                + testDataConfig.readApplicationProperty(strEndpointKey);
+    }
+
+    public RequestSpecification buildBaseRequestSpec(String strBearerToken, String strJWTToken) {
+        return given()
+                .spec(rspec)
+                .header("Authorization", strBearerToken + " " + strJWTToken)
+                .header("X-TYK-API-KEY", TYK_KEY)
+                .header("Content-Type", "application/json");
+    }
+
+    public void logRequestDetails(String method, String url, String body, Map<String, ?> queryParams) {
+        ExtentCucumberAdapter.addTestStepLog("Sending " + method + " request to: " + url);
+        if (queryParams != null && !queryParams.isEmpty()) {
+            ExtentCucumberAdapter.addTestStepLog("Query Parameters: " + queryParams.toString());
+        }
+        if (body != null && !body.isEmpty()) {
+            ExtentCucumberAdapter.addTestStepLog("Request Body:\n" + body);
+        }
+    }
+
+    public void logResponseDetails(Response response) {
+        String responseBody = getResponseBody(response);
+        ExtentCucumberAdapter.addTestStepLog("Response Code: " + response.getStatusCode());
+        ExtentCucumberAdapter.addTestStepLog("Response Body:\n" + responseBody);
+        objCucumberLogger.PrintStatus("Response is " + responseBody);
+    }
+
+
+
+
+    /*
+    public static void main(String args[]) throws Exception {
+        devHelperLibrary objdevHelperLibrary= new devHelperLibrary();
+        String strString= objdevHelperLibrary.getEIAMTokenURL();
+        HashMap<String,String> strEIAMToken=objdevHelperLibrary.getEIAMToken_ICOS(strString);
+        String strAccessToken=strEIAMToken.get("accessToken").trim();
+        String strTokentype=strEIAMToken.get("tokenType").trim();
+       // String strTykToken=objdevHelperLibrary.getTykToken(strAccessToken,strTokentype);
+        System.out.println("Access token is "+strAccessToken);
+        System.out.println("token type is "+strTokentype);
+       // System.out.println("Tyk token is "+strTykToken);
+
+
+
+    }
+    */
+
+}
