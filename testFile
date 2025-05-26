@@ -9,18 +9,17 @@ import utilities.Payloads;
 import utilities.ScenarioContext;
 import com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class ContactNotes extends BaseApiClient {
 
-    private ObjectMapper objectMapper;
-    private CucumberLogger cucumberLogger;
+    private ObjectMapper objObjectMapper;
+    private CucumberLogger objCucumberLogger;
 
     public ContactNotes() {
-        objectMapper = new ObjectMapper();
-        cucumberLogger = new CucumberLogger();
+        objObjectMapper = new ObjectMapper();
+        objCucumberLogger = new CucumberLogger();
     }
 
     // Create Contact Note for single PersonId
@@ -28,16 +27,16 @@ public class ContactNotes extends BaseApiClient {
                                       Map<String, String> mapNoteDetails, ScenarioContext scenarioContext) throws JsonProcessingException {
 
         String strTYKURL = getTYKURL(strEnvType, "TYK.CONTACTNOTES");
-        ContactNoteRequest noteRequest = Payloads.buildContactNotePayload(mapNoteDetails, scenarioContext);
-        String requestBody = objectMapper.writeValueAsString(noteRequest);
+        ContactNoteRequest objContactNoteRequest = Payloads.buildContactNotePayload(mapNoteDetails, scenarioContext);
+        String strRequestBody = objObjectMapper.writeValueAsString(objContactNoteRequest);
 
         ExtentCucumberAdapter.addTestStepLog("Sending request to Create Contact Note");
 
-        Response response = sendPostRequest(strTYKURL, strBearerToken, strJWTToken, requestBody, null);
-        String responseBody = devHelperLibrary.getResponseBody(response);
-        cucumberLogger.PrintStatus("Response is: " + responseBody);
+        Response objResponse = sendPostRequest(strTYKURL, strBearerToken, strJWTToken, strRequestBody, null);
+        String strResponseBody = devHelperLibrary.getResponseBody(objResponse);
+        objCucumberLogger.PrintStatus("Response is: " + strResponseBody);
 
-        return response;
+        return objResponse;
     }
 
     // Create Contact Note for multiple PersonIds
@@ -45,16 +44,16 @@ public class ContactNotes extends BaseApiClient {
                                       Map<String, String> mapNoteDetails, List<String> lstPersonIds) throws JsonProcessingException {
 
         String strTYKURL = getTYKURL(strEnvType, "TYK.CONTACTNOTES");
-        ContactNoteRequest noteRequest = Payloads.buildContactNotePayload(mapNoteDetails, lstPersonIds);
-        String requestBody = objectMapper.writeValueAsString(noteRequest);
+        ContactNoteRequest objContactNoteRequest = Payloads.buildContactNotePayload(mapNoteDetails, lstPersonIds);
+        String strRequestBody = objObjectMapper.writeValueAsString(objContactNoteRequest);
 
         ExtentCucumberAdapter.addTestStepLog("Sending request to Create Contact Note for multiple PersonIds");
 
-        Response response = sendPostRequest(strTYKURL, strBearerToken, strJWTToken, requestBody, null);
-        String responseBody = devHelperLibrary.getResponseBody(response);
-        cucumberLogger.PrintStatus("Response is: " + responseBody);
+        Response objResponse = sendPostRequest(strTYKURL, strBearerToken, strJWTToken, strRequestBody, null);
+        String strResponseBody = devHelperLibrary.getResponseBody(objResponse);
+        objCucumberLogger.PrintStatus("Response is: " + strResponseBody);
 
-        return response;
+        return objResponse;
     }
 
     // Get Contact Notes
@@ -64,10 +63,10 @@ public class ContactNotes extends BaseApiClient {
 
         ExtentCucumberAdapter.addTestStepLog("Sending GET request to fetch Contact Notes");
 
-        Response response = sendGetRequest(strTYKURL, strBearerToken, strJWTToken, null, null);
-        String responseBody = devHelperLibrary.getResponseBody(response);
-        cucumberLogger.PrintStatus("Response is: " + responseBody);
+        Response objResponse = sendGetRequest(strTYKURL, strBearerToken, strJWTToken, null, null);
+        String strResponseBody = devHelperLibrary.getResponseBody(objResponse);
+        objCucumberLogger.PrintStatus("Response is: " + strResponseBody);
 
-        return response;
+        return objResponse;
     }
 }
