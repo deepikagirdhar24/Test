@@ -157,4 +157,4 @@ public class LegalPerson {
         return response;
     }
 
-}
+} - this is my baseAPiclient
