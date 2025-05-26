@@ -1,74 +1,299 @@
-Update getUser also - 
-
 package ICOS;
 
-import ICOS.pojo.ContactNoteRequest;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.restassured.response.Response;
-import utilities.CucumberLogger;
-import utilities.Payloads;
-import utilities.ScenarioContext;
 import com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import commonLibrary.devHelperLibrary;
+import config.TestConfig;
+import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
+import utilities.CucumberLogger;
+import utilities.EncryptionUtil;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-public class ContactNotes extends BaseApiClient {
+import static io.restassured.RestAssured.with;
 
-    private ObjectMapper objObjectMapper;
-    private CucumberLogger objCucumberLogger;
+public class getUser {
+    public ObjectMapper objectMapper;
+    public static EncryptionUtil objEncryptionUtil;
+    protected TestConfig testDataConfig= TestConfig.getTestDataConfig();
 
-    public ContactNotes() {
-        objObjectMapper = new ObjectMapper();
-        objCucumberLogger = new CucumberLogger();
+    CucumberLogger objCucumberLogger;
+    devHelperLibrary objdevHelperLibrary;
+
+    public static RequestSpecification rspec;
+    private static Response response;
+    private static String responseBody;
+    //String TYK_KEY = System.getenv("X-TYK-API-KEY");
+    String TYK_KEY = TestConfig.getTykApiKey();//--> Newly Added
+    String strAuthentication;//--> Newly Added
+    String strTYKURL;//--> Newly Added
+
+    public getUser() throws Exception {
+        objEncryptionUtil= new EncryptionUtil();
+        objectMapper = new ObjectMapper();
+        objCucumberLogger= new CucumberLogger();
+        objdevHelperLibrary= new devHelperLibrary();
+        rspec=objdevHelperLibrary.setup();
     }
 
-    // Create Contact Note for single PersonId
-    public Response createContactNote(String strEnvType, String strBearerToken, String strJWTToken,
-                                      Map<String, String> mapNoteDetails, ScenarioContext scenarioContext) throws JsonProcessingException {
 
-        String strTYKURL = getTYKURL(strEnvType, "TYK.CONTACTNOTES");
-        ContactNoteRequest objContactNoteRequest = Payloads.buildContactNotePayload(mapNoteDetails, scenarioContext);
-        String strRequestBody = objObjectMapper.writeValueAsString(objContactNoteRequest);
 
-        ExtentCucumberAdapter.addTestStepLog("Sending request to Create Contact Note");
+    //Step4 get the user id
 
-        Response objResponse = sendPostRequest(strTYKURL, strBearerToken, strJWTToken, strRequestBody, null);
-        String strResponseBody = devHelperLibrary.getResponseBody(objResponse);
-        objCucumberLogger.PrintStatus("Response is: " + strResponseBody);
+    public Response getGetUser(String strEnvType,String strBearerToken,String strJWTToken, String strUserId) throws JsonProcessingException {
+//        HashMap<String,String> formParams= new HashMap<String,String>();
+//        String strAuthentication=strBearerToken+" "+strJWTToken;
+//        objCucumberLogger.PrintStatus("authenticationis"+strAuthentication);
+//        ExtentCucumberAdapter.addTestStepLog("Actual value of Authentication is : " +strAuthentication);
+//        objCucumberLogger.PrintStatus("user id is"+strUserId);
+//        //String strTYKURLKey="TYK.ENV."+strEnvType;
+//        String strTYKURL=testDataConfig.readApplicationProperty("TYK.ENV."+strEnvType)+testDataConfig.readApplicationProperty("TYK.USERID")+strUserId;
+//        objCucumberLogger.PrintStatus("URL is"+strTYKURL);
 
-        return objResponse;
+        strAuthentication = objdevHelperLibrary.buildAuthHeader(strBearerToken, strJWTToken); //--> Newly Added
+        strTYKURL = objdevHelperLibrary.getTYKURL(strEnvType, "TYK.USERID")+strUserId;//--> Newly Added
+
+        // Logging request details //--> Newly Added
+        ExtentCucumberAdapter.addTestStepLog("Sending request to Create New Person");
+        ExtentCucumberAdapter.addTestStepLog("Request URL: " + strTYKURL);
+        ExtentCucumberAdapter.addTestStepLog("Request Headers: Authorization=" + strAuthentication);
+
+        response = with().spec(rspec)
+                .header("Authorization",strBearerToken+" "+strJWTToken)
+                .header("X-TYK-API-KEY",TYK_KEY)
+                .header("UserID",strUserId)
+                .get(strTYKURL);
+        responseBody = objdevHelperLibrary.getResponseBody(response);
+        //objCucumberLogger.PrintStatus("Status code is"+response.statusCode());
+        objCucumberLogger.PrintStatus("Response is"+responseBody);
+
+        // Logging response details //--> Newly Added
+        ExtentCucumberAdapter.addTestStepLog("Response Code: " + response.getStatusCode());
+        ExtentCucumberAdapter.addTestStepLog("Response Body:\n" + responseBody);
+
+        return response;
     }
 
-    // Create Contact Note for multiple PersonIds
-    public Response createContactNote(String strEnvType, String strBearerToken, String strJWTToken,
-                                      Map<String, String> mapNoteDetails, List<String> lstPersonIds) throws JsonProcessingException {
 
-        String strTYKURL = getTYKURL(strEnvType, "TYK.CONTACTNOTES");
-        ContactNoteRequest objContactNoteRequest = Payloads.buildContactNotePayload(mapNoteDetails, lstPersonIds);
-        String strRequestBody = objObjectMapper.writeValueAsString(objContactNoteRequest);
-
-        ExtentCucumberAdapter.addTestStepLog("Sending request to Create Contact Note for multiple PersonIds");
-
-        Response objResponse = sendPostRequest(strTYKURL, strBearerToken, strJWTToken, strRequestBody, null);
-        String strResponseBody = devHelperLibrary.getResponseBody(objResponse);
-        objCucumberLogger.PrintStatus("Response is: " + strResponseBody);
-
-        return objResponse;
+    // New method to get name from the JSON
+    public String getName(Response response) throws JsonProcessingException {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        return rootNode.path("name").asText();
     }
 
-    // Get Contact Notes
-    public Response getContactNotes(String strEnvType, String strBearerToken, String strJWTToken) {
+    // New method to get business units as a list
+    public List<String> getBusinessUnits(Response response) throws JsonProcessingException {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode businessUnitsNode = rootNode.path("businessUnits");
 
-        String strTYKURL = getTYKURL(strEnvType, "TYK.CONTACTNOTES");
+        List<String> businessUnits = new ArrayList<>();
 
-        ExtentCucumberAdapter.addTestStepLog("Sending GET request to fetch Contact Notes");
+        if (businessUnitsNode.isArray()) {
+            for (JsonNode buNode : businessUnitsNode) {
+                businessUnits.add(buNode.path("bu").asText());
+            }
+        }
 
-        Response objResponse = sendGetRequest(strTYKURL, strBearerToken, strJWTToken, null, null);
-        String strResponseBody = devHelperLibrary.getResponseBody(objResponse);
-        objCucumberLogger.PrintStatus("Response is: " + strResponseBody);
-
-        return objResponse;
+        return businessUnits;
     }
+
+    // Method to get all roles across all business units
+    public List<String> getAllRoles(Response response) throws JsonProcessingException {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode businessUnitsNode = rootNode.path("businessUnits");
+
+        List<String> allRoles = new ArrayList<>();
+
+        if (businessUnitsNode.isArray()) {
+            for (JsonNode buNode : businessUnitsNode) {
+                JsonNode rolesNode = buNode.path("roles");
+                if (rolesNode.isArray()) {
+                    for (JsonNode roleNode : rolesNode) {
+                        allRoles.add(roleNode.path("name").asText());
+                    }
+                }
+            }
+        }
+
+        return allRoles;
+    }
+
+    // Method to get teams
+    public List<String> getTeams(Response response) throws JsonProcessingException {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode teamsNode = rootNode.path("privateBanker").path("teams");
+
+        List<String> teams = new ArrayList<>();
+
+        if (teamsNode.isArray()) {
+            for (JsonNode teamNode : teamsNode) {
+                teams.add(teamNode.path("name").asText());
+            }
+        }
+
+        return teams;
+    }
+
+
+    public List<List<String>> processUserData(Response response) throws JsonProcessingException {
+        List<List<String>> strGetUserResponse = new ArrayList<>();
+
+        String name = getName(response);
+        List<String> businessUnits = getBusinessUnits(response);
+        List<String> roles = getAllRoles(response);
+        List<String> teams = getTeams(response);
+        //boolean hasRequiredRole = hasRole(response, "R_OB_SUPP_CENT_COUTTS");
+
+        List<String> nameList = new ArrayList<>();
+        nameList.add(name);
+        strGetUserResponse.add(nameList);
+
+        strGetUserResponse.add(businessUnits);
+        strGetUserResponse.add(teams);
+        strGetUserResponse.add(roles);
+
+
+        return strGetUserResponse;
+    }
+
+
+    public boolean hasRole(Response response, String roleName) throws JsonProcessingException {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode businessUnitsNode = rootNode.path("businessUnits");
+        if (businessUnitsNode.isArray()) {
+            for (JsonNode buNode : businessUnitsNode) {
+                JsonNode rolesNode = buNode.path("roles");
+                if (rolesNode.isArray()) {
+                    for (JsonNode roleNode : rolesNode) {
+                        String currentRole = roleNode.path("name").asText();
+                        if (roleName.equals(currentRole)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    //If role Exists
+    public boolean hasRole(Response response) throws JsonProcessingException {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode businessUnitsNode = rootNode.path("businessUnits");
+        if (businessUnitsNode.isArray()) {
+            for (JsonNode buNode : businessUnitsNode) {
+                JsonNode rolesNode = buNode.path("roles");
+                if (!rolesNode.isEmpty()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean hasBURole(Response response, String buName) throws JsonProcessingException {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode businessUnitsNode = rootNode.path("businessUnits");
+        if (businessUnitsNode.isArray()) {
+            for (JsonNode buNode : businessUnitsNode) {
+                String currentBU = buNode.path("bu").asText();
+                if (buName.equals(currentBU)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    //If BU Exists in the response
+    public boolean hasBURole(Response response) throws JsonProcessingException {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode businessUnitsNode = rootNode.path("businessUnits");
+        if (businessUnitsNode.isArray()) {
+            if(!businessUnitsNode.isEmpty()) {
+                    return true;
+                }
+
+        }
+        return false;
+    }
+
+    /**
+     * Checks if the user is NOT a private banker
+     *
+     * @param response The API response containing user data
+     * @return true if the user is NOT a private banker, false if they are
+     * @throws JsonProcessingException if JSON parsing fails
+     */
+    public boolean isNotPrivateBanker(Response response) throws JsonProcessingException {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode privateBankerNode = rootNode.path("privateBanker");
+
+        // Check if privateBanker node is missing or is null/empty
+        if (privateBankerNode.isMissingNode() || privateBankerNode.isNull()) {
+            return false;
+        }
+
+        // Check if teams array is empty
+        JsonNode teamsNode = privateBankerNode.path("teams");
+        if (teamsNode.isArray() && teamsNode.size() == 0) {
+            return false;
+        }
+
+        // If we have a privateBanker node with teams, the user is a private banker
+        return true;
+    }
+
+
+
+    /**
+     * Checks if the specific team ID exists in the user's teams
+     *
+     * @param response The API response containing user data
+     * @param teamId The team ID to check for
+     * @return true if the team ID exists, false otherwise
+     * @throws JsonProcessingException if JSON parsing fails
+     */
+    public boolean hasTeamId(Response response, String teamId) throws JsonProcessingException {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode teamsNode = rootNode.path("privateBanker").path("teams");
+
+        if (teamsNode.isArray()) {
+            for (JsonNode teamNode : teamsNode) {
+                String currentTeamId = teamNode.path("id").asText();
+                if (teamId.equals(currentTeamId)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+
+
+
+    /**
+     * Checks if the user has the specified name
+     *
+     * @param response The API response containing user data
+     * @param userName The name to check for
+     * @return true if the name matches, false otherwise
+     * @throws JsonProcessingException if JSON parsing fails
+     */
+    public boolean hasName(Response response, String userName) throws JsonProcessingException {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        String name = rootNode.path("name").asText();
+        if (!name.equalsIgnoreCase(""))
+            return true;
+        else
+            return false;
+    }
+
+
+
+
 }
