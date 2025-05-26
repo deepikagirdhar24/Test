@@ -1,51 +1,75 @@
 package ICOS;
 
+import com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter;
+import commonLibrary.devHelperLibrary;
 import config.TestConfig;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-import utilities.CucumberLogger;
-import utilities.devHelperLibrary;
 
-import static io.restassured.RestAssured.with;
+import java.util.Map;
+
+import static io.restassured.RestAssured.given;
 
 public class BaseApiClient {
-    protected TestConfig testDataConfig = TestConfig.getTestDataConfig();
-    protected devHelperLibrary objDevHelperLibrary = new devHelperLibrary();
-    protected CucumberLogger objCucumberLogger = new CucumberLogger();
+    protected static devHelperLibrary objDevHelperLibrary = new devHelperLibrary();
+    protected static TestConfig testDataConfig = TestConfig.getTestDataConfig();
+    protected static String TYK_KEY = TestConfig.getTykApiKey();
 
-    protected static RequestSpecification rspec;
-    protected String TYK_KEY = TestConfig.getTykApiKey();
-    protected String strAuthentication;
-
-    public BaseApiClient() throws Exception {
-        rspec = objDevHelperLibrary.setup();
-    }
-
-    protected String buildAuthHeader(String bearerToken, String jwtToken) {
-        return objDevHelperLibrary.buildAuthHeader(bearerToken, jwtToken);
-    }
-
-    protected String buildUrl(String env, String endpointKey) {
-        return objDevHelperLibrary.getTYKURL(env, endpointKey);
-    }
-
-    protected RequestSpecification prepareRequest(String bearerToken, String jwtToken) {
-        strAuthentication = buildAuthHeader(bearerToken, jwtToken);
-        return with().spec(rspec)
-                .header("Authorization", bearerToken + " " + jwtToken)
+    public static RequestSpecification buildRequestSpec(String strBearerToken, String strJWTToken) {
+        return given()
+                .header("Authorization", strBearerToken + " " + strJWTToken)
                 .header("X-TYK-API-KEY", TYK_KEY)
                 .header("Content-Type", "application/json");
     }
 
-    protected Response doPost(String url, String body, RequestSpecification requestSpec) {
-        return requestSpec.body(body).post(url);
+    public static Response sendPostRequest(String url, String bearerToken, String jwtToken, String body) {
+        logRequestDetails("POST", url, body, null);
+        return buildRequestSpec(bearerToken, jwtToken)
+                .body(body)
+                .post(url);
     }
 
-    protected Response doGet(String url, RequestSpecification requestSpec) {
-        return requestSpec.get(url);
+    public static Response sendGetRequest(String url, String bearerToken, String jwtToken, Map<String, ?> pathParams, Map<String, ?> queryParams) {
+        RequestSpecification request = buildRequestSpec(bearerToken, jwtToken);
+
+        if (pathParams != null) {
+            request.pathParams(pathParams);
+        }
+        if (queryParams != null) {
+            request.queryParams(queryParams);
+        }
+
+        logRequestDetails("GET", url, null, queryParams);
+        return request.get(url);
     }
 
-    protected Response doPatch(String url, String body, RequestSpecification requestSpec) {
-        return requestSpec.body(body).patch(url);
+    public static Response sendPatchRequest(String url, String bearerToken, String jwtToken, String body, Map<String, ?> queryParams) {
+        RequestSpecification request = buildRequestSpec(bearerToken, jwtToken);
+
+        if (queryParams != null) {
+            request.queryParams(queryParams);
+        }
+
+        logRequestDetails("PATCH", url, body, queryParams);
+        return request.body(body).patch(url);
+    }
+
+    private static void logRequestDetails(String method, String url, String body, Map<String, ?> queryParams) {
+        ExtentCucumberAdapter.addTestStepLog("Sending " + method + " request to: " + url);
+        if (queryParams != null && !queryParams.isEmpty()) {
+            ExtentCucumberAdapter.addTestStepLog("Query Params: " + queryParams.toString());
+        }
+        if (body != null && !body.isEmpty()) {
+            ExtentCucumberAdapter.addTestStepLog("Request Body:\n" + body);
+        }
+    }
+
+    public static String getTYKURL(String strEnvType, String strEndpointKey) {
+        return testDataConfig.readApplicationProperty("TYK.ENV." + strEnvType)
+                + testDataConfig.readApplicationProperty(strEndpointKey);
+    }
+
+    public static String buildAuthHeader(String bearerToken, String jwtToken) {
+        return bearerToken + " " + jwtToken;
     }
 }
