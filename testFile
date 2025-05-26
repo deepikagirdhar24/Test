@@ -1,75 +1,93 @@
 package ICOS;
 
+import ICOS.pojo.NewPersonRequest;
 import com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import commonLibrary.devHelperLibrary;
 import config.TestConfig;
 import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
+import utilities.CucumberLogger;
+import utilities.EncryptionUtil;
+import utilities.Payloads;
+import utilities.ScenarioContext;
 
+import java.util.HashMap;
 import java.util.Map;
 
-import static io.restassured.RestAssured.given;
+public class NaturalPerson extends BaseApiClient {
 
-public class BaseApiClient {
-    protected static devHelperLibrary objDevHelperLibrary = new devHelperLibrary();
-    protected static TestConfig testDataConfig = TestConfig.getTestDataConfig();
-    protected static String TYK_KEY = TestConfig.getTykApiKey();
+    private ObjectMapper objectMapper;
+    private CucumberLogger objCucumberLogger;
+    private EncryptionUtil objEncryptionUtil;
 
-    public static RequestSpecification buildRequestSpec(String strBearerToken, String strJWTToken) {
-        return given()
-                .header("Authorization", strBearerToken + " " + strJWTToken)
-                .header("X-TYK-API-KEY", TYK_KEY)
-                .header("Content-Type", "application/json");
+    public NaturalPerson() throws Exception {
+        objectMapper = new ObjectMapper();
+        objCucumberLogger = new CucumberLogger();
+        objEncryptionUtil = new EncryptionUtil();
     }
 
-    public static Response sendPostRequest(String url, String bearerToken, String jwtToken, String body) {
-        logRequestDetails("POST", url, body, null);
-        return buildRequestSpec(bearerToken, jwtToken)
-                .body(body)
-                .post(url);
+    // Create Natural Person
+    public Response createNewPerson(String strEnvType, String bearerToken, String jwtToken, Map<String, String> mapPersonDetails, ScenarioContext scenarioContext) throws JsonProcessingException {
+        String url = getTYKURL(strEnvType, "TYK.CREATENEWPERSON");
+        String body = objectMapper.writeValueAsString(Payloads.buildNewPersonPayload(mapPersonDetails));
+
+        ExtentCucumberAdapter.addTestStepLog("Creating Natural Person");
+
+        Response response = sendPostRequest(url, bearerToken, jwtToken, body);
+        String responseBody = devHelperLibrary.getResponseBody(response);
+        objCucumberLogger.PrintStatus("Response is: " + responseBody);
+
+        String objectId = response.jsonPath().getString("objectId");
+        String orderId = response.jsonPath().getString("orderId");
+        String uuid = Payloads.buildNewPersonPayload(mapPersonDetails).getStrUuid();
+
+        scenarioContext.setContext("objectId", objectId);
+        scenarioContext.setContext("orderId", orderId);
+        scenarioContext.setContext("uuid", uuid);
+
+        return response;
     }
 
-    public static Response sendGetRequest(String url, String bearerToken, String jwtToken, Map<String, ?> pathParams, Map<String, ?> queryParams) {
-        RequestSpecification request = buildRequestSpec(bearerToken, jwtToken);
+    // Get Natural Person
+    public Response getNaturalPerson(String strEnvType, String bearerToken, String jwtToken, ScenarioContext scenarioContext) {
+        String url = getTYKURL(strEnvType, "TYK.CREATENEWPERSON") + "/{id}";
+        String objectId = scenarioContext.getContext("objectId");
+        String uuid = scenarioContext.getContext("uuid");
 
-        if (pathParams != null) {
-            request.pathParams(pathParams);
-        }
-        if (queryParams != null) {
-            request.queryParams(queryParams);
-        }
+        Map<String, String> pathParams = new HashMap<>();
+        pathParams.put("id", objectId);
 
-        logRequestDetails("GET", url, null, queryParams);
-        return request.get(url);
+        Map<String, String> queryParams = new HashMap<>();
+        queryParams.put("uuid", uuid);
+        queryParams.put("minimal", "yes");
+
+        ExtentCucumberAdapter.addTestStepLog("Sending GET request for Natural Person");
+
+        Response response = sendGetRequest(url, bearerToken, jwtToken, pathParams, queryParams);
+        String responseBody = devHelperLibrary.getResponseBody(response);
+        objCucumberLogger.PrintStatus("Response is: " + responseBody);
+
+        return response;
     }
 
-    public static Response sendPatchRequest(String url, String bearerToken, String jwtToken, String body, Map<String, ?> queryParams) {
-        RequestSpecification request = buildRequestSpec(bearerToken, jwtToken);
+    // Update Natural Person
+    public Response updateNaturalPerson(String strEnvType, String bearerToken, String jwtToken,
+                                        Map<String, String> mapPersonDetails, ScenarioContext scenarioContext) throws JsonProcessingException {
+        String url = getTYKURL(strEnvType, "TYK.CREATENEWPERSON");
+        String orderId = scenarioContext.getContext("orderId");
 
-        if (queryParams != null) {
-            request.queryParams(queryParams);
-        }
+        String body = objectMapper.writeValueAsString(Payloads.buildNewPersonPayload(mapPersonDetails));
 
-        logRequestDetails("PATCH", url, body, queryParams);
-        return request.body(body).patch(url);
-    }
+        Map<String, String> queryParams = new HashMap<>();
+        queryParams.put("order", orderId);
 
-    private static void logRequestDetails(String method, String url, String body, Map<String, ?> queryParams) {
-        ExtentCucumberAdapter.addTestStepLog("Sending " + method + " request to: " + url);
-        if (queryParams != null && !queryParams.isEmpty()) {
-            ExtentCucumberAdapter.addTestStepLog("Query Params: " + queryParams.toString());
-        }
-        if (body != null && !body.isEmpty()) {
-            ExtentCucumberAdapter.addTestStepLog("Request Body:\n" + body);
-        }
-    }
+        ExtentCucumberAdapter.addTestStepLog("Sending PATCH request to update Natural Person");
 
-    public static String getTYKURL(String strEnvType, String strEndpointKey) {
-        return testDataConfig.readApplicationProperty("TYK.ENV." + strEnvType)
-                + testDataConfig.readApplicationProperty(strEndpointKey);
-    }
+        Response response = sendPatchRequest(url, bearerToken, jwtToken, body, queryParams);
+        String responseBody = devHelperLibrary.getResponseBody(response);
+        objCucumberLogger.PrintStatus("Response is: " + responseBody);
 
-    public static String buildAuthHeader(String bearerToken, String jwtToken) {
-        return bearerToken + " " + jwtToken;
+        return response;
     }
 }
