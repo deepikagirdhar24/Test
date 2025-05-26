@@ -1,5 +1,7 @@
+Format this also as BaseApiClient and give me updated code.
 package ICOS;
 
+import ICOS.pojo.LegalPersonRequest;
 import ICOS.pojo.NewPersonRequest;
 import com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -7,89 +9,152 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import commonLibrary.devHelperLibrary;
 import config.TestConfig;
 import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 import utilities.CucumberLogger;
 import utilities.EncryptionUtil;
 import utilities.Payloads;
 import utilities.ScenarioContext;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
-public class NaturalPerson extends BaseApiClient {
+import static io.restassured.RestAssured.with;
 
-    private ObjectMapper objObjectMapper;
-    private CucumberLogger objCucumberLogger;
-    private EncryptionUtil objEncryptionUtil;
+public class LegalPerson {
+    public ObjectMapper objectMapper;
+    public static EncryptionUtil objEncryptionUtil;
+    protected TestConfig testDataConfig= TestConfig.getTestDataConfig();
 
-    public NaturalPerson() throws Exception {
-        objObjectMapper = new ObjectMapper();
-        objCucumberLogger = new CucumberLogger();
-        objEncryptionUtil = new EncryptionUtil();
+    CucumberLogger objCucumberLogger;
+    devHelperLibrary objdevHelperLibrary;
+
+    public static RequestSpecification rspec;
+    private static Response response;
+    private static String strResponseBody;
+    String TYK_KEY = TestConfig.getTykApiKey();
+    String strObjectId;
+    String strOrderId;
+    String strJsonBody;
+    String strAuthentication;
+    String strTYKURL;
+
+
+    public LegalPerson() throws Exception {
+        objEncryptionUtil= new EncryptionUtil();
+        objectMapper = new ObjectMapper();
+        objCucumberLogger= new CucumberLogger();
+        objdevHelperLibrary= new devHelperLibrary();
+        rspec=objdevHelperLibrary.setup();
     }
 
-    // Create Natural Person
-    public Response createNewPerson(String strEnvType, String strBearerToken, String strJwtToken, Map<String, String> mapPersonDetails, ScenarioContext objScenarioContext) throws JsonProcessingException {
-        String strUrl = getTYKURL(strEnvType, "TYK.CREATENEWPERSON");
-        NewPersonRequest pojoNewPersonRequest = Payloads.buildNewPersonPayload(mapPersonDetails);
-        String strRequestBody = objObjectMapper.writeValueAsString(pojoNewPersonRequest);
+    //Function to create a Legal Person
+    public Response createLegalPerson(String strEnvType, String strBearerToken, String strJWTToken, Map<String, String> mapPersonDetails, ScenarioContext scenarioContext) throws JsonProcessingException {
 
-        ExtentCucumberAdapter.addTestStepLog("Creating Natural Person");
+        strAuthentication = objdevHelperLibrary.buildAuthHeader(strBearerToken, strJWTToken);
+        strTYKURL = objdevHelperLibrary.getTYKURL(strEnvType, "TYK.CREATELEGALPERSON");
 
-        Response resCreatePerson = sendPostRequest(strUrl, strBearerToken, strJwtToken, strRequestBody);
-        String strResponseBody = devHelperLibrary.getResponseBody(resCreatePerson);
-        objCucumberLogger.PrintStatus("Response is: " + strResponseBody);
+        LegalPersonRequest legalPersonRequest = Payloads.buildLegalPersonPayload(mapPersonDetails, true);
 
-        String strObjectId = resCreatePerson.jsonPath().getString("objectId");
-        String strOrderId = resCreatePerson.jsonPath().getString("orderId");
-        String strUuid = pojoNewPersonRequest.getStrUuid();
+        strJsonBody = new ObjectMapper().writeValueAsString(legalPersonRequest);
 
-        objScenarioContext.setContext("objectId", strObjectId);
-        objScenarioContext.setContext("orderId", strOrderId);
-        objScenarioContext.setContext("uuid", strUuid);
+        // Logging request details
+        ExtentCucumberAdapter.addTestStepLog("Sending request to Create Legal Person");
+        ExtentCucumberAdapter.addTestStepLog("Request URL: " + strTYKURL);
+        ExtentCucumberAdapter.addTestStepLog("Request Headers: Authorization=" + strAuthentication);
+        ExtentCucumberAdapter.addTestStepLog("Request Body:\n" + strJsonBody);
 
-        return resCreatePerson;
+        response = with().spec(rspec)
+                .header("Authorization",strBearerToken+" "+strJWTToken)
+                .header("X-TYK-API-KEY",TYK_KEY)
+                .header("Content-Type","application/json")
+                .body(strJsonBody)
+                .post(strTYKURL);
+        strResponseBody = objdevHelperLibrary.getResponseBody(response);
+
+        // Logging response details
+        ExtentCucumberAdapter.addTestStepLog("Response Code: " + response.getStatusCode());
+        ExtentCucumberAdapter.addTestStepLog("Response Body:\n" + strResponseBody);
+
+        objCucumberLogger.PrintStatus("Response is"+ strResponseBody);
+
+        strObjectId = response.jsonPath().getString("objectId");
+        strOrderId = response.jsonPath().getString("orderId");
+
+        //Store in ScenarioContext
+        scenarioContext.setContext("objectId", strObjectId);
+        scenarioContext.setContext("orderId", strOrderId);
+        scenarioContext.setContext("uuid", legalPersonRequest.getStrUuid());
+
+        return response;
     }
 
-    // Get Natural Person
-    public Response getNaturalPerson(String strEnvType, String strBearerToken, String strJwtToken, ScenarioContext objScenarioContext) {
-        String strUrl = getTYKURL(strEnvType, "TYK.CREATENEWPERSON") + "/{id}";
-        String strObjectId = objScenarioContext.getContext("objectId");
-        String strUuid = objScenarioContext.getContext("uuid");
+    // New method to get Legal Person
+    public Response getLegalPerson(String strEnvType, String strBearerToken, String strJWTToken, ScenarioContext scenarioContext) throws JsonProcessingException {
 
-        Map<String, String> mapPathParams = new HashMap<>();
-        mapPathParams.put("id", strObjectId);
+        strAuthentication = objdevHelperLibrary.buildAuthHeader(strBearerToken, strJWTToken);
 
-        Map<String, String> mapQueryParams = new HashMap<>();
-        mapQueryParams.put("uuid", strUuid);
-        mapQueryParams.put("minimal", "yes");
+        String objectId = scenarioContext.getContext("objectId"); // Path param
+        String minimal = "yes";   // Query param
 
-        ExtentCucumberAdapter.addTestStepLog("Sending GET request for Natural Person");
+        // Base URL without path or query params
+        strTYKURL = objdevHelperLibrary.getTYKURL(strEnvType, "TYK.CREATELEGALPERSON");
 
-        Response resGetPerson = sendGetRequest(strUrl, strBearerToken, strJwtToken, mapPathParams, mapQueryParams);
-        String strResponseBody = devHelperLibrary.getResponseBody(resGetPerson);
-        objCucumberLogger.PrintStatus("Response is: " + strResponseBody);
+        // Logging request details
+        ExtentCucumberAdapter.addTestStepLog("Sending GET request for Legal Person");
+        ExtentCucumberAdapter.addTestStepLog("Base URL: " + strTYKURL);
+        ExtentCucumberAdapter.addTestStepLog("Path Param - objectId: " + objectId);
+        ExtentCucumberAdapter.addTestStepLog("Query Params - minimal: " + minimal);
 
-        return resGetPerson;
+        response = with().spec(rspec)
+                .header("Authorization", strBearerToken + " " + strJWTToken)
+                .header("X-TYK-API-KEY", TYK_KEY)
+                .header("Content-Type", "application/json")
+                .pathParam("id", objectId)
+                .queryParam("minimal", minimal)
+                .get(strTYKURL + "/{id}");
+        strResponseBody = objdevHelperLibrary.getResponseBody(response);
+
+        // Logging response details
+        ExtentCucumberAdapter.addTestStepLog("Response Code: " + response.getStatusCode());
+        ExtentCucumberAdapter.addTestStepLog("Response Body:\n" + strResponseBody);
+
+        objCucumberLogger.PrintStatus("Response is"+ strResponseBody);
+
+        return response;
     }
 
-    // Update Natural Person
-    public Response updateNaturalPerson(String strEnvType, String strBearerToken, String strJwtToken,
-                                        Map<String, String> mapPersonDetails, ScenarioContext objScenarioContext) throws JsonProcessingException {
-        String strUrl = getTYKURL(strEnvType, "TYK.CREATENEWPERSON");
-        String strOrderId = objScenarioContext.getContext("orderId");
+    //Function to create Legal Person Order
+    public Response createLegalPersonOrder(String strEnvType, String strBearerToken, String strJWTToken,
+                                        Map<String, String> mapPersonDetails, ScenarioContext scenarioContext) throws JsonProcessingException {
 
-        NewPersonRequest pojoNewPersonRequest = Payloads.buildNewPersonPayload(mapPersonDetails);
-        String strRequestBody = objObjectMapper.writeValueAsString(pojoNewPersonRequest);
+        String orderId = scenarioContext.getContext("orderId");
 
-        Map<String, String> mapQueryParams = new HashMap<>();
-        mapQueryParams.put("order", strOrderId);
+        strAuthentication = objdevHelperLibrary.buildAuthHeader(strBearerToken, strJWTToken);
+        strTYKURL = objdevHelperLibrary.getTYKURL(strEnvType, "TYK.CREATELEGALPERSON");
 
-        ExtentCucumberAdapter.addTestStepLog("Sending PATCH request to update Natural Person");
+        LegalPersonRequest legalPersonRequest = Payloads.buildLegalPersonPayload(mapPersonDetails, false);
 
-        Response resUpdatePerson = sendPatchRequest(strUrl, strBearerToken, strJwtToken, strRequestBody, mapQueryParams);
-        String strResponseBody = devHelperLibrary.getResponseBody(resUpdatePerson);
-        objCucumberLogger.PrintStatus("Response is: " + strResponseBody);
+        strJsonBody = new ObjectMapper().writeValueAsString(legalPersonRequest);
 
-        return resUpdatePerson;
+        ExtentCucumberAdapter.addTestStepLog("Sending request to Create Legal Person Order");
+        ExtentCucumberAdapter.addTestStepLog("Base URL: " + strTYKURL);
+        ExtentCucumberAdapter.addTestStepLog("Query Param: order=" + orderId);
+        ExtentCucumberAdapter.addTestStepLog("Request Body:\n" + strJsonBody);
+
+        response = with().spec(rspec)
+                .header("Authorization", strBearerToken + " " + strJWTToken)
+                .header("X-TYK-API-KEY", TYK_KEY)
+                .header("Content-Type", "application/json")
+                .queryParam("order", orderId)  //query param usage
+                .body(strJsonBody)
+                .post(strTYKURL);
+
+        strResponseBody = objdevHelperLibrary.getResponseBody(response);
+
+        ExtentCucumberAdapter.addTestStepLog("Response Code: " + response.getStatusCode());
+        ExtentCucumberAdapter.addTestStepLog("Response Body:\n" + strResponseBody);
+
+        return response;
     }
+
 }
