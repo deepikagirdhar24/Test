@@ -1,44 +1,35 @@
-  Scenario Outline: Verify the Get Contact Notes API
-    Given Send Request to get Authentication Token for ICOS
-    When I generate the JWT Token
-    Then Send Request to get Contact Note Information
-    And I verify the Status Code for Contact Notes "<StatusCode>"
-    And I verify the personIds array contains "<Item>" in Contact Notes response
-    And I verify the subject is "<Subject>" in Contact Notes response
-    And I verify the notes is "<Notes>" in Contact Notes response
-    And I verify the hasFollowup is <HasFollowup> in Contact Notes response
+@And("I verify the {string} array contains {string}")
+public void iVerifyArrayContainsValue(String arrayName, String expectedValue) throws Exception {
+    boolean valueExists = JsonHelper.valueExistsInJsonArray(response, arrayName, expectedValue);
+    ExtentCucumberAdapter.addTestStepLog("Checking if " + expectedValue + " exists in array '" + arrayName + "': " + valueExists);
+    Assert.assertTrue(valueExists, "Expected value not found in '" + arrayName + "' array: " + expectedValue);
+}
 
-    Examples:
-      | StatusCode | Item      | Subject | Notes | HasFollowup |
-      |  200       | 665321701 | Subject | Notes | true        |
+@And("I verify the string field {string} is {string}")
+public void iVerifyStringFieldEquals(String fieldName, String expectedValue) throws Exception {
+    String actualValue = JsonHelper.extractStringField(response, fieldName);
+    ExtentCucumberAdapter.addTestStepLog("Expected " + fieldName + ": " + expectedValue + ", Actual: " + actualValue);
+    Assert.assertEquals(actualValue, expectedValue, fieldName + " mismatch");
+}
 
-Update the step definition as common for subject and notes, and also for others so that it can be reused.
+@And("I verify the boolean field {string} is {word}")
+public void iVerifyBooleanFieldEquals(String fieldName, String expectedBool) throws Exception {
+    boolean expectedValue = Boolean.parseBoolean(expectedBool);
+    boolean actualValue = JsonHelper.extractBooleanField(response, fieldName);
+    ExtentCucumberAdapter.addTestStepLog("Expected " + fieldName + ": " + expectedValue + ", Actual: " + actualValue);
+    Assert.assertEquals(actualValue, expectedValue, fieldName + " mismatch");
+}
 
-  @And("I verify the personIds array contains {string}")
-    public void iVerifyPersonIdArrayContainsValue(String strExpectedPersonId) throws Exception {
-        boolean boolPersonIdExists = JsonHelper.valueExistsInJsonArray(response, "personIds", strExpectedPersonId);
-        ExtentCucumberAdapter.addTestStepLog("Checking if " + strExpectedPersonId + " exists in array 'personIds': " + boolPersonIdExists);
-        Assert.assertTrue(boolPersonIdExists, "Expected value not found in 'personIds' array: " + strExpectedPersonId);
-    }
+Scenario Outline: Verify the Get Contact Notes API
+  Given Send Request to get Authentication Token for ICOS
+  When I generate the JWT Token
+  Then Send Request to get Contact Note Information
+  And I verify the Status Code for Contact Notes "<StatusCode>"
+  And I verify the "personIds" array contains "<Item>"
+  And I verify the string field "subject" is "<Subject>"
+  And I verify the string field "notes" is "<Notes>"
+  And I verify the boolean field "hasFollowup" is <HasFollowup>
 
-    @And("I verify the subject is {string}")
-    public void iVerifySubjectIs(String strExpectedSubjectVal) throws Exception {
-        String strSubjActualVal = JsonHelper.extractStringField(response, "subject");
-        ExtentCucumberAdapter.addTestStepLog("Expected subject: " + strExpectedSubjectVal + ", Actual: " + strSubjActualVal);
-        Assert.assertEquals(strSubjActualVal, strExpectedSubjectVal, "Subject mismatch");
-    }
-
-    @And("I verify the notes is {string}")
-    public void iVerifyNotesIs(String strExpectedNotesVal) throws Exception {
-        String strNotesActualVal = JsonHelper.extractStringField(response, "notes");
-        ExtentCucumberAdapter.addTestStepLog("Expected notes: " + strExpectedNotesVal + ", Actual: " + strNotesActualVal);
-        Assert.assertEquals(strNotesActualVal, strExpectedNotesVal, "Notes mismatch");
-    }
-
-    @And("I verify the hasFollowup is {word}")
-    public void iVerifyHasFollowupIs(String strExpectedBool) throws Exception {
-        boolean boolHasFollowupExpectedVal = Boolean.parseBoolean(strExpectedBool);
-        boolean boolHasFollowupActualVal = JsonHelper.extractBooleanField(response, "hasFollowup");
-        ExtentCucumberAdapter.addTestStepLog("Expected hasFollowup: " + boolHasFollowupExpectedVal + ", Actual: " + boolHasFollowupActualVal);
-        Assert.assertEquals(boolHasFollowupActualVal, boolHasFollowupExpectedVal, "hasFollowup mismatch");
-    }
+Examples:
+  | StatusCode | Item      | Subject | Notes | HasFollowup |
+  | 200        | 665321701 | Subject | Notes | true        |
