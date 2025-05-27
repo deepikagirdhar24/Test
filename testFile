@@ -1,35 +1,38 @@
-@And("I verify the {string} array contains {string}")
-public void iVerifyArrayContainsValue(String arrayName, String expectedValue) throws Exception {
-    boolean valueExists = JsonHelper.valueExistsInJsonArray(response, arrayName, expectedValue);
-    ExtentCucumberAdapter.addTestStepLog("Checking if " + expectedValue + " exists in array '" + arrayName + "': " + valueExists);
-    Assert.assertTrue(valueExists, "Expected value not found in '" + arrayName + "' array: " + expectedValue);
-}
+  Scenario Outline: Verify the Get Legal Person API
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    Then Send request to generate Legal Person with below details
+      | subType         | <subType>       |
+      | domicileCountry | <domiCountry>   |
+      | name            | <name>          |
+    And I verify the Status Code for Legal Person "<statusCode>"
+    Then Send Request to get Legal Person
+    And I verify the subType is "<subType>" in Legal Person response
+    And I verify the country is "<domiCountry>" in Legal Person response
+    And I verify the name is "<name>" in Legal Person response
 
-@And("I verify the string field {string} is {string}")
-public void iVerifyStringFieldEquals(String fieldName, String expectedValue) throws Exception {
-    String actualValue = JsonHelper.extractStringField(response, fieldName);
-    ExtentCucumberAdapter.addTestStepLog("Expected " + fieldName + ": " + expectedValue + ", Actual: " + actualValue);
-    Assert.assertEquals(actualValue, expectedValue, fieldName + " mismatch");
-}
+    Examples:
+      | subType        | domiCountry | name             | statusCode |
+      | pers_form_ass  | GB          | Company Name Ltd | 200        |
 
-@And("I verify the boolean field {string} is {word}")
-public void iVerifyBooleanFieldEquals(String fieldName, String expectedBool) throws Exception {
-    boolean expectedValue = Boolean.parseBoolean(expectedBool);
-    boolean actualValue = JsonHelper.extractBooleanField(response, fieldName);
-    ExtentCucumberAdapter.addTestStepLog("Expected " + fieldName + ": " + expectedValue + ", Actual: " + actualValue);
-    Assert.assertEquals(actualValue, expectedValue, fieldName + " mismatch");
-}
 
-Scenario Outline: Verify the Get Contact Notes API
-  Given Send Request to get Authentication Token for ICOS
-  When I generate the JWT Token
-  Then Send Request to get Contact Note Information
-  And I verify the Status Code for Contact Notes "<StatusCode>"
-  And I verify the "personIds" array contains "<Item>"
-  And I verify the string field "subject" is "<Subject>"
-  And I verify the string field "notes" is "<Notes>"
-  And I verify the boolean field "hasFollowup" is <HasFollowup>
+ @And("I verify the subType is {string}")
+    public void iVerifySubType(String strExpectedSubType) throws Exception {
+        String strActualSubType = JsonHelper.extractStringField(response, "subType.key");
+        ExtentCucumberAdapter.addTestStepLog("Expected subType.key: " + strExpectedSubType + ", Actual: " + strActualSubType);
+        Assert.assertEquals(strExpectedSubType, strActualSubType);
+    }
 
-Examples:
-  | StatusCode | Item      | Subject | Notes | HasFollowup |
-  | 200        | 665321701 | Subject | Notes | true        |
+    @And("I verify the country is {string}")
+    public void iVerifyCountry(String strExpectedCountry) throws Exception {
+        String strActualCountry = JsonHelper.extractStringField(response, "residenceAddress.country");
+        ExtentCucumberAdapter.addTestStepLog("Expected residenceAddress.country: " + strExpectedCountry + ", Actual: " + strActualCountry);
+        Assert.assertEquals(strExpectedCountry, strActualCountry);
+    }
+
+    @And("I verify the name is {string}")
+    public void iVerifyName(String strExpectedName) throws Exception {
+        String strActualName = JsonHelper.extractStringField(response, "name");
+        ExtentCucumberAdapter.addTestStepLog("Expected Name: " + strExpectedName + ", Actual: " + strActualName);
+        Assert.assertEquals(strExpectedName, strActualName);
+    }
