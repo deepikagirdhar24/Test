@@ -1,9 +1,3 @@
-Can you incorportate this also in APICLinet -
-
-// Logging response details
-        ExtentCucumberAdapter.addTestStepLog("Response Code: " + response.getStatusCode());
-        ExtentCucumberAdapter.addTestStepLog("Response Body:\n" + strResponseBody);
-
 package ICOS;
 
 import com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter;
@@ -54,7 +48,9 @@ public class BaseApiClient {
         }
 
         logRequestDetails("POST", url, body, queryParams);
-        return request.body(body).post(url);
+        Response response = request.body(body).post(url);
+        logResponseDetails(response);
+        return response;
     }
 
     public static Response sendGetRequest(String url, String bearerToken, String jwtToken, Map<String, ?> pathParams, Map<String, ?> queryParams) {
@@ -68,7 +64,9 @@ public class BaseApiClient {
         }
 
         logRequestDetails("GET", url, null, queryParams);
-        return request.get(url);
+        Response response = request.get(url);
+        logResponseDetails(response);
+        return response;
     }
 
     public static Response sendPatchRequest(String url, String bearerToken, String jwtToken, String body, Map<String, ?> queryParams) {
@@ -79,7 +77,9 @@ public class BaseApiClient {
         }
 
         logRequestDetails("PATCH", url, body, queryParams);
-        return request.body(body).patch(url);
+        Response response = request.body(body).patch(url);
+        logResponseDetails(response);
+        return response;
     }
 
     private static void logRequestDetails(String method, String url, String body, Map<String, ?> queryParams) {
@@ -92,6 +92,12 @@ public class BaseApiClient {
         }
     }
 
+    private static void logResponseDetails(Response response) {
+        String strResponseBody = devHelperLibrary.getResponseBody(response);
+        ExtentCucumberAdapter.addTestStepLog("Response Code: " + response.getStatusCode());
+        ExtentCucumberAdapter.addTestStepLog("Response Body:\n" + strResponseBody);
+    }
+
     public static String getTYKURL(String strEnvType, String strEndpointKey) {
         return testDataConfig.readApplicationProperty("TYK.ENV." + strEnvType)
                 + testDataConfig.readApplicationProperty(strEndpointKey);
@@ -99,107 +105,5 @@ public class BaseApiClient {
 
     public static String buildAuthHeader(String bearerToken, String jwtToken) {
         return bearerToken + " " + jwtToken;
-    }
-}
-
-ALso, incorportae this in Legal person - 
-
-package ICOS;
-
-import ICOS.pojo.LegalPersonRequest;
-import com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import commonLibrary.devHelperLibrary;
-import io.restassured.response.Response;
-import utilities.CucumberLogger;
-import utilities.EncryptionUtil;
-import utilities.Payloads;
-import utilities.ScenarioContext;
-
-import java.util.HashMap;
-import java.util.Map;
-
-public class LegalPerson extends BaseApiClient {
-
-    private ObjectMapper objObjectMapper;
-    private CucumberLogger objCucumberLogger;
-    private EncryptionUtil objEncryptionUtil;
-
-    public LegalPerson() throws Exception {
-        objObjectMapper = new ObjectMapper();
-        objCucumberLogger = new CucumberLogger();
-        objEncryptionUtil = new EncryptionUtil();
-    }
-
-    // Create Legal Person
-    public Response createLegalPerson(String strEnvType, String strBearerToken, String strJWTToken,
-                                      Map<String, String> mapPersonDetails, ScenarioContext scenarioContext) throws JsonProcessingException {
-
-        String strTYKURL = getTYKURL(strEnvType, "TYK.CREATELEGALPERSON");
-        LegalPersonRequest pojoLegalPersonRequest = Payloads.buildLegalPersonPayload(mapPersonDetails, true);
-        String strRequestBody = objObjectMapper.writeValueAsString(pojoLegalPersonRequest);
-
-        ExtentCucumberAdapter.addTestStepLog("Sending request to Create Legal Person");
-
-        Response objResponse = sendPostRequest(strTYKURL, strBearerToken, strJWTToken, strRequestBody, null);
-        String strResponseBody = devHelperLibrary.getResponseBody(objResponse);
-        objCucumberLogger.PrintStatus("Response is: " + strResponseBody);
-
-        String strLegalPersonObjectId = objResponse.jsonPath().getString("objectId");
-        String strLegalPersonOrderId = objResponse.jsonPath().getString("orderId");
-        String strLegalPersonUuid = pojoLegalPersonRequest.getStrUuid();
-
-        scenarioContext.setContext("legalPersonObjectId", strLegalPersonObjectId);
-        scenarioContext.setContext("legalPersonOrderId", strLegalPersonOrderId);
-        scenarioContext.setContext("legalPersonUuid", strLegalPersonUuid);
-
-        return objResponse;
-    }
-
-    // Get Legal Person
-    public Response getLegalPerson(String strEnvType, String strBearerToken, String strJWTToken,
-                                   ScenarioContext scenarioContext) {
-
-        String strTYKURL = getTYKURL(strEnvType, "TYK.CREATELEGALPERSON") + "/{id}";
-        String strLegalPersonObjectId = scenarioContext.getContext("legalPersonObjectId");
-        String strLegalPersonUuid = scenarioContext.getContext("legalPersonUuid");
-
-        Map<String, String> mapPathParams = new HashMap<>();
-        mapPathParams.put("id", strLegalPersonObjectId);
-
-        Map<String, String> mapQueryParams = new HashMap<>();
-        mapQueryParams.put("uuid", strLegalPersonUuid);
-        mapQueryParams.put("minimal", "yes");
-
-        ExtentCucumberAdapter.addTestStepLog("Sending GET request for Legal Person");
-
-        Response objResponse = sendGetRequest(strTYKURL, strBearerToken, strJWTToken, mapPathParams, mapQueryParams);
-        String strResponseBody = devHelperLibrary.getResponseBody(objResponse);
-        objCucumberLogger.PrintStatus("Response is: " + strResponseBody);
-
-        return objResponse;
-    }
-
-    // Update Legal Person (Order)
-    public Response createLegalPersonOrder(String strEnvType, String strBearerToken, String strJWTToken,
-                                           Map<String, String> mapPersonDetails, ScenarioContext scenarioContext) throws JsonProcessingException {
-
-        String strLegalPersonOrderId = scenarioContext.getContext("legalPersonOrderId");
-        String strTYKURL = getTYKURL(strEnvType, "TYK.CREATELEGALPERSON");
-
-        LegalPersonRequest pojoLegalPersonRequest = Payloads.buildLegalPersonPayload(mapPersonDetails, false);
-        String strRequestBody = objObjectMapper.writeValueAsString(pojoLegalPersonRequest);
-
-        Map<String, String> mapQueryParams = new HashMap<>();
-        mapQueryParams.put("order", strLegalPersonOrderId);
-
-        ExtentCucumberAdapter.addTestStepLog("Sending request to Create Legal Person Order");
-
-        Response objResponse = sendPostRequest(strTYKURL, strBearerToken, strJWTToken, strRequestBody, mapQueryParams);
-        String strResponseBody = devHelperLibrary.getResponseBody(objResponse);
-        objCucumberLogger.PrintStatus("Response is: " + strResponseBody);
-
-        return objResponse;
     }
 }
