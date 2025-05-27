@@ -1,53 +1,44 @@
-package ICOS.pojo;
+  Scenario Outline: Verify the Get Contact Notes API
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    Then Send Request to get Contact Note Information
+    And I verify the Status Code for Contact Notes "<StatusCode>"
+    And I verify the personIds array contains "<Item>" in Contact Notes response
+    And I verify the subject is "<Subject>" in Contact Notes response
+    And I verify the notes is "<Notes>" in Contact Notes response
+    And I verify the hasFollowup is <HasFollowup> in Contact Notes response
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+    Examples:
+      | StatusCode | Item      | Subject | Notes | HasFollowup |
+      |  200       | 665321701 | Subject | Notes | true        |
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class LegalPersonRequest {
+Update the step definition as common for subject and notes, and also for others so that it can be reused.
 
-    @JsonProperty("uuid")
-    private String strUuid;
-
-    @JsonProperty("subType")
-    private String strSubType;
-
-    @JsonProperty("domiCountry")
-    private String strDomiCountry;
-
-    @JsonProperty("name")
-    private String strName;
-
-    // Getters and Setters
-    public String getStrUuid() {
-        return strUuid;
+  @And("I verify the personIds array contains {string}")
+    public void iVerifyPersonIdArrayContainsValue(String strExpectedPersonId) throws Exception {
+        boolean boolPersonIdExists = JsonHelper.valueExistsInJsonArray(response, "personIds", strExpectedPersonId);
+        ExtentCucumberAdapter.addTestStepLog("Checking if " + strExpectedPersonId + " exists in array 'personIds': " + boolPersonIdExists);
+        Assert.assertTrue(boolPersonIdExists, "Expected value not found in 'personIds' array: " + strExpectedPersonId);
     }
 
-    public void setStrUuid(String strUuid) {
-        this.strUuid = strUuid;
+    @And("I verify the subject is {string}")
+    public void iVerifySubjectIs(String strExpectedSubjectVal) throws Exception {
+        String strSubjActualVal = JsonHelper.extractStringField(response, "subject");
+        ExtentCucumberAdapter.addTestStepLog("Expected subject: " + strExpectedSubjectVal + ", Actual: " + strSubjActualVal);
+        Assert.assertEquals(strSubjActualVal, strExpectedSubjectVal, "Subject mismatch");
     }
 
-    public String getStrSubType() {
-        return strSubType;
+    @And("I verify the notes is {string}")
+    public void iVerifyNotesIs(String strExpectedNotesVal) throws Exception {
+        String strNotesActualVal = JsonHelper.extractStringField(response, "notes");
+        ExtentCucumberAdapter.addTestStepLog("Expected notes: " + strExpectedNotesVal + ", Actual: " + strNotesActualVal);
+        Assert.assertEquals(strNotesActualVal, strExpectedNotesVal, "Notes mismatch");
     }
 
-    public void setStrSubType(String strSubType) {
-        this.strSubType = strSubType;
+    @And("I verify the hasFollowup is {word}")
+    public void iVerifyHasFollowupIs(String strExpectedBool) throws Exception {
+        boolean boolHasFollowupExpectedVal = Boolean.parseBoolean(strExpectedBool);
+        boolean boolHasFollowupActualVal = JsonHelper.extractBooleanField(response, "hasFollowup");
+        ExtentCucumberAdapter.addTestStepLog("Expected hasFollowup: " + boolHasFollowupExpectedVal + ", Actual: " + boolHasFollowupActualVal);
+        Assert.assertEquals(boolHasFollowupActualVal, boolHasFollowupExpectedVal, "hasFollowup mismatch");
     }
-
-    public String getStrDomiCountry() {
-        return strDomiCountry;
-    }
-
-    public void setStrDomiCountry(String strDomiCountry) {
-        this.strDomiCountry = strDomiCountry;
-    }
-
-    public String getStrName() {
-        return strName;
-    }
-
-    public void setStrName(String strName) {
-        this.strName = strName;
-    }
-}
