@@ -1,109 +1,40 @@
-package ICOS;
+In this  Payloads.buildLegalPersonPayload(mapPersonDetails, false); w era ecalling the function below - 
 
-import com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter;
-import commonLibrary.devHelperLibrary;
-import config.TestConfig;
-import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
+    public static LegalPersonRequest buildLegalPersonPayload(Map<String, String> mapPersonDetails, boolean includeUuid) {
 
-import java.util.Map;
+        LegalPersonRequest legalPersonRequest = new LegalPersonRequest();
 
-import static io.restassured.RestAssured.given;
-
-public class BaseApiClient {
-    protected static devHelperLibrary objDevHelperLibrary;
-
-    static {
-        try {
-            objDevHelperLibrary = new devHelperLibrary();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    protected static TestConfig testDataConfig;
-
-    static {
-        try {
-            testDataConfig = TestConfig.getTestDataConfig();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    protected static String TYK_KEY = TestConfig.getTykApiKey();
-
-    public static RequestSpecification buildRequestSpec(String strBearerToken, String strJWTToken) {
-        return given()
-                .header("Authorization", buildAuthHeader(strBearerToken, strJWTToken))
-                .header("X-TYK-API-KEY", TYK_KEY)
-                .header("Content-Type", "application/json");
-    }
-
-    public static Response sendPostRequest(String url, String bearerToken, String jwtToken, String body, Map<String, ?> queryParams) {
-        RequestSpecification request = buildRequestSpec(bearerToken, jwtToken);
-
-        if (queryParams != null && !queryParams.isEmpty()) {
-            request.queryParams(queryParams);
+        if (includeUuid) {
+            String uuid = UUID.randomUUID().toString().substring(0, 7);
+            legalPersonRequest.setStrUuid(uuid);
         }
 
-        logRequestDetails("POST", url, body, queryParams);
-        Response response = request.body(body).post(url);
-        logResponseDetails(response);
-        return response;
+        legalPersonRequest.setStrSubType(mapPersonDetails.get("subType"));
+        legalPersonRequest.setStrDomiCountry(mapPersonDetails.get("domicileCountry"));
+        legalPersonRequest.setStrName(mapPersonDetails.get("name"));
+
+        return legalPersonRequest;
     }
 
-    public static Response sendGetRequest(String url, String bearerToken, String jwtToken, Map<String, ?> pathParams, Map<String, ?> queryParams) {
-        RequestSpecification request = buildRequestSpec(bearerToken, jwtToken);
+public Response createLegalPersonOrder(String strEnvType, String strBearerToken, String strJWTToken,
+                                           Map<String, String> mapPersonDetails, ScenarioContext scenarioContext) throws JsonProcessingException {
 
-        if (pathParams != null) {
-            request.pathParams(pathParams);
-        }
-        if (queryParams != null) {
-            request.queryParams(queryParams);
-        }
+        String strLegalPersonOrderId = scenarioContext.getContext("legalPersonOrderId");
+        String strTYKURL = getTYKURL(strEnvType, "TYK.CREATELEGALPERSON");
 
-        logRequestDetails("GET", url, null, queryParams);
-        Response response = request.get(url);
-        logResponseDetails(response);
-        return response;
+        LegalPersonRequest pojoLegalPersonRequest = Payloads.buildLegalPersonPayload(mapPersonDetails, false);
+        String strRequestBody = objObjectMapper.writeValueAsString(pojoLegalPersonRequest);
+
+        Map<String, String> mapQueryParams = new HashMap<>();
+        mapQueryParams.put("order", strLegalPersonOrderId);
+
+        ExtentCucumberAdapter.addTestStepLog("Sending request to Create Legal Person Order");
+
+        Response objResponse = sendPostRequest(strTYKURL, strBearerToken, strJWTToken, strRequestBody, mapQueryParams);
+        String strResponseBody = devHelperLibrary.getResponseBody(objResponse);
+        objCucumberLogger.PrintStatus("Response is: " + strResponseBody);
+
+        return objResponse;
     }
 
-    public static Response sendPatchRequest(String url, String bearerToken, String jwtToken, String body, Map<String, ?> queryParams) {
-        RequestSpecification request = buildRequestSpec(bearerToken, jwtToken);
-
-        if (queryParams != null) {
-            request.queryParams(queryParams);
-        }
-
-        logRequestDetails("PATCH", url, body, queryParams);
-        Response response = request.body(body).patch(url);
-        logResponseDetails(response);
-        return response;
-    }
-
-    private static void logRequestDetails(String method, String url, String body, Map<String, ?> queryParams) {
-        ExtentCucumberAdapter.addTestStepLog("Sending " + method + " request to: " + url);
-        if (queryParams != null && !queryParams.isEmpty()) {
-            ExtentCucumberAdapter.addTestStepLog("Query Params: " + queryParams.toString());
-        }
-        if (body != null && !body.isEmpty()) {
-            ExtentCucumberAdapter.addTestStepLog("Request Body:\n" + body);
-        }
-    }
-
-    private static void logResponseDetails(Response response) {
-        String strResponseBody = devHelperLibrary.getResponseBody(response);
-        ExtentCucumberAdapter.addTestStepLog("Response Code: " + response.getStatusCode());
-        ExtentCucumberAdapter.addTestStepLog("Response Body:\n" + strResponseBody);
-    }
-
-    public static String getTYKURL(String strEnvType, String strEndpointKey) {
-        return testDataConfig.readApplicationProperty("TYK.ENV." + strEnvType)
-                + testDataConfig.readApplicationProperty(strEndpointKey);
-    }
-
-    public static String buildAuthHeader(String bearerToken, String jwtToken) {
-        return bearerToken + " " + jwtToken;
-    }
-}
+when it is logging details in reports - there it is shwong uuid as null, we do not want to show uuid there
