@@ -1,38 +1,42 @@
-  Scenario Outline: Verify the Get Legal Person API
-    Given Send Request to get Authentication Token for ICOS
-    When I generate the JWT Token
-    Then Send request to generate Legal Person with below details
-      | subType         | <subType>       |
-      | domicileCountry | <domiCountry>   |
-      | name            | <name>          |
-    And I verify the Status Code for Legal Person "<statusCode>"
-    Then Send Request to get Legal Person
-    And I verify the subType is "<subType>" in Legal Person response
-    And I verify the country is "<domiCountry>" in Legal Person response
-    And I verify the name is "<name>" in Legal Person response
+Scenario Outline: Verify the Get Legal Person API
+  Given Send Request to get Authentication Token for ICOS
+  When I generate the JWT Token
+  Then Send request to generate Legal Person with below details
+    | subType         | <subType>       |
+    | domicileCountry | <domiCountry>   |
+    | name            | <name>          |
+  And I verify the Status Code for Legal Person "<statusCode>"
+  Then Send Request to get Legal Person
+  And I verify the string field "subType.key" is "<subType>" in Legal Person response
+  And I verify the string field "residenceAddress.country" is "<domiCountry>" in Legal Person response
+  And I verify the string field "name" is "<name>" in Legal Person response
 
-    Examples:
-      | subType        | domiCountry | name             | statusCode |
-      | pers_form_ass  | GB          | Company Name Ltd | 200        |
+@And("I verify the array field {string} contains {string}")
+public void iVerifyArrayFieldContainsValue(String jsonArrayPath, String expectedValue) throws Exception {
+    boolean valueExists = JsonHelper.valueExistsInJsonArray(response, jsonArrayPath, expectedValue);
+    ExtentCucumberAdapter.addTestStepLog("Expected value in array '" + jsonArrayPath + "': " + expectedValue + " → Found: " + valueExists);
+    Assert.assertTrue(valueExists, "Value '" + expectedValue + "' not found in array: " + jsonArrayPath);
+}
 
+@And("I verify the string field {string} is {string}")
+public void iVerifyStringFieldEquals(String jsonPath, String expectedValue) throws Exception {
+    String actualValue = JsonHelper.extractStringField(response, jsonPath);
+    ExtentCucumberAdapter.addTestStepLog("Expected value at '" + jsonPath + "': " + expectedValue + ", Actual: " + actualValue);
+    Assert.assertEquals(actualValue, expectedValue, "Mismatch at: " + jsonPath);
+}
 
- @And("I verify the subType is {string}")
-    public void iVerifySubType(String strExpectedSubType) throws Exception {
-        String strActualSubType = JsonHelper.extractStringField(response, "subType.key");
-        ExtentCucumberAdapter.addTestStepLog("Expected subType.key: " + strExpectedSubType + ", Actual: " + strActualSubType);
-        Assert.assertEquals(strExpectedSubType, strActualSubType);
-    }
+@And("I verify the boolean field {string} is {word}")
+public void iVerifyBooleanFieldEquals(String jsonPath, String expectedBool) throws Exception {
+    boolean expectedValue = Boolean.parseBoolean(expectedBool);
+    boolean actualValue = JsonHelper.extractBooleanField(response, jsonPath);
+    ExtentCucumberAdapter.addTestStepLog("Expected boolean at '" + jsonPath + "': " + expectedValue + ", Actual: " + actualValue);
+    Assert.assertEquals(actualValue, expectedValue, "Mismatch at: " + jsonPath);
+}
 
-    @And("I verify the country is {string}")
-    public void iVerifyCountry(String strExpectedCountry) throws Exception {
-        String strActualCountry = JsonHelper.extractStringField(response, "residenceAddress.country");
-        ExtentCucumberAdapter.addTestStepLog("Expected residenceAddress.country: " + strExpectedCountry + ", Actual: " + strActualCountry);
-        Assert.assertEquals(strExpectedCountry, strActualCountry);
-    }
+@And("I verify the string field {string} is {string} in Legal Person response")
+public void iVerifyStringFieldInLegalPerson(String jsonPath, String expectedValue) throws Exception {
+    String actualValue = JsonHelper.extractStringField(response, jsonPath);
+    ExtentCucumberAdapter.addTestStepLog("Expected value at '" + jsonPath + "': " + expectedValue + ", Actual: " + actualValue);
+    Assert.assertEquals(actualValue, expectedValue, "Mismatch at: " + jsonPath);
+}
 
-    @And("I verify the name is {string}")
-    public void iVerifyName(String strExpectedName) throws Exception {
-        String strActualName = JsonHelper.extractStringField(response, "name");
-        ExtentCucumberAdapter.addTestStepLog("Expected Name: " + strExpectedName + ", Actual: " + strActualName);
-        Assert.assertEquals(strExpectedName, strActualName);
-    }
