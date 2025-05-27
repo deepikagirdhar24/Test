@@ -1,40 +1,53 @@
-In this  Payloads.buildLegalPersonPayload(mapPersonDetails, false); w era ecalling the function below - 
+Thi si smy POJO where to update - 
 
-    public static LegalPersonRequest buildLegalPersonPayload(Map<String, String> mapPersonDetails, boolean includeUuid) {
+package ICOS.pojo;
 
-        LegalPersonRequest legalPersonRequest = new LegalPersonRequest();
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-        if (includeUuid) {
-            String uuid = UUID.randomUUID().toString().substring(0, 7);
-            legalPersonRequest.setStrUuid(uuid);
-        }
+public class LegalPersonRequest {
 
-        legalPersonRequest.setStrSubType(mapPersonDetails.get("subType"));
-        legalPersonRequest.setStrDomiCountry(mapPersonDetails.get("domicileCountry"));
-        legalPersonRequest.setStrName(mapPersonDetails.get("name"));
+    @JsonProperty("uuid")
+    private String strUuid;
 
-        return legalPersonRequest;
+    @JsonProperty("subType")
+    private String strSubType;
+
+    @JsonProperty("domiCountry")
+    private String strDomiCountry;
+
+    @JsonProperty("name")
+    private String strName;
+
+    // Getters and Setters
+    public String getStrUuid() {
+        return strUuid;
     }
 
-public Response createLegalPersonOrder(String strEnvType, String strBearerToken, String strJWTToken,
-                                           Map<String, String> mapPersonDetails, ScenarioContext scenarioContext) throws JsonProcessingException {
-
-        String strLegalPersonOrderId = scenarioContext.getContext("legalPersonOrderId");
-        String strTYKURL = getTYKURL(strEnvType, "TYK.CREATELEGALPERSON");
-
-        LegalPersonRequest pojoLegalPersonRequest = Payloads.buildLegalPersonPayload(mapPersonDetails, false);
-        String strRequestBody = objObjectMapper.writeValueAsString(pojoLegalPersonRequest);
-
-        Map<String, String> mapQueryParams = new HashMap<>();
-        mapQueryParams.put("order", strLegalPersonOrderId);
-
-        ExtentCucumberAdapter.addTestStepLog("Sending request to Create Legal Person Order");
-
-        Response objResponse = sendPostRequest(strTYKURL, strBearerToken, strJWTToken, strRequestBody, mapQueryParams);
-        String strResponseBody = devHelperLibrary.getResponseBody(objResponse);
-        objCucumberLogger.PrintStatus("Response is: " + strResponseBody);
-
-        return objResponse;
+    public void setStrUuid(String strUuid) {
+        this.strUuid = strUuid;
     }
 
-when it is logging details in reports - there it is shwong uuid as null, we do not want to show uuid there
+    public String getStrSubType() {
+        return strSubType;
+    }
+
+    public void setStrSubType(String strSubType) {
+        this.strSubType = strSubType;
+    }
+
+    public String getStrDomiCountry() {
+        return strDomiCountry;
+    }
+
+    public void setStrDomiCountry(String strDomiCountry) {
+        this.strDomiCountry = strDomiCountry;
+    }
+
+    public String getStrName() {
+        return strName;
+    }
+
+    public void setStrName(String strName) {
+        this.strName = strName;
+    }
+}
