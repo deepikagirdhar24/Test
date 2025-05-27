@@ -1,42 +1,67 @@
-Scenario Outline: Verify the Get Legal Person API
-  Given Send Request to get Authentication Token for ICOS
-  When I generate the JWT Token
-  Then Send request to generate Legal Person with below details
-    | subType         | <subType>       |
-    | domicileCountry | <domiCountry>   |
-    | name            | <name>          |
-  And I verify the Status Code for Legal Person "<statusCode>"
-  Then Send Request to get Legal Person
-  And I verify the string field "subType.key" is "<subType>" in Legal Person response
-  And I verify the string field "residenceAddress.country" is "<domiCountry>" in Legal Person response
-  And I verify the string field "name" is "<name>" in Legal Person response
+Update this also - 
 
-@And("I verify the array field {string} contains {string}")
-public void iVerifyArrayFieldContainsValue(String jsonArrayPath, String expectedValue) throws Exception {
-    boolean valueExists = JsonHelper.valueExistsInJsonArray(response, jsonArrayPath, expectedValue);
-    ExtentCucumberAdapter.addTestStepLog("Expected value in array '" + jsonArrayPath + "': " + expectedValue + " → Found: " + valueExists);
-    Assert.assertTrue(valueExists, "Value '" + expectedValue + "' not found in array: " + jsonArrayPath);
-}
+  Scenario Outline: Verify the Get Natural Persons API
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    Then Send request to generate New Person with below details
+      | firstName       | <firstName>     |
+      | lastName        | <lastName>      |
+      | subType         | <subType>       |
+      | domicileCountry | <domiCountry>   |
+      | gender          | <gender>        |
+      | nationalities   | <nationalities> |
+    And I verify the Status Code for Natural Persons "<statusCode>"
+    Then Send Request to get Natural Person
+    And I verify the firstName is "<firstName>" in Natural Person response
+    And I verify the lastName is "<lastName>" in Natural Person response
+    And I verify the subType key is "<subType>" in Natural Person response
+    And I verify the gender key is "<gender>" in Natural Person response
+    And I verify the domiCountry is "<domiCountry>" in Natural Person response
+    And I verify the nationalities array contains "<nationalities>" in Natural Person response
 
-@And("I verify the string field {string} is {string}")
-public void iVerifyStringFieldEquals(String jsonPath, String expectedValue) throws Exception {
-    String actualValue = JsonHelper.extractStringField(response, jsonPath);
-    ExtentCucumberAdapter.addTestStepLog("Expected value at '" + jsonPath + "': " + expectedValue + ", Actual: " + actualValue);
-    Assert.assertEquals(actualValue, expectedValue, "Mismatch at: " + jsonPath);
-}
+    Examples:
+      | firstName | lastName | subType        | domiCountry | gender | nationalities | statusCode |
+      | Firstname | Lastname | pers_form_ass  | CH          | male   | CH            | 200        |
 
-@And("I verify the boolean field {string} is {word}")
-public void iVerifyBooleanFieldEquals(String jsonPath, String expectedBool) throws Exception {
-    boolean expectedValue = Boolean.parseBoolean(expectedBool);
-    boolean actualValue = JsonHelper.extractBooleanField(response, jsonPath);
-    ExtentCucumberAdapter.addTestStepLog("Expected boolean at '" + jsonPath + "': " + expectedValue + ", Actual: " + actualValue);
-    Assert.assertEquals(actualValue, expectedValue, "Mismatch at: " + jsonPath);
-}
 
-@And("I verify the string field {string} is {string} in Legal Person response")
-public void iVerifyStringFieldInLegalPerson(String jsonPath, String expectedValue) throws Exception {
-    String actualValue = JsonHelper.extractStringField(response, jsonPath);
-    ExtentCucumberAdapter.addTestStepLog("Expected value at '" + jsonPath + "': " + expectedValue + ", Actual: " + actualValue);
-    Assert.assertEquals(actualValue, expectedValue, "Mismatch at: " + jsonPath);
-}
+@And("I verify the firstName is {string}")
+    public void iVerifyFirstName(String strExpectedFirstName) throws Exception {
+        String strActualFirstName = JsonHelper.extractStringField(response, "firstName");
+        ExtentCucumberAdapter.addTestStepLog("Expected firstName: " + strExpectedFirstName + ", Actual: " + strActualFirstName);
+        Assert.assertEquals(strExpectedFirstName, strActualFirstName);
+    }
 
+    @And("I verify the lastName is {string}")
+    public void iVerifyLastName(String strExpectedLastName) throws Exception {
+        String strActualLastName = JsonHelper.extractStringField(response, "lastName");
+        ExtentCucumberAdapter.addTestStepLog("Expected lastName: " + strExpectedLastName + ", Actual: " + strActualLastName);
+        Assert.assertEquals(strExpectedLastName, strActualLastName);
+    }
+
+    @And("I verify the subType key is {string}")
+    public void iVerifySubTypeKey(String strExpectedSubType) throws Exception {
+        String strActualSubType = JsonHelper.extractStringField(response, "subType.key");
+        ExtentCucumberAdapter.addTestStepLog("Expected subType.key: " + strExpectedSubType + ", Actual: " + strActualSubType);
+        Assert.assertEquals(strExpectedSubType, strActualSubType);
+    }
+
+    @And("I verify the gender key is {string}")
+    public void iVerifyGenderKey(String strExpectedGender) throws Exception {
+        String strActualGender = JsonHelper.extractStringField(response, "gender.key");
+        ExtentCucumberAdapter.addTestStepLog("Expected gender.key: " + strExpectedGender + ", Actual: " + strActualGender);
+        Assert.assertEquals(strExpectedGender, strActualGender);
+    }
+
+    @And("I verify the domiCountry is {string}")
+    public void iVerifyDomiCountry(String strExpectedDomiCountry) throws Exception {
+        String strActualDomiCountry = JsonHelper.extractStringField(response, "domiCountry");
+        ExtentCucumberAdapter.addTestStepLog("Expected domiCountry: " + strExpectedDomiCountry + ", Actual: " + strActualDomiCountry);
+        Assert.assertEquals(strExpectedDomiCountry, strActualDomiCountry);
+    }
+
+    @And("I verify the nationalities array contains {string}")
+    public void iVerifyNationalitiesArrayContains(String strExpectedNationality) throws Exception {
+        boolean blnNationalityExists = JsonHelper.valueExistsInJsonArray(response, "nationalities", strExpectedNationality);
+        ExtentCucumberAdapter.addTestStepLog("Checking if nationalities array contains: " + strExpectedNationality + " -> " + blnNationalityExists);
+        Assert.assertTrue(blnNationalityExists, "Expected nationality not found in array: " + strExpectedNationality);
+    }
