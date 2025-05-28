@@ -1,43 +1,38 @@
-Feature: Verify Work Requests API
+public static WorkRequest buildWorkRequestPayload(Map<String, String> mapWorkRequestDetails) {
+    WorkRequest workRequest = new WorkRequest();
 
-  Scenario Outline: Verify the Post Work Request API with valid data - <Comments>
-    Given Send Request to get Authentication Token for ICOS
-    When I generate the JWT Token
-    Then Send Request to create Work Request with below details
-      | bpId          | <bpId>        |
-      | type          | <type>        |
-      | subject       | <subject>     |
-      | description   | <description> |
+    workRequest.setStrBpId(mapWorkRequestDetails.get("bpId"));
+    workRequest.setStrType(mapWorkRequestDetails.get("type"));
+    workRequest.setStrSubject(mapWorkRequestDetails.get("subject"));
+    workRequest.setStrDescription(mapWorkRequestDetails.get("description"));
 
-    Examples:
-      | bpId      | type      | subject | description  |
-      | 66329769  | pay_domq  | Subject | Description  |
+    String dueDateInput = mapWorkRequestDetails.getOrDefault("dueDate", "FUTURE");
+    LocalDate dueDate;
 
-
-
-    @Then("Send Request to create Work Request with below details")
-    public void sendRequestToCreateWorkRequestWithDetails(DataTable dataTable) throws JsonProcessingException {
-        Map<String, String> mapWorkRequestDetails = dataTable.asMap(String.class, String.class);
-        String jwtToken = scenarioContext.getContext("JWTToken");
-        response = objWorkRequest.createWorkRequest(strEnvType, "Bearer", jwtToken, mapWorkRequestDetails, scenarioContext);
+    switch (dueDateInput.toUpperCase()) {
+        case "PAST":
+            dueDate = LocalDate.now().minusDays(7); // 1 week ago
+            break;
+        case "TODAY":
+            dueDate = LocalDate.now();
+            break;
+        default:
+            dueDate = LocalDate.now().plusWeeks(1); // FUTURE (default)
     }
 
-    // Create Work Request
-    public Response createWorkRequest(String strEnvType, String strBearerToken, String strJWTToken,
-                                      Map<String, String> mapWorkRequestDetails, ScenarioContext scenarioContext) throws JsonProcessingException {
+    workRequest.setStrDueDate(dueDate.toString()); // Format: yyyy-MM-dd
+    return workRequest;
+}
 
-        String strTYKURL = getTYKURL(strEnvType, "TYK.WORKREQUESTS");
-        POJOWorkRequest pojoWorkRequest = Payloads.buildWorkRequestPayload(mapWorkRequestDetails);
-        String strRequestBody = objObjectMapper.writeValueAsString(pojoWorkRequest);
+  Then Send Request to create Work Request with below details
+    | bpId        | <bpId>        |
+    | type        | <type>        |
+    | subject     | <subject>     |
+    | description | <description> |
+    | dueDate     | <dueDate>     |
 
-        ExtentCucumberAdapter.addTestStepLog("Sending request to Create Work Request");
-
-        Response objResponse = sendPostRequest(strTYKURL, strBearerToken, strJWTToken, strRequestBody, null);
-        String strResponseBody = devHelperLibrary.getResponseBody(objResponse);
-        objCucumberLogger.PrintStatus("Response is: " + strResponseBody);
-
-        String strWorkRequestOrderId = objResponse.jsonPath().getString("orderId");
-        scenarioContext.setContext("workRequestOrderId", strWorkRequestOrderId);
-
-        return objResponse;
-    }
+Examples:
+  | bpId     | type       | subject | description | dueDate |
+  | 66329769 | pay_domq   | Subject | Description | FUTURE  |
+  | 66329769 | olb_oarprw | Subject | Description | PAST    |
+  | 66329769 | olb_oarprw | Subject | Description | TODAY   |
