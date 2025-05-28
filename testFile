@@ -1,86 +1,13 @@
-This is my feature file - 
-
-Feature: Verify Work Requests API
-
-  Scenario: Verify the Post Work Request API with valid data - <Comments>
-    Given Send Request to get Authentication Token for ICOS
-    When I generate the JWT Token
-    Then Send Request to create Work Request with below details
-      | bpId          | <bpId>        |
-      | type          | <type>        |
-      | dueDate       | <dueDate>     |
-      | subject       | <subject>     |
-      | description   | <description> |
-
-    Examples:
-      | bpId      | type        | dueDate    | subject | description  |
-      | 66329769  | pay_domq    |            | Subject | Description  |
-
-
-Work Request Steps - 
-
-    @Then("Send Request to create Work Request with below details")
-    public void sendRequestToCreateWorkRequestWithDetails(DataTable dataTable) throws JsonProcessingException {
-        Map<String, String> mapPersonDetails = dataTable.asMap(String.class, String.class);
-        String jwtToken = scenarioContext.getContext("JWTToken");
-        response = objWorkRequest.createWorkRequest(strEnvType, "Bearer", jwtToken, mapPersonDetails, scenarioContext);
-    }
-
-WorkRequest - 
-
-// Create Work Request
-    public Response createWorkRequest(String strEnvType, String strBearerToken, String strJWTToken,
-                                      Map<String, String> mapPersonDetails, ScenarioContext scenarioContext) throws JsonProcessingException {
-
-        String strTYKURL = getTYKURL(strEnvType, "TYK.WORKREQUESTS");
-        LegalPersonRequest pojoLegalPersonRequest = Payloads.buildLegalPersonPayload(mapPersonDetails, true);
-        String strRequestBody = objObjectMapper.writeValueAsString(pojoLegalPersonRequest);
-
-        ExtentCucumberAdapter.addTestStepLog("Sending request to Create Work Request");
-
-        Response objResponse = sendPostRequest(strTYKURL, strBearerToken, strJWTToken, strRequestBody, null);
-        String strResponseBody = devHelperLibrary.getResponseBody(objResponse);
-        objCucumberLogger.PrintStatus("Response is: " + strResponseBody);
-
-        String strLegalPersonObjectId = objResponse.jsonPath().getString("objectId");
-        String strLegalPersonOrderId = objResponse.jsonPath().getString("orderId");
-        String strLegalPersonUuid = pojoLegalPersonRequest.getStrUuid();
-
-        scenarioContext.setContext("legalPersonObjectId", strLegalPersonObjectId);
-        scenarioContext.setContext("legalPersonOrderId", strLegalPersonOrderId);
-        scenarioContext.setContext("legalPersonUuid", strLegalPersonUuid);
-
-        return objResponse;
-    }
-
-This is just a protype which I copied from another LegalPerson class, can you please update it to correct and also refer to the payload attached, generate the date as given in the snapshot.
-
-Thsiis Legal Person Payload - 
-
-public static LegalPersonRequest buildLegalPersonPayload(Map<String, String> mapPersonDetails, boolean includeUuid) {
-
-        LegalPersonRequest legalPersonRequest = new LegalPersonRequest();
-
-        if (includeUuid) {
-            String uuid = UUID.randomUUID().toString().substring(0, 7);
-            legalPersonRequest.setStrUuid(uuid);
-        }
-
-        legalPersonRequest.setStrSubType(mapPersonDetails.get("subType"));
-        legalPersonRequest.setStrDomiCountry(mapPersonDetails.get("domicileCountry"));
-        legalPersonRequest.setStrName(mapPersonDetails.get("name"));
-
-        return legalPersonRequest;
-    }
-
-This is POJO - 
+This is the POJO of LegalPersonRequest - 
 
 package ICOS.pojo;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class LegalPersonRequest {
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty("uuid")
     private String strUuid;
 
@@ -127,3 +54,12 @@ public class LegalPersonRequest {
     }
 }
 
+Create the POJO for WOrkRequest using below payload - 
+
+{
+    "bpId": "66288663",
+    "type": "pay_domq",
+    "dueDate": "2019-09-23",
+    "subject": "Subject",
+    "description": "Description"
+}
