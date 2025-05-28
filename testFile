@@ -1,65 +1,64 @@
-This is the POJO of LegalPersonRequest - 
-
 package ICOS.pojo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class LegalPersonRequest {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class WorkRequest {
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    @JsonProperty("uuid")
-    private String strUuid;
+    @JsonProperty("bpId")
+    private String strBpId;
 
-    @JsonProperty("subType")
-    private String strSubType;
+    @JsonProperty("type")
+    private String strType;
 
-    @JsonProperty("domiCountry")
-    private String strDomiCountry;
+    @JsonProperty("dueDate")
+    private String strDueDate;
 
-    @JsonProperty("name")
-    private String strName;
+    @JsonProperty("subject")
+    private String strSubject;
+
+    @JsonProperty("description")
+    private String strDescription;
 
     // Getters and Setters
-    public String getStrUuid() {
-        return strUuid;
+    public String getStrBpId() {
+        return strBpId;
     }
 
-    public void setStrUuid(String strUuid) {
-        this.strUuid = strUuid;
+    public void setStrBpId(String strBpId) {
+        this.strBpId = strBpId;
     }
 
-    public String getStrSubType() {
-        return strSubType;
+    public String getStrType() {
+        return strType;
     }
 
-    public void setStrSubType(String strSubType) {
-        this.strSubType = strSubType;
+    public void setStrType(String strType) {
+        this.strType = strType;
     }
 
-    public String getStrDomiCountry() {
-        return strDomiCountry;
+    public String getStrDueDate() {
+        return strDueDate;
     }
 
-    public void setStrDomiCountry(String strDomiCountry) {
-        this.strDomiCountry = strDomiCountry;
+    public void setStrDueDate(String strDueDate) {
+        this.strDueDate = strDueDate;
     }
 
-    public String getStrName() {
-        return strName;
+    public String getStrSubject() {
+        return strSubject;
     }
 
-    public void setStrName(String strName) {
-        this.strName = strName;
+    public void setStrSubject(String strSubject) {
+        this.strSubject = strSubject;
     }
-}
 
-Create the POJO for WOrkRequest using below payload - 
+    public String getStrDescription() {
+        return strDescription;
+    }
 
-{
-    "bpId": "66288663",
-    "type": "pay_domq",
-    "dueDate": "2019-09-23",
-    "subject": "Subject",
-    "description": "Description"
+    public void setStrDescription(String strDescription) {
+        this.strDescription = strDescription;
+    }
 }
