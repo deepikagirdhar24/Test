@@ -1,21 +1,23 @@
-This function is for Legal Person in Payloads utility - 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Map;
 
-    public static LegalPersonRequest buildLegalPersonPayload(Map<String, String> mapPersonDetails, boolean includeUuid) {
+public class Payloads {
 
-        LegalPersonRequest legalPersonRequest = new LegalPersonRequest();
+    public static WorkRequest buildWorkRequestPayload(Map<String, String> mapWorkRequestDetails) {
 
-        if (includeUuid) {
-            String uuid = UUID.randomUUID().toString().substring(0, 7);
-            legalPersonRequest.setStrUuid(uuid);
-        }
+        WorkRequest workRequest = new WorkRequest();
 
-        legalPersonRequest.setStrSubType(mapPersonDetails.get("subType"));
-        legalPersonRequest.setStrDomiCountry(mapPersonDetails.get("domicileCountry"));
-        legalPersonRequest.setStrName(mapPersonDetails.get("name"));
+        workRequest.setStrBpId(mapWorkRequestDetails.get("bpId"));
+        workRequest.setStrType(mapWorkRequestDetails.get("type"));
+        workRequest.setStrSubject(mapWorkRequestDetails.get("subject"));
+        workRequest.setStrDescription(mapWorkRequestDetails.get("description"));
 
-        return legalPersonRequest;
+        // Always set dueDate to +1 week from today in yyyy-MM-dd format
+        String dueDate = LocalDate.now().plusWeeks(1)
+                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        workRequest.setStrDueDate(dueDate);
+
+        return workRequest;
     }
-
-Create similar kind of function for WOrkRequest - 
-
-Payload is - 
+}
