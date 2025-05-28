@@ -1,20 +1,192 @@
-    And I verify the string field "firstName" is "<firstName>" in Natural Person response
-    And I verify the string field "lastName" is "<lastName>" in Natural Person response
-    And I verify the string field "subType.key" is "<subType>" in Natural Person response
-    And I verify the string field "gender.key" is "<gender>" in Natural Person response
-    And I verify the string field "domiCountry" is "<domiCountry>" in Natural Person response
-    And I verify the array field "nationalities" contains "<nationalities>" in Natural Person response
+package utilities;
 
-@And("I verify the string field {string} is {string}")
-public void iVerifyStringFieldEquals(String jsonPath, String expectedValue) throws Exception {
-    String actualValue = JsonHelper.extractStringField(response, jsonPath);
-    ExtentCucumberAdapter.addTestStepLog("Expected value at '" + jsonPath + "': " + expectedValue + ", Actual: " + actualValue);
-    Assert.assertEquals(actualValue, expectedValue, "Mismatch at: " + jsonPath);
+import com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.restassured.response.Response;
+<<<<<<< HEAD
+import com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter;
+import org.json.JSONObject;
+=======
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+>>>>>>> feature-DG
+
+public class JsonHelper {
+
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+
+    private static JsonNode getNodeByPath(JsonNode rootNode, String path) {
+        String[] keys = path.split("\\.");
+        for (String key : keys) {
+            if (rootNode == null) break;
+            rootNode = rootNode.path(key);
+        }
+        return rootNode;
+    }
+
+    public static Object extractRawField(Response response, String fieldPath) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode node = getNodeByPath(rootNode, fieldPath);
+        return node.isMissingNode() || node.isNull() ? null : node;
+    }
+
+    public static String extractStringField(Response response, String fieldPath) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode node = getNodeByPath(rootNode, fieldPath);
+        return node.isMissingNode() || node.isNull() ? null : node.asText();
+    }
+
+    public static Boolean extractBooleanField(Response response, String fieldPath) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode node = getNodeByPath(rootNode, fieldPath);
+        return node.isMissingNode() || node.isNull() ? null : node.asBoolean();
+    }
+
+    public static boolean valueExistsInJsonArray(Response response, String jsonPath, String targetValue) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode arrayNode = getNodeByPath(rootNode, jsonPath);
+        if (arrayNode != null && arrayNode.isArray()) {
+            return iterateAndCheckArray(arrayNode, targetValue);
+        }
+        return false;
+    }
+
+    private static boolean iterateAndCheckArray(JsonNode arrayNode, String targetValue) {
+        for (JsonNode itemNode : arrayNode) {
+            String currentValue = itemNode.asText();
+            System.out.println("Checking item: " + currentValue);
+            if (targetValue.equals(currentValue)) {
+                logMatchFound(currentValue);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static void logMatchFound(String value) {
+        System.out.println("Match found: " + value);
+        ExtentCucumberAdapter.addTestStepLog("Actual value found: " + value);
+    }
+
+    public static List<String> extractListOfStringFieldsFromArray(Response response, String arrayField, String subField) {
+        List<Map<String, Object>> itemList = response.jsonPath().getList(arrayField);
+        List<String> result = new ArrayList<>();
+        for (Map<String, Object> item : itemList) {
+            Object value = item.get(subField);
+            if (value != null) {
+                result.add(value.toString());
+            }
+        }
+        return result;
+    }
+
+<<<<<<< HEAD
+
+    /**
+     * Extracts a value from a JSON string using the provided path
+     *
+     * @param jsonResponse The JSON response string
+     * @param path The path to the value (dot notation, e.g., "onlineBankingSetup.email")
+     * @return The value at the specified path, or null if not found
+     */
+    public static Object extractValue(String jsonResponse, String path) {
+        try {
+            // Clean the response if it contains leading/trailing text
+            String cleanedJson = cleanJsonResponse(jsonResponse);
+
+            // Parse the JSON
+            JSONObject jsonObject = new JSONObject(cleanedJson);
+
+            // Handle nested paths
+            String[] pathParts = path.split("\\.");
+            JSONObject currentObject = jsonObject;
+
+            // Navigate through the path except for the last part
+            for (int i = 0; i < pathParts.length - 1; i++) {
+                currentObject = currentObject.getJSONObject(pathParts[i]);
+            }
+
+            // Return the value at the final path
+            String finalKey = pathParts[pathParts.length - 1];
+            return currentObject.get(finalKey);
+
+        } catch (Exception e) {
+            System.err.println("Error extracting JSON value: " + e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Extracts a string value from a JSON response
+     */
+    public static String extractString(String jsonResponse, String path) {
+        Object value = extractValue(jsonResponse, path);
+        return value != null ? value.toString() : null;
+    }
+
+    /**
+     * Extracts a boolean value from a JSON response
+     */
+    public static Boolean extractBoolean(String jsonResponse, String path) {
+        Object value = extractValue(jsonResponse, path);
+        return value instanceof Boolean ? (Boolean) value : null;
+    }
+
+    /**
+     * Extracts a numeric value from a JSON response
+     */
+    public static Number extractNumber(String jsonResponse, String path) {
+        Object value = extractValue(jsonResponse, path);
+        return value instanceof Number ? (Number) value : null;
+    }
+
+    /**
+     * Cleans a JSON response string by removing any non-JSON text
+     */
+    private static String cleanJsonResponse(String response) {
+        // Find the first '{' and last '}' to extract just the JSON part
+        int startIndex = response.indexOf('{');
+        int endIndex = response.lastIndexOf('}') + 1;
+
+        if (startIndex >= 0 && endIndex > startIndex) {
+            return response.substring(startIndex, endIndex);
+        }
+
+        return response; // Return original if no JSON object found
+    }
+
+
+}
+=======
+    public static void validateFieldExistsInArray(Response response, String arrayPath, String fieldName) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode arrayNode = rootNode.at(arrayPath); // Path should start with '/' for root level
+
+        if (!arrayNode.isArray()) {
+            throw new Exception("Expected an array at path: " + arrayPath);
+        }
+
+        for (JsonNode element : arrayNode) {
+            JsonNode fieldNode = element.get(fieldName);
+            if (fieldNode == null || fieldNode.asText().isEmpty()) {
+                throw new AssertionError("Missing or empty '" + fieldName + "' in one of the elements at: " + arrayPath);
+            }
+        }
+
+        ExtentCucumberAdapter.addTestStepLog("All elements in array " + arrayPath + " contain a valid '" + fieldName + "'");
+    }
 }
 
-@And("I verify the array field {string} contains {string}")
-public void iVerifyArrayFieldContainsValue(String jsonArrayPath, String expectedValue) throws Exception {
-    boolean valueExists = JsonHelper.valueExistsInJsonArray(response, jsonArrayPath, expectedValue);
-    ExtentCucumberAdapter.addTestStepLog("Expected value in array '" + jsonArrayPath + "': " + expectedValue + " → Found: " + valueExists);
-    Assert.assertTrue(valueExists, "Value '" + expectedValue + "' not found in array: " + jsonArrayPath);
-}
+/*
+✅ Summary of Usage:
+        Method	                            Handles Nested?	 Return Type	        Typical Input
+        extractStringField	                ✅	             String	                "person.subType.key"
+        extractBooleanField	                ✅	             Boolean	            "isActive"
+        extractRawField	                    ✅	             JsonNode	            "meta.status"
+        valueExistsInJsonArray	            ✅	             boolean	            "roles"
+        extractListOfStringFieldsFromArray	❌               (flat arrays only)	    List<String>	"errors", "field"
+ */
+>>>>>>> feature-DG
