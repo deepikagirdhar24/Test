@@ -1,23 +1,43 @@
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Map;
+Feature: Verify Work Requests API
 
-public class Payloads {
+  Scenario Outline: Verify the Post Work Request API with valid data - <Comments>
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    Then Send Request to create Work Request with below details
+      | bpId          | <bpId>        |
+      | type          | <type>        |
+      | subject       | <subject>     |
+      | description   | <description> |
 
-    public static WorkRequest buildWorkRequestPayload(Map<String, String> mapWorkRequestDetails) {
+    Examples:
+      | bpId      | type      | subject | description  |
+      | 66329769  | pay_domq  | Subject | Description  |
 
-        WorkRequest workRequest = new WorkRequest();
 
-        workRequest.setStrBpId(mapWorkRequestDetails.get("bpId"));
-        workRequest.setStrType(mapWorkRequestDetails.get("type"));
-        workRequest.setStrSubject(mapWorkRequestDetails.get("subject"));
-        workRequest.setStrDescription(mapWorkRequestDetails.get("description"));
 
-        // Always set dueDate to +1 week from today in yyyy-MM-dd format
-        String dueDate = LocalDate.now().plusWeeks(1)
-                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        workRequest.setStrDueDate(dueDate);
-
-        return workRequest;
+    @Then("Send Request to create Work Request with below details")
+    public void sendRequestToCreateWorkRequestWithDetails(DataTable dataTable) throws JsonProcessingException {
+        Map<String, String> mapWorkRequestDetails = dataTable.asMap(String.class, String.class);
+        String jwtToken = scenarioContext.getContext("JWTToken");
+        response = objWorkRequest.createWorkRequest(strEnvType, "Bearer", jwtToken, mapWorkRequestDetails, scenarioContext);
     }
-}
+
+    // Create Work Request
+    public Response createWorkRequest(String strEnvType, String strBearerToken, String strJWTToken,
+                                      Map<String, String> mapWorkRequestDetails, ScenarioContext scenarioContext) throws JsonProcessingException {
+
+        String strTYKURL = getTYKURL(strEnvType, "TYK.WORKREQUESTS");
+        POJOWorkRequest pojoWorkRequest = Payloads.buildWorkRequestPayload(mapWorkRequestDetails);
+        String strRequestBody = objObjectMapper.writeValueAsString(pojoWorkRequest);
+
+        ExtentCucumberAdapter.addTestStepLog("Sending request to Create Work Request");
+
+        Response objResponse = sendPostRequest(strTYKURL, strBearerToken, strJWTToken, strRequestBody, null);
+        String strResponseBody = devHelperLibrary.getResponseBody(objResponse);
+        objCucumberLogger.PrintStatus("Response is: " + strResponseBody);
+
+        String strWorkRequestOrderId = objResponse.jsonPath().getString("orderId");
+        scenarioContext.setContext("workRequestOrderId", strWorkRequestOrderId);
+
+        return objResponse;
+    }
