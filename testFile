@@ -1,153 +1,57 @@
-package utilities;
+This is my feature file - 
 
-import com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.restassured.response.Response;
-import org.json.JSONObject;
+Feature: Verify Work Requests API
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+  Scenario: Verify the Post Work Request API with valid data - <Comments>
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    Then Send Request to create Work Request with below details
+      | bpId          | <bpId>        |
+      | type          | <type>        |
+      | dueDate       | <dueDate>     |
+      | subject       | <subject>     |
+      | description   | <description> |
 
-public class JsonHelper {
+    Examples:
+      | bpId      | type        | dueDate    | subject | description  |
+      | 66329769  | pay_domq    |            | Subject | Description  |
 
-    private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    private static JsonNode getNodeByPath(JsonNode rootNode, String path) {
-        String[] keys = path.split("\\.");
-        for (String key : keys) {
-            if (rootNode == null) break;
-            rootNode = rootNode.path(key);
-        }
-        return rootNode;
+Work Request Steps - 
+
+    @Then("Send Request to create Work Request with below details")
+    public void sendRequestToCreateWorkRequestWithDetails(DataTable dataTable) throws JsonProcessingException {
+        Map<String, String> mapPersonDetails = dataTable.asMap(String.class, String.class);
+        String jwtToken = scenarioContext.getContext("JWTToken");
+        response = objWorkRequest.createWorkRequest(strEnvType, "Bearer", jwtToken, mapPersonDetails, scenarioContext);
     }
 
-    public static Object extractRawField(Response response, String fieldPath) throws Exception {
-        JsonNode rootNode = objectMapper.readTree(response.asString());
-        JsonNode node = getNodeByPath(rootNode, fieldPath);
-        return node.isMissingNode() || node.isNull() ? null : node;
+WorkRequest - 
+
+// Create Work Request
+    public Response createWorkRequest(String strEnvType, String strBearerToken, String strJWTToken,
+                                      Map<String, String> mapPersonDetails, ScenarioContext scenarioContext) throws JsonProcessingException {
+
+        String strTYKURL = getTYKURL(strEnvType, "TYK.WORKREQUESTS");
+        LegalPersonRequest pojoLegalPersonRequest = Payloads.buildLegalPersonPayload(mapPersonDetails, true);
+        String strRequestBody = objObjectMapper.writeValueAsString(pojoLegalPersonRequest);
+
+        ExtentCucumberAdapter.addTestStepLog("Sending request to Create Work Request");
+
+        Response objResponse = sendPostRequest(strTYKURL, strBearerToken, strJWTToken, strRequestBody, null);
+        String strResponseBody = devHelperLibrary.getResponseBody(objResponse);
+        objCucumberLogger.PrintStatus("Response is: " + strResponseBody);
+
+        String strLegalPersonObjectId = objResponse.jsonPath().getString("objectId");
+        String strLegalPersonOrderId = objResponse.jsonPath().getString("orderId");
+        String strLegalPersonUuid = pojoLegalPersonRequest.getStrUuid();
+
+        scenarioContext.setContext("legalPersonObjectId", strLegalPersonObjectId);
+        scenarioContext.setContext("legalPersonOrderId", strLegalPersonOrderId);
+        scenarioContext.setContext("legalPersonUuid", strLegalPersonUuid);
+
+        return objResponse;
     }
 
-    public static String extractStringField(Response response, String fieldPath) throws Exception {
-        JsonNode rootNode = objectMapper.readTree(response.asString());
-        JsonNode node = getNodeByPath(rootNode, fieldPath);
-        return node.isMissingNode() || node.isNull() ? null : node.asText();
-    }
+This is just a protype which I copied from another LegalPerson class, can you please update it to correct and also refer to the payload attached, generate the date as given in the snapshot.
 
-    public static Boolean extractBooleanField(Response response, String fieldPath) throws Exception {
-        JsonNode rootNode = objectMapper.readTree(response.asString());
-        JsonNode node = getNodeByPath(rootNode, fieldPath);
-        return node.isMissingNode() || node.isNull() ? null : node.asBoolean();
-    }
-
-    public static boolean valueExistsInJsonArray(Response response, String jsonPath, String targetValue) throws Exception {
-        JsonNode rootNode = objectMapper.readTree(response.asString());
-        JsonNode arrayNode = getNodeByPath(rootNode, jsonPath);
-        if (arrayNode != null && arrayNode.isArray()) {
-            return iterateAndCheckArray(arrayNode, targetValue);
-        }
-        return false;
-    }
-
-    private static boolean iterateAndCheckArray(JsonNode arrayNode, String targetValue) {
-        for (JsonNode itemNode : arrayNode) {
-            String currentValue = itemNode.asText();
-            System.out.println("Checking item: " + currentValue);
-            if (targetValue.equals(currentValue)) {
-                logMatchFound(currentValue);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private static void logMatchFound(String value) {
-        System.out.println("Match found: " + value);
-        ExtentCucumberAdapter.addTestStepLog("Actual value found: " + value);
-    }
-
-    public static List<String> extractListOfStringFieldsFromArray(Response response, String arrayField, String subField) {
-        List<Map<String, Object>> itemList = response.jsonPath().getList(arrayField);
-        List<String> result = new ArrayList<>();
-        for (Map<String, Object> item : itemList) {
-            Object value = item.get(subField);
-            if (value != null) {
-                result.add(value.toString());
-            }
-        }
-        return result;
-    }
-
-    /**
-     * Extracts a value from a JSON string using the provided path
-     *
-     * @param jsonResponse The JSON response string
-     * @param path The path to the value (dot notation, e.g., "onlineBankingSetup.email")
-     * @return The value at the specified path, or null if not found
-     */
-    public static Object extractValue(String jsonResponse, String path) {
-        try {
-            String cleanedJson = cleanJsonResponse(jsonResponse);
-            JSONObject jsonObject = new JSONObject(cleanedJson);
-
-            String[] pathParts = path.split("\\.");
-            JSONObject currentObject = jsonObject;
-
-            for (int i = 0; i < pathParts.length - 1; i++) {
-                currentObject = currentObject.getJSONObject(pathParts[i]);
-            }
-
-            String finalKey = pathParts[pathParts.length - 1];
-            return currentObject.get(finalKey);
-
-        } catch (Exception e) {
-            System.err.println("Error extracting JSON value: " + e.getMessage());
-            return null;
-        }
-    }
-
-    public static String extractString(String jsonResponse, String path) {
-        Object value = extractValue(jsonResponse, path);
-        return value != null ? value.toString() : null;
-    }
-
-    public static Boolean extractBoolean(String jsonResponse, String path) {
-        Object value = extractValue(jsonResponse, path);
-        return value instanceof Boolean ? (Boolean) value : null;
-    }
-
-    public static Number extractNumber(String jsonResponse, String path) {
-        Object value = extractValue(jsonResponse, path);
-        return value instanceof Number ? (Number) value : null;
-    }
-
-    private static String cleanJsonResponse(String response) {
-        int startIndex = response.indexOf('{');
-        int endIndex = response.lastIndexOf('}') + 1;
-
-        if (startIndex >= 0 && endIndex > startIndex) {
-            return response.substring(startIndex, endIndex);
-        }
-
-        return response;
-    }
-
-    public static void validateFieldExistsInArray(Response response, String arrayPath, String fieldName) throws Exception {
-        JsonNode rootNode = objectMapper.readTree(response.asString());
-        JsonNode arrayNode = rootNode.at(arrayPath); // arrayPath must begin with '/'
-
-        if (!arrayNode.isArray()) {
-            throw new Exception("Expected an array at path: " + arrayPath);
-        }
-
-        for (JsonNode element : arrayNode) {
-            JsonNode fieldNode = element.get(fieldName);
-            if (fieldNode == null || fieldNode.asText().isEmpty()) {
-                throw new AssertionError("Missing or empty '" + fieldName + "' in one of the elements at: " + arrayPath);
-            }
-        }
-
-        ExtentCucumberAdapter.addTestStepLog("All elements in array " + arrayPath + " contain a valid '" + fieldName + "'");
-    }
-}
