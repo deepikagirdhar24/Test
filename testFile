@@ -55,3 +55,75 @@ WorkRequest -
 
 This is just a protype which I copied from another LegalPerson class, can you please update it to correct and also refer to the payload attached, generate the date as given in the snapshot.
 
+Thsiis Legal Person Payload - 
+
+public static LegalPersonRequest buildLegalPersonPayload(Map<String, String> mapPersonDetails, boolean includeUuid) {
+
+        LegalPersonRequest legalPersonRequest = new LegalPersonRequest();
+
+        if (includeUuid) {
+            String uuid = UUID.randomUUID().toString().substring(0, 7);
+            legalPersonRequest.setStrUuid(uuid);
+        }
+
+        legalPersonRequest.setStrSubType(mapPersonDetails.get("subType"));
+        legalPersonRequest.setStrDomiCountry(mapPersonDetails.get("domicileCountry"));
+        legalPersonRequest.setStrName(mapPersonDetails.get("name"));
+
+        return legalPersonRequest;
+    }
+
+This is POJO - 
+
+package ICOS.pojo;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public class LegalPersonRequest {
+
+    @JsonProperty("uuid")
+    private String strUuid;
+
+    @JsonProperty("subType")
+    private String strSubType;
+
+    @JsonProperty("domiCountry")
+    private String strDomiCountry;
+
+    @JsonProperty("name")
+    private String strName;
+
+    // Getters and Setters
+    public String getStrUuid() {
+        return strUuid;
+    }
+
+    public void setStrUuid(String strUuid) {
+        this.strUuid = strUuid;
+    }
+
+    public String getStrSubType() {
+        return strSubType;
+    }
+
+    public void setStrSubType(String strSubType) {
+        this.strSubType = strSubType;
+    }
+
+    public String getStrDomiCountry() {
+        return strDomiCountry;
+    }
+
+    public void setStrDomiCountry(String strDomiCountry) {
+        this.strDomiCountry = strDomiCountry;
+    }
+
+    public String getStrName() {
+        return strName;
+    }
+
+    public void setStrName(String strName) {
+        this.strName = strName;
+    }
+}
+
