@@ -1,3 +1,29 @@
+  Scenario Outline: Verify the Post Legal Person API with invalid data - <Comments>
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    Then Send Request to create Work Request with below details
+      | bpId          | <bpId>        |
+      | type          | <type>        |
+      | dueDate       | <dueDate>     |
+      | subject       | <subject>     |
+      | description   | <description> |
+    And I verify the Status Code for Work Request "<statusCode>"
+    And I verify the error response for Work Request with below details
+      | description   | <errDescription> |
+      | error message | <error>          |
+      | detail        | <detail>         |
+
+    Examples:
+      | bpId      | type       | dueDate | subject | description  | statusCode | errDescription    | error                         | detail                          | Comments                        |
+      | 66329769  | pay_domq   |         | Subject | Description  | 400        |                   |                               |                                 | Due Date as empty               |
+
+    @Then("Send Request to create Work Request with below details")
+    public void sendRequestToCreateWorkRequestWithDetails(DataTable dataTable) throws JsonProcessingException {
+        Map<String, String> mapWorkRequestDetails = dataTable.asMap(String.class, String.class);
+        String jwtToken = scenarioContext.getContext("JWTToken");
+        response = objWorkRequest.createWorkRequest(strEnvType, "Bearer", jwtToken, mapWorkRequestDetails, scenarioContext);
+    }
+
 // Create Work Request
     public Response createWorkRequest(String strEnvType, String strBearerToken, String strJWTToken,
                                       Map<String, String> mapWorkRequestDetails, ScenarioContext scenarioContext) throws JsonProcessingException {
@@ -18,31 +44,7 @@
         return objResponse;
     }
 
-Scenario Outline: Verify the Post Legal Person API with invalid data - <Comments>
-    Given Send Request to get Authentication Token for ICOS
-    When I generate the JWT Token
-    Then Send Request to create Work Request with below details
-      | bpId          | <bpId>        |
-      | type          | <type>        |
-      | dueDate       | <dueDate>     |
-      | subject       | <subject>     |
-      | description   | <description> |
-    And I verify the Status Code for Work Request "<statusCode>"
-    And I verify the error response for Work Request with below details
-      | description   | <errDescription> |
-      | error message | <error>          |
-      | detail        | <detail>         |
-
-    Examples:
-      | bpId      | type       | dueDate | subject | description  | statusCode | errDescription    | error                         | detail                          | Comments                        |
-      | ?         | pay_domq   | FUTURE  | Subject | Description  | 400        | Validation Errors | BP not found                  |                                 | BusinessPartnerID as invalid    |
-      | 66329769  | xxx        | FUTURE  | Subject | Description  | 400        | Validation Errors | Type not found                |                                 | WorkRequestType as invalid      |
-      | 66329769  | pay_domq   | 123454  | Subject | Description  | 400        |                   |                               | A validation error has occurred | Due Date as invalid             |
-      |           | pay_domq   | FUTURE  | Subject | Description  | 400        | Validation Errors | bpId or personId must be set  |                                 | BusinessPartnerID as empty      |
-      | 66329769  | pay_domq   |         | Subject | Description  | 400        |                   |                               |                                 | Due Date as empty               |
-      | 66329769  |            | FUTURE  | Subject | Description  | 500        |                   | Mandatory: Request Type       |                                 | WorkRequestType as empty        |
-
-error as - 
+why this eror - 
 
 [INFO] 
 [INFO] --- maven-surefire-plugin:3.0.0-M5:test (default-test) @ wealth-icos-api ---
@@ -51,116 +53,20 @@ error as -
 [INFO]  T E S T S
 [INFO] -------------------------------------------------------
 [INFO] Running testRunner.Runner
-Scenario Outline: Verify the Post Legal Person API with invalid data - BusinessPartnerID as invalid # src/test/resources/Features/WorkRequest.feature:58
-Before All
-  Given Send Request to get Authentication Token for ICOS                                           # stepDefinations.GetUserSteps.sendRequestToGetAuthenticationTokenForICOS()
-  When I generate the JWT Token                                                                     # stepDefinations.GetUserSteps.iGenerateTheJWTToken()
-  Then Send Request to create Work Request with below details                                       # stepDefinations.WorkRequestSteps.sendRequestToCreateWorkRequestWithDetails(io.cucumber.datatable.DataTable)
-    | bpId        | ?           |
-    | type        | pay_domq    |
-    | dueDate     | FUTURE      |
-    | subject     | Subject     |
-    | description | Description |
-  And I verify the Status Code for Work Request "400"                                               # stepDefinations.WorkRequestSteps.iVerifyTheStatusCodeForWorkRequest(java.lang.String)
-  And I verify the error response for Work Request with below details                               # stepDefinations.WorkRequestSteps.iVerifyTheErrorResponseforWorkRequestWithDetails(io.cucumber.datatable.DataTable)
-    | description   | Validation Errors |
-    | error message | BP not found      |
-    | detail        | [empty]           |
-May 29, 2025 10:25:10 AM hooks.CucumberHooks beforeScenario
-INFO: Before Scenario: Test is starting!
-May 29, 2025 10:25:23 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Access Token is93c6zX0hRiW32aMupRyl2ppQx5l1
-May 29, 2025 10:25:23 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Access Token  is{accessToken=93c6zX0hRiW32aMupRyl2ppQx5l1, tokenType=Bearer}
-May 29, 2025 10:25:24 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Tyk Token iseyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzdXAtYW1pd3Mtand0LWdlbmVyYXRvciIsInN1YiI6IlJCU0MkQ0xNX09OQk9BUkRJTkciLCJhdWQiOiJBTUlXZWJTZXJ2aWNlcyIsImV4cCI6MTc0ODUxMTYyNCwiaWF0IjoxNzQ4NTEwNzI0LCJhdmFsb3FfYnVfaWQiOiI2In0.eXdHN_ds09dRblVSCkot1MTNXWywN8kU_wy_Skllu_aTphIWjIHeZciCqFQnx1ikcTh-2KAsALXUyE5yjkGktxanCmmFlkCK3hYHBlGXQA3Q6JQ5s0YFzL3l2vaeiYp7VhoEMcfkOUFNfqYmCx0jyJEsrN2EhFllgXx3-nXMDjAcnECLSRTOWw8UGfSol_TgQpvk9T_mpX2OI7_BCfJulpTIKaqRSGyFRn8xHnc8OkVf5_aYvSOCWbdbVryNUYGyAVdnE9arA-bT7iT8gGNRdkLPFUHlrs0YbpHQ3YSxbAh4frYja1hs1K7xAJxHSphk_bVu3oN9mbRYUu7c-wfdBA
-May 29, 2025 10:25:25 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Response is: {"description":"Validation Errors","validationErrors":[{"value":"?","error":"BP not found"},{"value":"bpId and personId are null","error":"bpId or personId must be set"}]}
-Scenario Outline: Verify the Post Legal Person API with invalid data - WorkRequestType as invalid # src/test/resources/Features/WorkRequest.feature:59
-May 29, 2025 10:25:33 AM hooks.CucumberHooks beforeScenario
-INFO: Before Scenario: Test is starting!
-May 29, 2025 10:25:34 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Access Token is93c6LqS4IhuA3yolXCvFTm3LXBpg
-May 29, 2025 10:25:34 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Access Token  is{accessToken=93c6LqS4IhuA3yolXCvFTm3LXBpg, tokenType=Bearer}
-  Given Send Request to get Authentication Token for ICOS                                         # stepDefinations.GetUserSteps.sendRequestToGetAuthenticationTokenForICOS()
-May 29, 2025 10:25:35 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Tyk Token iseyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzdXAtYW1pd3Mtand0LWdlbmVyYXRvciIsInN1YiI6IlJCU0MkQ0xNX09OQk9BUkRJTkciLCJhdWQiOiJBTUlXZWJTZXJ2aWNlcyIsImV4cCI6MTc0ODUxMTYzNSwiaWF0IjoxNzQ4NTEwNzM1LCJhdmFsb3FfYnVfaWQiOiI2In0.HrcuOGB2-uo072zAP5iokX9kRZlDLED92QdJ5OANMimNvW_nrKgBVvzYZ51IvA-Yv_Cx0tSJbq2ZGKt8Loet-8jhI2GfVMKug4n2k71Vc22iCiAnf1vNtuDT52GZY_85yKO2XC_PXTuRSGM6b8W6ceQSadR7qAbpX0qbTT8HJ33yVDcRxBizKppAsh4kOJK757TarITEZcRvvhm0rRYAOd5jB10PkzES2fG1QZIKIY48vG3VMxgNN4b4wyBLZBF1Af7K0Ir1EVryxkgSvp91y8ZKAqw08rtpmbCtCqbZQPot0JyP-yAF7X9znZKhoahYadfnYjv8vyOaGpHbQlCBPQ
-  When I generate the JWT Token                                                                   # stepDefinations.GetUserSteps.iGenerateTheJWTToken()
-May 29, 2025 10:25:36 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Response is: {"description":"Validation Errors","validationErrors":[{"value":"xxx","error":"Type not found"}]}
-  Then Send Request to create Work Request with below details                                     # stepDefinations.WorkRequestSteps.sendRequestToCreateWorkRequestWithDetails(io.cucumber.datatable.DataTable)
-    | bpId        | 66329769    |
-    | type        | xxx         |
-    | dueDate     | FUTURE      |
-    | subject     | Subject     |
-    | description | Description |
-  And I verify the Status Code for Work Request "400"                                             # stepDefinations.WorkRequestSteps.iVerifyTheStatusCodeForWorkRequest(java.lang.String)
-  And I verify the error response for Work Request with below details                             # stepDefinations.WorkRequestSteps.iVerifyTheErrorResponseforWorkRequestWithDetails(io.cucumber.datatable.DataTable)
-    | description   | Validation Errors |
-    | error message | Type not found    |
-    | detail        | [empty]           |
-Scenario Outline: Verify the Post Legal Person API with invalid data - Due Date as invalid # src/test/resources/Features/WorkRequest.feature:60
-  Given Send Request to get Authentication Token for ICOS                                  # stepDefinations.GetUserSteps.sendRequestToGetAuthenticationTokenForICOS()
-  When I generate the JWT Token                                                            # stepDefinations.GetUserSteps.iGenerateTheJWTToken()
-May 29, 2025 10:25:36 AM hooks.CucumberHooks beforeScenario
-INFO: Before Scenario: Test is starting!
-May 29, 2025 10:25:36 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Access Token is93c66BV0gaMDxtULGevGZixHelfr
-May 29, 2025 10:25:36 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Access Token  is{accessToken=93c66BV0gaMDxtULGevGZixHelfr, tokenType=Bearer}
-May 29, 2025 10:25:36 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Tyk Token iseyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzdXAtYW1pd3Mtand0LWdlbmVyYXRvciIsInN1YiI6IlJCU0MkQ0xNX09OQk9BUkRJTkciLCJhdWQiOiJBTUlXZWJTZXJ2aWNlcyIsImV4cCI6MTc0ODUxMTYzNywiaWF0IjoxNzQ4NTEwNzM3LCJhdmFsb3FfYnVfaWQiOiI2In0.shjfPBksxZ8Cg7FLunYdGIVrVkFZyosWAtajKq5Ncbf39_clL93M4s73clS0buLWm-MAJMAlVMrMvIhZrlEkC4zw1pydM8aqKw6ZdBwQnEPGtcuJihtWWRTj_knzB4UWIasnRwpedKpZeL_W_6tswryn9lykpXAaVDBU9pHgtHEUOBQUObyiy_5uVqVFW2yTbAOuMttSrHBui9pT_liZBbK1LfS8u-0BBlDkH4V1N8igf6etUQ-GwAQWiHxskwC3SJcZ0yUAH4wN9wx19bOAXuTKGzTm7j59jfj1jKh3PsKYT3YWnCbqAMUv00RCz0fu2d0M4wq_W2dpcDbtgwK0PA
-May 29, 2025 10:25:37 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Response is: {"status":400,"type":"/aws/validation_error","detail":"A validation error has occurred","title":"Validation Error","stackTrace":["com.avaloq.aws.server.acpwsservice.ValidationErrorException: A validation error has occurred","at deployment.aws.war//gen.rbsc$sas_work_request.$dacf89a.SasWorkRequest.createWorkRequest(SasWorkRequest.java:229)","at deployment.aws.war//gen.rbsc$sas_work_request.$dacf89a.SasWorkRequestREST.postcreateWorkRequest(SasWorkRequestREST.java:211)","at deployment.aws.war//gen.rbsc$sas_work_request.$dacf89a.SasWorkRequestREST$Proxy$_$$_WeldSubclass.postcreateWorkRequest$$super(Unknown Source)","at jdk.internal.reflect.GeneratedMethodAccessor272.invoke(Unknown Source)","at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)","at java.base/java.lang.reflect.Method.invoke(Method.java:569)","at org.jboss.weld.core@5.1.2.Final//org.jboss.weld.interceptor.proxy.TerminalAroundInvokeInvocationContext.proceedInternal(TerminalAroundInvokeInvocationContext.java:55)","at org.jboss.weld.core@5.1.2.Final//org.jboss.weld.interceptor.proxy.AroundInvokeInvocationContext.proceed(AroundInvokeInvocationContext.java:86)","at org.hibernate.validator.cdi@8.0.1.Final//org.hibernate.validator.cdi.internal.interceptor.ValidationInterceptor.validateMethodInvocation(ValidationInterceptor.java:79)","at jdk.internal.reflect.GeneratedMethodAccessor258.invoke(Unknown Source)","at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)","at java.base/java.lang.reflect.Method.invoke(Method.java:569)","at org.jboss.weld.core@5.1.2.Final//org.jboss.weld.interceptor.reader.SimpleInterceptorInvocation$SimpleMethodInvocation.invoke(SimpleInterceptorInvocation.java:75)","at org.jboss.weld.core@5.1.2.Final//org.jboss.weld.interceptor.proxy.InterceptorMethodHandler.executeAroundInvoke(InterceptorMethodHandler.java:90)","at org.jboss.weld.core@5.1.2.Final//org.jboss.weld.interceptor.proxy.InterceptorMethodHandler.executeInterception(InterceptorMethodHandler.java:73)","at org.jboss.weld.core@5.1.2.Final//org.jboss.weld.interceptor.proxy.InterceptorMethodHandler.invoke(InterceptorMethodHandler.java:56)","at org.jboss.weld.core@5.1.2.Final//org.jboss.weld.bean.proxy.CombinedInterceptorAndDecoratorStackMethodHandler.invoke(CombinedInterceptorAndDecoratorStackMethodHandler.java:80)","at org.jboss.weld.core@5.1.2.Final//org.jboss.weld.bean.proxy.CombinedInterceptorAndDecoratorStackMethodHandler.invoke(CombinedInterceptorAndDecoratorStackMethodHandler.java:68)","at deployment.aws.war//gen.rbsc$sas_work_request.$dacf89a.SasWorkRequestREST$Proxy$_$$_WeldSubclass.postcreateWorkRequest(Unknown Source)","at deployment.aws.war//gen.rbsc$sas_work_request.$dacf89a.SasWorkRequestREST$Proxy$_$$_WeldClientProxy.postcreateWorkRequest(Unknown Source)","at jdk.internal.reflect.GeneratedMethodAccessor271.invoke(Unknown Source)","at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)","at java.base/java.lang.reflect.Method.invoke(Method.java:569)","at deployment.avaloq-amiwebservices-appl.ear//org.jboss.resteasy.core.MethodInjectorImpl.invoke(MethodInjectorImpl.java:154)","at deployment.avaloq-amiwebservices-appl.ear//org.jboss.resteasy.core.MethodInjectorImpl.invoke(MethodInjectorImpl.java:118)","at deployment.avaloq-amiwebservices-appl.ear//org.jboss.resteasy.core.ResourceMethodInvoker.internalInvokeOnTarget(ResourceMethodInvoker.java:560)","at deployment.avaloq-amiwebservices-appl.ear//org.jboss.resteasy.core.ResourceMethodInvoker.invokeOnTargetAfterFilter(ResourceMethodInvoker.java:452)","at deployment.avaloq-amiwebservices-appl.ear//org.jboss.resteasy.core.ResourceMethodInvoker.lambda$invokeOnTarget$2(ResourceMethodInvoker.java:413)","at deployment.avaloq-amiwebservices-appl.ear//org.jboss.resteasy.core.interception.jaxrs.PreMatchContainerRequestContext.filter(PreMatchContainerRequestContext.java:321)","at deployment.avaloq-amiwebservices-appl.ear//org.jboss.resteasy.core.ResourceMethodInvoker.invokeOnTarget(ResourceMethodInvoker.java:415)","at deployment.avaloq-amiwebservices-appl.ear//org.jboss.resteasy.core.ResourceMethodInvoker.invoke(ResourceMethodInvoker.java:378)","at deployment.avaloq-amiwebservices-appl.ear//org.jboss.resteasy.core.ResourceMethodInvoker.invoke(ResourceMethodInvoker.java:356)","at deployment.avaloq-amiwebservices-appl.ear//org.jboss.resteasy.core.ResourceMethodInvoker.invoke(ResourceMethodInvoker.java:70)","at deployment.avaloq-amiwebservices-appl.ear//org.jboss.resteasy.core.SynchronousDispatcher.invoke(SynchronousDispatcher.java:429)","at deployment.avaloq-amiwebservices-appl.ear//org.jboss.resteasy.core.SynchronousDispatcher.lambda$invoke$4(SynchronousDispatcher.java:240)","at deployment.avaloq-amiwebservices-appl.ear//org.jboss.resteasy.core.SynchronousDispatcher.lambda$preprocess$0(SynchronousDispatcher.java:154)","at deployment.avaloq-amiwebservices-appl.ear//org.jboss.resteasy.core.interception.jaxrs.PreMatchContainerRequestContext.filter(PreMatchContainerRequestContext.java:321)","at deployment.avaloq-amiwebservices-appl.ear//org.jboss.resteasy.core.SynchronousDispatcher.preprocess(SynchronousDispatcher.java:157)","at deployment.avaloq-amiwebservices-appl.ear//org.jboss.resteasy.core.SynchronousDispatcher.invoke(SynchronousDispatcher.java:229)","at deployment.avaloq-amiwebservices-appl.ear//org.jboss.resteasy.plugins.server.servlet.ServletContainerDispatcher.service(ServletContainerDispatcher.java:222)","at deployment.avaloq-amiwebservices-appl.ear//org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher.service(HttpServletDispatcher.java:55)","at deployment.avaloq-amiwebservices-appl.ear//org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher.service(HttpServletDispatcher.java:51)","at jakarta.servlet.api@6.0.0//jakarta.servlet.http.HttpServlet.service(HttpServlet.java:614)","at io.undertow.servlet@2.3.15.Final//io.undertow.servlet.handlers.ServletHandler.handleRequest(ServletHandler.java:74)","at io.undertow.servlet@2.3.15.Final//io.undertow.servlet.handlers.FilterHandler$FilterChainImpl.doFilter(FilterHandler.java:129)","at deployment.aws.war//com.avaloq.aws.server.security.InitializeUserContextFromTokenFilter.doFilter(InitializeUserContextFromTokenFilter.java:59)","at io.undertow.servlet@2.3.15.Final//io.undertow.servlet.core.ManagedFilter.doFilter(ManagedFilter.java:67)","at io.undertow.servlet@2.3.15.Final//io.undertow.servlet.handlers.FilterHandler$FilterChainImpl.doFilter(FilterHandler.java:131)","at io.undertow.servlet@2.3.15.Final//io.undertow.servlet.handlers.FilterHandler.handleRequest(FilterHandler.java:84)","at io.undertow.servlet@2.3.15.Final//io.undertow.servlet.handlers.security.ServletSecurityRoleHandler.handleRequest(ServletSecurityRoleHandler.java:62)","at io.undertow.servlet@2.3.15.Final//io.undertow.servlet.handlers.ServletChain$1.handleRequest(ServletChain.java:68)","at io.undertow.servlet@2.3.15.Final//io.undertow.servlet.handlers.ServletDispatchingHandler.handleRequest(ServletDispatchingHandler.java:36)","at org.wildfly.security.elytron-web.undertow-server@4.1.0.Final//org.wildfly.elytron.web.undertow.server.ElytronRunAsHandler.lambda$handleRequest$1(ElytronRunAsHandler.java:68)","at org.wildfly.security.elytron-base@2.5.1.Final//org.wildfly.security.auth.server.FlexibleIdentityAssociation.runAsFunctionEx(FlexibleIdentityAssociation.java:103)","at org.wildfly.security.elytron-base@2.5.1.Final//org.wildfly.security.auth.server.Scoped.runAsFunctionEx(Scoped.java:161)","at org.wildfly.security.elytron-base@2.5.1.Final//org.wildfly.security.auth.server.Scoped.runAs(Scoped.java:73)","at org.wildfly.security.elytron-web.undertow-server@4.1.0.Final//org.wildfly.elytron.web.undertow.server.ElytronRunAsHandler.handleRequest(ElytronRunAsHandler.java:67)","at io.undertow.servlet@2.3.15.Final//io.undertow.servlet.handlers.RedirectDirHandler.handleRequest(RedirectDirHandler.java:68)","at io.undertow.servlet@2.3.15.Final//io.undertow.servlet.handlers.security.SSLInformationAssociationHandler.handleRequest(SSLInformationAssociationHandler.java:117)","at io.undertow.servlet@2.3.15.Final//io.undertow.servlet.handlers.security.ServletAuthenticationCallHandler.handleRequest(ServletAuthenticationCallHandler.java:57)","at io.undertow.core@2.3.15.Final//io.undertow.server.handlers.PredicateHandler.handleRequest(PredicateHandler.java:43)","at io.undertow.core@2.3.15.Final//io.undertow.security.handlers.AbstractConfidentialityHandler.handleRequest(AbstractConfidentialityHandler.java:46)","at io.undertow.servlet@2.3.15.Final//io.undertow.servlet.handlers.security.ServletConfidentialityConstraintHandler.handleRequest(ServletConfidentialityConstraintHandler.java:64)","at io.undertow.core@2.3.15.Final//io.undertow.security.handlers.AbstractSecurityContextAssociationHandler.handleRequest(AbstractSecurityContextAssociationHandler.java:43)","at org.wildfly.security.elytron-web.undertow-server-servlet@4.1.0.Final//org.wildfly.elytron.web.undertow.server.servlet.CleanUpHandler.handleRequest(CleanUpHandler.java:38)","at io.undertow.core@2.3.15.Final//io.undertow.server.handlers.PredicateHandler.handleRequest(PredicateHandler.java:43)","at org.wildfly.extension.undertow@33.0.1.Final//org.wildfly.extension.undertow.security.jacc.JACCContextIdHandler.handleRequest(JACCContextIdHandler.java:44)","at io.undertow.core@2.3.15.Final//io.undertow.server.handlers.PredicateHandler.handleRequest(PredicateHandler.java:43)","at org.wildfly.extension.undertow@33.0.1.Final//org.wildfly.extension.undertow.deployment.GlobalRequestControllerHandler.handleRequest(GlobalRequestControllerHandler.java:51)","at io.undertow.servlet@2.3.15.Final//io.undertow.servlet.handlers.SendErrorPageHandler.handleRequest(SendErrorPageHandler.java:52)","at io.undertow.core@2.3.15.Final//io.undertow.server.handlers.PredicateHandler.handleRequest(PredicateHandler.java:43)","at io.undertow.core@2.3.15.Final//io.undertow.server.handlers.MetricsHandler.handleRequest(MetricsHandler.java:64)","at io.undertow.servlet@2.3.15.Final//io.undertow.servlet.core.MetricsChainHandler.handleRequest(MetricsChainHandler.java:59)","at io.undertow.servlet@2.3.15.Final//io.undertow.servlet.handlers.ServletInitialHandler.handleFirstRequest(ServletInitialHandler.java:276)","at io.undertow.servlet@2.3.15.Final//io.undertow.servlet.handlers.ServletInitialHandler$2.call(ServletInitialHandler.java:135)","at io.undertow.servlet@2.3.15.Final//io.undertow.servlet.handlers.ServletInitialHandler$2.call(ServletInitialHandler.java:132)","at io.undertow.servlet@2.3.15.Final//io.undertow.servlet.core.ServletRequestContextThreadSetupAction$1.call(ServletRequestContextThreadSetupAction.java:48)","at io.undertow.servlet@2.3.15.Final//io.undertow.servlet.core.ContextClassLoaderSetupAction$1.call(ContextClassLoaderSetupAction.java:43)","at org.wildfly.extension.undertow@33.0.1.Final//org.wildfly.extension.undertow.deployment.UndertowDeploymentInfoService$UndertowThreadSetupAction.lambda$create$0(UndertowDeploymentInfoService.java:1421)","at org.wildfly.extension.undertow@  Then Send Request to create Work Request with below details                              # stepDefinations.WorkRequestSteps.sendRequestToCreateWorkRequestWithDetails(io.cucumber.datatable.DataTable)
-    | bpId        | 66329769    |
-    | type        | pay_domq    |
-    | dueDate     | 123454      |
-    | subject     | Subject     |
-    | description | Description |
-  And I verify the Status Code for Work Request "400"                                      # stepDefinations.WorkRequestSteps.iVerifyTheStatusCodeForWorkRequest(java.lang.String)
-  And I verify the error response for Work Request with below details                      # stepDefinations.WorkRequestSteps.iVerifyTheErrorResponseforWorkRequestWithDetails(io.cucumber.datatable.DataTable)
-    | description   | [empty]                         |
-    | error message | [empty]                         |
-    | detail        | A validation error has occurred |
-33.0.1.Final//org.wildfly.extension.undertow.deployment.UndertowDeploymentInfoService$UndertowThreadSetupAction.lambda$create$0(UndertowDeploymentInfoService.java:1421)","at org.wildfly.extension.undertow@33.0.1.Final//org.wildfly.extension.undertow.deployment.UndertowDeploymentInfoService$UndertowThreadSetupAction.lambda$create$0(UndertowDeploymentInfoService.java:1421)","at org.wildfly.extension.undertow@33.0.1.Final//org.wildfly.extension.undertow.deployment.UndertowDeploymentInfoService$UndertowThreadSetupAction.lambda$create$0(UndertowDeploymentInfoService.java:1421)","at io.undertow.servlet@2.3.15.Final//io.undertow.servlet.handlers.ServletInitialHandler.dispatchRequest(ServletInitialHandler.java:256)","at io.undertow.servlet@2.3.15.Final//io.undertow.servlet.handlers.ServletInitialHandler$1.handleRequest(ServletInitialHandler.java:101)","at io.undertow.core@2.3.15.Final//io.undertow.server.Connectors.executeRootHandler(Connectors.java:393)","at io.undertow.core@2.3.15.Final//io.undertow.server.HttpServerExchange$1.run(HttpServerExchange.java:859)","at org.jboss.threads@2.4.0.Final//org.jboss.threads.ContextClassLoaderSavingRunnable.run(ContextClassLoaderSavingRunnable.java:35)","at org.jboss.threads@2.4.0.Final//org.jboss.threads.EnhancedQueueExecutor.safeRun(EnhancedQueueExecutor.java:1990)","at org.jboss.threads@2.4.0.Final//org.jboss.threads.EnhancedQueueExecutor$ThreadBody.doRunTask(EnhancedQueueExecutor.java:1486)","at org.jboss.threads@2.4.0.Final//org.jboss.threads.EnhancedQueueExecutor$ThreadBody.run(EnhancedQueueExecutor.java:1377)","at org.jboss.xnio@3.8.16.Final//org.xnio.XnioWorker$WorkerThreadFactory$1$1.run(XnioWorker.java:1282)","at java.base/java.lang.Thread.run(Thread.java:840)"],"errorDetails":[{"title":"Validation","field":"Body dueDate.dueDate","detail":"The field dueDate cannot be parsed. Please check the data type is correct"}]}
-Scenario Outline: Verify the Post Legal Person API with invalid data - BusinessPartnerID as empty # src/test/resources/Features/WorkRequest.feature:61
-  Given Send Request to get Authentication Token for ICOS                                         # stepDefinations.GetUserSteps.sendRequestToGetAuthenticationTokenForICOS()
-  When I generate the JWT Token                                                                   # stepDefinations.GetUserSteps.iGenerateTheJWTToken()
-  Then Send Request to create Work Request with below details                                     # stepDefinations.WorkRequestSteps.sendRequestToCreateWorkRequestWithDetails(io.cucumber.datatable.DataTable)
-    | bpId        | [empty]     |
-    | type        | pay_domq    |
-    | dueDate     | FUTURE      |
-    | subject     | Subject     |
-    | description | Description |
-  And I verify the Status Code for Work Request "400"                                             # stepDefinations.WorkRequestSteps.iVerifyTheStatusCodeForWorkRequest(java.lang.String)
-  And I verify the error response for Work Request with below details                             # stepDefinations.WorkRequestSteps.iVerifyTheErrorResponseforWorkRequestWithDetails(io.cucumber.datatable.DataTable)
-    | description   | Validation Errors            |
-    | error message | bpId or personId must be set |
-    | detail        | [empty]                      |
-May 29, 2025 10:25:37 AM hooks.CucumberHooks beforeScenario
-INFO: Before Scenario: Test is starting!
-May 29, 2025 10:25:37 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Access Token is93c6arvKtOCaPh4oCZEof4YwUb5H
-May 29, 2025 10:25:37 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Access Token  is{accessToken=93c6arvKtOCaPh4oCZEof4YwUb5H, tokenType=Bearer}
-May 29, 2025 10:25:38 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Tyk Token iseyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzdXAtYW1pd3Mtand0LWdlbmVyYXRvciIsInN1YiI6IlJCU0MkQ0xNX09OQk9BUkRJTkciLCJhdWQiOiJBTUlXZWJTZXJ2aWNlcyIsImV4cCI6MTc0ODUxMTYzOCwiaWF0IjoxNzQ4NTEwNzM4LCJhdmFsb3FfYnVfaWQiOiI2In0.tva7wOke-edJhISLbKIRIfp0PQ6HyuD8P60y24D_3E0aIu7Qd6o7IkDPTva7WrVsDMi7p10nf0UkrIhYCHKFH-A5VoY86Mqv_oAKi_5XZMn9gMf2TcSUjvgGw6vfSSPD7I_yw0xVmRYhRG23wAzGXrxXhaH7hS5UsTt3HtiZkRcAcHPJ1kT06cnTm6JfSLj7To9RmAI7UdKiEKdD13KmExCVGQWTxeU8eUhfnodalmqc-8nsC857SX_Hy5R9J8KaZywkt8FtBTIqzlokuDzx379248CHQSr1-YNaE9K2ROEsO4BjPUVSQDihrMoAGNytLJ78I6Cqeu6CzH-MqpZf3w
-May 29, 2025 10:25:38 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Response is: {"description":"Validation Errors","validationErrors":[{"value":"bpId and personId are null","error":"bpId or personId must be set"}]}
-May 29, 2025 10:25:38 AM hooks.CucumberHooks beforeScenario
-INFO: Before Scenario: Test is starting!
-May 29, 2025 10:25:38 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Access Token is93c6kc8S6gBkVJtnjGDNHgeiY0Ws
-May 29, 2025 10:25:38 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Access Token  is{accessToken=93c6kc8S6gBkVJtnjGDNHgeiY0Ws, tokenType=Bearer}
-May 29, 2025 10:25:39 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Tyk Token iseyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzdXAtYW1pd3Mtand0LWdlbmVyYXRvciIsInN1YiI6IlJCU0MkQ0xNX09OQk9BUkRJTkciLCJhdWQiOiJBTUlXZWJTZXJ2aWNlcyIsImV4cCI6MTc0ODUxMTYzOSwiaWF0IjoxNzQ4NTEwNzM5LCJhdmFsb3FfYnVfaWQiOiI2In0.GY9OBd6Ux0J2UunCG_MUmhcB4ZLxFJRrnH4GrQTeQ9lrRnHgkWkzV9eeazUlzY9HIpIu5xobipuwi-Cvp3wTTNh_dlAr0VkBaix_EFIHXVG7-_f1Axt1TDw2WNUi7vRV0JjKOifpd3W-WDTUh__9EVv241C_oTygHt9lcnQE7df-pSNjyp4aj_vfdgzrquVKwcX1XeN4xw3rWYgn5ZkPPghA1Y0Md2cMUmUCbtcnSExq2W3tnSaDodKv1snhC0Vd8kHx7IkuuL0DI7JeDi8ulYty89nbp2ZvEkQt6ZBQ6-gHXSQGR_u7QPqIjqq5RoLo0-APS77oUSDBFYD7JdSbxQ
-May 29, 2025 10:25:39 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Response is: Not able to deserialize data provided.
 Scenario Outline: Verify the Post Legal Person API with invalid data - Due Date as empty # src/test/resources/Features/WorkRequest.feature:62
+Before All
+May 29, 2025 10:43:55 AM hooks.CucumberHooks beforeScenario
+INFO: Before Scenario: Test is starting!
+May 29, 2025 10:43:59 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: Access Token is93c6XcctV81r0z8Ql9VsTaLiu8Z5
+May 29, 2025 10:43:59 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: Access Token  is{accessToken=93c6XcctV81r0z8Ql9VsTaLiu8Z5, tokenType=Bearer}
   Given Send Request to get Authentication Token for ICOS                                # stepDefinations.GetUserSteps.sendRequestToGetAuthenticationTokenForICOS()
+May 29, 2025 10:44:00 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: Tyk Token iseyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzdXAtYW1pd3Mtand0LWdlbmVyYXRvciIsInN1YiI6IlJCU0MkQ0xNX09OQk9BUkRJTkciLCJhdWQiOiJBTUlXZWJTZXJ2aWNlcyIsImV4cCI6MTc0ODUxMjc0MSwiaWF0IjoxNzQ4NTExODQxLCJhdmFsb3FfYnVfaWQiOiI2In0.mgEvD30NAfBrt3SY1-z6cKSi1eAmMUV1N_2Tv_Ua3BJ8ESYMBCjz84109RGbJlTH-Gxm4uLe3ciEgmYmVEmUIm-fYw25kD56HBtS9nef9Zrp12cc-svySxNwtXg9rhTqU2_XtuGLQI7lDuAqdUfA2imSz7RjtKeGfXHlfP9MPAk2psHWdGXeGdWlqEse0wCaQkKPVcPvu6nyJQa1qGT3gjZawg6DjiNsxhVlw8G8DjPvmFOGMH9gur4yf2R1lB1HlrquR0n1tsDtR61hMUM4PLANM1kw3JgqYEInRSePiKomjiZApAGCyLYsBvuExna6_Cxb_WzohXN_a65CQszjgg
   When I generate the JWT Token                                                          # stepDefinations.GetUserSteps.iGenerateTheJWTToken()
+May 29, 2025 10:44:01 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: Response is: Not able to deserialize data provided.
   Then Send Request to create Work Request with below details                            # stepDefinations.WorkRequestSteps.sendRequestToCreateWorkRequestWithDetails(io.cucumber.datatable.DataTable)
     | bpId        | 66329769    |
     | type        | pay_domq    |
@@ -179,8 +85,14 @@ Scenario Outline: Verify the Post Legal Person API with invalid data - Due Date 
 Caused by: groovy.json.JsonException: Lexing failed on line: 1, column: 1, while reading 'N', no possible valid JSON value or punctuation could be recognized.
 	at groovy.json.JsonLexer.nextToken(JsonLexer.java:86)
 	at groovy.json.JsonLexer$nextToken.call(Unknown Source)
+	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCall(CallSiteArray.java:45)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.call(AbstractCallSite.java:125)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.call(AbstractCallSite.java:130)
 	at io.restassured.internal.path.json.ConfigurableJsonSlurper.parse(ConfigurableJsonSlurper.groovy:97)
 	at io.restassured.internal.path.json.ConfigurableJsonSlurper$parse.callCurrent(Unknown Source)
+	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCallCurrent(CallSiteArray.java:49)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callCurrent(AbstractCallSite.java:171)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callCurrent(AbstractCallSite.java:185)
 	at io.restassured.internal.path.json.ConfigurableJsonSlurper.parseText(ConfigurableJsonSlurper.groovy:83)
 	at io.restassured.path.json.JsonPath$4$1.method(JsonPath.java:965)
 	at io.restassured.path.json.JsonPath$ExceptionCatcher.invoke(JsonPath.java:1000)
@@ -261,34 +173,10 @@ Caused by: groovy.json.JsonException: Lexing failed on line: 1, column: 1, while
     | description   | [empty] |
     | error message | [empty] |
     | detail        | [empty] |
-Scenario Outline: Verify the Post Legal Person API with invalid data - WorkRequestType as empty # src/test/resources/Features/WorkRequest.feature:63
-  Given Send Request to get Authentication Token for ICOS                                       # stepDefinations.GetUserSteps.sendRequestToGetAuthenticationTokenForICOS()
-  When I generate the JWT Token                                                                 # stepDefinations.GetUserSteps.iGenerateTheJWTToken()
-  Then Send Request to create Work Request with below details                                   # stepDefinations.WorkRequestSteps.sendRequestToCreateWorkRequestWithDetails(io.cucumber.datatable.DataTable)
-    | bpId        | 66329769    |
-    | type        | [empty]     |
-    | dueDate     | FUTURE      |
-    | subject     | Subject     |
-    | description | Description |
-  And I verify the Status Code for Work Request "500"                                           # stepDefinations.WorkRequestSteps.iVerifyTheStatusCodeForWorkRequest(java.lang.String)
-  And I verify the error response for Work Request with below details                           # stepDefinations.WorkRequestSteps.iVerifyTheErrorResponseforWorkRequestWithDetails(io.cucumber.datatable.DataTable)
-    | description   | [empty]                 |
-    | error message | Mandatory: Request Type |
-    | detail        | [empty]                 |
-May 29, 2025 10:25:39 AM hooks.CucumberHooks beforeScenario
-INFO: Before Scenario: Test is starting!
-May 29, 2025 10:25:39 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Access Token is93c6zS1GzbIuWbe23ont8R7KkY8r
-May 29, 2025 10:25:39 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Access Token  is{accessToken=93c6zS1GzbIuWbe23ont8R7KkY8r, tokenType=Bearer}
-May 29, 2025 10:25:40 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Tyk Token iseyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzdXAtYW1pd3Mtand0LWdlbmVyYXRvciIsInN1YiI6IlJCU0MkQ0xNX09OQk9BUkRJTkciLCJhdWQiOiJBTUlXZWJTZXJ2aWNlcyIsImV4cCI6MTc0ODUxMTY0MCwiaWF0IjoxNzQ4NTEwNzQwLCJhdmFsb3FfYnVfaWQiOiI2In0.hI83vzQljBK1fCByYsj52T_tdwnzlwyZy3zDffiNCA95IYkTTuU0sc1QnnG1O-GxjIQ-YWQSICpTdmEW_RbJbuXeF_pnHZwqzVo373x5Ldg8wB9Z5Xwc-ATXifY9ulfwIDYobXUYHSfrqnH4FPkyaJOqE6QsCPRe2xKHYj9_fyqPK7WxO4ll83RZsy-ifMnhBIwHBZZ6wsFW_h_tSKBmbPRn8tpsEV6ZbRDHRjiljRe7mlZypX00v_9P0BYddexVtgDgO2gFqpshFUmikUralXkQK9Qlty0wQ3rRdme0fYmZJkrywDfncTeTWBD3DXBTYDm6hsajYySqQRkCHq6_Qg
-May 29, 2025 10:25:41 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Response is: {"error":"Mandatory: Request Type"}
-May 29, 2025 10:25:43 AM tech.grasshopper.pdf.PDFCucumberReport collectReportConfiguration
+May 29, 2025 10:44:03 AM tech.grasshopper.pdf.PDFCucumberReport collectReportConfiguration
 INFO: PDF report configuration YAML file not found. Using default settings.
-[ERROR] Tests run: 6, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 38.4 s <<< FAILURE! - in testRunner.Runner
-[ERROR] Verify Work Requests API.Verify the Post Legal Person API with invalid data - Due Date as empty  Time elapsed: 0.85 s  <<< ERROR!
+[ERROR] Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 13.849 s <<< FAILURE! - in testRunner.Runner
+[ERROR] Verify Work Requests API.Verify the Post Legal Person API with invalid data - Due Date as empty  Time elapsed: 7.31 s  <<< ERROR!
 io.restassured.path.json.exception.JsonPathException: Failed to parse the JSON document
 Caused by: groovy.json.JsonException: Lexing failed on line: 1, column: 1, while reading 'N', no possible valid JSON value or punctuation could be recognized.
 [INFO] 
@@ -297,5 +185,5 @@ Caused by: groovy.json.JsonException: Lexing failed on line: 1, column: 1, while
 [ERROR] Errors: 
 [ERROR]   Failed to parse the JSON document
 [INFO] 
-[ERROR] Tests run: 6, Failures: 0, Errors: 1, Skipped: 0
+[ERROR] Tests run: 1, Failures: 0, Errors: 1, Skipped: 0
 [INFO] 
