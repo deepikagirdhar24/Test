@@ -1,72 +1,50 @@
-    @And("I verify the error response for Work Request with below details")
-    public void iVerifyTheErrorResponseforWorkRequestWithDetails(DataTable dataTable) throws Exception {
-        Map<String, String> mapResponsedata = dataTable.asMap(String.class, String.class);
+@And("I verify the error response for Work Request with below details")
+public void iVerifyTheErrorResponseforWorkRequestWithDetails(DataTable dataTable) throws Exception {
+    Map<String, String> mapResponseData = dataTable.asMap(String.class, String.class);
 
-        // Check if the map is empty or description is null or empty
-        if (mapResponsedata.containsKey("description") && mapResponsedata.containsKey("error message") &&
-                !(mapResponsedata.get("description") == null || mapResponsedata.get("description").isEmpty())) {
+    boolean isCheckPerformed = false;
 
-            // Validation error structure (400)
-            String strExpDescription = mapResponsedata.get("description");
-            String strExpErrorMessages = mapResponsedata.get("error message");
+    if (mapResponseData.containsKey("description") && mapResponseData.containsKey("error message")
+            && mapResponseData.get("description") != null && !mapResponseData.get("description").isEmpty()) {
 
-            String strActualDescription = JsonHelper.extractStringField(response, "description");
-            ExtentCucumberAdapter.addTestStepLog("Actual description: " + strActualDescription);
-            Assert.assertEquals(strActualDescription, strExpDescription, "Mismatch in description");
+        String expectedDescription = mapResponseData.get("description");
+        String actualDescription = JsonHelper.extractStringField(response, "description");
+        ExtentCucumberAdapter.addTestStepLog("Actual description: " + actualDescription);
+        Assert.assertEquals(actualDescription, expectedDescription, "Mismatch in description");
 
-            // Handle multiple error messages
-            String[] strArrExpErrors = strExpErrorMessages.split("\\s*,\\s*");
-            List<String> lstStrActualErrors = JsonHelper.extractListOfStringFieldsFromArray(response, "validationErrors", "error");
+        String[] expectedErrors = mapResponseData.get("error message").split("\\s*,\\s*");
+        List<String> actualErrors = JsonHelper.extractListOfStringFieldsFromArray(response, "validationErrors", "error");
+        ExtentCucumberAdapter.addTestStepLog("Actual error messages: " + actualErrors);
 
-            ExtentCucumberAdapter.addTestStepLog("Actual error messages: " + lstStrActualErrors.toString());
-
-            for (String strExpectedError : strArrExpErrors) {
-                Assert.assertTrue(lstStrActualErrors.contains(strExpectedError),
-                        "Expected error message not found: " + strExpectedError);
-            }
-        } else if (mapResponsedata.containsKey("error message") &&
-                !(mapResponsedata.get("error message") == null || mapResponsedata.get("error message").isEmpty())) {
-            // Simple error response (500 or others)
-            String strExpError = mapResponsedata.get("error message");
-            String strActualError = JsonHelper.extractStringField(response, "error");
-            ExtentCucumberAdapter.addTestStepLog("Actual error: " + strActualError);
-            Assert.assertEquals(strActualError, strExpError, "Mismatch in error message");
-        } else if (mapResponsedata.containsKey("detail") &&
-                !(mapResponsedata.get("detail") == null || mapResponsedata.get("detail").isEmpty())) {
-            // Handles AWS Validation error (400)
-            String expectedDetail = mapResponsedata.get("detail");
-            String actualDetail = JsonHelper.extractStringField(response, "detail");
-            ExtentCucumberAdapter.addTestStepLog("Actual detail: " + actualDetail);
-            Assert.assertEquals(actualDetail, expectedDetail, "Mismatch in detail field");
-
-        } else {
-            throw new IllegalArgumentException("Unsupported error format in DataTable");
+        for (String expectedError : expectedErrors) {
+            Assert.assertTrue(actualErrors.contains(expectedError), "Expected error not found: " + expectedError);
         }
-    } - I have this function, 
 
-I have one case when due date is null, then it throws 400 error and also response as Not able to deserialize data provided.
-can I skip the last step as my error response does not match with any parameters here, so if I can do some modiftcion in function, what do u suggest ?
+        isCheckPerformed = true;
 
-  Scenario Outline: Verify the Post Legal Person API with invalid data - <Comments>
-    Given Send Request to get Authentication Token for ICOS
-    When I generate the JWT Token
-    Then Send Request to create Work Request with below details
-      | bpId          | <bpId>        |
-      | type          | <type>        |
-      | dueDate       | <dueDate>     |
-      | subject       | <subject>     |
-      | description   | <description> |
-    And I verify the Status Code for Work Request "<statusCode>"
-    And I verify the error response for Work Request with below details
-      | description   | <errDescription> |
-      | error message | <error>          |
-      | detail        | <detail>         |
+    } else if (mapResponseData.containsKey("error message")
+            && mapResponseData.get("error message") != null && !mapResponseData.get("error message").isEmpty()) {
 
-    Examples:
-      | bpId      | type       | dueDate | subject | description  | statusCode | errDescription    | error                         | detail                          | Comments                        |
-      | ?         | pay_domq   | FUTURE  | Subject | Description  | 400        | Validation Errors | BP not found                  |                                 | BusinessPartnerID as invalid    |
-      | 66329769  | xxx        | FUTURE  | Subject | Description  | 400        | Validation Errors | Type not found                |                                 | WorkRequestType as invalid      |
-      | 66329769  | pay_domq   | 123454  | Subject | Description  | 400        |                   |                               | A validation error has occurred | Due Date as invalid             |
-      |           | pay_domq   | FUTURE  | Subject | Description  | 400        | Validation Errors | bpId or personId must be set  |                                 | BusinessPartnerID as empty      |
-      | 66329769  | pay_domq   |         | Subject | Description  | 400        |                   |                               |                                 | Due Date as empty               |
-      | 66329769  |            | FUTURE  | Subject | Description  | 500        |                   | Mandatory: Request Type       |                                 | WorkRequestType as empty   
+        String expectedError = mapResponseData.get("error message");
+        String actualError = JsonHelper.extractStringField(response, "error");
+        ExtentCucumberAdapter.addTestStepLog("Actual error: " + actualError);
+        Assert.assertEquals(actualError, expectedError, "Mismatch in error message");
+
+        isCheckPerformed = true;
+
+    } else if (mapResponseData.containsKey("detail")
+            && mapResponseData.get("detail") != null && !mapResponseData.get("detail").isEmpty()) {
+
+        String expectedDetail = mapResponseData.get("detail");
+        String actualDetail = JsonHelper.extractStringField(response, "detail");
+        ExtentCucumberAdapter.addTestStepLog("Actual detail: " + actualDetail);
+        Assert.assertEquals(actualDetail, expectedDetail, "Mismatch in detail field");
+
+        isCheckPerformed = true;
+    }
+
+    // If none of the above checks were performed, just log and move on
+    if (!isCheckPerformed) {
+        ExtentCucumberAdapter.addTestStepLog("No expected error fields were defined in the DataTable. Skipping error verification.");
+    }
+}
