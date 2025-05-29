@@ -1,171 +1,80 @@
-Feature file - 
+public static POJOWorkRequest buildWorkRequestPayloadWithExcludedFields(Map<String, String> mapWorkRequestDetails) {
+    POJOWorkRequest workRequest = new POJOWorkRequest();
 
-Scenario Outline: Verify Create Work Request with individual missing fields - <Comments>
-    Given Send Request to get Authentication Token for ICOS
-    When I generate the JWT Token
-    Then Send Request to create Work Request with below details excluding "<excludeField>"
-      | bpId        | <bpId>        |
-      | type        | <type>        |
-      | dueDate     | <dueDate>     |
-      | subject     | <subject>     |
-      | description | <description> |
-    And I verify the Status Code for Work Request "<statusCode>"
-
-    Examples:
-      | bpId      | type      | dueDate | subject   | description   | excludeField | statusCode | Comments               |
-      | 66329769  | pay_domq  | FUTURE  | Subject   | Description   | bpId         | 400        | BusinessPartnerID as NA |
-      | 66329769  | pay_domq  | FUTURE  | Subject   | Description   | type         | 400        | WorkRequestType as NA   |
-      | 66329769  | pay_domq  | FUTURE  | Subject   | Description   | subject      | 400        | Due Date as NA          |
-      | 66329769  | pay_domq  | FUTURE  | Subject   | Description   | description  | 400        | Subject as NA           |
-      | 66329769  | pay_domq  | FUTURE  | Subject   | Description   | dueDate      | 400        | Description as NA       |
-
-
-    @Then("Send Request to create Work Request with below details excluding {string}")
-    public void sendRequestToCreateWorkRequestWithExclusion(String excludeField, DataTable dataTable) throws JsonProcessingException {
-        Map<String, String> mapWorkRequestDetails = new HashMap<>(dataTable.asMap(String.class, String.class));
-
-        // Remove the field if needed
-        if (excludeField != null && !excludeField.trim().isEmpty()) {
-            mapWorkRequestDetails.remove(excludeField.trim());
-        }
-        
-        String jwtToken = scenarioContext.getContext("JWTToken");
-        response = objWorkRequest.createWorkRequest(strEnvType, "Bearer", jwtToken, mapWorkRequestDetails, scenarioContext);
+    if (mapWorkRequestDetails.containsKey("bpId")) {
+        workRequest.setStrBpId(mapWorkRequestDetails.get("bpId"));
     }
 
-what updates are needed below to handle above scenarios - 
-
-// Create Work Request
-    public Response createWorkRequest(String strEnvType, String strBearerToken, String strJWTToken,
-                                      Map<String, String> mapWorkRequestDetails, ScenarioContext scenarioContext) throws JsonProcessingException {
-
-        String strTYKURL = getTYKURL(strEnvType, "TYK.WORKREQUESTS");
-        POJOWorkRequest pojoWorkRequest = Payloads.buildWorkRequestPayload(mapWorkRequestDetails);
-        String strRequestBody = objObjectMapper.writeValueAsString(pojoWorkRequest);
-
-        ExtentCucumberAdapter.addTestStepLog("Sending request to Create Work Request");
-
-        Response objResponse = sendPostRequest(strTYKURL, strBearerToken, strJWTToken, strRequestBody, null);
-        String strResponseBody = devHelperLibrary.getResponseBody(objResponse);
-        objCucumberLogger.PrintStatus("Response is: " + strResponseBody);
-
-        // Avoid parsing if response is not JSON
-        if (objResponse.getContentType() != null && objResponse.getContentType().contains("application/json")) {
-            String strWorkRequestOrderId = objResponse.jsonPath().getString("orderId");
-            scenarioContext.setContext("workRequestOrderId", strWorkRequestOrderId);
-        }
-
-        return objResponse;
+    if (mapWorkRequestDetails.containsKey("type")) {
+        workRequest.setStrType(mapWorkRequestDetails.get("type"));
     }
 
-public static POJOWorkRequest buildWorkRequestPayload(Map<String, String> mapWorkRequestDetails) {
-        POJOWorkRequest workRequest = new POJOWorkRequest();
+    if (mapWorkRequestDetails.containsKey("subject")) {
+        workRequest.setStrSubject(mapWorkRequestDetails.get("subject"));
+    }
 
-        workRequest.setStrBpId(
-                mapWorkRequestDetails.get("bpId") != null ?
-                        mapWorkRequestDetails.get("bpId") : ""
-        );
+    if (mapWorkRequestDetails.containsKey("description")) {
+        workRequest.setStrDescription(mapWorkRequestDetails.get("description"));
+    }
 
-        workRequest.setStrType(
-                mapWorkRequestDetails.get("type") != null ?
-                        mapWorkRequestDetails.get("type") : ""
-        );
-
-        workRequest.setStrSubject(
-                mapWorkRequestDetails.get("subject") != null ?
-                        mapWorkRequestDetails.get("subject") : ""
-        );
-
-        workRequest.setStrDescription(
-                mapWorkRequestDetails.get("description") != null ?
-                        mapWorkRequestDetails.get("description") : ""
-        );
-
+    if (mapWorkRequestDetails.containsKey("dueDate")) {
         String dueDateInput = mapWorkRequestDetails.get("dueDate");
-        String resolvedDueDate;
-
-        if (dueDateInput == null || dueDateInput.trim().isEmpty()) {
-            resolvedDueDate = ""; // empty string
-        } else {
+        if (dueDateInput != null && !dueDateInput.trim().isEmpty()) {
             switch (dueDateInput.trim().toUpperCase()) {
                 case "FUTURE":
-                    resolvedDueDate = LocalDate.now().plusDays(7).toString();
+                    workRequest.setStrDueDate(LocalDate.now().plusDays(7).toString());
                     break;
                 case "PAST":
-                    resolvedDueDate = LocalDate.now().minusDays(7).toString();
+                    workRequest.setStrDueDate(LocalDate.now().minusDays(7).toString());
                     break;
                 case "TODAY":
-                    resolvedDueDate = LocalDate.now().toString();
+                    workRequest.setStrDueDate(LocalDate.now().toString());
                     break;
                 default:
-                    resolvedDueDate = dueDateInput; // use as-is for invalid/custom values
-                    break;
+                    workRequest.setStrDueDate(dueDateInput);
             }
         }
-
-        workRequest.setStrDueDate(resolvedDueDate);
-        return workRequest;
     }
 
-package ICOS.pojo;
+    return workRequest;
+}
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+public Response createWorkRequest(String strEnvType, String strBearerToken, String strJWTToken,
+                                  Map<String, String> mapWorkRequestDetails, ScenarioContext scenarioContext,
+                                  boolean excludeMissingFields) throws JsonProcessingException {
 
-public class POJOWorkRequest {
+    String strTYKURL = getTYKURL(strEnvType, "TYK.WORKREQUESTS");
+    POJOWorkRequest pojoWorkRequest = excludeMissingFields
+            ? Payloads.buildWorkRequestPayloadWithExcludedFields(mapWorkRequestDetails)
+            : Payloads.buildWorkRequestPayload(mapWorkRequestDetails);
 
-    @JsonProperty("bpId")
-    private String strBpId;
+    String strRequestBody = objObjectMapper.writeValueAsString(pojoWorkRequest);
 
-    @JsonProperty("type")
-    private String strType;
+    ExtentCucumberAdapter.addTestStepLog("Sending request to Create Work Request");
 
-    @JsonProperty("dueDate")
-    private String strDueDate;
+    Response objResponse = sendPostRequest(strTYKURL, strBearerToken, strJWTToken, strRequestBody, null);
+    String strResponseBody = devHelperLibrary.getResponseBody(objResponse);
+    objCucumberLogger.PrintStatus("Response is: " + strResponseBody);
 
-    @JsonProperty("subject")
-    private String strSubject;
-
-    @JsonProperty("description")
-    private String strDescription;
-
-    // Getters and Setters
-    public String getStrBpId() {
-        return strBpId;
+    if (objResponse.getContentType() != null && objResponse.getContentType().contains("application/json")) {
+        String strWorkRequestOrderId = objResponse.jsonPath().getString("orderId");
+        scenarioContext.setContext("workRequestOrderId", strWorkRequestOrderId);
     }
 
-    public void setStrBpId(String strBpId) {
-        this.strBpId = strBpId;
+    return objResponse;
+}
+
+@Then("Send Request to create Work Request with below details excluding {string}")
+public void sendRequestToCreateWorkRequestWithExclusion(String excludeField, DataTable dataTable) throws JsonProcessingException {
+    Map<String, String> mapWorkRequestDetails = new HashMap<>(dataTable.asMap(String.class, String.class));
+
+    // Remove the excluded field
+    if (excludeField != null && !excludeField.trim().isEmpty()) {
+        mapWorkRequestDetails.remove(excludeField.trim());
     }
 
-    public String getStrType() {
-        return strType;
-    }
+    String jwtToken = scenarioContext.getContext("JWTToken");
 
-    public void setStrType(String strType) {
-        this.strType = strType;
-    }
-
-    public String getStrDueDate() {
-        return strDueDate;
-    }
-
-    public void setStrDueDate(String strDueDate) {
-        this.strDueDate = strDueDate;
-    }
-
-    public String getStrSubject() {
-        return strSubject;
-    }
-
-    public void setStrSubject(String strSubject) {
-        this.strSubject = strSubject;
-    }
-
-    public String getStrDescription() {
-        return strDescription;
-    }
-
-    public void setStrDescription(String strDescription) {
-        this.strDescription = strDescription;
-    }
+    // Use new createWorkRequest with `excludeMissingFields = true`
+    response = objWorkRequest.createWorkRequest(strEnvType, "Bearer", jwtToken, mapWorkRequestDetails, scenarioContext, true);
 }
