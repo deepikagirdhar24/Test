@@ -1,33 +1,24 @@
-Scenario Outline: Verify Create Work Request with individual missing fields
-  Given Send Request to get Authentication Token for ICOS
-  When I generate the JWT Token
-  Then Send Request to create Work Request with below details excluding "<excludeField>"
-    | bpId        | <bpId>        |
-    | type        | <type>        |
-    | dueDate     | <dueDate>     |
-    | subject     | <subject>     |
-    | description | <description> |
-  And I verify the Status Code for Work Request "<statusCode>"
+ANy c hanges to be done here - 
 
-Examples:
-  | bpId      | type      | dueDate | subject   | description | excludeField | statusCode |
-  | 66329769  | pay_domq  | FUTURE  | Test sub  | Test desc   | bpId         | 400        |
-  | 66329769  | pay_domq  | FUTURE  | Test sub  | Test desc   | type         | 400        |
-  | 66329769  | pay_domq  | FUTURE  | Test sub  | Test desc   | subject      | 400        |
-  | 66329769  | pay_domq  | FUTURE  | Test sub  | Test desc   | description  | 400        |
-  | 66329769  | pay_domq  | FUTURE  | Test sub  | Test desc   | dueDate      | 400        |
+// Create Work Request
+    public Response createWorkRequest(String strEnvType, String strBearerToken, String strJWTToken,
+                                      Map<String, String> mapWorkRequestDetails, ScenarioContext scenarioContext) throws JsonProcessingException {
 
+        String strTYKURL = getTYKURL(strEnvType, "TYK.WORKREQUESTS");
+        POJOWorkRequest pojoWorkRequest = Payloads.buildWorkRequestPayload(mapWorkRequestDetails);
+        String strRequestBody = objObjectMapper.writeValueAsString(pojoWorkRequest);
 
-@Then("Send Request to create Work Request with below details excluding {string}")
-public void sendRequestToCreateWorkRequestWithExclusion(String excludeField, DataTable dataTable) throws JsonProcessingException {
-    Map<String, String> mapWorkRequestDetails = new HashMap<>(dataTable.asMap(String.class, String.class));
-    
-    // Remove the field if needed
-    if (excludeField != null && !excludeField.trim().isEmpty()) {
-        mapWorkRequestDetails.remove(excludeField.trim());
+        ExtentCucumberAdapter.addTestStepLog("Sending request to Create Work Request");
+
+        Response objResponse = sendPostRequest(strTYKURL, strBearerToken, strJWTToken, strRequestBody, null);
+        String strResponseBody = devHelperLibrary.getResponseBody(objResponse);
+        objCucumberLogger.PrintStatus("Response is: " + strResponseBody);
+
+        // Avoid parsing if response is not JSON
+        if (objResponse.getContentType() != null && objResponse.getContentType().contains("application/json")) {
+            String strWorkRequestOrderId = objResponse.jsonPath().getString("orderId");
+            scenarioContext.setContext("workRequestOrderId", strWorkRequestOrderId);
+        }
+
+        return objResponse;
     }
-
-    scenarioContext.setContext("WorkRequestDetailsMap", mapWorkRequestDetails);
-    String jwtToken = scenarioContext.getContext("JWTToken");
-    response = objWorkRequest.createWorkRequest(strEnvType, "Bearer", jwtToken, mapWorkRequestDetails, scenarioContext);
-}
