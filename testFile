@@ -1,25 +1,13 @@
-  Scenario Outline: Verify the Get Work Request API
-    Given Send Request to get Authentication Token for ICOS
-    When I generate the JWT Token
-    Then Send Request to get Work Request
-    And I verify the Status Code for Work Request "<statusCode>"
-    And I verify the string field "bpId" is "<bpId>" in Work Request response
-    And I verify the string field "type" is "<type>" in Work Request response
-    And I verify the string field "dueDate" is "<dueDate>" in Work Request response
-    And I verify the string field "subject" is "<subject>" in Work Request response
-    And I verify the string field "description" is "<description>" in Work Request response
-
-    Examples:
-      | bpId      | type       | dueDate | subject | description  | statusCode |
-      | 66329769  | olb_oarprw |         | Subject | Description  | 200        |
-
-    @And("I verify the string field {string} is {string} in Work Request response")
-    public void iVerifyStringFieldEquals(String jsonPath, String expectedValue) throws Exception {
-        String actualValue = JsonHelper.extractStringField(response, jsonPath);
-        ExtentCucumberAdapter.addTestStepLog("Expected value at '" + jsonPath + "': " + expectedValue + ", Actual: " + actualValue);
-        Assert.assertEquals(actualValue, expectedValue, "Mismatch at: " + jsonPath);
+@And("I verify the string field {string} follows the date format {string} in Work Request response")
+public void iVerifyDateFormat(String jsonPath, String expectedFormat) throws Exception {
+    String dateStr = JsonHelper.extractStringField(response, jsonPath);
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern(expectedFormat);
+    try {
+        LocalDate.parse(dateStr, formatter);
+        ExtentCucumberAdapter.addTestStepLog("Date at '" + jsonPath + "' is in correct format: " + dateStr);
+    } catch (DateTimeParseException e) {
+        Assert.fail("Date at '" + jsonPath + "' is NOT in expected format: " + expectedFormat + ". Actual: " + dateStr);
     }
+}
 
-I am using this feature file and want to validate the response, but not sure how to validate the date ?
-
-IN the validation, we need ot do this -attached screenshot from TOSCA
+And I verify the string field "dueDate" follows the date format "yyyy-MM-dd" in Work Request response
