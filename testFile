@@ -1,45 +1,74 @@
+@And("I verify the Legal Person API 400 error response with below details")
+public void iVerifyLegalPerson400ErrorResponse(DataTable dataTable) throws Exception {
+    Map<String, String> expectedData = dataTable.asMap(String.class, String.class);
 
+    String expectedDescription = expectedData.get("description");
+    String expectedErrorMessages = expectedData.get("error message");
 
-@And("I verify the error response for Legal Person with below details")
-    public void iVerifyTheErrorResponseforLegalPersonWithDetails(DataTable dataTable) throws Exception {
-        Map<String, String> mapResponsedata = dataTable.asMap(String.class, String.class);
+    String actualDescription = JsonHelper.extractStringField(response, "description");
+    ExtentCucumberAdapter.addTestStepLog("Actual description: " + actualDescription);
+    Assert.assertEquals(actualDescription, expectedDescription, "Mismatch in description");
 
-        // Check if the map is empty or description is null or empty
-        if (mapResponsedata.containsKey("description") && mapResponsedata.containsKey("error message") &&
-                !(mapResponsedata.get("description") == null || mapResponsedata.get("description").isEmpty())) {
+    // Handle multiple error messages
+    String[] expectedErrors = expectedErrorMessages.split("\\s*,\\s*");
+    List<String> actualErrors = JsonHelper.extractListOfStringFieldsFromArray(response, "validationErrors", "error");
 
-            // Validation error structure (400)
-            String strExpDescription = mapResponsedata.get("description");
-            String strExpErrorMessages = mapResponsedata.get("error message");
+    ExtentCucumberAdapter.addTestStepLog("Actual error messages: " + actualErrors);
 
-            String strActualDescription = JsonHelper.extractStringField(response, "description");
-            ExtentCucumberAdapter.addTestStepLog("Actual description: " + strActualDescription);
-            Assert.assertEquals(strActualDescription, strExpDescription, "Mismatch in description");
-
-            // Handle multiple error messages
-            String[] strArrExpErrors = strExpErrorMessages.split("\\s*,\\s*");
-            List<String> lstStrActualErrors = JsonHelper.extractListOfStringFieldsFromArray(response, "validationErrors", "error");
-
-            ExtentCucumberAdapter.addTestStepLog("Actual error messages: " + lstStrActualErrors.toString());
-
-            for (String strExpectedError : strArrExpErrors) {
-                Assert.assertTrue(lstStrActualErrors.contains(strExpectedError),
-                        "Expected error message not found: " + strExpectedError);
-            }
-        } else if (mapResponsedata.containsKey("error message")) {
-            // Simple error response (500 or others)
-            String strExpError = mapResponsedata.get("error message");
-            String strActualError = JsonHelper.extractStringField(response, "error");
-            ExtentCucumberAdapter.addTestStepLog("Actual error: " + strActualError);
-            Assert.assertEquals(strActualError, strExpError, "Mismatch in error message");
-        } else {
-            throw new IllegalArgumentException("Unsupported error format in DataTable");
-        }
+    for (String expectedError : expectedErrors) {
+        Assert.assertTrue(actualErrors.contains(expectedError),
+                "Expected error message not found: " + expectedError);
     }
+}
 
-    And I verify the error response for Legal Person with below details
-      | description   | <description> |
-      | error message | <error>       |
+  And I verify the Legal Person API 400 error response with below details
+    | description   | Validation Errors                       |
+    | error message | Name is required, Address is required  |
 
+@And("I verify the Legal Person API 500 error response with message {string}")
+public void iVerifyLegalPerson500ErrorResponse(String expectedError) throws Exception {
+    String actualError = JsonHelper.extractStringField(response, "error");
+    ExtentCucumberAdapter.addTestStepLog("Actual error: " + actualError);
+    Assert.assertEquals(actualError, expectedError, "Mismatch in error message");
+}
 
-break this 400 and 500 error response in diff step definitions.
+@And("I verify the Legal Person AWS-style 400 error response with below details")
+public void iVerifyLegalPersonAWSStyle400ErrorResponse(DataTable dataTable) throws Exception {
+    Map<String, String> expectedData = dataTable.asMap(String.class, String.class);
+
+    // Extract expected main fields
+    String expectedType = expectedData.get("type");
+    String expectedTitle = expectedData.get("title");
+    String expectedDetail = expectedData.get("detail");
+    String expectedErrorMessages = expectedData.get("error message"); // comma-separated
+
+    // Validate basic fields
+    String actualType = JsonHelper.extractStringField(response, "type");
+    String actualTitle = JsonHelper.extractStringField(response, "title");
+    String actualDetail = JsonHelper.extractStringField(response, "detail");
+
+    ExtentCucumberAdapter.addTestStepLog("Actual type: " + actualType);
+    ExtentCucumberAdapter.addTestStepLog("Actual title: " + actualTitle);
+    ExtentCucumberAdapter.addTestStepLog("Actual detail: " + actualDetail);
+
+    Assert.assertEquals(actualType, expectedType, "Mismatch in 'type'");
+    Assert.assertEquals(actualTitle, expectedTitle, "Mismatch in 'title'");
+    Assert.assertEquals(actualDetail, expectedDetail, "Mismatch in 'detail'");
+
+    // Validate errorDetails[].error
+    String[] expectedErrors = expectedErrorMessages.split("\\s*,\\s*");
+    List<String> actualErrors = JsonHelper.extractListOfStringFieldsFromArray(response, "errorDetails", "error");
+
+    ExtentCucumberAdapter.addTestStepLog("Actual error messages: " + actualErrors);
+
+    for (String expectedError : expectedErrors) {
+        Assert.assertTrue(actualErrors.contains(expectedError),
+                "Expected error message not found: " + expectedError);
+    }
+}
+
+  And I verify the Legal Person AWS-style 400 error response with below details
+    | type          | https://example.com/probs/validation |
+    | title         | Validation Error                     |
+    | detail        | One or more validation errors        |
+    | error message | Invalid BP ID, Invalid SubType Key   |
