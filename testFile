@@ -1,13 +1,12 @@
 Scenario Outline: Verify Create Work Request with individual missing fields
   Given Send Request to get Authentication Token for ICOS
   When I generate the JWT Token
-  Then Send Request to create Work Request with below details
+  Then Send Request to create Work Request with below details excluding "<excludeField>"
     | bpId        | <bpId>        |
     | type        | <type>        |
     | dueDate     | <dueDate>     |
     | subject     | <subject>     |
     | description | <description> |
-  And Remove "<excludeField>" from request payload
   And I verify the Status Code for Work Request "<statusCode>"
 
 Examples:
@@ -18,21 +17,17 @@ Examples:
   | 66329769  | pay_domq  | FUTURE  | Test sub  | Test desc   | description  | 400        |
   | 66329769  | pay_domq  | FUTURE  | Test sub  | Test desc   | dueDate      | 400        |
 
-@And("Remove {string} from request payload")
-public void removeFieldFromPayload(String excludeField) {
-    ScenarioContext scenarioContext = getScenarioContext(); // use your existing method to get it
-    Map<String, String> map = scenarioContext.getContext("WorkRequestDetailsMap");
-    if (map != null && excludeField != null && !excludeField.isEmpty()) {
-        map.remove(excludeField);
+
+@Then("Send Request to create Work Request with below details excluding {string}")
+public void sendRequestToCreateWorkRequestWithExclusion(String excludeField, DataTable dataTable) throws JsonProcessingException {
+    Map<String, String> mapWorkRequestDetails = new HashMap<>(dataTable.asMap(String.class, String.class));
+    
+    // Remove the field if needed
+    if (excludeField != null && !excludeField.trim().isEmpty()) {
+        mapWorkRequestDetails.remove(excludeField.trim());
     }
-}
 
-
-@Then("Send Request to create Work Request with below details")
-public void sendRequestToCreateWorkRequestWithDetails(DataTable dataTable) throws JsonProcessingException {
-    Map<String, String> mapWorkRequestDetails = dataTable.asMap(String.class, String.class);
-    scenarioContext.setContext("WorkRequestDetailsMap", mapWorkRequestDetails); // store it
+    scenarioContext.setContext("WorkRequestDetailsMap", mapWorkRequestDetails);
     String jwtToken = scenarioContext.getContext("JWTToken");
     response = objWorkRequest.createWorkRequest(strEnvType, "Bearer", jwtToken, mapWorkRequestDetails, scenarioContext);
 }
-
