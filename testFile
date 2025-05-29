@@ -72,3 +72,19 @@ public void iVerifyLegalPersonAWSStyle400ErrorResponse(DataTable dataTable) thro
     | title         | Validation Error                     |
     | detail        | One or more validation errors        |
     | error message | Invalid BP ID, Invalid SubType Key   |
+
+Thsi is the correct paylaod for AWS error reponse.
+
+{
+    "status": 400,
+    "type": "/aws/validation_error",
+    "detail": "A validation error has occurred",
+    "title": "Validation Error",
+"errorDetails": [
+        {
+            "title": "Validation",
+            "field": "Body description",
+            "detail": "Field must not be null"
+        }
+    ]
+} - we need to validate type detail and title and errorDetails.title, errorDetails.field. errorDetails.detail - I thik the function you have sent above s not as per this.
