@@ -1,0 +1,36 @@
+@And("I verify the error response for Legal Person with below details")
+    public void iVerifyTheErrorResponseforLegalPersonWithDetails(DataTable dataTable) throws Exception {
+        Map<String, String> mapResponsedata = dataTable.asMap(String.class, String.class);
+
+        // Check if the map is empty or description is null or empty
+        if (mapResponsedata.containsKey("description") && mapResponsedata.containsKey("error message") &&
+                !(mapResponsedata.get("description") == null || mapResponsedata.get("description").isEmpty())) {
+
+            // Validation error structure (400)
+            String strExpDescription = mapResponsedata.get("description");
+            String strExpErrorMessages = mapResponsedata.get("error message");
+
+            String strActualDescription = JsonHelper.extractStringField(response, "description");
+            ExtentCucumberAdapter.addTestStepLog("Actual description: " + strActualDescription);
+            Assert.assertEquals(strActualDescription, strExpDescription, "Mismatch in description");
+
+            // Handle multiple error messages
+            String[] strArrExpErrors = strExpErrorMessages.split("\\s*,\\s*");
+            List<String> lstStrActualErrors = JsonHelper.extractListOfStringFieldsFromArray(response, "validationErrors", "error");
+
+            ExtentCucumberAdapter.addTestStepLog("Actual error messages: " + lstStrActualErrors.toString());
+
+            for (String strExpectedError : strArrExpErrors) {
+                Assert.assertTrue(lstStrActualErrors.contains(strExpectedError),
+                        "Expected error message not found: " + strExpectedError);
+            }
+        } else if (mapResponsedata.containsKey("error message")) {
+            // Simple error response (500 or others)
+            String strExpError = mapResponsedata.get("error message");
+            String strActualError = JsonHelper.extractStringField(response, "error");
+            ExtentCucumberAdapter.addTestStepLog("Actual error: " + strActualError);
+            Assert.assertEquals(strActualError, strExpError, "Mismatch in error message");
+        } else {
+            throw new IllegalArgumentException("Unsupported error format in DataTable");
+        }
+    }
