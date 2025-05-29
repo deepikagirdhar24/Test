@@ -1,4 +1,39 @@
-ANy c hanges to be done here - 
+Feature file - 
+
+Scenario Outline: Verify Create Work Request with individual missing fields - <Comments>
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    Then Send Request to create Work Request with below details excluding "<excludeField>"
+      | bpId        | <bpId>        |
+      | type        | <type>        |
+      | dueDate     | <dueDate>     |
+      | subject     | <subject>     |
+      | description | <description> |
+    And I verify the Status Code for Work Request "<statusCode>"
+
+    Examples:
+      | bpId      | type      | dueDate | subject   | description   | excludeField | statusCode | Comments               |
+      | 66329769  | pay_domq  | FUTURE  | Subject   | Description   | bpId         | 400        | BusinessPartnerID as NA |
+      | 66329769  | pay_domq  | FUTURE  | Subject   | Description   | type         | 400        | WorkRequestType as NA   |
+      | 66329769  | pay_domq  | FUTURE  | Subject   | Description   | subject      | 400        | Due Date as NA          |
+      | 66329769  | pay_domq  | FUTURE  | Subject   | Description   | description  | 400        | Subject as NA           |
+      | 66329769  | pay_domq  | FUTURE  | Subject   | Description   | dueDate      | 400        | Description as NA       |
+
+
+    @Then("Send Request to create Work Request with below details excluding {string}")
+    public void sendRequestToCreateWorkRequestWithExclusion(String excludeField, DataTable dataTable) throws JsonProcessingException {
+        Map<String, String> mapWorkRequestDetails = new HashMap<>(dataTable.asMap(String.class, String.class));
+
+        // Remove the field if needed
+        if (excludeField != null && !excludeField.trim().isEmpty()) {
+            mapWorkRequestDetails.remove(excludeField.trim());
+        }
+        
+        String jwtToken = scenarioContext.getContext("JWTToken");
+        response = objWorkRequest.createWorkRequest(strEnvType, "Bearer", jwtToken, mapWorkRequestDetails, scenarioContext);
+    }
+
+what updates are needed below to handle above scenarios - 
 
 // Create Work Request
     public Response createWorkRequest(String strEnvType, String strBearerToken, String strJWTToken,
@@ -22,3 +57,115 @@ ANy c hanges to be done here -
 
         return objResponse;
     }
+
+public static POJOWorkRequest buildWorkRequestPayload(Map<String, String> mapWorkRequestDetails) {
+        POJOWorkRequest workRequest = new POJOWorkRequest();
+
+        workRequest.setStrBpId(
+                mapWorkRequestDetails.get("bpId") != null ?
+                        mapWorkRequestDetails.get("bpId") : ""
+        );
+
+        workRequest.setStrType(
+                mapWorkRequestDetails.get("type") != null ?
+                        mapWorkRequestDetails.get("type") : ""
+        );
+
+        workRequest.setStrSubject(
+                mapWorkRequestDetails.get("subject") != null ?
+                        mapWorkRequestDetails.get("subject") : ""
+        );
+
+        workRequest.setStrDescription(
+                mapWorkRequestDetails.get("description") != null ?
+                        mapWorkRequestDetails.get("description") : ""
+        );
+
+        String dueDateInput = mapWorkRequestDetails.get("dueDate");
+        String resolvedDueDate;
+
+        if (dueDateInput == null || dueDateInput.trim().isEmpty()) {
+            resolvedDueDate = ""; // empty string
+        } else {
+            switch (dueDateInput.trim().toUpperCase()) {
+                case "FUTURE":
+                    resolvedDueDate = LocalDate.now().plusDays(7).toString();
+                    break;
+                case "PAST":
+                    resolvedDueDate = LocalDate.now().minusDays(7).toString();
+                    break;
+                case "TODAY":
+                    resolvedDueDate = LocalDate.now().toString();
+                    break;
+                default:
+                    resolvedDueDate = dueDateInput; // use as-is for invalid/custom values
+                    break;
+            }
+        }
+
+        workRequest.setStrDueDate(resolvedDueDate);
+        return workRequest;
+    }
+
+package ICOS.pojo;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public class POJOWorkRequest {
+
+    @JsonProperty("bpId")
+    private String strBpId;
+
+    @JsonProperty("type")
+    private String strType;
+
+    @JsonProperty("dueDate")
+    private String strDueDate;
+
+    @JsonProperty("subject")
+    private String strSubject;
+
+    @JsonProperty("description")
+    private String strDescription;
+
+    // Getters and Setters
+    public String getStrBpId() {
+        return strBpId;
+    }
+
+    public void setStrBpId(String strBpId) {
+        this.strBpId = strBpId;
+    }
+
+    public String getStrType() {
+        return strType;
+    }
+
+    public void setStrType(String strType) {
+        this.strType = strType;
+    }
+
+    public String getStrDueDate() {
+        return strDueDate;
+    }
+
+    public void setStrDueDate(String strDueDate) {
+        this.strDueDate = strDueDate;
+    }
+
+    public String getStrSubject() {
+        return strSubject;
+    }
+
+    public void setStrSubject(String strSubject) {
+        this.strSubject = strSubject;
+    }
+
+    public String getStrDescription() {
+        return strDescription;
+    }
+
+    public void setStrDescription(String strDescription) {
+        this.strDescription = strDescription;
+    }
+}
