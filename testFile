@@ -1,56 +1,50 @@
-  Scenario Outline: Verify the Post Work Request API with valid data - <Comments>
-    Given Send Request to get Authentication Token for ICOS
-    When I generate the JWT Token
-    Then Send Request to create Work Request with below details
-      | bpId          | <bpId>        |
-      | type          | <type>        |
-      | dueDate       | <dueDate>     |
-      | subject       | <subject>     |
-      | description   | <description> |
-    And I verify the Status Code for Work Request "<statusCode>"
-    And I verify the "orderId" exists in Work Request response
+public static POJOWorkRequest buildWorkRequestPayload(Map<String, String> mapWorkRequestDetails) {
+        POJOWorkRequest workRequest = new POJOWorkRequest();
 
-    Examples:
-      | bpId      | type       | dueDate | subject | description  | statusCode | Comments                                                               |
-      | 66329769  | pay_domq   | FUTURE  | Subject | Description  | 200        | all valid inputs and type as Domestic Payment                          |
+        workRequest.setStrBpId(
+                mapWorkRequestDetails.get("bpId") != null ?
+                        mapWorkRequestDetails.get("bpId") : ""
+        );
 
-    @Then("Send Request to create Work Request with below details")
-    public void sendRequestToCreateWorkRequestWithDetails(DataTable dataTable) throws JsonProcessingException {
-        Map<String, String> mapWorkRequestDetails = dataTable.asMap(String.class, String.class);
-        String jwtToken = scenarioContext.getContext("JWTToken");
-        response = objWorkRequest.createWorkRequest(strEnvType, "Bearer", jwtToken, mapWorkRequestDetails, scenarioContext);
-    }
+        workRequest.setStrType(
+                mapWorkRequestDetails.get("type") != null ?
+                        mapWorkRequestDetails.get("type") : ""
+        );
 
-// Create Work Request
-    public Response createWorkRequest(String strEnvType, String strBearerToken, String strJWTToken,
-                                      Map<String, String> mapWorkRequestDetails, ScenarioContext scenarioContext) throws JsonProcessingException {
+        workRequest.setStrSubject(
+                mapWorkRequestDetails.get("subject") != null ?
+                        mapWorkRequestDetails.get("subject") : ""
+        );
 
-        String strTYKURL = getTYKURL(strEnvType, "TYK.WORKREQUESTS");
-        POJOWorkRequest pojoWorkRequest = Payloads.buildWorkRequestPayload(mapWorkRequestDetails);
-        String strRequestBody = objObjectMapper.writeValueAsString(pojoWorkRequest);
+        workRequest.setStrDescription(
+                mapWorkRequestDetails.get("description") != null ?
+                        mapWorkRequestDetails.get("description") : ""
+        );
 
-        ExtentCucumberAdapter.addTestStepLog("Sending request to Create Work Request");
+        String dueDateInput = mapWorkRequestDetails.get("dueDate");
+        String resolvedDueDate;
 
-        Response objResponse = sendPostRequest(strTYKURL, strBearerToken, strJWTToken, strRequestBody, null);
-        String strResponseBody = devHelperLibrary.getResponseBody(objResponse);
-        objCucumberLogger.PrintStatus("Response is: " + strResponseBody);
-
-        // Avoid parsing if response is not JSON
-        if (objResponse.getContentType() != null && objResponse.getContentType().contains("application/json")) {
-            String strWorkRequestOrderId = objResponse.jsonPath().getString("orderId");
-            scenarioContext.setContext("workRequestOrderId", strWorkRequestOrderId);
+        if (dueDateInput == null || dueDateInput.trim().isEmpty()) {
+            resolvedDueDate = ""; // empty string
+        } else {
+            switch (dueDateInput.trim().toUpperCase()) {
+                case "FUTURE":
+                    resolvedDueDate = LocalDate.now().plusDays(7).toString();
+                    break;
+                case "PAST":
+                    resolvedDueDate = LocalDate.now().minusDays(7).toString();
+                    break;
+                case "TODAY":
+                    resolvedDueDate = LocalDate.now().toString();
+                    break;
+                default:
+                    resolvedDueDate = dueDateInput; // use as-is for invalid/custom values
+                    break;
+            }
         }
 
-        return objResponse;
+        workRequest.setStrDueDate(resolvedDueDate);
+        return workRequest;
     }
 
-There is a scenario where due date field is not applicable i.e. something like this - 
-
-{
-    "bpId": "66329769",
-    "type": "pay_domq",
-    "subject": "Subject",
-    "description": "Description"
-}
-
-Hw to incorporate this scenario here ?
+My palod is this, Theer are varios scnearios where I need to pass NA in all the 5 fields, please modify accordingly.
