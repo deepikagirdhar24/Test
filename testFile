@@ -149,113 +149,55 @@ and then there is 400 AWS response code error -
 
 Can you help me with setp definition and also function to be called in class ?
 
-I have JSONHelper utility also, can we use this and incoorporate in our code - 
+This is exsiting setp definition and is to long - do not break the existing logic 
 
-package utilities;
+@And("I verify the error response for Work Request with below details")
+    public void iVerifyTheErrorResponseforWorkRequestWithDetails(DataTable dataTable) throws Exception {
+        Map<String, String> mapResponseData = dataTable.asMap(String.class, String.class);
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.restassured.response.Response;
-import com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter;
-import org.json.JSONObject;
+        boolean isCheckPerformed = false;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+        if (mapResponseData.containsKey("description") && mapResponseData.containsKey("error message")
+                && mapResponseData.get("description") != null && !mapResponseData.get("description").isEmpty()) {
 
-public class JsonHelper {
+            String expectedDescription = mapResponseData.get("description");
+            String actualDescription = JsonHelper.extractStringField(response, "description");
+            ExtentCucumberAdapter.addTestStepLog("Actual description: " + actualDescription);
+            Assert.assertEquals(actualDescription, expectedDescription, "Mismatch in description");
 
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+            String[] expectedErrors = mapResponseData.get("error message").split("\\s*,\\s*");
+            List<String> actualErrors = JsonHelper.extractListOfStringFieldsFromArray(response, "validationErrors", "error");
+            ExtentCucumberAdapter.addTestStepLog("Actual error messages: " + actualErrors);
 
-    private static JsonNode getNodeByPath(JsonNode rootNode, String path) {
-        String[] keys = path.split("\\.");
-        for (String key : keys) {
-            if (rootNode == null) break;
-            rootNode = rootNode.path(key);
-        }
-        return rootNode;
-    }
-
-    public static Object extractRawField(Response response, String fieldPath) throws Exception {
-        JsonNode rootNode = objectMapper.readTree(response.asString());
-        JsonNode node = getNodeByPath(rootNode, fieldPath);
-        return node.isMissingNode() || node.isNull() ? null : node;
-    }
-
-    public static String extractStringField(Response response, String fieldPath) throws Exception {
-        JsonNode rootNode = objectMapper.readTree(response.asString());
-        JsonNode node = getNodeByPath(rootNode, fieldPath);
-        return node.isMissingNode() || node.isNull() ? null : node.asText();
-    }
-
-    public static Boolean extractBooleanField(Response response, String fieldPath) throws Exception {
-        JsonNode rootNode = objectMapper.readTree(response.asString());
-        JsonNode node = getNodeByPath(rootNode, fieldPath);
-        return node.isMissingNode() || node.isNull() ? null : node.asBoolean();
-    }
-
-    public static boolean valueExistsInJsonArray(Response response, String jsonPath, String targetValue) throws Exception {
-        JsonNode rootNode = objectMapper.readTree(response.asString());
-        JsonNode arrayNode = getNodeByPath(rootNode, jsonPath);
-        if (arrayNode != null && arrayNode.isArray()) {
-            return iterateAndCheckArray(arrayNode, targetValue);
-        }
-        return false;
-    }
-
-    private static boolean iterateAndCheckArray(JsonNode arrayNode, String targetValue) {
-        for (JsonNode itemNode : arrayNode) {
-            String currentValue = itemNode.asText();
-            System.out.println("Checking item: " + currentValue);
-            if (targetValue.equals(currentValue)) {
-                logMatchFound(currentValue);
-                return true;
+            for (String expectedError : expectedErrors) {
+                Assert.assertTrue(actualErrors.contains(expectedError), "Expected error not found: " + expectedError);
             }
-        }
-        return false;
-    }
 
-    private static void logMatchFound(String value) {
-        System.out.println("Match found: " + value);
-        ExtentCucumberAdapter.addTestStepLog("Actual value found: " + value);
-    }
+            isCheckPerformed = true;
 
-    public static List<String> extractListOfStringFieldsFromArray(Response response, String arrayField, String subField) {
-        List<Map<String, Object>> itemList = response.jsonPath().getList(arrayField);
-        List<String> result = new ArrayList<>();
-        for (Map<String, Object> item : itemList) {
-            Object value = item.get(subField);
-            if (value != null) {
-                result.add(value.toString());
-            }
-        }
-        return result;
-    }
+        } else if (mapResponseData.containsKey("error message")
+                && mapResponseData.get("error message") != null && !mapResponseData.get("error message").isEmpty()) {
 
-    public static void validateFieldExistsInArray(Response response, String arrayPath, String fieldName) throws Exception {
-        JsonNode rootNode = objectMapper.readTree(response.asString());
-        JsonNode arrayNode = rootNode.at(arrayPath); // Path should start with '/' for root level
+            String expectedError = mapResponseData.get("error message");
+            String actualError = JsonHelper.extractStringField(response, "error");
+            ExtentCucumberAdapter.addTestStepLog("Actual error: " + actualError);
+            Assert.assertEquals(actualError, expectedError, "Mismatch in error message");
 
-        if (!arrayNode.isArray()) {
-            throw new Exception("Expected an array at path: " + arrayPath);
+            isCheckPerformed = true;
+
+        } else if (mapResponseData.containsKey("detail")
+                && mapResponseData.get("detail") != null && !mapResponseData.get("detail").isEmpty()) {
+
+            String expectedDetail = mapResponseData.get("detail");
+            String actualDetail = JsonHelper.extractStringField(response, "detail");
+            ExtentCucumberAdapter.addTestStepLog("Actual detail: " + actualDetail);
+            Assert.assertEquals(actualDetail, expectedDetail, "Mismatch in detail field");
+
+            isCheckPerformed = true;
         }
 
-        for (JsonNode element : arrayNode) {
-            JsonNode fieldNode = element.get(fieldName);
-            if (fieldNode == null || fieldNode.asText().isEmpty()) {
-                throw new AssertionError("Missing or empty '" + fieldName + "' in one of the elements at: " + arrayPath);
-            }
+        // If none of the above checks were performed, just log and move on
+        if (!isCheckPerformed) {
+            ExtentCucumberAdapter.addTestStepLog("No expected error fields were defined in the DataTable. Skipping error verification.");
         }
-
-        ExtentCucumberAdapter.addTestStepLog("All elements in array " + arrayPath + " contain a valid '" + fieldName + "'");
     }
-
-/*
-✅ Summary of Usage:
-        Method	                            Handles Nested?	 Return Type	        Typical Input
-        extractStringField	                ✅	             String	                "person.subType.key"
-        extractBooleanField	                ✅	             Boolean	            "isActive"
-        extractRawField	                    ✅	             JsonNode	            "meta.status"
-        valueExistsInJsonArray	            ✅	             boolean	            "roles"
-        extractListOfStringFieldsFromArray	❌               (flat arrays only)	    List<String>	"errors", "field"
- */
