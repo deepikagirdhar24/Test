@@ -1,13 +1,67 @@
-@And("I verify the string field {string} follows the date format {string} in Work Request response")
-public void iVerifyDateFormat(String jsonPath, String expectedFormat) throws Exception {
-    String dateStr = JsonHelper.extractStringField(response, jsonPath);
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern(expectedFormat);
-    try {
-        LocalDate.parse(dateStr, formatter);
-        ExtentCucumberAdapter.addTestStepLog("Date at '" + jsonPath + "' is in correct format: " + dateStr);
-    } catch (DateTimeParseException e) {
-        Assert.fail("Date at '" + jsonPath + "' is NOT in expected format: " + expectedFormat + ". Actual: " + dateStr);
-    }
-}
+There is a payload - 
 
-And I verify the string field "dueDate" follows the date format "yyyy-MM-dd" in Work Request response
+    public static LegalPersonRequest buildLegalPersonPayload(Map<String, String> mapPersonDetails) {
+
+        LegalPersonRequest legalPersonRequest = new LegalPersonRequest();
+
+        String uuid = UUID.randomUUID().toString().substring(0, 7);
+        legalPersonRequest.setStrUuid(uuid);
+        
+        legalPersonRequest.setStrSubType(mapPersonDetails.get("subType"));
+        legalPersonRequest.setStrDomiCountry(mapPersonDetails.get("domicileCountry"));
+        legalPersonRequest.setStrName(mapPersonDetails.get("name"));
+
+        return legalPersonRequest;
+    }
+
+This payload I  need to make similar to below payload - where when any ofthe 4 fields is passed as empty or null, it returns "",
+if NA, then return null, deafult return value.
+
+public static POJOWorkRequest buildWorkRequestPayload(Map<String, String> mapWorkRequestDetails) {
+        POJOWorkRequest workRequest = new POJOWorkRequest();
+
+        workRequest.setStrBpId(normalize(mapWorkRequestDetails.get("bpId")));
+        workRequest.setStrType(normalize(mapWorkRequestDetails.get("type")));
+        workRequest.setStrSubject(normalize(mapWorkRequestDetails.get("subject")));
+        workRequest.setStrDescription(normalize(mapWorkRequestDetails.get("description")));
+
+        String dueDateInput = mapWorkRequestDetails.get("dueDate");
+        String resolvedDueDate = resolveDueDate(dueDateInput);
+        workRequest.setStrDueDate(resolvedDueDate);
+
+        return workRequest;
+    }
+
+    //normalize Helper - Used for all fields except dueDate.
+    private static String normalize(String value) {
+        if (value == null) return "";
+        switch (value.trim().toUpperCase()) {
+            case "NA": return null;
+            case "EMPTY": return "";
+            default: return value;
+        }
+    }
+
+    // resolveDueDate Helper (handles NA, EMPTY, FUTURE etc.)
+    private static String resolveDueDate(String dueDateInput) {
+        if (dueDateInput == null || dueDateInput.trim().isEmpty()) {
+            return "";  // empty string
+        }
+
+        String trimmedInput = dueDateInput.trim().toUpperCase();
+
+        switch (trimmedInput) {
+            case "NA":
+                return null;  // will be excluded in final payload
+            case "EMPTY":
+                return "";     // included as empty string
+            case "FUTURE":
+                return LocalDate.now().plusDays(7).toString();
+            case "PAST":
+                return LocalDate.now().minusDays(7).toString();
+            case "TODAY":
+                return LocalDate.now().toString();
+            default:
+                return dueDateInput;  // use as-is (custom date)
+        }
+    }
