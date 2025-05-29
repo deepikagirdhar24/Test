@@ -1,65 +1,72 @@
-Scenario Outline: Verify the Post Work Request API with invalid data - <Comments>
-  Given Send Request to get Authentication Token for ICOS
-  When I generate the JWT Token
-  Then Send Request to create Work Request with below details
-    | bpId        | <bpId>        |
-    | type        | <type>        |
-    | dueDate     | <dueDate>     |
-    | subject     | <subject>     |
-    | description | <description> |
-  And I verify the Status Code for Work Request "<statusCode>"
-  And I verify the error response for Work Request with below details
-    | description   | <errDescription> |
-    | error message | <error>          |
-    | detail        | <detail>         |
+    @And("I verify the error response for Work Request with below details")
+    public void iVerifyTheErrorResponseforWorkRequestWithDetails(DataTable dataTable) throws Exception {
+        Map<String, String> mapResponsedata = dataTable.asMap(String.class, String.class);
 
-Examples:
-  | bpId      | type       | dueDate | subject | description  | statusCode | errDescription    | error                     | detail                            | Comments                                |
-  | 123       | pay_domq   | 123456  | Subject | Description  | 400        |                    |                           | A validation error has occurred  | Invalid date only                       |
-  | ?         | xxx        | FUTURE  | Subject | Description  | 400        | Validation Errors  | BP not found,Type invalid |                                  | Invalid bpId and type                  |
-  | ?         | pay_domq   | 123456  | Subject | Description  | 400        | Validation Errors  | BP not found              | A validation error has occurred  | Invalid bpId and invalid date both     |
+        // Check if the map is empty or description is null or empty
+        if (mapResponsedata.containsKey("description") && mapResponsedata.containsKey("error message") &&
+                !(mapResponsedata.get("description") == null || mapResponsedata.get("description").isEmpty())) {
 
-@And("I verify the error response for Work Request with below details")
-public void iVerifyTheErrorResponseforWorkRequestWithDetails(DataTable dataTable) throws Exception {
-    Map<String, String> mapResponsedata = dataTable.asMap(String.class, String.class);
+            // Validation error structure (400)
+            String strExpDescription = mapResponsedata.get("description");
+            String strExpErrorMessages = mapResponsedata.get("error message");
 
-    if (mapResponsedata.containsKey("description") && mapResponsedata.containsKey("error message")
-            && !(mapResponsedata.get("description") == null || mapResponsedata.get("description").isEmpty())) {
+            String strActualDescription = JsonHelper.extractStringField(response, "description");
+            ExtentCucumberAdapter.addTestStepLog("Actual description: " + strActualDescription);
+            Assert.assertEquals(strActualDescription, strExpDescription, "Mismatch in description");
 
-        // Validation error structure (400)
-        String strExpDescription = mapResponsedata.get("description");
-        String strExpErrorMessages = mapResponsedata.get("error message");
+            // Handle multiple error messages
+            String[] strArrExpErrors = strExpErrorMessages.split("\\s*,\\s*");
+            List<String> lstStrActualErrors = JsonHelper.extractListOfStringFieldsFromArray(response, "validationErrors", "error");
 
-        String strActualDescription = JsonHelper.extractStringField(response, "description");
-        ExtentCucumberAdapter.addTestStepLog("Actual description: " + strActualDescription);
-        Assert.assertEquals(strActualDescription, strExpDescription, "Mismatch in description");
+            ExtentCucumberAdapter.addTestStepLog("Actual error messages: " + lstStrActualErrors.toString());
 
-        // Handle multiple error messages
-        String[] strArrExpErrors = strExpErrorMessages.split("\\s*,\\s*");
-        List<String> lstStrActualErrors = JsonHelper.extractListOfStringFieldsFromArray(response, "validationErrors", "error");
+            for (String strExpectedError : strArrExpErrors) {
+                Assert.assertTrue(lstStrActualErrors.contains(strExpectedError),
+                        "Expected error message not found: " + strExpectedError);
+            }
+        } else if (mapResponsedata.containsKey("error message") &&
+                !(mapResponsedata.get("error message") == null || mapResponsedata.get("error message").isEmpty())) {
+            // Simple error response (500 or others)
+            String strExpError = mapResponsedata.get("error message");
+            String strActualError = JsonHelper.extractStringField(response, "error");
+            ExtentCucumberAdapter.addTestStepLog("Actual error: " + strActualError);
+            Assert.assertEquals(strActualError, strExpError, "Mismatch in error message");
+        } else if (mapResponsedata.containsKey("detail") &&
+                !(mapResponsedata.get("detail") == null || mapResponsedata.get("detail").isEmpty())) {
+            // Handles AWS Validation error (400)
+            String expectedDetail = mapResponsedata.get("detail");
+            String actualDetail = JsonHelper.extractStringField(response, "detail");
+            ExtentCucumberAdapter.addTestStepLog("Actual detail: " + actualDetail);
+            Assert.assertEquals(actualDetail, expectedDetail, "Mismatch in detail field");
 
-        ExtentCucumberAdapter.addTestStepLog("Actual error messages: " + lstStrActualErrors.toString());
-
-        for (String strExpectedError : strArrExpErrors) {
-            Assert.assertTrue(lstStrActualErrors.contains(strExpectedError),
-                    "Expected error message not found: " + strExpectedError);
+        } else {
+            throw new IllegalArgumentException("Unsupported error format in DataTable");
         }
+    } - I have this function, 
 
-    } else if (mapResponsedata.containsKey("detail")) {
-        // NEW BLOCK: Handles generic validation response
-        String expectedDetail = mapResponsedata.get("detail");
-        String actualDetail = JsonHelper.extractStringField(response, "detail");
-        ExtentCucumberAdapter.addTestStepLog("Actual detail: " + actualDetail);
-        Assert.assertEquals(actualDetail, expectedDetail, "Mismatch in detail field");
+I have one case when due date is null, then it throws 400 error and also response as Not able to deserialize data provided.
+can I skip the last step as my error response does not match with any parameters here, so if I can do some modiftcion in function, what do u suggest ?
 
-    } else if (mapResponsedata.containsKey("error message")) {
-        // Simple error response (500 or others)
-        String strExpError = mapResponsedata.get("error message");
-        String strActualError = JsonHelper.extractStringField(response, "error");
-        ExtentCucumberAdapter.addTestStepLog("Actual error: " + strActualError);
-        Assert.assertEquals(strActualError, strExpError, "Mismatch in error message");
+  Scenario Outline: Verify the Post Legal Person API with invalid data - <Comments>
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    Then Send Request to create Work Request with below details
+      | bpId          | <bpId>        |
+      | type          | <type>        |
+      | dueDate       | <dueDate>     |
+      | subject       | <subject>     |
+      | description   | <description> |
+    And I verify the Status Code for Work Request "<statusCode>"
+    And I verify the error response for Work Request with below details
+      | description   | <errDescription> |
+      | error message | <error>          |
+      | detail        | <detail>         |
 
-    } else {
-        throw new IllegalArgumentException("Unsupported error format in DataTable");
-    }
-}
+    Examples:
+      | bpId      | type       | dueDate | subject | description  | statusCode | errDescription    | error                         | detail                          | Comments                        |
+      | ?         | pay_domq   | FUTURE  | Subject | Description  | 400        | Validation Errors | BP not found                  |                                 | BusinessPartnerID as invalid    |
+      | 66329769  | xxx        | FUTURE  | Subject | Description  | 400        | Validation Errors | Type not found                |                                 | WorkRequestType as invalid      |
+      | 66329769  | pay_domq   | 123454  | Subject | Description  | 400        |                   |                               | A validation error has occurred | Due Date as invalid             |
+      |           | pay_domq   | FUTURE  | Subject | Description  | 400        | Validation Errors | bpId or personId must be set  |                                 | BusinessPartnerID as empty      |
+      | 66329769  | pay_domq   |         | Subject | Description  | 400        |                   |                               |                                 | Due Date as empty               |
+      | 66329769  |            | FUTURE  | Subject | Description  | 500        |                   | Mandatory: Request Type       |                                 | WorkRequestType as empty   
