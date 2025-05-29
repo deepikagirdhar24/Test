@@ -1,48 +1,12 @@
-@And("I verify the Legal Person API 400 error response with below details")
-public void iVerifyLegalPerson400ErrorResponse(DataTable dataTable) throws Exception {
-    Map<String, String> expectedData = dataTable.asMap(String.class, String.class);
-
-    String expectedDescription = expectedData.get("description");
-    String expectedErrorMessages = expectedData.get("error message");
-
-    String actualDescription = JsonHelper.extractStringField(response, "description");
-    ExtentCucumberAdapter.addTestStepLog("Actual description: " + actualDescription);
-    Assert.assertEquals(actualDescription, expectedDescription, "Mismatch in description");
-
-    // Handle multiple error messages
-    String[] expectedErrors = expectedErrorMessages.split("\\s*,\\s*");
-    List<String> actualErrors = JsonHelper.extractListOfStringFieldsFromArray(response, "validationErrors", "error");
-
-    ExtentCucumberAdapter.addTestStepLog("Actual error messages: " + actualErrors);
-
-    for (String expectedError : expectedErrors) {
-        Assert.assertTrue(actualErrors.contains(expectedError),
-                "Expected error message not found: " + expectedError);
-    }
-}
-
-  And I verify the Legal Person API 400 error response with below details
-    | description   | Validation Errors                       |
-    | error message | Name is required, Address is required  |
-
-@And("I verify the Legal Person API 500 error response with message {string}")
-public void iVerifyLegalPerson500ErrorResponse(String expectedError) throws Exception {
-    String actualError = JsonHelper.extractStringField(response, "error");
-    ExtentCucumberAdapter.addTestStepLog("Actual error: " + actualError);
-    Assert.assertEquals(actualError, expectedError, "Mismatch in error message");
-}
-
 @And("I verify the Legal Person AWS-style 400 error response with below details")
-public void iVerifyLegalPersonAWSStyle400ErrorResponse(DataTable dataTable) throws Exception {
+public void iVerifyLegalPersonAWS400ErrorResponse(DataTable dataTable) throws Exception {
     Map<String, String> expectedData = dataTable.asMap(String.class, String.class);
 
-    // Extract expected main fields
+    // Top-level fields
     String expectedType = expectedData.get("type");
     String expectedTitle = expectedData.get("title");
     String expectedDetail = expectedData.get("detail");
-    String expectedErrorMessages = expectedData.get("error message"); // comma-separated
 
-    // Validate basic fields
     String actualType = JsonHelper.extractStringField(response, "type");
     String actualTitle = JsonHelper.extractStringField(response, "title");
     String actualDetail = JsonHelper.extractStringField(response, "detail");
@@ -55,36 +19,21 @@ public void iVerifyLegalPersonAWSStyle400ErrorResponse(DataTable dataTable) thro
     Assert.assertEquals(actualTitle, expectedTitle, "Mismatch in 'title'");
     Assert.assertEquals(actualDetail, expectedDetail, "Mismatch in 'detail'");
 
-    // Validate errorDetails[].error
-    String[] expectedErrors = expectedErrorMessages.split("\\s*,\\s*");
-    List<String> actualErrors = JsonHelper.extractListOfStringFieldsFromArray(response, "errorDetails", "error");
+    // Validate errorDetails list fields
+    List<String> actualErrorTitles = JsonHelper.extractListOfStringFieldsFromArray(response, "errorDetails", "title");
+    List<String> actualErrorFields = JsonHelper.extractListOfStringFieldsFromArray(response, "errorDetails", "field");
+    List<String> actualErrorDetails = JsonHelper.extractListOfStringFieldsFromArray(response, "errorDetails", "detail");
 
-    ExtentCucumberAdapter.addTestStepLog("Actual error messages: " + actualErrors);
+    ExtentCucumberAdapter.addTestStepLog("Actual errorDetails.title: " + actualErrorTitles);
+    ExtentCucumberAdapter.addTestStepLog("Actual errorDetails.field: " + actualErrorFields);
+    ExtentCucumberAdapter.addTestStepLog("Actual errorDetails.detail: " + actualErrorDetails);
 
-    for (String expectedError : expectedErrors) {
-        Assert.assertTrue(actualErrors.contains(expectedError),
-                "Expected error message not found: " + expectedError);
+    // Validate first entry only (as per your previous behavior)
+    if (!actualErrorTitles.isEmpty()) {
+        Assert.assertEquals(actualErrorTitles.get(0), expectedData.get("errorDetails.title"), "Mismatch in errorDetails.title");
+        Assert.assertEquals(actualErrorFields.get(0), expectedData.get("errorDetails.field"), "Mismatch in errorDetails.field");
+        Assert.assertEquals(actualErrorDetails.get(0), expectedData.get("errorDetails.detail"), "Mismatch in errorDetails.detail");
+    } else {
+        throw new AssertionError("errorDetails array is empty in the response");
     }
 }
-
-  And I verify the Legal Person AWS-style 400 error response with below details
-    | type          | https://example.com/probs/validation |
-    | title         | Validation Error                     |
-    | detail        | One or more validation errors        |
-    | error message | Invalid BP ID, Invalid SubType Key   |
-
-Thsi is the correct paylaod for AWS error reponse.
-
-{
-    "status": 400,
-    "type": "/aws/validation_error",
-    "detail": "A validation error has occurred",
-    "title": "Validation Error",
-"errorDetails": [
-        {
-            "title": "Validation",
-            "field": "Body description",
-            "detail": "Field must not be null"
-        }
-    ]
-} - we need to validate type detail and title and errorDetails.title, errorDetails.field. errorDetails.detail - I thik the function you have sent above s not as per this.
