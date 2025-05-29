@@ -1,15 +1,25 @@
-@Then("Send Request to create Work Request with below details")
-    public void sendRequestToCreateWorkRequestWithDetails(DataTable dataTable) throws JsonProcessingException {
-        Map<String, String> mapWorkRequestDetails = dataTable.asMap(String.class, String.class);
-        String jwtToken = scenarioContext.getContext("JWTToken");
-        response = objWorkRequest.createWorkRequest(strEnvType, "Bearer", jwtToken, mapWorkRequestDetails, scenarioContext);
+  Scenario Outline: Verify the Get Work Request API
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    Then Send Request to get Work Request
+    And I verify the Status Code for Work Request "<statusCode>"
+    And I verify the string field "bpId" is "<bpId>" in Work Request response
+    And I verify the string field "type" is "<type>" in Work Request response
+    And I verify the string field "dueDate" is "<dueDate>" in Work Request response
+    And I verify the string field "subject" is "<subject>" in Work Request response
+    And I verify the string field "description" is "<description>" in Work Request response
+
+    Examples:
+      | bpId      | type       | dueDate | subject | description  | statusCode |
+      | 66329769  | olb_oarprw |         | Subject | Description  | 200        |
+
+    @And("I verify the string field {string} is {string} in Work Request response")
+    public void iVerifyStringFieldEquals(String jsonPath, String expectedValue) throws Exception {
+        String actualValue = JsonHelper.extractStringField(response, jsonPath);
+        ExtentCucumberAdapter.addTestStepLog("Expected value at '" + jsonPath + "': " + expectedValue + ", Actual: " + actualValue);
+        Assert.assertEquals(actualValue, expectedValue, "Mismatch at: " + jsonPath);
     }
 
-    @And("I verify the Status Code for Work Request {string}")
-    public void iVerifyTheStatusCodeForWorkRequest(String strStatusCode) {
-        int responseCode= response.statusCode();
-        ExtentCucumberAdapter.addTestStepLog("Actual value of Status code is : " +responseCode);
-        Assert.assertEquals(Integer.parseInt(strStatusCode),responseCode);
-    }
+I am using this feature file and want to validate the response, but not sure how to validate the date ?
 
-These are SDs - is the code which you have given is consistent with this ?
+IN the validation, we need ot do this -attached screenshot from TOSCA
