@@ -37,3 +37,11 @@ public void iVerifyLegalPersonAWS400ErrorResponse(DataTable dataTable) throws Ex
         throw new AssertionError("errorDetails array is empty in the response");
     }
 }
+
+  And I verify the Legal Person AWS-style 400 error response with below details
+    | type                | /aws/validation_error       |
+    | title               | Validation Error            |
+    | detail              | A validation error has occurred |
+    | errorDetails.title  | Validation                  |
+    | errorDetails.field  | Body description            |
+    | errorDetails.detail | Field must not be null      |
