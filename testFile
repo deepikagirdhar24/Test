@@ -43,14 +43,43 @@ public void iVerifyLegalPersonAWS400ErrorResponse(DataTable dataTable) throws Ex
     | title               | Validation Error            |
     | detail              | A validation error has occurred |
     | errorDetails.title  | Validation                  |
-    | errorDetails.field  | Body description            |
     | errorDetails.detail | Field must not be null      |
 
-    @And("I verify the {string} exists in Work Request response")
-    public void iVerifyTheKeyExistsInWorkRequestResponse(String key) throws Exception {
-        String strActualKeyValue = JsonHelper.extractStringField(response, key);
-        ExtentCucumberAdapter.addTestStepLog("Actual value of " + key + " is: " + strActualKeyValue);
+@And("I verify the Legal Person AWS-style 400 error response with below details")
+public void iVerifyLegalPersonAWS400ErrorResponse(DataTable dataTable) throws Exception {
+    Map<String, String> expectedData = dataTable.asMap(String.class, String.class);
 
-        Assert.assertNotNull(strActualKeyValue, key + " should not be null");
-        Assert.assertFalse(strActualKeyValue.isEmpty(), key + " should not be empty");
-    }
+    // Top-level fields
+    String expectedType = expectedData.get("type");
+    String expectedTitle = expectedData.get("title");
+    String expectedDetail = expectedData.get("detail");
+
+    String actualType = JsonHelper.extractStringField(response, "type");
+    String actualTitle = JsonHelper.extractStringField(response, "title");
+    String actualDetail = JsonHelper.extractStringField(response, "detail");
+
+    ExtentCucumberAdapter.addTestStepLog("Actual type: " + actualType);
+    ExtentCucumberAdapter.addTestStepLog("Actual title: " + actualTitle);
+    ExtentCucumberAdapter.addTestStepLog("Actual detail: " + actualDetail);
+
+    Assert.assertEquals(actualType, expectedType, "Mismatch in 'type'");
+    Assert.assertEquals(actualTitle, expectedTitle, "Mismatch in 'title'");
+    Assert.assertEquals(actualDetail, expectedDetail, "Mismatch in 'detail'");
+
+    // Validate errorDetails[0] fields for presence and non-null content
+    String actualErrorTitle = JsonHelper.extractStringFieldFromArray(response, "errorDetails", 0, "title");
+    String actualErrorField = JsonHelper.extractStringFieldFromArray(response, "errorDetails", 0, "field");
+    String actualErrorDetail = JsonHelper.extractStringFieldFromArray(response, "errorDetails", 0, "detail");
+
+    ExtentCucumberAdapter.addTestStepLog("Actual errorDetails[0].title: " + actualErrorTitle);
+    ExtentCucumberAdapter.addTestStepLog("Actual errorDetails[0].field: " + actualErrorField);
+    ExtentCucumberAdapter.addTestStepLog("Actual errorDetails[0].detail: " + actualErrorDetail);
+
+    Assert.assertEquals(actualErrorTitle, expectedData.get("errorDetails.title"), "Mismatch in errorDetails.title");
+    Assert.assertEquals(actualErrorDetail, expectedData.get("errorDetails.detail"), "Mismatch in errorDetails.detail");
+
+    // Validate only that errorDetails[0].field exists and is not null/empty
+    Assert.assertNotNull(actualErrorField, "errorDetails[0].field should not be null");
+    Assert.assertFalse(actualErrorField.trim().isEmpty(), "errorDetails[0].field should not be empty");
+}
+
