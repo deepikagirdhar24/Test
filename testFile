@@ -7,24 +7,27 @@ public static WorkRequest buildWorkRequestPayload(Map<String, String> mapWorkReq
     workRequest.setStrDescription(mapWorkRequestDetails.get("description"));
 
     String dueDateInput = mapWorkRequestDetails.get("dueDate");
-    String resolvedDueDate = "";
+    String resolvedDueDate;
 
-    if (dueDateInput != null && !dueDateInput.trim().isEmpty()) {
+    if (dueDateInput == null || dueDateInput.trim().isEmpty()) {
+        resolvedDueDate = ""; // empty string
+    } else {
         switch (dueDateInput.trim().toUpperCase()) {
+            case "FUTURE":
+                resolvedDueDate = LocalDate.now().plusDays(7).toString();
+                break;
             case "PAST":
                 resolvedDueDate = LocalDate.now().minusDays(7).toString();
                 break;
             case "TODAY":
                 resolvedDueDate = LocalDate.now().toString();
                 break;
-            case "FUTURE":
-                resolvedDueDate = LocalDate.now().plusDays(7).toString();
-                break;
             default:
-                resolvedDueDate = ""; // Invalid keyword
+                resolvedDueDate = dueDateInput; // use as-is for invalid/custom values
+                break;
         }
     }
 
-    workRequest.setStrDueDate(resolvedDueDate); // Always set, empty if needed
+    workRequest.setStrDueDate(resolvedDueDate);
     return workRequest;
 }
