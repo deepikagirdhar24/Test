@@ -45,3 +45,12 @@ public void iVerifyLegalPersonAWS400ErrorResponse(DataTable dataTable) throws Ex
     | errorDetails.title  | Validation                  |
     | errorDetails.field  | Body description            |
     | errorDetails.detail | Field must not be null      |
+
+    @And("I verify the {string} exists in Work Request response")
+    public void iVerifyTheKeyExistsInWorkRequestResponse(String key) throws Exception {
+        String strActualKeyValue = JsonHelper.extractStringField(response, key);
+        ExtentCucumberAdapter.addTestStepLog("Actual value of " + key + " is: " + strActualKeyValue);
+
+        Assert.assertNotNull(strActualKeyValue, key + " should not be null");
+        Assert.assertFalse(strActualKeyValue.isEmpty(), key + " should not be empty");
+    }
