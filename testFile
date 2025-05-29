@@ -1,33 +1,68 @@
-public static WorkRequest buildWorkRequestPayload(Map<String, String> mapWorkRequestDetails) {
-    WorkRequest workRequest = new WorkRequest();
+Hi, I am handling the 400 nad 500 errors within this function - 
 
-    workRequest.setStrBpId(mapWorkRequestDetails.get("bpId"));
-    workRequest.setStrType(mapWorkRequestDetails.get("type"));
-    workRequest.setStrSubject(mapWorkRequestDetails.get("subject"));
-    workRequest.setStrDescription(mapWorkRequestDetails.get("description"));
+@And("I verify the error response for Work Request with below details")
+    public void iVerifyTheErrorResponseforWorkRequestWithDetails(DataTable dataTable) throws Exception {
+        Map<String, String> mapResponsedata = dataTable.asMap(String.class, String.class);
 
-    String dueDateInput = mapWorkRequestDetails.get("dueDate");
-    String resolvedDueDate;
+        // Check if the map is empty or description is null or empty
+        if (mapResponsedata.containsKey("description") && mapResponsedata.containsKey("error message") &&
+                !(mapResponsedata.get("description") == null || mapResponsedata.get("description").isEmpty())) {
 
-    if (dueDateInput == null || dueDateInput.trim().isEmpty()) {
-        resolvedDueDate = ""; // empty string
-    } else {
-        switch (dueDateInput.trim().toUpperCase()) {
-            case "FUTURE":
-                resolvedDueDate = LocalDate.now().plusDays(7).toString();
-                break;
-            case "PAST":
-                resolvedDueDate = LocalDate.now().minusDays(7).toString();
-                break;
-            case "TODAY":
-                resolvedDueDate = LocalDate.now().toString();
-                break;
-            default:
-                resolvedDueDate = dueDateInput; // use as-is for invalid/custom values
-                break;
+            // Validation error structure (400)
+            String strExpDescription = mapResponsedata.get("description");
+            String strExpErrorMessages = mapResponsedata.get("error message");
+
+            String strActualDescription = JsonHelper.extractStringField(response, "description");
+            ExtentCucumberAdapter.addTestStepLog("Actual description: " + strActualDescription);
+            Assert.assertEquals(strActualDescription, strExpDescription, "Mismatch in description");
+
+            // Handle multiple error messages
+            String[] strArrExpErrors = strExpErrorMessages.split("\\s*,\\s*");
+            List<String> lstStrActualErrors = JsonHelper.extractListOfStringFieldsFromArray(response, "validationErrors", "error");
+
+            ExtentCucumberAdapter.addTestStepLog("Actual error messages: " + lstStrActualErrors.toString());
+
+            for (String strExpectedError : strArrExpErrors) {
+                Assert.assertTrue(lstStrActualErrors.contains(strExpectedError),
+                        "Expected error message not found: " + strExpectedError);
+            }
+        } else if (mapResponsedata.containsKey("error message")) {
+            // Simple error response (500 or others)
+            String strExpError = mapResponsedata.get("error message");
+            String strActualError = JsonHelper.extractStringField(response, "error");
+            ExtentCucumberAdapter.addTestStepLog("Actual error: " + strActualError);
+            Assert.assertEquals(strActualError, strExpError, "Mismatch in error message");
+        } else {
+            throw new IllegalArgumentException("Unsupported error format in DataTable");
         }
     }
 
-    workRequest.setStrDueDate(resolvedDueDate);
-    return workRequest;
+feature file - 
+
+Scenario Outline: Verify the Post Legal Person API with invalid data - <Comments>
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    Then Send Request to create Work Request with below details
+      | bpId          | <bpId>        |
+      | type          | <type>        |
+      | dueDate       | <dueDate>     |
+      | subject       | <subject>     |
+      | description   | <description> |
+    And I verify the Status Code for Work Request "<statusCode>"
+    And I verify the error response for Work Request with below details
+      | description   | <errDescription> |
+      | error message | <error>       |
+
+    Examples:
+      | bpId      | type       | dueDate | subject | description  | statusCode | errDescription    | error           | Comments                        |
+      | ?         | pay_domq   | FUTURE  | Subject | Description  | 400        | Validation Errors | BP not found    | BusinessPartnerID as invalid    |
+      | 66329769  | xxx        | FUTURE  | Subject | Description  | 400        | Validation Errors | Type not found  | WorkRequestType as invalid      |
+
+Now, I need to validate one more case with date as invalid like 123454, then below error comes and I need to validate the detail in this case below. should I reuse the same function and modfiy it or make a new function altogether - 
+
+{
+    "status": 400,
+    "type": "/aws/validation_error",
+    "detail": "A validation error has occurred",
+    "title": "Validation Error"
 }
