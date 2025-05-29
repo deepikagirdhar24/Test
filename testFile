@@ -6,33 +6,25 @@ public static WorkRequest buildWorkRequestPayload(Map<String, String> mapWorkReq
     workRequest.setStrSubject(mapWorkRequestDetails.get("subject"));
     workRequest.setStrDescription(mapWorkRequestDetails.get("description"));
 
-    String dueDateInput = mapWorkRequestDetails.getOrDefault("dueDate", "FUTURE");
-    LocalDate dueDate;
+    String dueDateInput = mapWorkRequestDetails.get("dueDate");
+    String resolvedDueDate = "";
 
-    switch (dueDateInput.toUpperCase()) {
-        case "PAST":
-            dueDate = LocalDate.now().minusDays(7); // 1 week ago
-            break;
-        case "TODAY":
-            dueDate = LocalDate.now();
-            break;
-        default:
-            dueDate = LocalDate.now().plusWeeks(1); // FUTURE (default)
+    if (dueDateInput != null && !dueDateInput.trim().isEmpty()) {
+        switch (dueDateInput.trim().toUpperCase()) {
+            case "PAST":
+                resolvedDueDate = LocalDate.now().minusDays(7).toString();
+                break;
+            case "TODAY":
+                resolvedDueDate = LocalDate.now().toString();
+                break;
+            case "FUTURE":
+                resolvedDueDate = LocalDate.now().plusDays(7).toString();
+                break;
+            default:
+                resolvedDueDate = ""; // Invalid keyword
+        }
     }
 
-    workRequest.setStrDueDate(dueDate.toString()); // Format: yyyy-MM-dd
+    workRequest.setStrDueDate(resolvedDueDate); // Always set, empty if needed
     return workRequest;
 }
-
-  Then Send Request to create Work Request with below details
-    | bpId        | <bpId>        |
-    | type        | <type>        |
-    | subject     | <subject>     |
-    | description | <description> |
-    | dueDate     | <dueDate>     |
-
-Examples:
-  | bpId     | type       | subject | description | dueDate |
-  | 66329769 | pay_domq   | Subject | Description | FUTURE  |
-  | 66329769 | olb_oarprw | Subject | Description | PAST    |
-  | 66329769 | olb_oarprw | Subject | Description | TODAY   |
