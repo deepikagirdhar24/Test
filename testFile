@@ -1,71 +1,15 @@
-@And("I verify the Work Request API 400 error response with below details")
-public void iVerifyWorkRequest400ErrorResponse(DataTable dataTable) throws Exception {
-    WorkRequest.verifyWorkRequest400ErrorResponse(dataTable, response);
-}
-
-@And("I verify the Work Request AWS-style 400 error response with below details")
-public void iVerifyWorkRequestAWS400ErrorResponse(DataTable dataTable) throws Exception {
-    WorkRequest.verifyAwsStyle400ErrorResponse(dataTable, response);
-}
-
-public class WorkRequest {
-
-    public static void verifyWorkRequest400ErrorResponse(DataTable dataTable, Response response) throws Exception {
-        Map<String, String> expectedData = dataTable.asMap(String.class, String.class);
-
-        String expectedDescription = expectedData.get("description");
-        String expectedErrorMessages = expectedData.get("error message");
-
-        String actualDescription = JsonHelper.extractStringField(response, "description");
-        ExtentCucumberAdapter.addTestStepLog("Actual description: " + actualDescription);
-        Assert.assertEquals(actualDescription, expectedDescription, "Mismatch in description");
-
-        String[] expectedErrors = expectedErrorMessages.split("\\s*,\\s*");
-        List<String> actualErrors = JsonHelper.extractListOfStringFieldsFromArray(response, "validationErrors", "error");
-
-        ExtentCucumberAdapter.addTestStepLog("Actual error messages: " + actualErrors);
-
-        for (String expectedError : expectedErrors) {
-            Assert.assertTrue(actualErrors.contains(expectedError),
-                    "Expected error message not found: " + expectedError);
-        }
+@Then("Send Request to create Work Request with below details")
+    public void sendRequestToCreateWorkRequestWithDetails(DataTable dataTable) throws JsonProcessingException {
+        Map<String, String> mapWorkRequestDetails = dataTable.asMap(String.class, String.class);
+        String jwtToken = scenarioContext.getContext("JWTToken");
+        response = objWorkRequest.createWorkRequest(strEnvType, "Bearer", jwtToken, mapWorkRequestDetails, scenarioContext);
     }
 
-    public static void verifyAwsStyle400ErrorResponse(DataTable dataTable, Response response) throws Exception {
-        Map<String, String> expectedData = dataTable.asMap(String.class, String.class);
-
-        verifyTopLevelErrorFields(response, expectedData);
-        verifyErrorDetailsFields(response, expectedData);
+    @And("I verify the Status Code for Work Request {string}")
+    public void iVerifyTheStatusCodeForWorkRequest(String strStatusCode) {
+        int responseCode= response.statusCode();
+        ExtentCucumberAdapter.addTestStepLog("Actual value of Status code is : " +responseCode);
+        Assert.assertEquals(Integer.parseInt(strStatusCode),responseCode);
     }
 
-    private static void verifyTopLevelErrorFields(Response response, Map<String, String> expectedData) {
-        String actualType = JsonHelper.extractStringField(response, "type");
-        String actualTitle = JsonHelper.extractStringField(response, "title");
-        String actualDetail = JsonHelper.extractStringField(response, "detail");
-
-        ExtentCucumberAdapter.addTestStepLog("Actual type: " + actualType);
-        ExtentCucumberAdapter.addTestStepLog("Actual title: " + actualTitle);
-        ExtentCucumberAdapter.addTestStepLog("Actual detail: " + actualDetail);
-
-        Assert.assertEquals(actualType, expectedData.get("type"), "Mismatch in 'type'");
-        Assert.assertEquals(actualTitle, expectedData.get("title"), "Mismatch in 'title'");
-        Assert.assertEquals(actualDetail, expectedData.get("detail"), "Mismatch in 'detail'");
-    }
-
-    private static void verifyErrorDetailsFields(Response response, Map<String, String> expectedData) {
-        String errorTitle = JsonHelper.extractStringFieldFromArray(response, "errorDetails", 0, "title");
-        String errorField = JsonHelper.extractStringFieldFromArray(response, "errorDetails", 0, "field");
-        String errorDetail = JsonHelper.extractStringFieldFromArray(response, "errorDetails", 0, "detail");
-
-        ExtentCucumberAdapter.addTestStepLog("Actual errorDetails[0].title: " + errorTitle);
-        ExtentCucumberAdapter.addTestStepLog("Actual errorDetails[0].field: " + errorField);
-        ExtentCucumberAdapter.addTestStepLog("Actual errorDetails[0].detail: " + errorDetail);
-
-        Assert.assertEquals(errorTitle, expectedData.get("errorDetails.title"), "Mismatch in errorDetails.title");
-        Assert.assertEquals(errorDetail, expectedData.get("errorDetails.detail"), "Mismatch in errorDetails.detail");
-
-        // Validate presence of field without checking value
-        Assert.assertNotNull(errorField, "errorDetails[0].field should not be null");
-        Assert.assertFalse(errorField.trim().isEmpty(), "errorDetails[0].field should not be empty");
-    }
-}
+These are SDs - is the code which you have given is consistent with this ?
