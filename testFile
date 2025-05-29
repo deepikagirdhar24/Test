@@ -1,50 +1,38 @@
-public static POJOWorkRequest buildWorkRequestPayload(Map<String, String> mapWorkRequestDetails) {
-        POJOWorkRequest workRequest = new POJOWorkRequest();
+Scenario Outline: Verify Create Work Request with individual missing fields
+  Given Send Request to get Authentication Token for ICOS
+  When I generate the JWT Token
+  Then Send Request to create Work Request with below details
+    | bpId        | <bpId>        |
+    | type        | <type>        |
+    | dueDate     | <dueDate>     |
+    | subject     | <subject>     |
+    | description | <description> |
+  And Remove "<excludeField>" from request payload
+  And I verify the Status Code for Work Request "<statusCode>"
 
-        workRequest.setStrBpId(
-                mapWorkRequestDetails.get("bpId") != null ?
-                        mapWorkRequestDetails.get("bpId") : ""
-        );
+Examples:
+  | bpId      | type      | dueDate | subject   | description | excludeField | statusCode |
+  | 66329769  | pay_domq  | FUTURE  | Test sub  | Test desc   | bpId         | 400        |
+  | 66329769  | pay_domq  | FUTURE  | Test sub  | Test desc   | type         | 400        |
+  | 66329769  | pay_domq  | FUTURE  | Test sub  | Test desc   | subject      | 400        |
+  | 66329769  | pay_domq  | FUTURE  | Test sub  | Test desc   | description  | 400        |
+  | 66329769  | pay_domq  | FUTURE  | Test sub  | Test desc   | dueDate      | 400        |
 
-        workRequest.setStrType(
-                mapWorkRequestDetails.get("type") != null ?
-                        mapWorkRequestDetails.get("type") : ""
-        );
-
-        workRequest.setStrSubject(
-                mapWorkRequestDetails.get("subject") != null ?
-                        mapWorkRequestDetails.get("subject") : ""
-        );
-
-        workRequest.setStrDescription(
-                mapWorkRequestDetails.get("description") != null ?
-                        mapWorkRequestDetails.get("description") : ""
-        );
-
-        String dueDateInput = mapWorkRequestDetails.get("dueDate");
-        String resolvedDueDate;
-
-        if (dueDateInput == null || dueDateInput.trim().isEmpty()) {
-            resolvedDueDate = ""; // empty string
-        } else {
-            switch (dueDateInput.trim().toUpperCase()) {
-                case "FUTURE":
-                    resolvedDueDate = LocalDate.now().plusDays(7).toString();
-                    break;
-                case "PAST":
-                    resolvedDueDate = LocalDate.now().minusDays(7).toString();
-                    break;
-                case "TODAY":
-                    resolvedDueDate = LocalDate.now().toString();
-                    break;
-                default:
-                    resolvedDueDate = dueDateInput; // use as-is for invalid/custom values
-                    break;
-            }
-        }
-
-        workRequest.setStrDueDate(resolvedDueDate);
-        return workRequest;
+@And("Remove {string} from request payload")
+public void removeFieldFromPayload(String excludeField) {
+    ScenarioContext scenarioContext = getScenarioContext(); // use your existing method to get it
+    Map<String, String> map = scenarioContext.getContext("WorkRequestDetailsMap");
+    if (map != null && excludeField != null && !excludeField.isEmpty()) {
+        map.remove(excludeField);
     }
+}
 
-My palod is this, Theer are varios scnearios where I need to pass NA in all the 5 fields, please modify accordingly.
+
+@Then("Send Request to create Work Request with below details")
+public void sendRequestToCreateWorkRequestWithDetails(DataTable dataTable) throws JsonProcessingException {
+    Map<String, String> mapWorkRequestDetails = dataTable.asMap(String.class, String.class);
+    scenarioContext.setContext("WorkRequestDetailsMap", mapWorkRequestDetails); // store it
+    String jwtToken = scenarioContext.getContext("JWTToken");
+    response = objWorkRequest.createWorkRequest(strEnvType, "Bearer", jwtToken, mapWorkRequestDetails, scenarioContext);
+}
+
