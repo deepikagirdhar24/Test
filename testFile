@@ -1,18 +1,22 @@
 private static void verifyErrorDetailsFields(Response response, Map<String, String> expectedData) {
-        String errorTitle = JsonHelper.extractStringFieldFromArray(response, "errorDetails", 0, "title");
-        String errorField = JsonHelper.extractStringFieldFromArray(response, "errorDetails", 0, "field");
-        String errorDetail = JsonHelper.extractStringFieldFromArray(response, "errorDetails", 0, "detail");
+    String errorTitle = JsonHelper.extractStringFieldFromArray(response, "errorDetails", 0, "title");
+    String errorField = JsonHelper.extractStringFieldFromArray(response, "errorDetails", 0, "field");
+    String errorDetail = JsonHelper.extractStringFieldFromArray(response, "errorDetails", 0, "detail");
 
-        ExtentCucumberAdapter.addTestStepLog("Actual errorDetails[0].title: " + errorTitle);
-        ExtentCucumberAdapter.addTestStepLog("Actual errorDetails[0].field: " + errorField);
-        ExtentCucumberAdapter.addTestStepLog("Actual errorDetails[0].detail: " + errorDetail);
+    ExtentCucumberAdapter.addTestStepLog("Actual errorDetails[0].title: " + errorTitle);
+    ExtentCucumberAdapter.addTestStepLog("Actual errorDetails[0].field: " + errorField);
+    ExtentCucumberAdapter.addTestStepLog("Actual errorDetails[0].detail: " + errorDetail);
 
-        Assert.assertEquals(errorTitle, expectedData.get("errorDetails.title"), "Mismatch in errorDetails.title");
-        Assert.assertEquals(errorDetail, expectedData.get("errorDetails.detail"), "Mismatch in errorDetails.detail");
+    Assert.assertEquals(errorTitle, expectedData.get("errorDetails.title"), "Mismatch in errorDetails.title");
+    Assert.assertEquals(errorDetail, expectedData.get("errorDetails.detail"), "Mismatch in errorDetails.detail");
 
-        // Validate presence of field without checking value
-        Assert.assertNotNull(errorField, "errorDetails[0].field should not be null");
-        Assert.assertFalse(errorField.trim().isEmpty(), "errorDetails[0].field should not be empty");
+    // Log and validate presence of field
+    if (errorField == null || errorField.trim().isEmpty()) {
+        ExtentCucumberAdapter.addTestStepLog("Validation Failed: errorDetails[0].field is null or empty.");
+    } else {
+        ExtentCucumberAdapter.addTestStepLog("Validation Passed: errorDetails[0].field is present with value: " + errorField);
     }
 
-I want to add  ExtentCucumberAdapter.addTestStepLog to print in report to check errorDetails[0].field has some value and is not null. add something like this
+    Assert.assertNotNull(errorField, "errorDetails[0].field should not be null");
+    Assert.assertFalse(errorField.trim().isEmpty(), "errorDetails[0].field should not be empty");
+}
