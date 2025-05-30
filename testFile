@@ -1,13 +1,18 @@
-public static LegalPersonRequest buildLegalPersonPayload(Map<String, String> mapPersonDetails) {
-    LegalPersonRequest legalPersonRequest = new LegalPersonRequest();
+private static void verifyErrorDetailsFields(Response response, Map<String, String> expectedData) {
+        String errorTitle = JsonHelper.extractStringFieldFromArray(response, "errorDetails", 0, "title");
+        String errorField = JsonHelper.extractStringFieldFromArray(response, "errorDetails", 0, "field");
+        String errorDetail = JsonHelper.extractStringFieldFromArray(response, "errorDetails", 0, "detail");
 
-    // Apply normalization logic to all fields
-    String uuid = UUID.randomUUID().toString().substring(0, 7);
-    legalPersonRequest.setStrUuid(uuid); // Always non-null
+        ExtentCucumberAdapter.addTestStepLog("Actual errorDetails[0].title: " + errorTitle);
+        ExtentCucumberAdapter.addTestStepLog("Actual errorDetails[0].field: " + errorField);
+        ExtentCucumberAdapter.addTestStepLog("Actual errorDetails[0].detail: " + errorDetail);
 
-    legalPersonRequest.setStrSubType(normalize(mapPersonDetails.get("subType")));
-    legalPersonRequest.setStrDomiCountry(normalize(mapPersonDetails.get("domicileCountry")));
-    legalPersonRequest.setStrName(normalize(mapPersonDetails.get("name")));
+        Assert.assertEquals(errorTitle, expectedData.get("errorDetails.title"), "Mismatch in errorDetails.title");
+        Assert.assertEquals(errorDetail, expectedData.get("errorDetails.detail"), "Mismatch in errorDetails.detail");
 
-    return legalPersonRequest;
-}
+        // Validate presence of field without checking value
+        Assert.assertNotNull(errorField, "errorDetails[0].field should not be null");
+        Assert.assertFalse(errorField.trim().isEmpty(), "errorDetails[0].field should not be empty");
+    }
+
+I want to add  ExtentCucumberAdapter.addTestStepLog to print in report to check errorDetails[0].field has some value and is not null. add something like this
