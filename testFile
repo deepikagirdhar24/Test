@@ -1,22 +1,26 @@
-private static void verifyErrorDetailsFields(Response response, Map<String, String> expectedData) {
-    String errorTitle = JsonHelper.extractStringFieldFromArray(response, "errorDetails", 0, "title");
-    String errorField = JsonHelper.extractStringFieldFromArray(response, "errorDetails", 0, "field");
-    String errorDetail = JsonHelper.extractStringFieldFromArray(response, "errorDetails", 0, "detail");
+    public static void verify400ErrorResponse(DataTable dataTable, Response response) throws Exception {
+        Map<String, String> expectedData = dataTable.asMap(String.class, String.class);
 
-    ExtentCucumberAdapter.addTestStepLog("Actual errorDetails[0].title: " + errorTitle);
-    ExtentCucumberAdapter.addTestStepLog("Actual errorDetails[0].field: " + errorField);
-    ExtentCucumberAdapter.addTestStepLog("Actual errorDetails[0].detail: " + errorDetail);
+        String expectedDescription = expectedData.get("description");
+        String expectedErrorMessages = expectedData.get("error message");
 
-    Assert.assertEquals(errorTitle, expectedData.get("errorDetails.title"), "Mismatch in errorDetails.title");
-    Assert.assertEquals(errorDetail, expectedData.get("errorDetails.detail"), "Mismatch in errorDetails.detail");
+        String actualDescription = JsonHelper.extractStringField(response, "description");
+        ExtentCucumberAdapter.addTestStepLog("Actual description: " + actualDescription);
+        Assert.assertEquals(actualDescription, expectedDescription, "Mismatch in description");
 
-    // Log and validate presence of field
-    if (errorField == null || errorField.trim().isEmpty()) {
-        ExtentCucumberAdapter.addTestStepLog("Validation Failed: errorDetails[0].field is null or empty.");
-    } else {
-        ExtentCucumberAdapter.addTestStepLog("Validation Passed: errorDetails[0].field is present with value: " + errorField);
+        String[] expectedErrors = expectedErrorMessages.split("\\s*,\\s*");
+        List<String> actualErrors = JsonHelper.extractListOfStringFieldsFromArray(response, "validationErrors", "error");
+
+        ExtentCucumberAdapter.addTestStepLog("Actual error messages: " + actualErrors);
+
+        for (String expectedError : expectedErrors) {
+            Assert.assertTrue(actualErrors.contains(expectedError),
+                    "Expected error message not found: " + expectedError);
+        }
     }
 
-    Assert.assertNotNull(errorField, "errorDetails[0].field should not be null");
-    Assert.assertFalse(errorField.trim().isEmpty(), "errorDetails[0].field should not be empty");
-}
+for this, can you use extractStringFieldsFromArray and extract only 0 index please  
+
+    public static String extractStringFieldFromArray(Response response, String arrayField, int index, String fieldName) {
+        return response.jsonPath().getString(arrayField + "[" + index + "]." + fieldName);
+    }
