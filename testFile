@@ -1,35 +1,5 @@
-Examples:
-  | challengeWord    | qaPairs                                                                                                 | statusCode | Comments     |
-  | Challenge Answer | What is your pet's name?=Fluffy; What city were you born in?=Zurich; What is your favorite color?=Blue | 200        | 3 QnA        |
-  | Challenge Answer | First teacher's name?=Mrs. Smith; Favorite dish?=Pasta; Dream city?=Paris; Hobby?=Reading              | 200        | 4 QnA        |
-
-
-public static POJONewDocumentRequest buildNewDocumentPayload(Map<String, String> mapDocDetails, ScenarioContext scenarioContext) {
-    POJONewDocumentRequest documentRequest = new POJONewDocumentRequest();
-
-    String strNaturalPersonObjectId = scenarioContext.getContext("naturalPersonObjectId");
-
-    documentRequest.setStrPersonId(
-        mapDocDetails.getOrDefault("personId", strNaturalPersonObjectId)
-    );
-    documentRequest.setStrChallengeWord(mapDocDetails.get("challengeWord"));
-
-    List<POJONewDocumentRequest.QuestionAnswer> qaList = new ArrayList<>();
-
-    String qaPairs = mapDocDetails.get("qaPairs");
-    if (qaPairs != null && !qaPairs.trim().isEmpty()) {
-        String[] pairs = qaPairs.split(";");
-        for (String pair : pairs) {
-            String[] qa = pair.split("=", 2); // Use limit 2 to allow = inside answers
-            if (qa.length == 2) {
-                POJONewDocumentRequest.QuestionAnswer qaObj = new POJONewDocumentRequest.QuestionAnswer();
-                qaObj.setStrQuestion(qa[0].trim());
-                qaObj.setStrAnswer(qa[1].trim());
-                qaList.add(qaObj);
-            }
-        }
+  if (mapDocDetails.containsKey("personId") && mapDocDetails.get("personId") != null && !mapDocDetails.get("personId").isEmpty()) {
+        documentRequest.setStrPersonId(mapDocDetails.get("personId"));
+    } else {
+        documentRequest.setStrPersonId(strNaturalPersonObjectId);
     }
-
-    documentRequest.setLstQuestions(qaList);
-    return documentRequest;
-}
