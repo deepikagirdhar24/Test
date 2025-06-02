@@ -1,5 +1,36 @@
-  if (mapDocDetails.containsKey("personId") && mapDocDetails.get("personId") != null && !mapDocDetails.get("personId").isEmpty()) {
-        documentRequest.setStrPersonId(mapDocDetails.get("personId"));
-    } else {
-        documentRequest.setStrPersonId(strNaturalPersonObjectId);
+public static POJONewDocumentRequest buildNewDocumentPayload(Map<String, String> mapDocDetails, ScenarioContext scenarioContext) {
+        POJONewDocumentRequest documentRequest = new POJONewDocumentRequest();
+
+        String strNaturalPersonObjectId = scenarioContext.getContext("naturalPersonObjectId");
+
+        if (mapDocDetails.containsKey("personId")) {
+            documentRequest.setStrPersonId(mapDocDetails.get("personId") != null ? mapDocDetails.get("personId") : "")
+        } else {
+            documentRequest.setStrPersonId(strNaturalPersonObjectId);
+        }
+
+        documentRequest.setStrChallengeWord(
+                mapDocDetails.get("challengeWord") != null ? mapDocDetails.get("challengeWord") : ""
+        );
+
+        List<POJONewDocumentRequest.QuestionAnswer> qaList = new ArrayList<>();
+
+        String qaPairs = mapDocDetails.get("qaPairs");
+        if (qaPairs != null && !qaPairs.trim().isEmpty()) {
+            String[] pairs = qaPairs.split(";");
+            for (String pair : pairs) {
+                String[] qa = pair.split("=", 2); // Use limit 2 to allow = inside answers
+                if (qa.length == 2) {
+                    POJONewDocumentRequest.QuestionAnswer qaObj = new POJONewDocumentRequest.QuestionAnswer();
+                    qaObj.setStrQuestion(qa[0].trim());
+                    qaObj.setStrAnswer(qa[1].trim());
+                    qaList.add(qaObj);
+                }
+            }
+        }
+
+        documentRequest.setLstQuestions(qaList);
+        return documentRequest;
     }
+
+what is syntax error here ?
