@@ -1,26 +1,225 @@
-    public static void verify400ErrorResponse(DataTable dataTable, Response response) throws Exception {
-        Map<String, String> expectedData = dataTable.asMap(String.class, String.class);
+Below is my feature file - The ObjectId fetched from the SD Send request to generate New Person with below details will be considered as personId in the paylod of this SD - Send request to generate New Document with below details.
+I have created this SD and write the code for this in the class. 
 
-        String expectedDescription = expectedData.get("description");
-        String expectedErrorMessages = expectedData.get("error message");
+The payload is - 
+Here person ID is scenario.getCOntext("naturalPersonObjectId")
 
-        String actualDescription = JsonHelper.extractStringField(response, "description");
-        ExtentCucumberAdapter.addTestStepLog("Actual description: " + actualDescription);
-        Assert.assertEquals(actualDescription, expectedDescription, "Mismatch in description");
-
-        String[] expectedErrors = expectedErrorMessages.split("\\s*,\\s*");
-        List<String> actualErrors = JsonHelper.extractListOfStringFieldsFromArray(response, "validationErrors", "error");
-
-        ExtentCucumberAdapter.addTestStepLog("Actual error messages: " + actualErrors);
-
-        for (String expectedError : expectedErrors) {
-            Assert.assertTrue(actualErrors.contains(expectedError),
-                    "Expected error message not found: " + expectedError);
+{
+    "personId": "665321511",
+    "challengeWord": "Challenge Answer",
+    "questions": [
+        {
+            "question": "Question 1",
+            "answer": "Answer 1"
+        },
+        {
+            "question": "Question 2",
+            "answer": "Answer 2"
+        },
+        {
+            "question": "Question 3",
+            "answer": "Answer 3"
+        },
+        {
+            "question": "Question 4",
+            "answer": "Answer 4"
+        },
+        {
+            "question": "MMN",
+            "answer": "Answer 5"
         }
+    ]
+}
+
+Feature: Verify Document API
+
+  Scenario Outline: Verify the Post Document API with valid data - <Comments>
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    Then Send request to generate New Person with below details
+      | firstName       | <firstName>     |
+      | lastName        | <lastName>      |
+      | subType         | <subType>       |
+      | domicileCountry | <domiCountry>   |
+      | gender          | <gender>        |
+      | nationalities   | <nationalities> |
+    Then Send request to generate New Document with below details
+
+
+    Examples:
+      | firstName | lastName | subType        | domiCountry | gender | nationalities | statusCode | Comments                      |
+      | Firstname | Lastname | pers_form_ass  | CH          | male   | CH            | 200        | all valid inputs              |
+
+    @Then("Send request to generate New Document with below details")
+    public void sendRequestToGenerateNewDocumentWithDetails(DataTable dataTable) throws JsonProcessingException {
+        Map<String, String> mapDocDetails = dataTable.asMap(String.class, String.class);
+        String jwtToken = scenarioContext.getContext("JWTToken");
+        response = objDocument.createNewDocument(strEnvType, "Bearer", jwtToken, mapDocDetails, scenarioContext);
     }
 
-for this, can you use extractStringFieldsFromArray and extract only 0 index please  
+DOcument.class - 
 
-    public static String extractStringFieldFromArray(Response response, String arrayField, int index, String fieldName) {
-        return response.jsonPath().getString(arrayField + "[" + index + "]." + fieldName);
+// Create Natural Document
+    public Response createNewDocument(String strEnvType, String strBearerToken, String strJwtToken, Map<String, String> mapDocDetails, ScenarioContext scenarioContext) throws JsonProcessingException {
+        String strUrl = getTYKURL(strEnvType, "TYK.DOCUMENT");
+}
+
+Write the code similar to the layout like this  -
+
+    // Create Natural Person
+    public Response createNewPerson(String strEnvType, String strBearerToken, String strJwtToken, Map<String, String> mapPersonDetails, ScenarioContext scenarioContext) throws JsonProcessingException {
+        String strUrl = getTYKURL(strEnvType, "TYK.CREATENEWPERSON");
+        POJONewPersonRequest pojoNewPersonRequest = Payloads.buildNewPersonPayload(mapPersonDetails);
+        String strRequestBody = objObjectMapper.writeValueAsString(pojoNewPersonRequest);
+
+        ExtentCucumberAdapter.addTestStepLog("Sending request to create Natural Person");
+
+        Response resCreatePerson = sendPostRequest(strUrl, strBearerToken, strJwtToken, strRequestBody, null);
+        String strResponseBody = devHelperLibrary.getResponseBody(resCreatePerson);
+        objCucumberLogger.PrintStatus("Response is: " + strResponseBody);
+
+        String strNaturalPersonObjectId = resCreatePerson.jsonPath().getString("objectId");
+        String strNaturalPersonOrderId = resCreatePerson.jsonPath().getString("orderId");
+        String strNaturalPersonUuid = pojoNewPersonRequest.getStrUuid();
+
+        scenarioContext.setContext("naturalPersonObjectId", strNaturalPersonObjectId);
+        scenarioContext.setContext("naturalPersonOrderId", strNaturalPersonOrderId);
+        scenarioContext.setContext("naturalPersonUuid", strNaturalPersonUuid);
+
+        return resCreatePerson;
     }
+
+Create POJo and Payload also for this - 
+
+Example Payload and pOJO - 
+
+public static POJONewPersonRequest buildNewPersonPayload(Map<String, String> mapPersonDetails) {
+        POJONewPersonRequest personRequest = new POJONewPersonRequest();
+
+        String uuid = UUID.randomUUID().toString().substring(0, 7);
+        personRequest.setStrUuid(uuid);
+
+        personRequest.setStrSubType(mapPersonDetails.get("subType"));
+        personRequest.setStrDomiCountry(mapPersonDetails.get("domicileCountry"));
+        personRequest.setStrFirstName(mapPersonDetails.get("firstName"));
+        personRequest.setStrLastName(mapPersonDetails.get("lastName"));
+        personRequest.setStrGender(mapPersonDetails.get("gender"));
+
+        // Handle multiple nationalities (comma-separated)
+        String strNationalities = mapPersonDetails.get("nationalities");
+        List<String> lstNationality = new ArrayList<>();
+        if (strNationalities != null && !strNationalities.trim().isEmpty()) {
+            lstNationality = Arrays.stream(strNationalities.split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .collect(Collectors.toList());
+        }
+        personRequest.setLstNationalities(lstNationality);
+
+        return personRequest;
+    }
+
+    public static POJOLegalPersonRequest buildLegalPersonPayload(Map<String, String> mapPersonDetails, boolean includeUuid) {
+
+        POJOLegalPersonRequest legalPersonRequest = new POJOLegalPersonRequest();
+
+        if (includeUuid) {
+            String uuid = UUID.randomUUID().toString().substring(0, 7);
+            legalPersonRequest.setStrUuid(uuid);
+        }
+
+        legalPersonRequest.setStrSubType(normalize(mapPersonDetails.get("subType")));
+        legalPersonRequest.setStrDomiCountry(normalize(mapPersonDetails.get("domicileCountry")));
+        legalPersonRequest.setStrName(normalize(mapPersonDetails.get("name")));
+
+        return legalPersonRequest;
+    }
+
+package ICOS.pojo;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.List;
+
+public class POJONewPersonRequest {
+
+    @JsonProperty("uuid")
+    private String strUuid;
+
+    @JsonProperty("subType")
+    private String strSubType;
+
+    @JsonProperty("domiCountry")
+    private String strDomiCountry;
+
+    @JsonProperty("firstName")
+    private String strFirstName;
+
+    @JsonProperty("lastName")
+    private String strLastName;
+
+    @JsonProperty("gender")
+    private String strGender;
+
+    @JsonProperty("nationalities")
+    private List<String> lstNationalities;
+
+    // Getters and Setters
+    public String getStrUuid() {
+        return strUuid;
+    }
+
+    public void setStrUuid(String strUuid) {
+        this.strUuid = strUuid;
+    }
+
+    public String getStrSubType() {
+        return strSubType;
+    }
+
+    public void setStrSubType(String strSubType) {
+        this.strSubType = strSubType;
+    }
+
+    public String getStrDomiCountry() {
+        return strDomiCountry;
+    }
+
+    public void setStrDomiCountry(String strDomiCountry) {
+        this.strDomiCountry = strDomiCountry;
+    }
+
+    public String getStrFirstName() {
+        return strFirstName;
+    }
+
+    public void setStrFirstName(String strFirstName) {
+        this.strFirstName = strFirstName;
+    }
+
+    public String getStrLastName() {
+        return strLastName;
+    }
+
+    public void setStrLastName(String strLastName) {
+        this.strLastName = strLastName;
+    }
+
+    public String getStrGender() {
+        return strGender;
+    }
+
+    public void setStrGender(String strGender) {
+        this.strGender = strGender;
+    }
+
+    public List<String> getLstNationalities() {
+        return lstNationalities;
+    }
+
+    public void setLstNationalities(List<String> lstNationalities) {
+        this.lstNationalities = lstNationalities;
+    }
+
+}
+
