@@ -1,10 +1,90 @@
-public static POJONewDocumentRequest buildNewDocumentPayload(Map<String, String> mapDocDetails, ScenarioContext scenarioContext) {
+I have a TestDataGnerator class which generates random data, liek below - 
+
+package utilities;
+
+import java.util.Random;
+
+public class TestDataGenerator {
+
+    public static String generateRandomSubject(String type) {
+        Random random = new Random();
+
+        // Case 1: RANDOM_LESS_250 - generate random length less than 250 characters
+        if ("RANDOM_LESS_250".equalsIgnoreCase(type)) {
+            int length = random.nextInt(249) + 1; // length between 1 and 249
+            return randomString(length);
+        }
+
+        // Case 2: RANDOM_EXACT_250 - generate exactly 250 characters
+        if ("RANDOM_EXACT_250".equalsIgnoreCase(type)) {
+            return randomString(250); // exactly 250 characters
+        }
+
+        // Case 3: RANDOM_GREATER_250 - generate random length greater than 250 characters
+        if ("RANDOM_GREATER_250".equalsIgnoreCase(type)) {
+            int length = random.nextInt(500) + 251; // length greater than 250
+            return randomString(length);
+        }
+
+        // Case 4: EMPTY_SUBJECT - return empty subject
+        if ("EMPTY_SUBJECT".equalsIgnoreCase(type)) {
+            return ""; // Empty subject
+        }
+
+        // Default case: Return the string as-is (Literal subject text)
+        return type;
+    }
+
+    private static String randomString(int length) {
+        int leftLimit = 97; // 'a'
+        int rightLimit = 122; // 'z'
+        Random random = new Random();
+
+        return random.ints(leftLimit, rightLimit + 1)
+                .limit(length)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
+    }
+
+}
+
+Now, my test case has 6 cases, 
+
+Scenario Outline: Verify the Post Document API with invalid data - <Comments>
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    Then Send request to generate New Person with below details
+      | firstName       | Firstname     |
+      | lastName        | Lastname      |
+      | subType         | pers_form_ass |
+      | domicileCountry | CH            |
+      | gender          | male          |
+      | nationalities   | CH            |
+    Then Send request to generate New Document with below details
+      | challengeWord | <challengeWord> |
+      | qaPairs       | <qaPairs>     |
+    And I verify the Status Code for Document "400"
+    And I verify the Document API 400 error response with below details
+      | description   | <description> |
+      | error message | <error>       |
+
+    Examples:
+      | challengeWord     | qaPairs                                                                                                           | description       | error                                    | Comments            |
+      | Challenge Answer  | Question1=Answer1; Question2=Answer2; Question3=Answer3; Question4=Answer4; Question5=Answer5; Question6=Answer6  | Validation Errors | Number of question and answers must be 5 | 6 ID_Questions      |
+      | Challenge Answer  | Question1=Answer1; Question2=Answer2; Question3=Answer3; Question4=Answer4                                      
+
+I want the first question to be of 49 characters, 50 characters, 51 characters and I want first answer to be of 49 characters, 50 characters, 51 characters
+i.e. total 6 test cases.
+
+This should be random data of fixed size as mentioned above.
+
+    public static POJONewDocumentRequest buildNewDocumentPayload(Map<String, String> mapDocDetails, ScenarioContext scenarioContext) {
         POJONewDocumentRequest documentRequest = new POJONewDocumentRequest();
 
         String strNaturalPersonObjectId = scenarioContext.getContext("naturalPersonObjectId");
 
         if (mapDocDetails.containsKey("personId")) {
-            documentRequest.setStrPersonId(mapDocDetails.get("personId") != null ? mapDocDetails.get("personId") : "")
+            documentRequest.setStrPersonId(mapDocDetails.get("personId") != null ? mapDocDetails.get("personId") : "");
         } else {
             documentRequest.setStrPersonId(strNaturalPersonObjectId);
         }
@@ -33,4 +113,4 @@ public static POJONewDocumentRequest buildNewDocumentPayload(Map<String, String>
         return documentRequest;
     }
 
-what is syntax error here ?
+what all changes to be done ?
