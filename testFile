@@ -1,41 +1,4 @@
-Then Send request to generate New Document with below details
-  | challengeWord | Challenge Answer |
-  | question1     | Question 1       |
-  | answer1       | Answer 1         |
-  | question2     | Question 2       |
-  | answer2       | Answer 2         |
-  | question3     | Question 3       |
-  | answer3       | Answer 3         |
-  | question4     | Question 4       |
-  | answer4       | Answer 4         |
-  | question5     | MMN              |
-  | answer5       | Answer 5         |
-
-public static POJONewDocumentRequest buildNewDocumentPayload(Map<String, String> mapDocDetails) {
-    POJONewDocumentRequest documentRequest = new POJONewDocumentRequest();
-
-    documentRequest.setPersonId(mapDocDetails.get("personId"));
-    documentRequest.setChallengeWord(mapDocDetails.get("challengeWord"));
-
-    List<POJONewDocumentRequest.QuestionAnswer> qaList = new ArrayList<>();
-
-    // Collect question-answer pairs from the map
-    for (int i = 1; i <= 5; i++) {
-        String questionKey = "question" + i;
-        String answerKey = "answer" + i;
-
-        if (mapDocDetails.containsKey(questionKey) && mapDocDetails.containsKey(answerKey)) {
-            POJONewDocumentRequest.QuestionAnswer qa = new POJONewDocumentRequest.QuestionAnswer();
-            qa.setQuestion(mapDocDetails.get(questionKey));
-            qa.setAnswer(mapDocDetails.get(answerKey));
-            qaList.add(qa);
-        }
-    }
-
-    documentRequest.setQuestions(qaList);
-    return documentRequest;
-}
-
+Update this pojo - 
 
 package ICOS.pojo;
 
@@ -105,26 +68,92 @@ public class POJONewDocumentRequest {
     }
 }
 
+as per naming convenntion like str etc. similar to the below pojo - 
 
-public Response createNewDocument(String strEnvType, String strBearerToken, String strJwtToken, Map<String, String> mapDocDetails, ScenarioContext scenarioContext) throws JsonProcessingException {
-    String strUrl = getTYKURL(strEnvType, "TYK.DOCUMENT");
+package ICOS.pojo;
 
-    // Inject personId from scenario context
-    String personId = scenarioContext.getContext("naturalPersonObjectId");
-    mapDocDetails.put("personId", personId);
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-    POJONewDocumentRequest pojoNewDocumentRequest = Payloads.buildNewDocumentPayload(mapDocDetails);
-    String strRequestBody = objObjectMapper.writeValueAsString(pojoNewDocumentRequest);
+import java.util.List;
 
-    ExtentCucumberAdapter.addTestStepLog("Sending request to create Document");
+public class POJONewPersonRequest {
 
-    Response resCreateDocument = sendPostRequest(strUrl, strBearerToken, strJwtToken, strRequestBody, null);
-    String strResponseBody = devHelperLibrary.getResponseBody(resCreateDocument);
-    objCucumberLogger.PrintStatus("Response is: " + strResponseBody);
+    @JsonProperty("uuid")
+    private String strUuid;
 
-    // Optional: Store document ID from response
-    String strDocumentId = resCreateDocument.jsonPath().getString("documentId");
-    scenarioContext.setContext("documentId", strDocumentId);
+    @JsonProperty("subType")
+    private String strSubType;
 
-    return resCreateDocument;
+    @JsonProperty("domiCountry")
+    private String strDomiCountry;
+
+    @JsonProperty("firstName")
+    private String strFirstName;
+
+    @JsonProperty("lastName")
+    private String strLastName;
+
+    @JsonProperty("gender")
+    private String strGender;
+
+    @JsonProperty("nationalities")
+    private List<String> lstNationalities;
+
+    // Getters and Setters
+    public String getStrUuid() {
+        return strUuid;
+    }
+
+    public void setStrUuid(String strUuid) {
+        this.strUuid = strUuid;
+    }
+
+    public String getStrSubType() {
+        return strSubType;
+    }
+
+    public void setStrSubType(String strSubType) {
+        this.strSubType = strSubType;
+    }
+
+    public String getStrDomiCountry() {
+        return strDomiCountry;
+    }
+
+    public void setStrDomiCountry(String strDomiCountry) {
+        this.strDomiCountry = strDomiCountry;
+    }
+
+    public String getStrFirstName() {
+        return strFirstName;
+    }
+
+    public void setStrFirstName(String strFirstName) {
+        this.strFirstName = strFirstName;
+    }
+
+    public String getStrLastName() {
+        return strLastName;
+    }
+
+    public void setStrLastName(String strLastName) {
+        this.strLastName = strLastName;
+    }
+
+    public String getStrGender() {
+        return strGender;
+    }
+
+    public void setStrGender(String strGender) {
+        this.strGender = strGender;
+    }
+
+    public List<String> getLstNationalities() {
+        return lstNationalities;
+    }
+
+    public void setLstNationalities(List<String> lstNationalities) {
+        this.lstNationalities = lstNationalities;
+    }
+
 }
