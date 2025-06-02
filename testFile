@@ -1,5 +1,3 @@
-Update this pojo - 
-
 package ICOS.pojo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -8,152 +6,62 @@ import java.util.List;
 public class POJONewDocumentRequest {
 
     @JsonProperty("personId")
-    private String personId;
+    private String strPersonId;
 
     @JsonProperty("challengeWord")
-    private String challengeWord;
+    private String strChallengeWord;
 
     @JsonProperty("questions")
-    private List<QuestionAnswer> questions;
+    private List<QuestionAnswer> lstQuestions;
 
     // Inner class for question-answer
     public static class QuestionAnswer {
         @JsonProperty("question")
-        private String question;
+        private String strQuestion;
 
         @JsonProperty("answer")
-        private String answer;
+        private String strAnswer;
 
         // Getters and Setters
-        public String getQuestion() {
-            return question;
+        public String getStrQuestion() {
+            return strQuestion;
         }
 
-        public void setQuestion(String question) {
-            this.question = question;
+        public void setStrQuestion(String strQuestion) {
+            this.strQuestion = strQuestion;
         }
 
-        public String getAnswer() {
-            return answer;
+        public String getStrAnswer() {
+            return strAnswer;
         }
 
-        public void setAnswer(String answer) {
-            this.answer = answer;
+        public void setStrAnswer(String strAnswer) {
+            this.strAnswer = strAnswer;
         }
     }
 
     // Getters and Setters
-    public String getPersonId() {
-        return personId;
+    public String getStrPersonId() {
+        return strPersonId;
     }
 
-    public void setPersonId(String personId) {
-        this.personId = personId;
+    public void setStrPersonId(String strPersonId) {
+        this.strPersonId = strPersonId;
     }
 
-    public String getChallengeWord() {
-        return challengeWord;
+    public String getStrChallengeWord() {
+        return strChallengeWord;
     }
 
-    public void setChallengeWord(String challengeWord) {
-        this.challengeWord = challengeWord;
+    public void setStrChallengeWord(String strChallengeWord) {
+        this.strChallengeWord = strChallengeWord;
     }
 
-    public List<QuestionAnswer> getQuestions() {
-        return questions;
+    public List<QuestionAnswer> getLstQuestions() {
+        return lstQuestions;
     }
 
-    public void setQuestions(List<QuestionAnswer> questions) {
-        this.questions = questions;
+    public void setLstQuestions(List<QuestionAnswer> lstQuestions) {
+        this.lstQuestions = lstQuestions;
     }
-}
-
-as per naming convenntion like str etc. similar to the below pojo - 
-
-package ICOS.pojo;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import java.util.List;
-
-public class POJONewPersonRequest {
-
-    @JsonProperty("uuid")
-    private String strUuid;
-
-    @JsonProperty("subType")
-    private String strSubType;
-
-    @JsonProperty("domiCountry")
-    private String strDomiCountry;
-
-    @JsonProperty("firstName")
-    private String strFirstName;
-
-    @JsonProperty("lastName")
-    private String strLastName;
-
-    @JsonProperty("gender")
-    private String strGender;
-
-    @JsonProperty("nationalities")
-    private List<String> lstNationalities;
-
-    // Getters and Setters
-    public String getStrUuid() {
-        return strUuid;
-    }
-
-    public void setStrUuid(String strUuid) {
-        this.strUuid = strUuid;
-    }
-
-    public String getStrSubType() {
-        return strSubType;
-    }
-
-    public void setStrSubType(String strSubType) {
-        this.strSubType = strSubType;
-    }
-
-    public String getStrDomiCountry() {
-        return strDomiCountry;
-    }
-
-    public void setStrDomiCountry(String strDomiCountry) {
-        this.strDomiCountry = strDomiCountry;
-    }
-
-    public String getStrFirstName() {
-        return strFirstName;
-    }
-
-    public void setStrFirstName(String strFirstName) {
-        this.strFirstName = strFirstName;
-    }
-
-    public String getStrLastName() {
-        return strLastName;
-    }
-
-    public void setStrLastName(String strLastName) {
-        this.strLastName = strLastName;
-    }
-
-    public String getStrGender() {
-        return strGender;
-    }
-
-    public void setStrGender(String strGender) {
-        this.strGender = strGender;
-    }
-
-    public List<String> getLstNationalities() {
-        return lstNationalities;
-    }
-
-    public void setLstNationalities(List<String> lstNationalities) {
-        this.lstNationalities = lstNationalities;
-    }
-
 }
