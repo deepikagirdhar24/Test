@@ -1,68 +1,50 @@
-I have below payload na dclass function.
-Now I have a case where I am randomly sending a wrong personId. So, what can be modfications for this one.
+public static POJONewDocumentRequest buildNewDocumentPayload(Map<String, String> mapDocDetails, ScenarioContext scenarioContext) {
+    POJONewDocumentRequest documentRequest = new POJONewDocumentRequest();
 
+    String strNaturalPersonObjectId = scenarioContext.getContext("naturalPersonObjectId");
 
-public static POJONewDocumentRequest buildNewDocumentPayload(Map<String, String> mapDocDetails) {
-        POJONewDocumentRequest documentRequest = new POJONewDocumentRequest();
-
+    // Use overridden personId from map (for negative test), else default from context
+    if (mapDocDetails.containsKey("personId") && mapDocDetails.get("personId") != null && !mapDocDetails.get("personId").isEmpty()) {
         documentRequest.setStrPersonId(mapDocDetails.get("personId"));
-        documentRequest.setStrChallengeWord(mapDocDetails.get("challengeWord"));
-
-        List<POJONewDocumentRequest.QuestionAnswer> qaList = new ArrayList<>();
-
-        // Collect question-answer pairs from the map
-        for (int i = 1; i <= 5; i++) {
-            String questionKey = "question" + i;
-            String answerKey = "answer" + i;
-
-            if (mapDocDetails.containsKey(questionKey) && mapDocDetails.containsKey(answerKey)) {
-                POJONewDocumentRequest.QuestionAnswer qa = new POJONewDocumentRequest.QuestionAnswer();
-                qa.setStrQuestion(mapDocDetails.get(questionKey));
-                qa.setStrAnswer(mapDocDetails.get(answerKey));
-                qaList.add(qa);
-            }
-        }
-
-        documentRequest.setLstQuestions(qaList);
-        return documentRequest;
+    } else {
+        documentRequest.setStrPersonId(strNaturalPersonObjectId);
     }
 
-// Create Natural Document
-    public Response createNewDocument(String strEnvType, String strBearerToken, String strJwtToken, Map<String, String> mapDocDetails, ScenarioContext scenarioContext) throws JsonProcessingException {
-        String strUrl = getTYKURL(strEnvType, "TYK.DOCUMENT");
+    documentRequest.setStrChallengeWord(mapDocDetails.get("challengeWord"));
 
-        // Inject personId from scenario context
-        String personId = scenarioContext.getContext("naturalPersonObjectId");
-        mapDocDetails.put("personId", personId);
+    List<POJONewDocumentRequest.QuestionAnswer> qaList = new ArrayList<>();
 
-        POJONewDocumentRequest pojoNewDocumentRequest = Payloads.buildNewDocumentPayload(mapDocDetails);
-        String strRequestBody = objObjectMapper.writeValueAsString(pojoNewDocumentRequest);
+    for (int i = 1; i <= 5; i++) {
+        String questionKey = "question" + i;
+        String answerKey = "answer" + i;
 
-        ExtentCucumberAdapter.addTestStepLog("Sending request to create Document");
-
-        Response resCreateDocument = sendPostRequest(strUrl, strBearerToken, strJwtToken, strRequestBody, null);
-        String strResponseBody = devHelperLibrary.getResponseBody(resCreateDocument);
-        objCucumberLogger.PrintStatus("Response is: " + strResponseBody);
-
-        // Optional: Store document ID from response
-        String strDocumentId = resCreateDocument.jsonPath().getString("documentId");
-        scenarioContext.setContext("documentId", strDocumentId);
-
-        return resCreateDocument;
+        if (mapDocDetails.containsKey(questionKey) && mapDocDetails.containsKey(answerKey)) {
+            POJONewDocumentRequest.QuestionAnswer qa = new POJONewDocumentRequest.QuestionAnswer();
+            qa.setStrQuestion(mapDocDetails.get(questionKey));
+            qa.setStrAnswer(mapDocDetails.get(answerKey));
+            qaList.add(qa);
+        }
     }
 
-Can we do like we did in contact notes paylod  i.e. getting the context in pyalod class onlya nd pallying some conditions. or any other you suggest- 
-
-    public static POJOContactNoteRequest buildContactNotePayload(Map<String, String> mapNoteDetails, ScenarioContext scenarioContext) {
-
-        POJOContactNoteRequest noteRequest = new POJOContactNoteRequest();
-        String strNaturalPersonObjectId = scenarioContext.getContext("naturalPersonObjectId");
-
-        //Set PersonIds: Use provided personIds if available, else use strObjectId
-        if (mapNoteDetails.containsKey("personIds") && mapNoteDetails.get("personIds") != null && !mapNoteDetails.get("personIds").isEmpty()) {
-            noteRequest.setLstPersonIds(Collections.singletonList(mapNoteDetails.get("personIds")));
-        } else {
-            noteRequest.setLstPersonIds(Collections.singletonList(strNaturalPersonObjectId));
-        }
+    documentRequest.setLstQuestions(qaList);
+    return documentRequest;
 }
 
+public Response createNewDocument(String strEnvType, String strBearerToken, String strJwtToken, Map<String, String> mapDocDetails, ScenarioContext scenarioContext) throws JsonProcessingException {
+    String strUrl = getTYKURL(strEnvType, "TYK.DOCUMENT");
+
+    POJONewDocumentRequest pojoNewDocumentRequest = Payloads.buildNewDocumentPayload(mapDocDetails, scenarioContext);
+    String strRequestBody = objObjectMapper.writeValueAsString(pojoNewDocumentRequest);
+
+    ExtentCucumberAdapter.addTestStepLog("Sending request to create Document");
+
+    Response resCreateDocument = sendPostRequest(strUrl, strBearerToken, strJwtToken, strRequestBody, null);
+    String strResponseBody = devHelperLibrary.getResponseBody(resCreateDocument);
+    objCucumberLogger.PrintStatus("Response is: " + strResponseBody);
+
+    // Optional: Store document ID from response
+    String strDocumentId = resCreateDocument.jsonPath().getString("documentId");
+    scenarioContext.setContext("documentId", strDocumentId);
+
+    return resCreateDocument;
+}
