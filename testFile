@@ -1,87 +1,35 @@
-Feature: Verify Document API
+Examples:
+  | challengeWord    | qaPairs                                                                                                 | statusCode | Comments     |
+  | Challenge Answer | What is your pet's name?=Fluffy; What city were you born in?=Zurich; What is your favorite color?=Blue | 200        | 3 QnA        |
+  | Challenge Answer | First teacher's name?=Mrs. Smith; Favorite dish?=Pasta; Dream city?=Paris; Hobby?=Reading              | 200        | 4 QnA        |
 
-  Scenario Outline: Verify the Post Document API with valid data - <Comments>
-    Given Send Request to get Authentication Token for ICOS
-    When I generate the JWT Token
-    Then Send request to generate New Person with below details
-      | firstName       | Firstname     |
-      | lastName        | Lastname      |
-      | subType         | pers_form_ass |
-      | domicileCountry | CH            |
-      | gender          | male          |
-      | nationalities   | CH            |
-    Then Send request to generate New Document with below details
-      | challengeWord | <challengeWord> |
-      | question1     | <question1>     |
-      | answer1       | <answer1>       |
-      | question2     | <question2>     |
-      | answer2       | <answer2>       |
-      | question3     | <question3>     |
-      | answer3       | <answer3>       |
-      | question4     | <question4>     |
-      | answer4       | <answer4>       |
-      | question5     | <question5>     |
-      | answer5       | <answer5>       |
-    And I verify the Status Code for Document "<statusCode>"
-    And I verify the "objectId" exists in Document response
-    And I verify the "orderId" exists in Document response
-
-    Examples:
-      | challengeWord     | question1 | answer1  | question2 | answer2  | question3 | answer3  | question4 | answer4  | question5 | answer5  | statusCode | Comments         |
-      | Challenge Answer  | Question  | Answer   | Question  | Answer   | Question  | Answer   | Question  | Answer   | Question  | Answer   | 200        | 5 QnA |
-
-    @Then("Send request to generate New Document with below details")
-    public void sendRequestToGenerateNewDocumentWithDetails(DataTable dataTable) throws JsonProcessingException {
-        Map<String, String> mapDocDetails = dataTable.asMap(String.class, String.class);
-        String jwtToken = scenarioContext.getContext("JWTToken");
-        response = objDocument.createNewDocument(strEnvType, "Bearer", jwtToken, mapDocDetails, scenarioContext);
-    }
-
-// Create Natural Document
-    public Response createNewDocument(String strEnvType, String strBearerToken, String strJwtToken, Map<String, String> mapDocDetails, ScenarioContext scenarioContext) throws JsonProcessingException {
-        String strUrl = getTYKURL(strEnvType, "TYK.DOCUMENT");
-
-        POJONewDocumentRequest pojoNewDocumentRequest = Payloads.buildNewDocumentPayload(mapDocDetails, scenarioContext);
-        String strRequestBody = objObjectMapper.writeValueAsString(pojoNewDocumentRequest);
-
-        ExtentCucumberAdapter.addTestStepLog("Sending request to create Document");
-
-        Response resCreateDocument = sendPostRequest(strUrl, strBearerToken, strJwtToken, strRequestBody, null);
-        String strResponseBody = devHelperLibrary.getResponseBody(resCreateDocument);
-        objCucumberLogger.PrintStatus("Response is: " + strResponseBody);
-
-        return resCreateDocument;
-    }
 
 public static POJONewDocumentRequest buildNewDocumentPayload(Map<String, String> mapDocDetails, ScenarioContext scenarioContext) {
-        POJONewDocumentRequest documentRequest = new POJONewDocumentRequest();
+    POJONewDocumentRequest documentRequest = new POJONewDocumentRequest();
 
-        String strNaturalPersonObjectId = scenarioContext.getContext("naturalPersonObjectId");
+    String strNaturalPersonObjectId = scenarioContext.getContext("naturalPersonObjectId");
 
-        // Use overridden personId from map (for negative test), else default from context
-        if (mapDocDetails.containsKey("personId") && mapDocDetails.get("personId") != null && !mapDocDetails.get("personId").isEmpty()) {
-            documentRequest.setStrPersonId(mapDocDetails.get("personId"));
-        } else {
-            documentRequest.setStrPersonId(strNaturalPersonObjectId);
-        }
+    documentRequest.setStrPersonId(
+        mapDocDetails.getOrDefault("personId", strNaturalPersonObjectId)
+    );
+    documentRequest.setStrChallengeWord(mapDocDetails.get("challengeWord"));
 
-        documentRequest.setStrChallengeWord(mapDocDetails.get("challengeWord"));
+    List<POJONewDocumentRequest.QuestionAnswer> qaList = new ArrayList<>();
 
-        List<POJONewDocumentRequest.QuestionAnswer> qaList = new ArrayList<>();
-
-        for (int i = 1; i <= 5; i++) {
-            String questionKey = "question" + i;
-            String answerKey = "answer" + i;
-
-            if (mapDocDetails.containsKey(questionKey) && mapDocDetails.containsKey(answerKey)) {
-                POJONewDocumentRequest.QuestionAnswer qa = new POJONewDocumentRequest.QuestionAnswer();
-                qa.setStrQuestion(mapDocDetails.get(questionKey));
-                qa.setStrAnswer(mapDocDetails.get(answerKey));
-                qaList.add(qa);
+    String qaPairs = mapDocDetails.get("qaPairs");
+    if (qaPairs != null && !qaPairs.trim().isEmpty()) {
+        String[] pairs = qaPairs.split(";");
+        for (String pair : pairs) {
+            String[] qa = pair.split("=", 2); // Use limit 2 to allow = inside answers
+            if (qa.length == 2) {
+                POJONewDocumentRequest.QuestionAnswer qaObj = new POJONewDocumentRequest.QuestionAnswer();
+                qaObj.setStrQuestion(qa[0].trim());
+                qaObj.setStrAnswer(qa[1].trim());
+                qaList.add(qaObj);
             }
         }
-
-        documentRequest.setLstQuestions(qaList);
-        return documentRequest;
     }
 
+    documentRequest.setLstQuestions(qaList);
+    return documentRequest;
+}
