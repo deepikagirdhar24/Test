@@ -1,67 +1,68 @@
-package ICOS.pojo;
+I have below payload na dclass function.
+Now I have a case where I am randomly sending a wrong personId. So, what can be modfications for this one.
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.List;
 
-public class POJONewDocumentRequest {
+public static POJONewDocumentRequest buildNewDocumentPayload(Map<String, String> mapDocDetails) {
+        POJONewDocumentRequest documentRequest = new POJONewDocumentRequest();
 
-    @JsonProperty("personId")
-    private String strPersonId;
+        documentRequest.setStrPersonId(mapDocDetails.get("personId"));
+        documentRequest.setStrChallengeWord(mapDocDetails.get("challengeWord"));
 
-    @JsonProperty("challengeWord")
-    private String strChallengeWord;
+        List<POJONewDocumentRequest.QuestionAnswer> qaList = new ArrayList<>();
 
-    @JsonProperty("questions")
-    private List<QuestionAnswer> lstQuestions;
+        // Collect question-answer pairs from the map
+        for (int i = 1; i <= 5; i++) {
+            String questionKey = "question" + i;
+            String answerKey = "answer" + i;
 
-    // Inner class for question-answer
-    public static class QuestionAnswer {
-        @JsonProperty("question")
-        private String strQuestion;
-
-        @JsonProperty("answer")
-        private String strAnswer;
-
-        // Getters and Setters
-        public String getStrQuestion() {
-            return strQuestion;
+            if (mapDocDetails.containsKey(questionKey) && mapDocDetails.containsKey(answerKey)) {
+                POJONewDocumentRequest.QuestionAnswer qa = new POJONewDocumentRequest.QuestionAnswer();
+                qa.setStrQuestion(mapDocDetails.get(questionKey));
+                qa.setStrAnswer(mapDocDetails.get(answerKey));
+                qaList.add(qa);
+            }
         }
 
-        public void setStrQuestion(String strQuestion) {
-            this.strQuestion = strQuestion;
+        documentRequest.setLstQuestions(qaList);
+        return documentRequest;
+    }
+
+// Create Natural Document
+    public Response createNewDocument(String strEnvType, String strBearerToken, String strJwtToken, Map<String, String> mapDocDetails, ScenarioContext scenarioContext) throws JsonProcessingException {
+        String strUrl = getTYKURL(strEnvType, "TYK.DOCUMENT");
+
+        // Inject personId from scenario context
+        String personId = scenarioContext.getContext("naturalPersonObjectId");
+        mapDocDetails.put("personId", personId);
+
+        POJONewDocumentRequest pojoNewDocumentRequest = Payloads.buildNewDocumentPayload(mapDocDetails);
+        String strRequestBody = objObjectMapper.writeValueAsString(pojoNewDocumentRequest);
+
+        ExtentCucumberAdapter.addTestStepLog("Sending request to create Document");
+
+        Response resCreateDocument = sendPostRequest(strUrl, strBearerToken, strJwtToken, strRequestBody, null);
+        String strResponseBody = devHelperLibrary.getResponseBody(resCreateDocument);
+        objCucumberLogger.PrintStatus("Response is: " + strResponseBody);
+
+        // Optional: Store document ID from response
+        String strDocumentId = resCreateDocument.jsonPath().getString("documentId");
+        scenarioContext.setContext("documentId", strDocumentId);
+
+        return resCreateDocument;
+    }
+
+Can we do like we did in contact notes paylod  i.e. getting the context in pyalod class onlya nd pallying some conditions. or any other you suggest- 
+
+    public static POJOContactNoteRequest buildContactNotePayload(Map<String, String> mapNoteDetails, ScenarioContext scenarioContext) {
+
+        POJOContactNoteRequest noteRequest = new POJOContactNoteRequest();
+        String strNaturalPersonObjectId = scenarioContext.getContext("naturalPersonObjectId");
+
+        //Set PersonIds: Use provided personIds if available, else use strObjectId
+        if (mapNoteDetails.containsKey("personIds") && mapNoteDetails.get("personIds") != null && !mapNoteDetails.get("personIds").isEmpty()) {
+            noteRequest.setLstPersonIds(Collections.singletonList(mapNoteDetails.get("personIds")));
+        } else {
+            noteRequest.setLstPersonIds(Collections.singletonList(strNaturalPersonObjectId));
         }
-
-        public String getStrAnswer() {
-            return strAnswer;
-        }
-
-        public void setStrAnswer(String strAnswer) {
-            this.strAnswer = strAnswer;
-        }
-    }
-
-    // Getters and Setters
-    public String getStrPersonId() {
-        return strPersonId;
-    }
-
-    public void setStrPersonId(String strPersonId) {
-        this.strPersonId = strPersonId;
-    }
-
-    public String getStrChallengeWord() {
-        return strChallengeWord;
-    }
-
-    public void setStrChallengeWord(String strChallengeWord) {
-        this.strChallengeWord = strChallengeWord;
-    }
-
-    public List<QuestionAnswer> getLstQuestions() {
-        return lstQuestions;
-    }
-
-    public void setLstQuestions(List<QuestionAnswer> lstQuestions) {
-        this.lstQuestions = lstQuestions;
-    }
 }
+
