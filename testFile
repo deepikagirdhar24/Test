@@ -87,3 +87,16 @@ public class DataHelper {
                 .toString();
     }
 }
+
+
+
+
+import static utilities.DataHelper.*;
+
+personRequest.setStrSubType(normalize(map.get("subType")));
+personRequest.setLstNationalities(parseNationalities(map.get("nationalities")));
+
+noteRequest.setStrSubject(resolveDynamicText(map.get("subject")));
+
+documentRequest.setLstQuestions(parseQuestionAnswers(map.get("qaPairs")));
+
