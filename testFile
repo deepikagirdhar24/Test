@@ -1,9 +1,67 @@
-String personId = mapDocDetails.get("personId");
+Scenario Outline: Verify the Post Contact Notes API with Subject Greater Than 250 characters
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    And Send request to generate New Person with below details
+      | firstName       | <firstName>    |
+      | lastName        | Lastname       |
+      | subType         | pers_form_ass  |
+      | domicileCountry | CH             |
+      | gender          | male           |
+      | nationalities   | CH             |
+    Then Send POST ContactNote Request with below details
+      | subject      | <subject>     |
+      | notes        | <notes>       |
+      | hasFollowup  | <hasFollowup> |
+    And I verify the Status Code for Contact Notes "<statusCode>"
+    And I verify the Contact Notes API 400 error response with below details
+      | description   | <description> |
+      | error message | <error>       |
 
-if (personId == null || personId.trim().isEmpty() || personId.equalsIgnoreCase("EMPTY")) {
-    documentRequest.setStrPersonId(""); // Simulate empty input
-} else if (personId.equalsIgnoreCase("USE_CONTEXT_ID")) {
-    documentRequest.setStrPersonId(strNaturalPersonObjectId); // Use the one from context
-} else {
-    documentRequest.setStrPersonId(personId); // Use the value provided directly
-}
+    Examples:
+      | firstName   | subject            | notes    | hasFollowup | statusCode |  description        | error                       |
+      | FirstName_1 | RANDOM_GT_250      | Testnote | false       | 400        |  Validation Errors  | subject too long (max 250)  |
+
+
+  Scenario Outline: Verify the Post Contact Notes API with invalid personId
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    Then Send POST ContactNote Request with below details
+      | personIds    | <personIds>   |
+      | subject      | <subject>     |
+      | notes        | <notes>       |
+      | hasFollowup  | <hasFollowup> |
+    And I verify the Status Code for Contact Notes "<statusCode>"
+    And I verify the Contact Notes API 400 error response with below details
+      | description   | <description> |
+      | error message | <error>       |
+
+    Examples:
+      | personIds   | subject     | notes    | hasFollowup | statusCode | description       | error            |
+      | ghgf       | Testsubject  | Testnote | false       | 400        | Validation Errors | Person not found |
+
+    public static POJOContactNoteRequest buildContactNotePayload(Map<String, String> mapNoteDetails, ScenarioContext scenarioContext) {
+
+        POJOContactNoteRequest noteRequest = new POJOContactNoteRequest();
+        String strNaturalPersonObjectId = scenarioContext.getContext("naturalPersonObjectId");
+
+        //Set PersonIds: Use provided personIds if available, else use strObjectId
+        if (mapNoteDetails.containsKey("personIds") && mapNoteDetails.get("personIds") != null && !mapNoteDetails.get("personIds").isEmpty()) {
+            noteRequest.setLstPersonIds(Collections.singletonList(mapNoteDetails.get("personIds")));
+        } else {
+            noteRequest.setLstPersonIds(Collections.singletonList(strNaturalPersonObjectId));
+        }
+
+        // Set subject: generate based on the subject type
+        noteRequest.setStrSubject(
+                mapNoteDetails.get("subject") != null ?
+                        TestDataGenerator.resolveDynamicText(mapNoteDetails.get("subject")) : "" // use the subject type from feature file
+        );
+
+        noteRequest.setStrNotes(
+                mapNoteDetails.get("notes") != null ? mapNoteDetails.get("notes") : ""
+        );
+
+        noteRequest.setBoolHasFollowup(Boolean.parseBoolean(mapNoteDetails.get("hasFollowup")));
+
+        return noteRequest;
+    }
