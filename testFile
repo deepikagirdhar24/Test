@@ -1,26 +1,116 @@
+Feature: Verify Document API
+
+  Scenario Outline: Verify the Post Document API with valid data - <Comments>
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    Then Send request to generate New Person with below details
+      | firstName       | Firstname     |
+      | lastName        | Lastname      |
+      | subType         | pers_form_ass |
+      | domicileCountry | CH            |
+      | gender          | male          |
+      | nationalities   | CH            |
+    Then Send request to generate New Document with below details
+      | challengeWord | <challengeWord> |
+      | qaPairs       | <qaPairs>     |
+    And I verify the Status Code for Document "200"
+    And I verify the "objectId" exists in Document response
+    And I verify the "orderId" exists in Document response
+
+    Examples:
+      | challengeWord     | qaPairs                                                                                       | Comments            |
+      | Challenge Answer  | Question1=Answer1; Question2=Answer2; Question3=Answer3; Question4=Answer4; Question5=Answer5 | all valid inputs    |
+      |                   | Question1=Answer1; Question2=Answer2; Question3=Answer3; Question4=Answer4; Question5=Answer5 | challengeWord Empty |
+
+Theer are cases hwere first Question is empty
+first question has RANDOM_49
+first question has RANDOM_50
+first question has RANDOM_51
+firs answer is empty
+first answer has RANDOM_49
+first answer has RANDOM_50
+first answer has 
+
+This RANDOM_* generates from TestDatagenrator below - 
+
+package utilities;
+
+import java.util.Random;
+
+public class TestDataGenerator {
 public static String resolveDynamicText(String type) {
-    if (type == null || type.isEmpty()) return "";
+        if (type == null || type.isEmpty()) return "";
 
-    if (type.equalsIgnoreCase("EMPTY")) return "";
+        if (type.equalsIgnoreCase("EMPTY")) return "";
 
-    if (type.equalsIgnoreCase("RANDOM_LT_250")) {
-        return randomString(new Random().nextInt(249) + 1);
-    }
-
-    if (type.equalsIgnoreCase("RANDOM_GT_250")) {
-        return randomString(new Random().nextInt(500) + 251);
-    }
-
-    // Pattern-based: RANDOM_49, RANDOM_50, etc.
-    if (type.toUpperCase().startsWith("RANDOM_")) {
-        try {
-            int length = Integer.parseInt(type.substring(7));
-            return randomString(length);
-        } catch (NumberFormatException e) {
-            return type;
+        if (type.equalsIgnoreCase("RANDOM_LT_250")) {
+            return randomString(new Random().nextInt(249) + 1);
         }
+
+        if (type.equalsIgnoreCase("RANDOM_GT_250")) {
+            return randomString(new Random().nextInt(500) + 251);
+        }
+
+        // Pattern-based: RANDOM_49, RANDOM_50, etc.
+        if (type.toUpperCase().startsWith("RANDOM_")) {
+            try {
+                int length = Integer.parseInt(type.substring(7));
+                return randomString(length);
+            } catch (NumberFormatException e) {
+                return type;
+            }
+        }
+
+        // Default case: literal string
+        return type;
     }
 
-    // Default case: literal string
-    return type;
+    private static String randomString(int length) {
+        int leftLimit = 97; // 'a'
+        int rightLimit = 122; // 'z'
+        Random random = new Random();
+
+        return random.ints(leftLimit, rightLimit + 1)
+                .limit(length)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
+    }
+
 }
+
+Also, update below function in payload class - 
+
+public static POJONewDocumentRequest buildNewDocumentPayload(Map<String, String> mapDocDetails, ScenarioContext scenarioContext) {
+        POJONewDocumentRequest documentRequest = new POJONewDocumentRequest();
+
+        String strNaturalPersonObjectId = scenarioContext.getContext("naturalPersonObjectId");
+
+        if (mapDocDetails.containsKey("personId")) {
+            documentRequest.setStrPersonId(mapDocDetails.get("personId") != null ? mapDocDetails.get("personId") : "");
+        } else {
+            documentRequest.setStrPersonId(strNaturalPersonObjectId);
+        }
+
+        documentRequest.setStrChallengeWord(
+                mapDocDetails.get("challengeWord") != null ? mapDocDetails.get("challengeWord") : ""
+        );
+
+        List<POJONewDocumentRequest.QuestionAnswer> qaList = new ArrayList<>();
+
+        String qaPairs = mapDocDetails.get("qaPairs");
+        if (qaPairs != null && !qaPairs.trim().isEmpty()) {
+            String[] pairs = qaPairs.split(";");
+            for (String pair : pairs) {
+                String[] qa = pair.split("=", 2); // Use limit 2 to allow = inside answers
+                if (qa.length == 2) {
+                    POJONewDocumentRequest.QuestionAnswer qaObj = new POJONewDocumentRequest.QuestionAnswer();
+                    qaObj.setStrQuestion(qa[0].trim());
+                    qaObj.setStrAnswer(qa[1].trim());
+                    qaList.add(qaObj);
+                }
+            }
+        }
+
+        documentRequest.setLstQuestions(qaList);
+        return documentRequest;
+    }
