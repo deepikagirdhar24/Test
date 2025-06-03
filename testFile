@@ -1,16 +1,141 @@
-    public static String resolvePersonId(String input, String naturalPersonId) {
-        if (input == null || input.trim().isEmpty() || input.equalsIgnoreCase("EMPTY")) {
-            return "";
-        } else if (input.equalsIgnoreCase("NATURAL_PERSON_OBJECT_ID")) {
-            return naturalPersonId;
-        }
-        return input;
+Can we combine tehse and use the same step defintion Then Send POST ContactNote Request with below details and  Then Send POST ContactNote Request with below details for both scenarios- 
+
+Feature: Verify Contact Notes API
+
+  Scenario Outline: Verify the Post Contact Notes API with valid data - <Comments>
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    And Send request to generate New Person with below details
+      | firstName       | <firstName>    |
+      | lastName        | Lastname       |
+      | subType         | pers_form_ass  |
+      | domicileCountry | CH             |
+      | gender          | male           |
+      | nationalities   | CH             |
+    Then Send POST ContactNote Request with below details
+      | personIds    | <personIds>   |
+      | subject      | <subject>     |
+      | notes        | <notes>       |
+      | hasFollowup  | <hasFollowup> |
+    And I verify the Status Code for Contact Notes "<statusCode>"
+    And I verify the "orderId" exists in Contact Notes response
+
+    Examples:
+      | firstName   | personIds                | subject          | notes     | hasFollowup | statusCode | Comments                    |
+      | FirstName_1 | NATURAL_PERSON_OBJECT_ID | Testsubject      | Testnote  | false       | 200        | All valid Inputs                |
+
+  Scenario Outline: Verify the Post Contact Notes API with multiple PersonIds
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    And Send request to generate multiple Persons with below details
+      | firstName     | lastName | subType        | domicileCountry | gender | nationalities |
+      | <firstName1>  | Lastname | pers_form_ass  | CH              | male   | CH            |
+      | <firstName2>  | Lastname | pers_form_ass  | CH              | male   | CH            |
+    Then Send POST ContactNote Request for multiple Persons with below details
+      | subject     | <subject>     |
+      | notes       | <notes>       |
+      | hasFollowup | <hasFollowup> |
+    And I verify the Status Code for Contact Notes "<statusCode>"
+    And I verify the "orderId" exists in Contact Notes response
+
+    Examples:
+      | firstName1  | firstName2  | subject     | notes     | hasFollowup | statusCode |
+      | FirstName_1 | FirstName_2 | Testsubject | Testnote  | false       | 200        |
+
+
+    @Then("Send request to generate New Person with below details")
+    public void sendRequestToGenerateNewPersonWithDetails(DataTable dataTable) throws JsonProcessingException {
+        Map<String, String> mapPersonDetails = dataTable.asMap(String.class, String.class);
+        String jwtToken = scenarioContext.getContext("JWTToken");
+        response = objNaturalPerson.createNewPerson(strEnvType, "Bearer", jwtToken, mapPersonDetails, scenarioContext);
     }
 
-if (mapNoteDetails.get("personIds") != null && !mapNoteDetails.get("personIds").isEmpty()) {
-    noteRequest.setLstPersonIds(Collections.singletonList(mapNoteDetails.get("personIds")));
-}
+    @Then("Send POST ContactNote Request with below details")
+    public void sendPOSTContactNoteRequestWithDetails(DataTable dataTable) throws JsonProcessingException {
+        Map<String, String> mapNoteDetails = dataTable.asMap(String.class, String.class);
+        String jwtToken = scenarioContext.getContext("JWTToken");
+        response = objContactNotes.createContactNote(strEnvType, "Bearer", jwtToken, mapNoteDetails, scenarioContext);
+    }
 
+@And("Send request to generate multiple Persons with below details")
+    public void generateMultiplePersons(DataTable dataTable) throws JsonProcessingException {
+        List<Map<String, String>> lstPersons = dataTable.asMaps(String.class, String.class);
+        List<String> lstPersonIds = new ArrayList<>();
+        String jwtToken = scenarioContext.getContext("JWTToken");
 
-String personId = TestDataHelper.resolvePersonId(mapNoteDetails.get("personIds"), strNaturalPersonObjectId);
-noteRequest.setLstPersonIds(Collections.singletonList(personId));
+        for (Map<String, String> mapPersonData : lstPersons) {
+            Response response = objNaturalPerson.createNewPerson(strEnvType, "Bearer", jwtToken, mapPersonData, scenarioContext);
+            String objectId = response.jsonPath().getString("objectId");
+            lstPersonIds.add(objectId);
+        }
+
+        scenarioContext.setContext("GeneratedPersonIds", lstPersonIds);
+    }
+
+    @Then("Send POST ContactNote Request for multiple Persons with below details")
+    public void sendPostContactNoteForMultiplePersons(DataTable dataTable) throws JsonProcessingException {
+        Map<String, String> mapNoteDetails = dataTable.asMap(String.class, String.class);
+        String jwtToken = scenarioContext.getContext("JWTToken");
+        List<String> lstpersonIds = (List<String>) scenarioContext.getContext("GeneratedPersonIds");
+
+        response = objContactNotes.createContactNote(strEnvType, "Bearer", jwtToken, mapNoteDetails, lstpersonIds);
+    }
+
+    // Create Natural Person
+    public Response createNewPerson(String strEnvType, String strBearerToken, String strJwtToken, Map<String, String> mapPersonDetails, ScenarioContext scenarioContext) throws JsonProcessingException {
+        String strUrl = getTYKURL(strEnvType, "TYK.CREATENEWPERSON");
+        POJONewPersonRequest pojoNewPersonRequest = Payloads.buildNewPersonPayload(mapPersonDetails);
+        String strRequestBody = objObjectMapper.writeValueAsString(pojoNewPersonRequest);
+
+        ExtentCucumberAdapter.addTestStepLog("Sending request to create Natural Person");
+
+        Response resCreatePerson = sendPostRequest(strUrl, strBearerToken, strJwtToken, strRequestBody, null);
+        String strResponseBody = devHelperLibrary.getResponseBody(resCreatePerson);
+        objCucumberLogger.PrintStatus("Response is: " + strResponseBody);
+
+        String strNaturalPersonObjectId = resCreatePerson.jsonPath().getString("objectId");
+        String strNaturalPersonOrderId = resCreatePerson.jsonPath().getString("orderId");
+        String strNaturalPersonUuid = pojoNewPersonRequest.getStrUuid();
+
+        scenarioContext.setContext("naturalPersonObjectId", strNaturalPersonObjectId);
+        scenarioContext.setContext("naturalPersonOrderId", strNaturalPersonOrderId);
+        scenarioContext.setContext("naturalPersonUuid", strNaturalPersonUuid);
+
+        return resCreatePerson;
+    }
+
+// Create Contact Note for single PersonId
+    public Response createContactNote(String strEnvType, String strBearerToken, String strJWTToken,
+                                      Map<String, String> mapNoteDetails, ScenarioContext scenarioContext) throws JsonProcessingException {
+
+        String strTYKURL = getTYKURL(strEnvType, "TYK.CONTACTNOTES");
+        POJOContactNoteRequest objContactNoteRequest = Payloads.buildContactNotePayload(mapNoteDetails, scenarioContext);
+        String strRequestBody = objObjectMapper.writeValueAsString(objContactNoteRequest);
+
+        ExtentCucumberAdapter.addTestStepLog("Sending request to Create Contact Note");
+
+        Response objResponse = sendPostRequest(strTYKURL, strBearerToken, strJWTToken, strRequestBody, null);
+        String strResponseBody = devHelperLibrary.getResponseBody(objResponse);
+        objCucumberLogger.PrintStatus("Response is: " + strResponseBody);
+
+        return objResponse;
+    }
+
+    // Create Contact Note for multiple PersonIds
+    public Response createContactNote(String strEnvType, String strBearerToken, String strJWTToken,
+                                      Map<String, String> mapNoteDetails, List<String> lstPersonIds) throws JsonProcessingException {
+
+        String strTYKURL = getTYKURL(strEnvType, "TYK.CONTACTNOTES");
+        POJOContactNoteRequest objContactNoteRequest = Payloads.buildContactNotePayload(mapNoteDetails, lstPersonIds);
+        String strRequestBody = objObjectMapper.writeValueAsString(objContactNoteRequest);
+
+        ExtentCucumberAdapter.addTestStepLog("Sending request to Create Contact Note for multiple PersonIds");
+
+        Response objResponse = sendPostRequest(strTYKURL, strBearerToken, strJWTToken, strRequestBody, null);
+        String strResponseBody = devHelperLibrary.getResponseBody(objResponse);
+        objCucumberLogger.PrintStatus("Response is: " + strResponseBody);
+
+        return objResponse;
+    }
+
+or if you suggest it should be kept separately, then also tell me ?
