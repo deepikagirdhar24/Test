@@ -1,4 +1,5 @@
-Can we combine tehse and use the same step defintion Then Send POST ContactNote Request with below details and  Then Send POST ContactNote Request with below details for both scenarios- 
+Can we combine tehse and use the same step defintion - And Send request to generate New Person with below details and  And Send request to generate multiple Persons with below details
+Also, Then Send POST ContactNote Request with below details and  Then Send POST ContactNote Request with below details for both scenarios- 
 
 Feature: Verify Contact Notes API
 
