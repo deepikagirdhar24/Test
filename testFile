@@ -1,6 +1,16 @@
-public static String getOrEmpty(Map<String, String> map, String key) {
-    return Optional.ofNullable(map.get(key)).orElse("");
+    public static String resolvePersonId(String input, String naturalPersonId) {
+        if (input == null || input.trim().isEmpty() || input.equalsIgnoreCase("EMPTY")) {
+            return "";
+        } else if (input.equalsIgnoreCase("NATURAL_PERSON_OBJECT_ID")) {
+            return naturalPersonId;
+        }
+        return input;
+    }
+
+if (mapNoteDetails.get("personIds") != null && !mapNoteDetails.get("personIds").isEmpty()) {
+    noteRequest.setLstPersonIds(Collections.singletonList(mapNoteDetails.get("personIds")));
 }
 
 
-noteRequest.setStrNotes(getOrEmpty(mapNoteDetails, "notes"));
+String personId = TestDataHelper.resolvePersonId(mapNoteDetails.get("personIds"), strNaturalPersonObjectId);
+noteRequest.setLstPersonIds(Collections.singletonList(personId));
