@@ -138,4 +138,33 @@ Feature: Verify Contact Notes API
         return objResponse;
     }
 
-or if you suggest it should be kept separately, then also tell me ?
+public static POJOContactNoteRequest buildContactNotePayload(Map<String, String> mapNoteDetails, ScenarioContext scenarioContext) {
+
+        POJOContactNoteRequest noteRequest = new POJOContactNoteRequest();
+        String strNaturalPersonObjectId = scenarioContext.getContext("naturalPersonObjectId");
+
+        String personId = TestDataHelper.resolvePersonId(mapNoteDetails.get("personIds"), strNaturalPersonObjectId);
+        noteRequest.setLstPersonIds(Collections.singletonList(personId));
+
+        // Set subject: generate based on the subject type
+        noteRequest.setStrSubject(resolveDynamicText(mapNoteDetails.get("subject")));
+        noteRequest.setStrNotes(getOrEmpty(mapNoteDetails, "notes"));
+        noteRequest.setBoolHasFollowup(Boolean.parseBoolean(mapNoteDetails.get("hasFollowup")));
+
+        return noteRequest;
+    }
+
+    public static POJOContactNoteRequest buildContactNotePayload(Map<String, String> mapNoteDetails, List<String> lstPersonIds) {
+
+        POJOContactNoteRequest noteRequest = new POJOContactNoteRequest();
+
+        // Set multiple PersonIds directly
+        noteRequest.setLstPersonIds(lstPersonIds);
+
+        // Set subject, notes, follow-up
+        noteRequest.setStrSubject(resolveDynamicText(mapNoteDetails.get("subject")));
+        noteRequest.setStrNotes(getOrEmpty(mapNoteDetails, "notes"));
+        noteRequest.setBoolHasFollowup(Boolean.parseBoolean(mapNoteDetails.get("hasFollowup")));
+
+        return noteRequest;
+    }
