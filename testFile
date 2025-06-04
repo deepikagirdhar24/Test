@@ -1,35 +1,51 @@
-@Then("Send request to generate person(s) with below details")
-public void sendRequestToGeneratePersonsWithDetails(DataTable dataTable) throws JsonProcessingException {
-    List<Map<String, String>> personList = dataTable.asMaps(String.class, String.class);
-    String jwtToken = scenarioContext.getContext("JWTToken");
+Thsi is the JSON repsonse when I get the DOcument - 
 
-    if (personList.size() == 1) {
-        // Single person creation
-        Map<String, String> personDetails = personList.get(0);
-        response = objNaturalPerson.createNewPerson(strEnvType, "Bearer", jwtToken, personDetails, scenarioContext);
-    } else {
-        // Multiple persons creation
-        List<String> lstPersonIds = new ArrayList<>();
-        for (Map<String, String> mapPersonData : personList) {
-            Response resp = objNaturalPerson.createNewPerson(strEnvType, "Bearer", jwtToken, mapPersonData, scenarioContext);
-            String objectId = resp.jsonPath().getString("objectId");
-            lstPersonIds.add(objectId);
+{
+    "personId": "665321511",
+    "challengeWord": "Challenge Answer",
+    "questions": [
+        {
+            "question": "Question 1",
+            "answer": "Answer 1"
+        },
+        {
+            "question": "Question 2",
+            "answer": "Answer 2"
+        },
+        {
+            "question": "Question 3",
+            "answer": "Answer 3"
+        },
+        {
+            "question": "Question 4",
+            "answer": "Answer 4"
+        },
+        {
+            "question": "Question 5",
+            "answer": "Answer 5"
         }
-        scenarioContext.setContext("GeneratedPersonIds", lstPersonIds);
-    }
+    ]
 }
 
-@Then("Send POST ContactNote Request with below details")
-public void sendPOSTContactNoteRequestWithDetails(DataTable dataTable) throws JsonProcessingException {
-    Map<String, String> mapNoteDetails = dataTable.asMap(String.class, String.class);
-    String jwtToken = scenarioContext.getContext("JWTToken");
+I need to validate question = Question 1, answer = Answer 1
+I need to validate question = Question 2, answer = Answer 2
+I need to validate question = Question 3, answer = Answer 3
+I need to validate question = Question 4, answer = Answer 4
+I need to validate question = Question 5, answer = Answer 5
 
-    if (mapNoteDetails.containsKey("personIds")) {
-        // Single person note
-        response = objContactNotes.createContactNote(strEnvType, "Bearer", jwtToken, mapNoteDetails, scenarioContext);
-    } else {
-        // Multiple persons note
-        List<String> lstPersonIds = (List<String>) scenarioContext.getContext("GeneratedPersonIds");
-        response = objContactNotes.createContactNote(strEnvType, "Bearer", jwtToken, mapNoteDetails, lstPersonIds);
+Can I use these existing methods, or need a new method to validate ?
+
+    @And("I verify the string field {string} is {string} in Document response")
+    public void iVerifyStringFieldEquals(String jsonPath, String expectedValue) throws Exception {
+        String actualValue = JsonHelper.extractStringField(response, jsonPath);
+        ExtentCucumberAdapter.addTestStepLog("Expected value at '" + jsonPath + "': " + expectedValue + ", Actual: " + actualValue);
+        Assert.assertEquals(actualValue, expectedValue, "Mismatch at: " + jsonPath);
     }
-}
+
+    @And("I verify the array field {string} contains {string} in Document response")
+    public void iVerifyArrayFieldContainsValue(String jsonArrayPath, String expectedValue) throws Exception {
+        boolean valueExists = JsonHelper.valueExistsInJsonArray(response, jsonArrayPath, expectedValue);
+        ExtentCucumberAdapter.addTestStepLog("Expected value in array '" + jsonArrayPath + "': " + expectedValue + " → Found: " + valueExists);
+        Assert.assertTrue(valueExists, "Value '" + expectedValue + "' not found in array: " + jsonArrayPath);
+    }
+
