@@ -1,108 +1,37 @@
-package stepDefinations;
+And I verify the following questions and answers in Document response
+  | question     | answer     |
+  | Question 1   | Answer 1   |
+  | Question 2   | Answer 2   |
+  | Question 3   | Answer 3   |
+  | Question 4   | Answer 4   |
+  | Question 5   | Answer 5   |
 
-import ICOS.Document;
-import ICOS.NaturalPerson;
-import com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import commonLibrary.DBUtil;
-import commonLibrary.SQLQueries;
-import config.JsonExtractor;
-import config.JsonVerifier;
-import config.TestConfig;
-import hooks.CucumberHooks;
-import io.cucumber.core.logging.Logger;
-import io.cucumber.core.logging.LoggerFactory;
-import io.cucumber.datatable.DataTable;
-import io.cucumber.java.en.And;
-import io.cucumber.java.en.Then;
-import io.restassured.response.Response;
-import org.testng.Assert;
-import utilities.CucumberLogger;
-import utilities.JsonHelper;
-import utilities.ScenarioContext;
+@And("I verify the following questions and answers in Document response")
+public void iVerifyAllQuestionAnswerPairs(DataTable dataTable) {
+    List<Map<String, String>> expectedQAList = dataTable.asMaps(String.class, String.class);
+    objDocument.verifyAllQuestionAnswerPairs(expectedQAList, response);
+}
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+public void verifyAllQuestionAnswerPairs(List<Map<String, String>> expectedQAList, Response response) {
+    List<Map<String, String>> actualQAList = response.jsonPath().getList("questions");
 
-public class DocumentSteps extends BaseStep{
+    Assert.assertEquals(actualQAList.size(), expectedQAList.size(),
+        "Mismatch in number of question/answer pairs");
 
+    for (int i = 0; i < expectedQAList.size(); i++) {
+        Map<String, String> expected = expectedQAList.get(i);
+        Map<String, String> actual = actualQAList.get(i);
 
-    protected TestConfig testDataConfig = TestConfig.getTestDataConfig();
-    private static final Logger logger = LoggerFactory.getLogger(CucumberHooks.class);
-    TestConfig testConfig;
-    Document objDocument;
-    private static Response response;
-    public static String strToken;
-    public String strMembershipDetails;
-    public int sizeOfPagination;
-    public static String strEnv;
-    public static String strEnvType;
-    public static String strEnvFDSType;
-    public String strFDSHostURL;
-    public String strFDSDevHelperURL;
-    public Object strRes;
-    public String strJWTToken;
-    public String strEIAMTokenURL;
-    CucumberLogger objCucumberLogger;
-    JsonVerifier objJsonVerifier;
-    JsonExtractor objJsonExtractor;
-    DBUtil objDBUtil;
-    public String strUserid;
-    SQLQueries objSQLQueries;
-    protected ScenarioContext scenarioContext;
+        String expectedQuestion = expected.get("question");
+        String expectedAnswer = expected.get("answer");
+        String actualQuestion = actual.get("question");
+        String actualAnswer = actual.get("answer");
 
-    public DocumentSteps(ScenarioContext scenarioContext) throws Exception {
-        super();
-        this.scenarioContext = scenarioContext;
-        testConfig = new TestConfig();
-        objCucumberLogger= new CucumberLogger();
-        objJsonVerifier= new JsonVerifier();
-        objJsonExtractor= new JsonExtractor();
-        objDBUtil= new DBUtil();
-        objSQLQueries= new SQLQueries();
-        objDocument = new Document();
-        this.strEnvType = scenarioContext.getContext("strEnvType");
-    }
+        ExtentCucumberAdapter.addTestStepLog("Validating Q/A Pair " + (i + 1));
+        ExtentCucumberAdapter.addTestStepLog("Expected → Q: " + expectedQuestion + ", A: " + expectedAnswer);
+        ExtentCucumberAdapter.addTestStepLog("Actual   → Q: " + actualQuestion + ", A: " + actualAnswer);
 
-    @Then("Send request to generate New Document with below details")
-    public void sendRequestToGenerateNewDocumentWithDetails(DataTable dataTable) throws JsonProcessingException {
-        Map<String, String> mapDocDetails = dataTable.asMap(String.class, String.class);
-        String jwtToken = scenarioContext.getContext("JWTToken");
-        response = objDocument.createNewDocument(strEnvType, "Bearer", jwtToken, mapDocDetails, scenarioContext);
-    }
-
-    @And("I verify the Status Code for Document {string}")
-    public void iVerifyTheStatusCodeForDocument(String strStatusCode) {
-        int responseCode= response.statusCode();
-        ExtentCucumberAdapter.addTestStepLog("Actual value of Status code is : " +responseCode);
-        Assert.assertEquals(Integer.parseInt(strStatusCode),responseCode);
-    }
-
-    @And("I verify the {string} exists in Document response")
-    public void iVerifyTheKeyExistsInDocumentResponse(String key) throws Exception {
-        String strActualKeyValue = JsonHelper.extractStringField(response, key);
-        ExtentCucumberAdapter.addTestStepLog("Actual value of " + key + " is: " + strActualKeyValue);
-
-        Assert.assertNotNull(strActualKeyValue, key + " should not be null");
-        Assert.assertFalse(strActualKeyValue.isEmpty(), key + " should not be empty");
-    }
-
-    @And("I verify the Document API 400 error response with below details")
-    public void iVerify400ErrorResponse(DataTable dataTable) throws Exception {
-        Document.verify400ErrorResponse(dataTable, response);
-    }
-
-    @Then("Send request to get Document Information")
-    public void sendRequestToGetDocumentInformation() throws JsonProcessingException {
-        String jwtToken = scenarioContext.getContext("JWTToken");
-        response =objDocument.getDocument(strEnvType,"Bearer",jwtToken);
-    }
-
-    @And("I verify the string field {string} is {string} in Document response")
-    public void iVerifyStringFieldEquals(String jsonPath, String expectedValue) throws Exception {
-        String actualValue = JsonHelper.extractStringField(response, jsonPath);
-        ExtentCucumberAdapter.addTestStepLog("Expected value at '" + jsonPath + "': " + expectedValue + ", Actual: " + actualValue);
-        Assert.assertEquals(actualValue, expectedValue, "Mismatch at: " + jsonPath);
+        Assert.assertEquals(actualQuestion, expectedQuestion, "Mismatch in question at index " + (i + 1));
+        Assert.assertEquals(actualAnswer, expectedAnswer, "Mismatch in answer at index " + (i + 1));
     }
 }
