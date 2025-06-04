@@ -1,39 +1,103 @@
-Thsi is the JSON repsonse when I get the DOcument - 
+package stepDefinations;
 
-{
-    "personId": "665321511",
-    "challengeWord": "Challenge Answer",
-    "questions": [
-        {
-            "question": "Question 1",
-            "answer": "Answer 1"
-        },
-        {
-            "question": "Question 2",
-            "answer": "Answer 2"
-        },
-        {
-            "question": "Question 3",
-            "answer": "Answer 3"
-        },
-        {
-            "question": "Question 4",
-            "answer": "Answer 4"
-        },
-        {
-            "question": "Question 5",
-            "answer": "Answer 5"
-        }
-    ]
-}
+import ICOS.Document;
+import ICOS.NaturalPerson;
+import com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import commonLibrary.DBUtil;
+import commonLibrary.SQLQueries;
+import config.JsonExtractor;
+import config.JsonVerifier;
+import config.TestConfig;
+import hooks.CucumberHooks;
+import io.cucumber.core.logging.Logger;
+import io.cucumber.core.logging.LoggerFactory;
+import io.cucumber.datatable.DataTable;
+import io.cucumber.java.en.And;
+import io.cucumber.java.en.Then;
+import io.restassured.response.Response;
+import org.testng.Assert;
+import utilities.CucumberLogger;
+import utilities.JsonHelper;
+import utilities.ScenarioContext;
 
-I need to validate question = Question 1, answer = Answer 1
-I need to validate question = Question 2, answer = Answer 2
-I need to validate question = Question 3, answer = Answer 3
-I need to validate question = Question 4, answer = Answer 4
-I need to validate question = Question 5, answer = Answer 5
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
-Can I use these existing methods, or need a new method to validate ?
+public class DocumentSteps extends BaseStep{
+
+
+    protected TestConfig testDataConfig = TestConfig.getTestDataConfig();
+    private static final Logger logger = LoggerFactory.getLogger(CucumberHooks.class);
+    TestConfig testConfig;
+    Document objDocument;
+    private static Response response;
+    public static String strToken;
+    public String strMembershipDetails;
+    public int sizeOfPagination;
+    public static String strEnv;
+    public static String strEnvType;
+    public static String strEnvFDSType;
+    public String strFDSHostURL;
+    public String strFDSDevHelperURL;
+    public Object strRes;
+    public String strJWTToken;
+    public String strEIAMTokenURL;
+    CucumberLogger objCucumberLogger;
+    JsonVerifier objJsonVerifier;
+    JsonExtractor objJsonExtractor;
+    DBUtil objDBUtil;
+    public String strUserid;
+    SQLQueries objSQLQueries;
+    protected ScenarioContext scenarioContext;
+
+    public DocumentSteps(ScenarioContext scenarioContext) throws Exception {
+        super();
+        this.scenarioContext = scenarioContext;
+        testConfig = new TestConfig();
+        objCucumberLogger= new CucumberLogger();
+        objJsonVerifier= new JsonVerifier();
+        objJsonExtractor= new JsonExtractor();
+        objDBUtil= new DBUtil();
+        objSQLQueries= new SQLQueries();
+        objDocument = new Document();
+        this.strEnvType = scenarioContext.getContext("strEnvType");
+    }
+
+    @Then("Send request to generate New Document with below details")
+    public void sendRequestToGenerateNewDocumentWithDetails(DataTable dataTable) throws JsonProcessingException {
+        Map<String, String> mapDocDetails = dataTable.asMap(String.class, String.class);
+        String jwtToken = scenarioContext.getContext("JWTToken");
+        response = objDocument.createNewDocument(strEnvType, "Bearer", jwtToken, mapDocDetails, scenarioContext);
+    }
+
+    @And("I verify the Status Code for Document {string}")
+    public void iVerifyTheStatusCodeForDocument(String strStatusCode) {
+        int responseCode= response.statusCode();
+        ExtentCucumberAdapter.addTestStepLog("Actual value of Status code is : " +responseCode);
+        Assert.assertEquals(Integer.parseInt(strStatusCode),responseCode);
+    }
+
+    @And("I verify the {string} exists in Document response")
+    public void iVerifyTheKeyExistsInDocumentResponse(String key) throws Exception {
+        String strActualKeyValue = JsonHelper.extractStringField(response, key);
+        ExtentCucumberAdapter.addTestStepLog("Actual value of " + key + " is: " + strActualKeyValue);
+
+        Assert.assertNotNull(strActualKeyValue, key + " should not be null");
+        Assert.assertFalse(strActualKeyValue.isEmpty(), key + " should not be empty");
+    }
+
+    @And("I verify the Document API 400 error response with below details")
+    public void iVerify400ErrorResponse(DataTable dataTable) throws Exception {
+        Document.verify400ErrorResponse(dataTable, response);
+    }
+
+    @Then("Send request to get Document Information")
+    public void sendRequestToGetDocumentInformation() throws JsonProcessingException {
+        String jwtToken = scenarioContext.getContext("JWTToken");
+        response =objDocument.getDocument(strEnvType,"Bearer",jwtToken);
+    }
 
     @And("I verify the string field {string} is {string} in Document response")
     public void iVerifyStringFieldEquals(String jsonPath, String expectedValue) throws Exception {
@@ -41,11 +105,4 @@ Can I use these existing methods, or need a new method to validate ?
         ExtentCucumberAdapter.addTestStepLog("Expected value at '" + jsonPath + "': " + expectedValue + ", Actual: " + actualValue);
         Assert.assertEquals(actualValue, expectedValue, "Mismatch at: " + jsonPath);
     }
-
-    @And("I verify the array field {string} contains {string} in Document response")
-    public void iVerifyArrayFieldContainsValue(String jsonArrayPath, String expectedValue) throws Exception {
-        boolean valueExists = JsonHelper.valueExistsInJsonArray(response, jsonArrayPath, expectedValue);
-        ExtentCucumberAdapter.addTestStepLog("Expected value in array '" + jsonArrayPath + "': " + expectedValue + " → Found: " + valueExists);
-        Assert.assertTrue(valueExists, "Value '" + expectedValue + "' not found in array: " + jsonArrayPath);
-    }
-
+}
