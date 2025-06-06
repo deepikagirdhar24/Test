@@ -7,3 +7,22 @@ Scenario: Verify the Get Prospect API
     | type       | sole        |
   And I verify the Status Code for Get Prospect "200"
 
+@Then("Send request to get Prospect Information")
+public void sendRequestToGetProspectInfo(DataTable dataTable) {
+    Map<String, String> data = dataTable.asMap(String.class, String.class);
+
+    String envType = TestConfig.getInstance().getEnvType();
+    String bearerToken = TestConfig.getInstance().getAccessToken();
+    String jwtToken = TestConfig.getInstance().getJWTToken();
+
+    // Resolve values - if value is a placeholder like PROSPECT_ID, get from context
+    String prospectId = resolveValue(data.get("prospectId"));
+    String type = resolveValue(data.get("type"));
+
+    Response response = prospect.getProspect(envType, bearerToken, jwtToken, prospectId, type);
+    ScenarioContext.put("GET_PROSPECT_RESPONSE", response);
+}
+
+
+
+
