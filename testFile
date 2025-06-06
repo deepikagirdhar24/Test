@@ -1,32 +1,9 @@
-This is Get Prospect function - 
-
-    // Get Prospect
-    public Response getProspect(String strEnvType, String strBearerToken, String strJWTToken) {
-
-        String strTYKURL = getTYKURL(strEnvType, "TYK.GETPROSPECT");
-
-        ExtentCucumberAdapter.addTestStepLog("Sending GET request to fetch Prospect Information");
-
-        Response objResponse = sendGetRequest(strTYKURL, strBearerToken, strJWTToken, null, null);
-        String strResponseBody = devHelperLibrary.getResponseBody(objResponse);
-        objCucumberLogger.PrintStatus("Response is: " + strResponseBody);
-
-        return objResponse;
-    }
-
-where in config.properties, below like is added - 
-
-TYK.GETPROSPECT=/avq/acpr/sas-prospect/v1/prospects
-
-feature file - 
-
-Feature: Verify Get Prospect API
-
-  Scenario : Verify the Get Prospect API
-    Given Send Request to get Authentication Token for ICOS
-    When I generate the JWT Token
-    Then Send request to get Prospect Information
-    And I verify the Status Code for Get Prospect "200"
-
-and in TOSCA, bleow is the endpoint - 
+Scenario: Verify the Get Prospect API
+  Given Send Request to get Authentication Token for ICOS
+  When I generate the JWT Token
+  And I save the generated Prospect ID as "PROSPECT_ID"
+  Then Send request to get Prospect Information
+    | prospectId | PROSPECT_ID |
+    | type       | sole        |
+  And I verify the Status Code for Get Prospect "200"
 
