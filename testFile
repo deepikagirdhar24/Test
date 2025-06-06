@@ -1,36 +1,23 @@
-This is my feature file - 
+Can you make implementation similar o below function to maintain consistency - 
 
-Feature: Verify Get Prospect API
+/ Get Legal Person
+    public Response getLegalPerson(String strEnvType, String strBearerToken, String strJWTToken,
+                                   ScenarioContext scenarioContext) {
 
-  Scenario Outline : Verify the Get Prospect API
-    Given Send Request to get Authentication Token for ICOS
-    When I generate the JWT Token
-    Then Send request to get Prospect Information
-      | prospectId | <prospectId> |
-      | type       | <type>       |
-    And I verify the Status Code for Get Prospect "200"
+        String strTYKURL = getTYKURL(strEnvType, "TYK.CREATELEGALPERSON") + "/{id}";
+        String strLegalPersonObjectId = scenarioContext.getContext("legalPersonObjectId");
+        String strLegalPersonUuid = scenarioContext.getContext("legalPersonUuid");
 
-    Examples:
-      | prospectId  | type  |
-      | 43434314    | sole  |
+        Map<String, String> mapPathParams = new HashMap<>();
+        mapPathParams.put("id", strLegalPersonObjectId);
 
-    @Then("Send request to get Prospect Information")
-    public void sendRequestToGetProspectInformation(DataTable dataTable) throws JsonProcessingException {
-        Map<String, String> mapGetProspectDetails = dataTable.asMap(String.class, String.class);
-        String jwtToken = scenarioContext.getContext("JWTToken");
-        response =objGetProspect.getProspect(strEnvType,"Bearer",jwtToken, mapGetProspectDetails);
-    }
+        Map<String, String> mapQueryParams = new HashMap<>();
+        mapQueryParams.put("uuid", strLegalPersonUuid);
+        mapQueryParams.put("minimal", "yes");
 
-Update this below function to incorproate the API - 
+        ExtentCucumberAdapter.addTestStepLog("Sending GET request for Legal Person");
 
-    // Get Prospect
-    public Response getProspect(String strEnvType, String strBearerToken, String strJWTToken, Map<String, String> mapGetProspectDetails) {
-
-        String strTYKURL = getTYKURL(strEnvType, "TYK.GETPROSPECT");
-
-        ExtentCucumberAdapter.addTestStepLog("Sending GET request to fetch Prospect Information");
-
-        Response objResponse = sendGetRequest(strTYKURL, strBearerToken, strJWTToken, null, null);
+        Response objResponse = sendGetRequest(strTYKURL, strBearerToken, strJWTToken, mapPathParams, mapQueryParams);
         String strResponseBody = devHelperLibrary.getResponseBody(objResponse);
         objCucumberLogger.PrintStatus("Response is: " + strResponseBody);
 
