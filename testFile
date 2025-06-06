@@ -1,25 +1,32 @@
-Can you make implementation similar o below function to maintain consistency - 
+public Response getProspect(String strEnvType, String strBearerToken, String strJWTToken,
+                            ) {
 
-/ Get Legal Person
-    public Response getLegalPerson(String strEnvType, String strBearerToken, String strJWTToken,
-                                   ScenarioContext scenarioContext) {
+    String strTYKURL = getTYKURL(strEnvType, "TYK.GETPROSPECT") + "/{prospectId}";
 
-        String strTYKURL = getTYKURL(strEnvType, "TYK.CREATELEGALPERSON") + "/{id}";
-        String strLegalPersonObjectId = scenarioContext.getContext("legalPersonObjectId");
-        String strLegalPersonUuid = scenarioContext.getContext("legalPersonUuid");
+    // Extract path and query parameters
+    String strProspectId = mapGetProspectDetails.get("prospectId");
+    String strType = mapGetProspectDetails.get("type");
 
-        Map<String, String> mapPathParams = new HashMap<>();
-        mapPathParams.put("id", strLegalPersonObjectId);
+    // Prepare path parameters
+    Map<String, String> mapPathParams = new HashMap<>();
+    mapPathParams.put("prospectId", strProspectId);
 
-        Map<String, String> mapQueryParams = new HashMap<>();
-        mapQueryParams.put("uuid", strLegalPersonUuid);
-        mapQueryParams.put("minimal", "yes");
-
-        ExtentCucumberAdapter.addTestStepLog("Sending GET request for Legal Person");
-
-        Response objResponse = sendGetRequest(strTYKURL, strBearerToken, strJWTToken, mapPathParams, mapQueryParams);
-        String strResponseBody = devHelperLibrary.getResponseBody(objResponse);
-        objCucumberLogger.PrintStatus("Response is: " + strResponseBody);
-
-        return objResponse;
+    // Prepare query parameters
+    Map<String, String> mapQueryParams = new HashMap<>();
+    if (strType != null && !strType.isEmpty()) {
+        mapQueryParams.put("type", strType);
     }
+
+    // Log the request details
+    ExtentCucumberAdapter.addTestStepLog("Sending GET request for Prospect with ID: " + strProspectId
+            + " and type: " + strType);
+
+    // Send GET request
+    Response objResponse = sendGetRequest(strTYKURL, strBearerToken, strJWTToken, mapPathParams, mapQueryParams);
+
+    // Log the response
+    String strResponseBody = devHelperLibrary.getResponseBody(objResponse);
+    objCucumberLogger.PrintStatus("Response is: " + strResponseBody);
+
+    return objResponse;
+}
