@@ -1,3 +1,28 @@
+Scenario Outline: Verify the Post Address API with valid data - <Comments>
+  Given Send Request to get Authentication Token for ICOS
+  When I generate the JWT Token
+  Then Send Request to create Address with below details
+    | uuid             | <uuid>             |
+    | firstName        | <firstName>        |
+    | middleName       | <middleName>       |
+    | lastName         | <lastName>         |
+    | salutation       | <salutation>       |
+    | salutationLetter | <salutationLetter> |
+    | attnOf           | <attnOf>           |
+    | crof             | <crof>             |
+    | residency        | <residency>        |
+    | streetNr         | <streetNr>         |
+    | street           | <street>           |
+    | streetAdd        | <streetAdd>        |
+    | poBox            | <poBox>            |
+    | city             | <city>             |
+    | state            | <state>            |
+    | zip              | <zip>              |
+    | country          | <country>          |
+  And I verify the Status Code for Address "<statusCode>"
+  And I verify the "objectId" exists in Address response
+  And I verify the "orderId" exists in Address response
+
 Examples:
-  | Comments                 | uuid     | firstName | middleName | lastName | salutation | salutationLetter | attnOf | crof | residency | streetNr | street       | streetAdd       | poBox       | city   | state | zip  | country | statusCode |
-  | Valid Address Payload 1  | 1234000  | Firstname | Middlename | Lastname | mr         | mr               |        |      | 123       | 123      | Strret Name  | Addition street | P.O.Box 123 | Zurich | ZH    | 8001 | CH      | 201         |
+  | Comments                | uuid      | firstName | middleName | lastName | salutation | salutationLetter | attnOf | crof | residency | streetNr | street      | streetAdd       | poBox       | city   | state            | zip  | country | statusCode |
+  | From Excel Test Sheet  | {RND[7]}  | Firstname | Middlename | Lastname | mr         | mr               |        |      | 123       | 123      | {B[Street]} | Addition street | P.O.Box 123 | Zurich | {RANDOMTEXT[49]} | 8001 | CH      | 201         |
