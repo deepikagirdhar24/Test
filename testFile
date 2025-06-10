@@ -1,31 +1,35 @@
+public static String resolveDynamicText(String type) {
+    if (type == null || type.isEmpty()) return "";
+    if (type.equalsIgnoreCase("EMPTY")) return "";
 
-public static POJOAddressRequest buildAddressPayload(Map<String, String> mapAddressDetails, boolean includeUuid) {
-    POJOAddressRequest address = new POJOAddressRequest();
-
-    if (includeUuid) {
-        address.setStrUuid(UUID.randomUUID().toString().substring(0, 7));
+    // Handle expression like "prefix + RANDOM_6 + suffix"
+    if (type.contains("+")) {
+        String[] parts = type.split("\\+");
+        StringBuilder result = new StringBuilder();
+        for (String part : parts) {
+            String trimmed = part.trim();
+            result.append(resolveDynamicText(trimmed));
+        }
+        return result.toString();
     }
 
-    address.setStrSalutation(PayloadHelper.normalize(mapAddressDetails.get("salutation")));
-    address.setStrSalutationLetter(PayloadHelper.normalize(mapAddressDetails.get("salutationLetter")));
-    address.setStrAttnOf(PayloadHelper.normalize(mapAddressDetails.get("attnOf")));
-    address.setStrCrof(PayloadHelper.normalize(mapAddressDetails.get("crof")));
-    address.setStrResidency(PayloadHelper.normalize(mapAddressDetails.get("residency")));
-    address.setStrStreetNr(PayloadHelper.normalize(mapAddressDetails.get("streetNr")));
+    if (type.equalsIgnoreCase("RANDOM_LT_250")) {
+        return randomString(random.nextInt(249) + 1);
+    }
 
-    // Street = fixed prefix + RANDOM_6
-    String streetSuffix = PayloadHelper.resolveDynamicText(mapAddressDetails.get("street"));
-    address.setStrStreet("teststreet" + streetSuffix);
+    if (type.equalsIgnoreCase("RANDOM_GT_250")) {
+        return randomString(random.nextInt(500) + 251);
+    }
 
-    address.setStrStreetAdd(PayloadHelper.normalize(mapAddressDetails.get("streetAdd")));
-    address.setStrPoBox(PayloadHelper.normalize(mapAddressDetails.get("poBox")));
-    address.setStrCity(PayloadHelper.normalize(mapAddressDetails.get("city")));
+    if (type.toUpperCase().startsWith("RANDOM_")) {
+        try {
+            int length = Integer.parseInt(type.substring(7));
+            return randomString(length);
+        } catch (NumberFormatException e) {
+            return type;
+        }
+    }
 
-    // state = RANDOM_49 or any other dynamic rule
-    address.setStrState(PayloadHelper.resolveDynamicText(mapAddressDetails.get("state")));
-
-    address.setStrZip(PayloadHelper.normalize(mapAddressDetails.get("zip")));
-    address.setStrCountry(PayloadHelper.normalize(mapAddressDetails.get("country")));
-
-    return address;
+    // Otherwise treat as literal value
+    return type;
 }
