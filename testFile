@@ -1,26 +1,64 @@
-Create a payload for address similar to below - 
-
 package ICOS.pojo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class POJOLegalPersonRequest {
+public class POJOAddressRequest {
 
     @JsonProperty("uuid")
     private String strUuid;
 
-    @JsonProperty("subType")
-    private String strSubType;
+    @JsonProperty("firstName")
+    private String strFirstName;
 
-    @JsonProperty("domiCountry")
-    private String strDomiCountry;
+    @JsonProperty("middleName")
+    private String strMiddleName;
 
-    @JsonProperty("name")
-    private String strName;
+    @JsonProperty("lastName")
+    private String strLastName;
+
+    @JsonProperty("salutation")
+    private String strSalutation;
+
+    @JsonProperty("salutationLetter")
+    private String strSalutationLetter;
+
+    @JsonProperty("attnOf")
+    private String strAttnOf;
+
+    @JsonProperty("crof")
+    private String strCrof;
+
+    @JsonProperty("residency")
+    private String strResidency;
+
+    @JsonProperty("streetNr")
+    private String strStreetNr;
+
+    @JsonProperty("street")
+    private String strStreet;
+
+    @JsonProperty("streetAdd")
+    private String strStreetAdd;
+
+    @JsonProperty("poBox")
+    private String strPoBox;
+
+    @JsonProperty("city")
+    private String strCity;
+
+    @JsonProperty("state")
+    private String strState;
+
+    @JsonProperty("zip")
+    private String strZip;
+
+    @JsonProperty("country")
+    private String strCountry;
 
     // Getters and Setters
+
     public String getStrUuid() {
         return strUuid;
     }
@@ -29,27 +67,131 @@ public class POJOLegalPersonRequest {
         this.strUuid = strUuid;
     }
 
-    public String getStrSubType() {
-        return strSubType;
+    public String getStrFirstName() {
+        return strFirstName;
     }
 
-    public void setStrSubType(String strSubType) {
-        this.strSubType = strSubType;
+    public void setStrFirstName(String strFirstName) {
+        this.strFirstName = strFirstName;
     }
 
-    public String getStrDomiCountry() {
-        return strDomiCountry;
+    public String getStrMiddleName() {
+        return strMiddleName;
     }
 
-    public void setStrDomiCountry(String strDomiCountry) {
-        this.strDomiCountry = strDomiCountry;
+    public void setStrMiddleName(String strMiddleName) {
+        this.strMiddleName = strMiddleName;
     }
 
-    public String getStrName() {
-        return strName;
+    public String getStrLastName() {
+        return strLastName;
     }
 
-    public void setStrName(String strName) {
-        this.strName = strName;
+    public void setStrLastName(String strLastName) {
+        this.strLastName = strLastName;
+    }
+
+    public String getStrSalutation() {
+        return strSalutation;
+    }
+
+    public void setStrSalutation(String strSalutation) {
+        this.strSalutation = strSalutation;
+    }
+
+    public String getStrSalutationLetter() {
+        return strSalutationLetter;
+    }
+
+    public void setStrSalutationLetter(String strSalutationLetter) {
+        this.strSalutationLetter = strSalutationLetter;
+    }
+
+    public String getStrAttnOf() {
+        return strAttnOf;
+    }
+
+    public void setStrAttnOf(String strAttnOf) {
+        this.strAttnOf = strAttnOf;
+    }
+
+    public String getStrCrof() {
+        return strCrof;
+    }
+
+    public void setStrCrof(String strCrof) {
+        this.strCrof = strCrof;
+    }
+
+    public String getStrResidency() {
+        return strResidency;
+    }
+
+    public void setStrResidency(String strResidency) {
+        this.strResidency = strResidency;
+    }
+
+    public String getStrStreetNr() {
+        return strStreetNr;
+    }
+
+    public void setStrStreetNr(String strStreetNr) {
+        this.strStreetNr = strStreetNr;
+    }
+
+    public String getStrStreet() {
+        return strStreet;
+    }
+
+    public void setStrStreet(String strStreet) {
+        this.strStreet = strStreet;
+    }
+
+    public String getStrStreetAdd() {
+        return strStreetAdd;
+    }
+
+    public void setStrStreetAdd(String strStreetAdd) {
+        this.strStreetAdd = strStreetAdd;
+    }
+
+    public String getStrPoBox() {
+        return strPoBox;
+    }
+
+    public void setStrPoBox(String strPoBox) {
+        this.strPoBox = strPoBox;
+    }
+
+    public String getStrCity() {
+        return strCity;
+    }
+
+    public void setStrCity(String strCity) {
+        this.strCity = strCity;
+    }
+
+    public String getStrState() {
+        return strState;
+    }
+
+    public void setStrState(String strState) {
+        this.strState = strState;
+    }
+
+    public String getStrZip() {
+        return strZip;
+    }
+
+    public void setStrZip(String strZip) {
+        this.strZip = strZip;
+    }
+
+    public String getStrCountry() {
+        return strCountry;
+    }
+
+    public void setStrCountry(String strCountry) {
+        this.strCountry = strCountry;
     }
 }
