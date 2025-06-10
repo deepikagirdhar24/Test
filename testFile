@@ -5,26 +5,23 @@ public static POJOAddressRequest buildAddressPayload(Map<String, String> mapAddr
         address.setStrUuid(UUID.randomUUID().toString().substring(0, 7));
     }
 
-    address.setStrSalutation(PayloadHelper.normalize(mapAddressDetails.get("salutation")));
-    address.setStrSalutationLetter(PayloadHelper.normalize(mapAddressDetails.get("salutationLetter")));
-    address.setStrAttnOf(PayloadHelper.normalize(mapAddressDetails.get("attnOf")));
-    address.setStrCrof(PayloadHelper.normalize(mapAddressDetails.get("crof")));
-    address.setStrResidency(PayloadHelper.normalize(mapAddressDetails.get("residency")));
-    address.setStrStreetNr(PayloadHelper.normalize(mapAddressDetails.get("streetNr")));
+    address.setStrSalutation(PayloadHelper.resolveDynamicText(mapAddressDetails.get("salutation")));
+    address.setStrSalutationLetter(PayloadHelper.resolveDynamicText(mapAddressDetails.get("salutationLetter")));
+    address.setStrAttnOf(PayloadHelper.resolveDynamicText(mapAddressDetails.get("attnOf")));
+    address.setStrCrof(PayloadHelper.resolveDynamicText(mapAddressDetails.get("crof")));
+    address.setStrResidency(PayloadHelper.resolveDynamicText(mapAddressDetails.get("residency")));
+    address.setStrStreetNr(PayloadHelper.resolveDynamicText(mapAddressDetails.get("streetNr")));
 
-    // Custom: teststreet + 6 random chars
-    String street = "teststreet" + PayloadHelper.randomString(6);
-    address.setStrStreet(street);
+    // Custom fixed prefix for street
+    String streetSuffix = PayloadHelper.resolveDynamicText(mapAddressDetails.get("street"));
+    address.setStrStreet("teststreet" + streetSuffix);
 
-    address.setStrStreetAdd(PayloadHelper.normalize(mapAddressDetails.get("streetAdd")));
-    address.setStrPoBox(PayloadHelper.normalize(mapAddressDetails.get("poBox")));
-    address.setStrCity(PayloadHelper.normalize(mapAddressDetails.get("city")));
-
-    // Custom: RANDOM_49 for state
-    address.setStrState(PayloadHelper.resolveDynamicText("RANDOM_49"));
-
-    address.setStrZip(PayloadHelper.normalize(mapAddressDetails.get("zip")));
-    address.setStrCountry(PayloadHelper.normalize(mapAddressDetails.get("country")));
+    address.setStrStreetAdd(PayloadHelper.resolveDynamicText(mapAddressDetails.get("streetAdd")));
+    address.setStrPoBox(PayloadHelper.resolveDynamicText(mapAddressDetails.get("poBox")));
+    address.setStrCity(PayloadHelper.resolveDynamicText(mapAddressDetails.get("city")));
+    address.setStrState(PayloadHelper.resolveDynamicText(mapAddressDetails.get("state")));
+    address.setStrZip(PayloadHelper.resolveDynamicText(mapAddressDetails.get("zip")));
+    address.setStrCountry(PayloadHelper.resolveDynamicText(mapAddressDetails.get("country")));
 
     return address;
 }
