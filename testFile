@@ -1,43 +1,19 @@
-Convert this payload into the parameters in the below SD similar to the below - 
+Then Send Request to create Address with below details
+  | uuid            | <uuid>            |
+  | firstName       | <firstName>       |
+  | middleName      | <middleName>      |
+  | lastName        | <lastName>        |
+  | salutation      | <salutation>      |
+  | salutationLetter| <salutationLetter>|
+  | attnOf          | <attnOf>          |
+  | crof            | <crof>            |
+  | residency       | <residency>       |
+  | streetNr        | <streetNr>        |
+  | street          | <street>          |
+  | streetAdd       | <streetAdd>       |
+  | poBox           | <poBox>           |
+  | city            | <city>            |
+  | state           | <state>           |
+  | zip             | <zip>             |
+  | country         | <country>         |
 
-    Then Send Request to create Work Request with below details
-      | bpId        | <bpId>        |
-      | type        | <type>        |
-      | dueDate     | <dueDate>     |
-      | subject     | <subject>     |
-      | description | <description> |
-
-{
-    "uuid": "1234000",
-    "firstName": "Firstname",
-    "middleName": "Middlename",
-    "lastName": "Lastname",
-    "salutation": "mr",
-    "salutationLetter": "mr",
-    "attnOf": "",
-    "crof": "",
-    "residency": "123",
-    "streetNr": "123",
-    "street": "Strret Name",
-    "streetAdd": "Addition street",
-    "poBox": "P.O.Box 123",
-    "city": "Zurich",
-    "state": "ZH",
-    "zip": "8001",
-    "country": "CH"
-}
-
-Scenario is -
-
-  Scenario Outline: Verify the Post Address API with valid data - <Comments>
-    Given Send Request to get Authentication Token for ICOS
-    When I generate the JWT Token
-    Then Send Request to create Address with below details
-      | bpId          | <bpId>        |
-      | type          | <type>        |
-      | dueDate       | <dueDate>     |
-      | subject       | <subject>     |
-      | description   | <description> |
-    And I verify the Status Code for Address "<statusCode>"
-    And I verify the "objectId" exists in Address response
-    And I verify the "orderId" exists in Address response
