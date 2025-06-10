@@ -1,142 +1,30 @@
-Now, create a payload function for ADdress similar to the functions below - 
+public static POJOAddressRequest buildAddressPayload(Map<String, String> mapAddressDetails, boolean includeUuid) {
+    POJOAddressRequest address = new POJOAddressRequest();
 
-public static POJOLegalPersonRequest buildLegalPersonPayload(Map<String, String> mapPersonDetails, boolean includeUuid) {
-
-        POJOLegalPersonRequest legalPersonRequest = new POJOLegalPersonRequest();
-
-        if (includeUuid) {
-            String uuid = UUID.randomUUID().toString().substring(0, 7);
-            legalPersonRequest.setStrUuid(uuid);
-        }
-
-        legalPersonRequest.setStrSubType(normalize(mapPersonDetails.get("subType")));
-        legalPersonRequest.setStrDomiCountry(normalize(mapPersonDetails.get("domicileCountry")));
-        legalPersonRequest.setStrName(normalize(mapPersonDetails.get("name")));
-
-        return legalPersonRequest;
+    if (includeUuid) {
+        address.setStrUuid(UUID.randomUUID().toString().substring(0, 7));
     }
 
-    public static POJOContactNoteRequest buildContactNotePayload(Map<String, String> mapNoteDetails, ScenarioContext scenarioContext) {
+    address.setStrSalutation(PayloadHelper.normalize(mapAddressDetails.get("salutation")));
+    address.setStrSalutationLetter(PayloadHelper.normalize(mapAddressDetails.get("salutationLetter")));
+    address.setStrAttnOf(PayloadHelper.normalize(mapAddressDetails.get("attnOf")));
+    address.setStrCrof(PayloadHelper.normalize(mapAddressDetails.get("crof")));
+    address.setStrResidency(PayloadHelper.normalize(mapAddressDetails.get("residency")));
+    address.setStrStreetNr(PayloadHelper.normalize(mapAddressDetails.get("streetNr")));
 
-        POJOContactNoteRequest noteRequest = new POJOContactNoteRequest();
-        String strNaturalPersonObjectId = scenarioContext.getContext("naturalPersonObjectId");
+    // Custom: teststreet + 6 random chars
+    String street = "teststreet" + PayloadHelper.randomString(6);
+    address.setStrStreet(street);
 
-        String personId = PayloadHelper.resolvePersonId(mapNoteDetails.get("personIds"), strNaturalPersonObjectId);
-        noteRequest.setLstPersonIds(Collections.singletonList(personId));
+    address.setStrStreetAdd(PayloadHelper.normalize(mapAddressDetails.get("streetAdd")));
+    address.setStrPoBox(PayloadHelper.normalize(mapAddressDetails.get("poBox")));
+    address.setStrCity(PayloadHelper.normalize(mapAddressDetails.get("city")));
 
-        // Set subject: generate based on the subject type
-        noteRequest.setStrSubject(resolveDynamicText(mapNoteDetails.get("subject")));
+    // Custom: RANDOM_49 for state
+    address.setStrState(PayloadHelper.resolveDynamicText("RANDOM_49"));
 
-        noteRequest.setStrNotes(getOrEmpty(mapNoteDetails, "notes"));
-        noteRequest.setBoolHasFollowup(Boolean.parseBoolean(mapNoteDetails.get("hasFollowup")));
+    address.setStrZip(PayloadHelper.normalize(mapAddressDetails.get("zip")));
+    address.setStrCountry(PayloadHelper.normalize(mapAddressDetails.get("country")));
 
-        return noteRequest;
-    }
-
-We have a payload helper as well - 
-
-package utilities;
-
-import ICOS.pojo.POJONewDocumentRequest;
-
-import java.time.LocalDate;
-import java.util.*;
-import java.util.stream.Collectors;
-
-public class PayloadHelper {
-
-    private static final Random random = new Random();
-
-    public static String normalize(String value) {
-        if (value == null) return "";
-        switch (value.trim().toUpperCase()) {
-            case "NA": return null;
-            case "EMPTY": return "";
-            default: return value;
-        }
-    }
-
-    public static String resolveDueDate(String dueDateInput) {
-        if (dueDateInput == null || dueDateInput.trim().isEmpty()) return "";
-        switch (dueDateInput.trim().toUpperCase()) {
-            case "NA": return null;
-            case "EMPTY": return "";
-            case "FUTURE": return LocalDate.now().plusDays(7).toString();
-            case "PAST": return LocalDate.now().minusDays(7).toString();
-            case "TODAY": return LocalDate.now().toString();
-            default: return dueDateInput;
-        }
-    }
-
-    public static String resolveDynamicText(String type) {
-        if (type == null || type.isEmpty()) return "";
-        if (type.equalsIgnoreCase("EMPTY")) return "";
-
-        if (type.equalsIgnoreCase("RANDOM_LT_250")) {
-            return randomString(random.nextInt(249) + 1);
-        }
-
-        if (type.equalsIgnoreCase("RANDOM_GT_250")) {
-            return randomString(random.nextInt(500) + 251);
-        }
-
-        if (type.toUpperCase().startsWith("RANDOM_")) {
-            try {
-                int length = Integer.parseInt(type.substring(7));
-                return randomString(length);
-            } catch (NumberFormatException e) {
-                return type;
-            }
-        }
-
-        return type;
-    }
-
-    public static List<String> parseNationalities(String commaSeparated) {
-        if (commaSeparated == null || commaSeparated.trim().isEmpty()) return Collections.emptyList();
-        return Arrays.stream(commaSeparated.split(","))
-                .map(String::trim)
-                .filter(s -> !s.isEmpty())
-                .collect(Collectors.toList());
-    }
-
-    public static List<POJONewDocumentRequest.QuestionAnswer> parseQuestionAnswers(String qaPairs) {
-        List<POJONewDocumentRequest.QuestionAnswer> qaList = new ArrayList<>();
-        if (qaPairs != null && !qaPairs.trim().isEmpty()) {
-            String[] pairs = qaPairs.split(";");
-            for (String pair : pairs) {
-                String[] qa = pair.split("=", 2);
-                if (qa.length == 2) {
-                    POJONewDocumentRequest.QuestionAnswer qaObj = new POJONewDocumentRequest.QuestionAnswer();
-                    qaObj.setStrQuestion(resolveDynamicText(qa[0].trim()));
-                    qaObj.setStrAnswer(resolveDynamicText(qa[1].trim()));
-                    qaList.add(qaObj);
-                }
-            }
-        }
-        return qaList;
-    }
-
-    private static String randomString(int length) {
-        int leftLimit = 97; // 'a'
-        int rightLimit = 122; // 'z'
-        return random.ints(leftLimit, rightLimit + 1)
-                .limit(length)
-                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-                .toString();
-    }
-
-    public static String getOrEmpty(Map<String, String> map, String key) {
-        return Optional.ofNullable(map.get(key)).orElse("");
-    }
-
-    public static String resolvePersonId(String input, String naturalPersonId) {
-        if (input == null || input.trim().isEmpty() || input.equalsIgnoreCase("EMPTY")) {
-            return "";
-        } else if (input.equalsIgnoreCase("NATURAL_PERSON_OBJECT_ID")) {
-            return naturalPersonId;
-        }
-        return input;
-    }
-
+    return address;
 }
