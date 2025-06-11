@@ -1,98 +1,57 @@
-package ICOS;
+package utilities;
 
 import com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter;
-import commonLibrary.devHelperLibrary;
-import config.TestConfig;
 import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
+import org.testng.Assert;
 
+import java.util.List;
 import java.util.Map;
 
-import static io.restassured.RestAssured.given;
+public class ErrorResponseVerifier {
 
-public class BaseApiClient {
-
-    protected devHelperLibrary objDevHelperLibrary;
-    protected TestConfig testDataConfig;
-    protected String TYK_KEY;
-
-    public BaseApiClient() throws Exception {
-        this.objDevHelperLibrary = new devHelperLibrary();
-        this.testDataConfig = TestConfig.getTestDataConfig();
-        this.TYK_KEY = testDataConfig.getTykApiKey();
+    public void verifyDescription(Response objResponse, String strExpectedDescription) throws Exception {
+        String strActualDescription = JsonHelper.extractStringField(objResponse, "description");
+        ExtentCucumberAdapter.addTestStepLog("Actual description: " + strActualDescription);
+        Assert.assertEquals(strActualDescription, strExpectedDescription, "Mismatch in description");
     }
 
-    public RequestSpecification buildRequestSpec(String strBearerToken, String strJWTToken) {
-        return given()
-                .header("Authorization", buildAuthHeader(strBearerToken, strJWTToken))
-                .header("X-TYK-API-KEY", TYK_KEY)
-                .header("Content-Type", "application/json");
-    }
+    public void verifyValidationErrors(Response objResponse, String strExpectedErrorsCSV) throws Exception {
+        List<String> listActualErrors = JsonHelper.extractListOfStringFieldsFromArray(objResponse, "validationErrors", "error");
+        ExtentCucumberAdapter.addTestStepLog("Actual error messages: " + listActualErrors);
 
-    public Response sendPostRequest(String url, String bearerToken, String jwtToken, String body, Map<String, ?> queryParams) {
-        RequestSpecification request = buildRequestSpec(bearerToken, jwtToken);
-
-        if (queryParams != null && !queryParams.isEmpty()) {
-            request.queryParams(queryParams);
-        }
-
-        logRequestDetails("POST", url, body, queryParams);
-        Response response = request.body(body).post(url);
-        logResponseDetails(response);
-        return response;
-    }
-
-    public Response sendGetRequest(String url, String bearerToken, String jwtToken, Map<String, ?> pathParams, Map<String, ?> queryParams) {
-        RequestSpecification request = buildRequestSpec(bearerToken, jwtToken);
-
-        if (pathParams != null) {
-            request.pathParams(pathParams);
-        }
-        if (queryParams != null) {
-            request.queryParams(queryParams);
-        }
-
-        logRequestDetails("GET", url, null, queryParams);
-        Response response = request.get(url);
-        logResponseDetails(response);
-        return response;
-    }
-
-    public Response sendPatchRequest(String url, String bearerToken, String jwtToken, String body, Map<String, ?> queryParams) {
-        RequestSpecification request = buildRequestSpec(bearerToken, jwtToken);
-
-        if (queryParams != null) {
-            request.queryParams(queryParams);
-        }
-
-        logRequestDetails("PATCH", url, body, queryParams);
-        Response response = request.body(body).patch(url);
-        logResponseDetails(response);
-        return response;
-    }
-
-    private void logRequestDetails(String method, String url, String body, Map<String, ?> queryParams) {
-        ExtentCucumberAdapter.addTestStepLog("Sending " + method + " request to: " + url);
-        if (queryParams != null && !queryParams.isEmpty()) {
-            ExtentCucumberAdapter.addTestStepLog("Query Params: " + queryParams.toString());
-        }
-        if (body != null && !body.isEmpty()) {
-            ExtentCucumberAdapter.addTestStepLog("Request Body:\n" + body);
+        for (String strExpectedError : strExpectedErrorsCSV.split("\\s*,\\s*")) {
+            Assert.assertTrue(listActualErrors.contains(strExpectedError), "Missing expected error: " + strExpectedError);
         }
     }
 
-    private void logResponseDetails(Response response) {
-        String strResponseBody = objDevHelperLibrary.getResponseBody(response);
-        ExtentCucumberAdapter.addTestStepLog("Response Code: " + response.getStatusCode());
-        ExtentCucumberAdapter.addTestStepLog("Response Body:\n" + strResponseBody);
+    public void verifyTopLevelAWSFields(Response objResponse, Map<String, String> mapExpectedFields) throws Exception {
+        String strActualType = JsonHelper.extractStringField(objResponse, "type");
+        String strActualTitle = JsonHelper.extractStringField(objResponse, "title");
+        String strActualDetail = JsonHelper.extractStringField(objResponse, "detail");
+
+        ExtentCucumberAdapter.addTestStepLog("Actual type: " + strActualType);
+        ExtentCucumberAdapter.addTestStepLog("Actual title: " + strActualTitle);
+        ExtentCucumberAdapter.addTestStepLog("Actual detail: " + strActualDetail);
+
+        Assert.assertEquals(strActualType, mapExpectedFields.get("type"), "Mismatch in 'type'");
+        Assert.assertEquals(strActualTitle, mapExpectedFields.get("title"), "Mismatch in 'title'");
+        Assert.assertEquals(strActualDetail, mapExpectedFields.get("detail"), "Mismatch in 'detail'");
     }
 
-    public String getTYKURL(String strEnvType, String strEndpointKey) {
-        return testDataConfig.readApplicationProperty("TYK.ENV." + strEnvType)
-                + testDataConfig.readApplicationProperty(strEndpointKey);
-    }
+    public void verifyErrorDetails(Response objResponse, Map<String, String> mapExpectedFields) {
+        String strErrorTitle = JsonHelper.extractStringFieldFromArray(objResponse, "errorDetails", 0, "title");
+        String strErrorField = JsonHelper.extractStringFieldFromArray(objResponse, "errorDetails", 0, "field");
+        String strErrorDetail = JsonHelper.extractStringFieldFromArray(objResponse, "errorDetails", 0, "detail");
 
-    public String buildAuthHeader(String bearerToken, String jwtToken) {
-        return bearerToken + " " + jwtToken;
+        ExtentCucumberAdapter.addTestStepLog("Actual errorDetails[0].title: " + strErrorTitle);
+        ExtentCucumberAdapter.addTestStepLog("errorDetails[0].field exists with value: " + strErrorField);
+        ExtentCucumberAdapter.addTestStepLog("Actual errorDetails[0].detail: " + strErrorDetail);
+
+        Assert.assertEquals(strErrorTitle, mapExpectedFields.get("errorDetails.title"), "Mismatch in errorDetails.title");
+        Assert.assertEquals(strErrorDetail, mapExpectedFields.get("errorDetails.detail"), "Mismatch in errorDetails.detail");
+        Assert.assertNotNull(strErrorField, "errorDetails[0].field should not be null");
+        Assert.assertFalse(strErrorField.trim().isEmpty(), "errorDetails[0].field should not be empty");
     }
 }
+
+How to declare JSONHelper object here ? and how to call methods ?
