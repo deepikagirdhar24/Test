@@ -1,152 +1,29 @@
-My Manager is saying to remove static in all functions in Payload helper - 
+private final PayloadHelper payloadHelper = new PayloadHelper();
 
-package utilities;
 
-import ICOS.pojo.POJONewDocumentRequest;
+public POJOAddressRequest buildAddressPayload(Map<String, String> mapAddressDetails, boolean includeUuid) {
+    POJOAddressRequest address = new POJOAddressRequest();
 
-import java.time.LocalDate;
-import java.util.*;
-import java.util.stream.Collectors;
-
-public class PayloadHelper {
-
-    private static final Random random = new Random();
-
-    public static String normalize(String value) {
-        if (value == null) return "";
-        switch (value.trim().toUpperCase()) {
-            case "NA": return null;
-            case "EMPTY": return "";
-            default: return value;
-        }
+    if (includeUuid) {
+        address.setStrUuid(UUID.randomUUID().toString().substring(0, 7));
     }
 
-    public static String resolveDueDate(String dueDateInput) {
-        if (dueDateInput == null || dueDateInput.trim().isEmpty()) return "";
-        switch (dueDateInput.trim().toUpperCase()) {
-            case "NA": return null;
-            case "EMPTY": return "";
-            case "FUTURE": return LocalDate.now().plusDays(7).toString();
-            case "PAST": return LocalDate.now().minusDays(7).toString();
-            case "TODAY": return LocalDate.now().toString();
-            default: return dueDateInput;
-        }
-    }
+    address.setStrSalutation(payloadHelper.normalize(mapAddressDetails.get("salutation")));
+    address.setStrSalutationLetter(payloadHelper.normalize(mapAddressDetails.get("salutationLetter")));
+    address.setStrAttnOf(payloadHelper.normalize(mapAddressDetails.get("attnOf")));
+    address.setStrCrof(payloadHelper.normalize(mapAddressDetails.get("crof")));
+    address.setStrResidency(payloadHelper.normalize(mapAddressDetails.get("residency")));
+    address.setStrStreetNr(payloadHelper.normalize(mapAddressDetails.get("streetNr")));
 
-    public static String resolveDynamicText(String type) {
-        if (type == null || type.isEmpty()) return "";
-        if (type.equalsIgnoreCase("EMPTY")) return "";
-        if (type.equalsIgnoreCase("NA")) return null;
+    String streetSuffix = payloadHelper.resolveDynamicText(mapAddressDetails.get("street"));
+    address.setStrStreet("teststreet" + streetSuffix);
 
-        // Handle expression like "prefix + RANDOM_6 + suffix"
-        if (type.contains("+")) {
-            String[] parts = type.split("\\+");
-            StringBuilder result = new StringBuilder();
-            for (String part : parts) {
-                String trimmed = part.trim();
-                result.append(resolveDynamicText(trimmed));
-            }
-            return result.toString();
-        }
+    address.setStrStreetAdd(payloadHelper.normalize(mapAddressDetails.get("streetAdd")));
+    address.setStrPoBox(payloadHelper.normalize(mapAddressDetails.get("poBox")));
+    address.setStrCity(payloadHelper.normalize(mapAddressDetails.get("city")));
+    address.setStrState(payloadHelper.resolveDynamicText(mapAddressDetails.get("state")));
+    address.setStrZip(payloadHelper.normalize(mapAddressDetails.get("zip")));
+    address.setStrCountry(payloadHelper.normalize(mapAddressDetails.get("country")));
 
-        if (type.equalsIgnoreCase("RANDOM_LT_250")) {
-            return randomString(random.nextInt(249) + 1);
-        }
-
-        if (type.equalsIgnoreCase("RANDOM_GT_250")) {
-            return randomString(random.nextInt(500) + 251);
-        }
-
-        if (type.toUpperCase().startsWith("RANDOM_")) {
-            try {
-                int length = Integer.parseInt(type.substring(7));
-                return randomString(length);
-            } catch (NumberFormatException e) {
-                return type;
-            }
-        }
-
-        return type;
-    }
-
-    public static List<String> parseNationalities(String commaSeparated) {
-        if (commaSeparated == null || commaSeparated.trim().isEmpty()) return Collections.emptyList();
-        return Arrays.stream(commaSeparated.split(","))
-                .map(String::trim)
-                .filter(s -> !s.isEmpty())
-                .collect(Collectors.toList());
-    }
-
-    public static List<POJONewDocumentRequest.QuestionAnswer> parseQuestionAnswers(String qaPairs) {
-        List<POJONewDocumentRequest.QuestionAnswer> qaList = new ArrayList<>();
-        if (qaPairs != null && !qaPairs.trim().isEmpty()) {
-            String[] pairs = qaPairs.split(";");
-            for (String pair : pairs) {
-                String[] qa = pair.split("=", 2);
-                if (qa.length == 2) {
-                    POJONewDocumentRequest.QuestionAnswer qaObj = new POJONewDocumentRequest.QuestionAnswer();
-                    qaObj.setStrQuestion(resolveDynamicText(qa[0].trim()));
-                    qaObj.setStrAnswer(resolveDynamicText(qa[1].trim()));
-                    qaList.add(qaObj);
-                }
-            }
-        }
-        return qaList;
-    }
-
-    private static String randomString(int length) {
-        int leftLimit = 97; // 'a'
-        int rightLimit = 122; // 'z'
-        return random.ints(leftLimit, rightLimit + 1)
-                .limit(length)
-                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-                .toString();
-    }
-
-    public static String getOrEmpty(Map<String, String> map, String key) {
-        return Optional.ofNullable(map.get(key)).orElse("");
-    }
-
-    public static String resolvePersonId(String input, String naturalPersonId) {
-        if (input == null || input.trim().isEmpty() || input.equalsIgnoreCase("EMPTY")) {
-            return "";
-        } else if (input.equalsIgnoreCase("NATURAL_PERSON_OBJECT_ID")) {
-            return naturalPersonId;
-        }
-        return input;
-    }
-
+    return address;
 }
-
-how to use these functiosn in payload then - 
-
-public static POJOAddressRequest buildAddressPayload(Map<String, String> mapAddressDetails, boolean includeUuid) {
-        POJOAddressRequest address = new POJOAddressRequest();
-
-        if (includeUuid) {
-            address.setStrUuid(UUID.randomUUID().toString().substring(0, 7));
-        }
-
-        address.setStrSalutation(PayloadHelper.normalize(mapAddressDetails.get("salutation")));
-        address.setStrSalutationLetter(PayloadHelper.normalize(mapAddressDetails.get("salutationLetter")));
-        address.setStrAttnOf(PayloadHelper.normalize(mapAddressDetails.get("attnOf")));
-        address.setStrCrof(PayloadHelper.normalize(mapAddressDetails.get("crof")));
-        address.setStrResidency(PayloadHelper.normalize(mapAddressDetails.get("residency")));
-        address.setStrStreetNr(PayloadHelper.normalize(mapAddressDetails.get("streetNr")));
-
-        // Street = fixed prefix + RANDOM_6
-        String streetSuffix = PayloadHelper.resolveDynamicText(mapAddressDetails.get("street"));
-        address.setStrStreet("teststreet" + streetSuffix);
-
-        address.setStrStreetAdd(PayloadHelper.normalize(mapAddressDetails.get("streetAdd")));
-        address.setStrPoBox(PayloadHelper.normalize(mapAddressDetails.get("poBox")));
-        address.setStrCity(PayloadHelper.normalize(mapAddressDetails.get("city")));
-
-        // state = RANDOM_49 or any other dynamic rule
-        address.setStrState(PayloadHelper.resolveDynamicText(mapAddressDetails.get("state")));
-
-        address.setStrZip(PayloadHelper.normalize(mapAddressDetails.get("zip")));
-        address.setStrCountry(PayloadHelper.normalize(mapAddressDetails.get("country")));
-
-        return address;
-    }
