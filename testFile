@@ -1,5 +1,3 @@
-How to remove static from here - 
-
 package ICOS;
 
 import com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter;
@@ -13,36 +11,25 @@ import java.util.Map;
 import static io.restassured.RestAssured.given;
 
 public class BaseApiClient {
-    protected static devHelperLibrary objDevHelperLibrary;
 
-    static {
-        try {
-            objDevHelperLibrary = new devHelperLibrary();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    protected devHelperLibrary objDevHelperLibrary;
+    protected TestConfig testDataConfig;
+    protected String TYK_KEY;
+
+    public BaseApiClient() throws Exception {
+        this.objDevHelperLibrary = new devHelperLibrary();
+        this.testDataConfig = TestConfig.getTestDataConfig();
+        this.TYK_KEY = testDataConfig.getTykApiKey();
     }
 
-    protected static TestConfig testDataConfig;
-
-    static {
-        try {
-            testDataConfig = TestConfig.getTestDataConfig();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    protected static String TYK_KEY = TestConfig.getTykApiKey();
-
-    public static RequestSpecification buildRequestSpec(String strBearerToken, String strJWTToken) {
+    public RequestSpecification buildRequestSpec(String strBearerToken, String strJWTToken) {
         return given()
                 .header("Authorization", buildAuthHeader(strBearerToken, strJWTToken))
                 .header("X-TYK-API-KEY", TYK_KEY)
                 .header("Content-Type", "application/json");
     }
 
-    public static Response sendPostRequest(String url, String bearerToken, String jwtToken, String body, Map<String, ?> queryParams) {
+    public Response sendPostRequest(String url, String bearerToken, String jwtToken, String body, Map<String, ?> queryParams) {
         RequestSpecification request = buildRequestSpec(bearerToken, jwtToken);
 
         if (queryParams != null && !queryParams.isEmpty()) {
@@ -55,7 +42,7 @@ public class BaseApiClient {
         return response;
     }
 
-    public static Response sendGetRequest(String url, String bearerToken, String jwtToken, Map<String, ?> pathParams, Map<String, ?> queryParams) {
+    public Response sendGetRequest(String url, String bearerToken, String jwtToken, Map<String, ?> pathParams, Map<String, ?> queryParams) {
         RequestSpecification request = buildRequestSpec(bearerToken, jwtToken);
 
         if (pathParams != null) {
@@ -71,7 +58,7 @@ public class BaseApiClient {
         return response;
     }
 
-    public static Response sendPatchRequest(String url, String bearerToken, String jwtToken, String body, Map<String, ?> queryParams) {
+    public Response sendPatchRequest(String url, String bearerToken, String jwtToken, String body, Map<String, ?> queryParams) {
         RequestSpecification request = buildRequestSpec(bearerToken, jwtToken);
 
         if (queryParams != null) {
@@ -84,7 +71,7 @@ public class BaseApiClient {
         return response;
     }
 
-    private static void logRequestDetails(String method, String url, String body, Map<String, ?> queryParams) {
+    private void logRequestDetails(String method, String url, String body, Map<String, ?> queryParams) {
         ExtentCucumberAdapter.addTestStepLog("Sending " + method + " request to: " + url);
         if (queryParams != null && !queryParams.isEmpty()) {
             ExtentCucumberAdapter.addTestStepLog("Query Params: " + queryParams.toString());
@@ -94,47 +81,18 @@ public class BaseApiClient {
         }
     }
 
-    private static void logResponseDetails(Response response) {
-        String strResponseBody = devHelperLibrary.getResponseBody(response);
+    private void logResponseDetails(Response response) {
+        String strResponseBody = objDevHelperLibrary.getResponseBody(response);
         ExtentCucumberAdapter.addTestStepLog("Response Code: " + response.getStatusCode());
         ExtentCucumberAdapter.addTestStepLog("Response Body:\n" + strResponseBody);
     }
 
-    public static String getTYKURL(String strEnvType, String strEndpointKey) {
+    public String getTYKURL(String strEnvType, String strEndpointKey) {
         return testDataConfig.readApplicationProperty("TYK.ENV." + strEnvType)
                 + testDataConfig.readApplicationProperty(strEndpointKey);
     }
 
-    public static String buildAuthHeader(String bearerToken, String jwtToken) {
+    public String buildAuthHeader(String bearerToken, String jwtToken) {
         return bearerToken + " " + jwtToken;
     }
 }
-
-
-and alos how to reuse in the class functions - 
-
-// Create Address
-    public Response createAddress(String strEnvType, String strBearerToken, String strJWTToken,
-                                      Map<String, String> mapAddressDetails, ScenarioContext scenarioContext) throws Exception {
-
-        String strTYKURL = getTYKURL(strEnvType, "TYK.ADDRESS");
-        POJOAddressRequest pojoAddressRequest = payloads.buildAddressPayload(mapAddressDetails, true);
-        String strRequestBody = objObjectMapper.writeValueAsString(pojoAddressRequest);
-
-        ExtentCucumberAdapter.addTestStepLog("Sending request to Create Address");
-
-        Response objResponse = sendPostRequest(strTYKURL, strBearerToken, strJWTToken, strRequestBody, null);
-        String strResponseBody = devHelperLibrary.getResponseBody(objResponse);
-        objCucumberLogger.PrintStatus("Response is: " + strResponseBody);
-
-        String strAddressObjectId = jsonHelper.extractStringField(objResponse, "objectId");
-        String strAddressOrderId = jsonHelper.extractStringField(objResponse, "orderId");
-        String strAddressUuid = pojoAddressRequest.getStrUuid();
-
-        scenarioContext.setContext("AddressObjectId", strAddressObjectId);
-        scenarioContext.setContext("AddressOrderId", strAddressOrderId);
-        scenarioContext.setContext("AddressUuid", strAddressUuid);
-
-        return objResponse;
-    }
-
