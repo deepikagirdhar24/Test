@@ -1,17 +1,126 @@
-    @And("I verify the Status Code for Work Request {string}")
-    public void iVerifyTheStatusCodeForWorkRequest(String strStatusCode) {
-        int responseCode= response.statusCode();
-        ExtentCucumberAdapter.addTestStepLog("Actual value of Status code is : " +responseCode);
-        Assert.assertEquals(Integer.parseInt(strStatusCode),responseCode);
+Thss is the SD - 
+
+    @And("I verify the following questions and answers in Document response")
+    public void iVerifyAllQuestionAnswerPairs(DataTable dataTable) {
+        List<Map<String, String>> expectedQAList = dataTable.asMaps(String.class, String.class);
+        objDocument.verifyAllQuestionAnswerPairs(expectedQAList, response);
     }
 
-    @And("I verify the {string} exists in Work Request response")
-    public void iVerifyTheKeyExistsInWorkRequestResponse(String key) throws Exception {
-        String strActualKeyValue = JsonHelper.extractStringField(response, key);
-        ExtentCucumberAdapter.addTestStepLog("Actual value of " + key + " is: " + strActualKeyValue);
+This is function in DOcument class - 
 
-        Assert.assertNotNull(strActualKeyValue, key + " should not be null");
-        Assert.assertFalse(strActualKeyValue.isEmpty(), key + " should not be empty");
+public void verifyAllQuestionAnswerPairs(List<Map<String, String>> expectedQAList, Response response) {
+        List<Map<String, String>> actualQAList = response.jsonPath().getList("questions");
+
+        Assert.assertEquals(actualQAList.size(), expectedQAList.size(),
+                "Mismatch in number of question/answer pairs");
+
+        for (int i = 0; i < expectedQAList.size(); i++) {
+            Map<String, String> expected = expectedQAList.get(i);
+            Map<String, String> actual = actualQAList.get(i);
+
+            String expectedQuestion = expected.get("question");
+            String expectedAnswer = expected.get("answer");
+            String actualQuestion = actual.get("question");
+            String actualAnswer = actual.get("answer");
+
+            ExtentCucumberAdapter.addTestStepLog("Validating Q/A Pair " + (i + 1));
+            ExtentCucumberAdapter.addTestStepLog("Expected → Q: " + expectedQuestion + ", A: " + expectedAnswer);
+            ExtentCucumberAdapter.addTestStepLog("Actual   → Q: " + actualQuestion + ", A: " + actualAnswer);
+
+            Assert.assertEquals(actualQuestion, expectedQuestion, "Mismatch in question at index " + (i + 1));
+            Assert.assertEquals(actualAnswer, expectedAnswer, "Mismatch in answer at index " + (i + 1));
+        }
     }
 
-Can we add the implementaion in some reusable class ike ResponseVerifier, as the implementation is same for all APIs
+My Manager has suggsted to keep assert in SD and also to resue the helpers in JSONHlper instead of  response.jsonPath().getList("questions");
+
+public class JsonHelper {
+
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+
+    private static JsonNode getNodeByPath(JsonNode rootNode, String path) {
+        String[] keys = path.split("\\.");
+        for (String key : keys) {
+            if (rootNode == null) break;
+            rootNode = rootNode.path(key);
+        }
+        return rootNode;
+    }
+
+    public static Object extractRawField(Response response, String fieldPath) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode node = getNodeByPath(rootNode, fieldPath);
+        return node.isMissingNode() || node.isNull() ? null : node;
+    }
+
+    public static String extractStringField(Response response, String fieldPath) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode node = getNodeByPath(rootNode, fieldPath);
+        return node.isMissingNode() || node.isNull() ? null : node.asText();
+    }
+
+    public static Boolean extractBooleanField(Response response, String fieldPath) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode node = getNodeByPath(rootNode, fieldPath);
+        return node.isMissingNode() || node.isNull() ? null : node.asBoolean();
+    }
+
+    public static boolean valueExistsInJsonArray(Response response, String jsonPath, String targetValue) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode arrayNode = getNodeByPath(rootNode, jsonPath);
+        if (arrayNode != null && arrayNode.isArray()) {
+            return iterateAndCheckArray(arrayNode, targetValue);
+        }
+        return false;
+    }
+
+    private static boolean iterateAndCheckArray(JsonNode arrayNode, String targetValue) {
+        for (JsonNode itemNode : arrayNode) {
+            String currentValue = itemNode.asText();
+            System.out.println("Checking item: " + currentValue);
+            if (targetValue.equals(currentValue)) {
+                logMatchFound(currentValue);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static void logMatchFound(String value) {
+        System.out.println("Match found: " + value);
+        ExtentCucumberAdapter.addTestStepLog("Actual value found: " + value);
+    }
+
+    public static List<String> extractListOfStringFieldsFromArray(Response response, String arrayField, String subField) {
+        List<Map<String, Object>> itemList = response.jsonPath().getList(arrayField);
+        List<String> result = new ArrayList<>();
+        for (Map<String, Object> item : itemList) {
+            Object value = item.get(subField);
+            if (value != null) {
+                result.add(value.toString());
+            }
+        }
+        return result;
+    }
+
+    public static void validateFieldExistsInArray(Response response, String arrayPath, String fieldName) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode arrayNode = rootNode.at(arrayPath); // Path should start with '/' for root level
+
+        if (!arrayNode.isArray()) {
+            throw new Exception("Expected an array at path: " + arrayPath);
+        }
+
+        for (JsonNode element : arrayNode) {
+            JsonNode fieldNode = element.get(fieldName);
+            if (fieldNode == null || fieldNode.asText().isEmpty()) {
+                throw new AssertionError("Missing or empty '" + fieldName + "' in one of the elements at: " + arrayPath);
+            }
+        }
+
+        ExtentCucumberAdapter.addTestStepLog("All elements in array " + arrayPath + " contain a valid '" + fieldName + "'");
+    }
+
+    public static String extractStringFieldFromArray(Response response, String arrayField, int index, String fieldName) {
+        return response.jsonPath().getString(arrayField + "[" + index + "]." + fieldName);
+    }
