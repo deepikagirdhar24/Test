@@ -1,28 +1,28 @@
 @And("I verify the following questions and answers in Document response")
 public void iVerifyAllQuestionAnswerPairs(DataTable dataTable) throws Exception {
-    List<Map<String, String>> expectedQAList = dataTable.asMaps(String.class, String.class);
+    List<Map<String, String>> listExpectedQAPairs = dataTable.asMaps(String.class, String.class);
+    List<Map<String, Object>> listActualQAPairs = JsonHelper.extractListOfMapFromArray(response, "questions");
 
-    List<Map<String, Object>> actualQAList = JsonHelper.extractListOfMapFromArray(response, "questions");
+    Assert.assertEquals(listActualQAPairs.size(), listExpectedQAPairs.size(), "Mismatch in number of question/answer pairs");
 
-    Assert.assertEquals(actualQAList.size(), expectedQAList.size(), "Mismatch in number of question/answer pairs");
+    for (int i = 0; i < listExpectedQAPairs.size(); i++) {
+        Map<String, String> mapExpectedQA = listExpectedQAPairs.get(i);
+        Map<String, Object> mapActualQA = listActualQAPairs.get(i);
 
-    for (int i = 0; i < expectedQAList.size(); i++) {
-        Map<String, String> expected = expectedQAList.get(i);
-        Map<String, Object> actual = actualQAList.get(i);
-
-        String expectedQuestion = expected.get("question");
-        String expectedAnswer = expected.get("answer");
-        String actualQuestion = actual.get("question").toString();
-        String actualAnswer = actual.get("answer").toString();
+        String strExpectedQuestion = mapExpectedQA.get("question");
+        String strExpectedAnswer = mapExpectedQA.get("answer");
+        String strActualQuestion = mapActualQA.get("question").toString();
+        String strActualAnswer = mapActualQA.get("answer").toString();
 
         ExtentCucumberAdapter.addTestStepLog("Validating Q/A Pair " + (i + 1));
-        ExtentCucumberAdapter.addTestStepLog("Expected → Q: " + expectedQuestion + ", A: " + expectedAnswer);
-        ExtentCucumberAdapter.addTestStepLog("Actual   → Q: " + actualQuestion + ", A: " + actualAnswer);
+        ExtentCucumberAdapter.addTestStepLog("Expected → Q: " + strExpectedQuestion + ", A: " + strExpectedAnswer);
+        ExtentCucumberAdapter.addTestStepLog("Actual   → Q: " + strActualQuestion + ", A: " + strActualAnswer);
 
-        Assert.assertEquals(actualQuestion, expectedQuestion, "Mismatch in question at index " + (i + 1));
-        Assert.assertEquals(actualAnswer, expectedAnswer, "Mismatch in answer at index " + (i + 1));
+        Assert.assertEquals(strActualQuestion, strExpectedQuestion, "Mismatch in question at index " + (i + 1));
+        Assert.assertEquals(strActualAnswer, strExpectedAnswer, "Mismatch in answer at index " + (i + 1));
     }
 }
+
 
 public static List<Map<String, Object>> extractListOfMapFromArray(Response response, String arrayFieldPath) throws Exception {
     JsonNode rootNode = objectMapper.readTree(response.asString());
