@@ -1,58 +1,36 @@
-Can we use switch in resolveDynamicText like we have used in otehr functions - 
+public String resolveDynamicText(String type) {
+    if (type == null || type.isEmpty()) return "";
 
-public String normalize(String value) {
-        if (value == null) return "";
-        switch (value.trim().toUpperCase()) {
-            case "NA": return null;
-            case "EMPTY": return "";
-            default: return value;
+    // Handle expression like "prefix + RANDOM_6 + suffix"
+    if (type.contains("+")) {
+        String[] parts = type.split("\\+");
+        StringBuilder result = new StringBuilder();
+        for (String part : parts) {
+            String trimmed = part.trim();
+            result.append(resolveDynamicText(trimmed));
         }
+        return result.toString();
     }
 
-    public String resolveDueDate(String dueDateInput) {
-        if (dueDateInput == null || dueDateInput.trim().isEmpty()) return "";
-        switch (dueDateInput.trim().toUpperCase()) {
-            case "NA": return null;
-            case "EMPTY": return "";
-            case "FUTURE": return LocalDate.now().plusDays(7).toString();
-            case "PAST": return LocalDate.now().minusDays(7).toString();
-            case "TODAY": return LocalDate.now().toString();
-            default: return dueDateInput;
-        }
-    }
-
-    public String resolveDynamicText(String type) {
-        if (type == null || type.isEmpty()) return "";
-        if (type.equalsIgnoreCase("EMPTY")) return "";
-        if (type.equalsIgnoreCase("NA")) return null;
-
-        // Handle expression like "prefix + RANDOM_6 + suffix"
-        if (type.contains("+")) {
-            String[] parts = type.split("\\+");
-            StringBuilder result = new StringBuilder();
-            for (String part : parts) {
-                String trimmed = part.trim();
-                result.append(resolveDynamicText(trimmed));
-            }
-            return result.toString();
-        }
-
-        if (type.equalsIgnoreCase("RANDOM_LT_250")) {
+    switch (type.trim().toUpperCase()) {
+        case "EMPTY":
+            return "";
+        case "NA":
+            return null;
+        case "RANDOM_LT_250":
             return randomString(random.nextInt(249) + 1);
-        }
-
-        if (type.equalsIgnoreCase("RANDOM_GT_250")) {
+        case "RANDOM_GT_250":
             return randomString(random.nextInt(500) + 251);
-        }
-
-        if (type.toUpperCase().startsWith("RANDOM_")) {
-            try {
-                int length = Integer.parseInt(type.substring(7));
-                return randomString(length);
-            } catch (NumberFormatException e) {
-                return type;
+        default:
+            // Check if it's like RANDOM_6
+            if (type.toUpperCase().startsWith("RANDOM_")) {
+                try {
+                    int length = Integer.parseInt(type.substring(7));
+                    return randomString(length);
+                } catch (NumberFormatException e) {
+                    return type;
+                }
             }
-        }
-
-        return type;
+            return type;
     }
+}
