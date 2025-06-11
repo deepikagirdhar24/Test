@@ -4,3 +4,6 @@
     public ErrorResponseVerifier(JsonHelper jsonHelper) {
         this.jsonHelper = jsonHelper;
     }
+
+JsonHelper jsonHelper = new JsonHelper();
+ErrorResponseVerifier verifier = new ErrorResponseVerifier(jsonHelper);
