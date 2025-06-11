@@ -1,21 +1,4 @@
-package utils;
-
-public class ErrorResponseVerifier {
-
-    public void verifyDescription(Response objResponse, String strExpectedDescription) throws Exception {
-        String strActualDescription = JsonHelper.extractStringField(objResponse, "description");
-        ExtentCucumberAdapter.addTestStepLog("Actual description: " + strActualDescription);
-        Assert.assertEquals(strActualDescription, strExpectedDescription, "Mismatch in description");
-    }
-
-    public void verifyValidationErrors(Response objResponse, String strExpectedErrorsCSV) throws Exception {
-        List<String> listActualErrors = JsonHelper.extractListOfStringFieldsFromArray(objResponse, "validationErrors", "error");
-        ExtentCucumberAdapter.addTestStepLog("Actual error messages: " + listActualErrors);
-
-        for (String strExpectedError : strExpectedErrorsCSV.split("\\s*,\\s*")) {
-            Assert.assertTrue(listActualErrors.contains(strExpectedError), "Missing expected error: " + strExpectedError);
-        }
-    }
+Thsi is a functio used in reusable methods - 
 
     public void verifyTopLevelAWSFields(Response objResponse, Map<String, String> mapExpectedFields) throws Exception {
         Assert.assertEquals(JsonHelper.extractStringField(objResponse, "type"), mapExpectedFields.get("type"), "Mismatch in type");
@@ -23,32 +6,18 @@ public class ErrorResponseVerifier {
         Assert.assertEquals(JsonHelper.extractStringField(objResponse, "detail"), mapExpectedFields.get("detail"), "Mismatch in detail");
     }
 
-    public void verifyErrorDetails(Response objResponse, Map<String, String> mapExpectedFields) {
-        String strField = JsonHelper.extractStringFieldFromArray(objResponse, "errorDetails", 0, "field");
-        String strTitle = JsonHelper.extractStringFieldFromArray(objResponse, "errorDetails", 0, "title");
-        String strDetail = JsonHelper.extractStringFieldFromArray(objResponse, "errorDetails", 0, "detail");
+but I want to print also - 
 
-        ExtentCucumberAdapter.addTestStepLog("errorDetails[0]: field=" + strField + ", title=" + strTitle + ", detail=" + strDetail);
+    private static void verifyTopLevelErrorFields(Response response, Map<String, String> expectedData) throws Exception {
+        String actualType = JsonHelper.extractStringField(response, "type");
+        String actualTitle = JsonHelper.extractStringField(response, "title");
+        String actualDetail = JsonHelper.extractStringField(response, "detail");
 
-        Assert.assertEquals(strTitle, mapExpectedFields.get("errorDetails.title"), "Mismatch in errorDetails.title");
-        Assert.assertEquals(strDetail, mapExpectedFields.get("errorDetails.detail"), "Mismatch in errorDetails.detail");
-        Assert.assertNotNull(strField, "errorDetails[0].field should not be null");
-        Assert.assertFalse(strField.trim().isEmpty(), "errorDetails[0].field should not be empty");
+        ExtentCucumberAdapter.addTestStepLog("Actual type: " + actualType);
+        ExtentCucumberAdapter.addTestStepLog("Actual title: " + actualTitle);
+        ExtentCucumberAdapter.addTestStepLog("Actual detail: " + actualDetail);
+
+        Assert.assertEquals(actualType, expectedData.get("type"), "Mismatch in 'type'");
+        Assert.assertEquals(actualTitle, expectedData.get("title"), "Mismatch in 'title'");
+        Assert.assertEquals(actualDetail, expectedData.get("detail"), "Mismatch in 'detail'");
     }
-}
-
-ErrorResponseVerifier objErrorVerifier = new ErrorResponseVerifier();
-
-@And("I verify the Work Request API 400 error response with below details")
-public void iVerifyWorkRequest400ErrorResponse(DataTable dataTable) throws Exception {
-    Map<String, String> mapExpectedErrorDetails = dataTable.asMap(String.class, String.class);
-    objErrorVerifier.verifyDescription(response, mapExpectedErrorDetails.get("description"));
-    objErrorVerifier.verifyValidationErrors(response, mapExpectedErrorDetails.get("error message"));
-}
-
-@And("I verify the Work Request AWS-style 400 error response with below details")
-public void iVerifyWorkRequestAWS400ErrorResponse(DataTable dataTable) throws Exception {
-    Map<String, String> mapExpectedAWSErrorFields = dataTable.asMap(String.class, String.class);
-    objErrorVerifier.verifyTopLevelAWSFields(response, mapExpectedAWSErrorFields);
-    objErrorVerifier.verifyErrorDetails(response, mapExpectedAWSErrorFields);
-}
