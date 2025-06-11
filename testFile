@@ -1,52 +1,58 @@
-package ICOS;
+Can we use switch in resolveDynamicText like we have used in otehr functions - 
 
-import ICOS.pojo.POJONewPersonRequest;
-import com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import commonLibrary.devHelperLibrary;
-import io.cucumber.datatable.DataTable;
-import io.restassured.response.Response;
-import org.testng.Assert;
-import utilities.*;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-public class NaturalPerson extends BaseApiClient {
-
-    private ObjectMapper objObjectMapper;
-    private CucumberLogger objCucumberLogger;
-    private EncryptionUtil objEncryptionUtil;
-
-    public NaturalPerson() throws Exception {
-        objObjectMapper = new ObjectMapper();
-        objCucumberLogger = new CucumberLogger();
-        objEncryptionUtil = new EncryptionUtil();
+public String normalize(String value) {
+        if (value == null) return "";
+        switch (value.trim().toUpperCase()) {
+            case "NA": return null;
+            case "EMPTY": return "";
+            default: return value;
+        }
     }
 
-    // Create Natural Person
-    public Response createNewPerson(String strEnvType, String strBearerToken, String strJwtToken, Map<String, String> mapPersonDetails, ScenarioContext scenarioContext) throws Exception {
-        String strUrl = getTYKURL(strEnvType, "TYK.CREATENEWPERSON");
-        POJONewPersonRequest pojoNewPersonRequest = Payloads.buildNewPersonPayload(mapPersonDetails);
-        String strRequestBody = objObjectMapper.writeValueAsString(pojoNewPersonRequest);
-
-        ExtentCucumberAdapter.addTestStepLog("Sending request to create Natural Person");
-
-        Response objResponse = sendPostRequest(strUrl, strBearerToken, strJwtToken, strRequestBody, null);
-        String strResponseBody = devHelperLibrary.getResponseBody(objResponse);
-        objCucumberLogger.PrintStatus("Response is: " + strResponseBody);
-
-        String strNaturalPersonObjectId = JsonHelper.extractStringField(objResponse, "objectId");
-        String strNaturalPersonOrderId = JsonHelper.extractStringField(objResponse, "orderId");
-        String strNaturalPersonUuid = pojoNewPersonRequest.getStrUuid();
-
-        scenarioContext.setContext("naturalPersonObjectId", strNaturalPersonObjectId);
-        scenarioContext.setContext("naturalPersonOrderId", strNaturalPersonOrderId);
-        scenarioContext.setContext("naturalPersonUuid", strNaturalPersonUuid);
-
-        return objResponse;
+    public String resolveDueDate(String dueDateInput) {
+        if (dueDateInput == null || dueDateInput.trim().isEmpty()) return "";
+        switch (dueDateInput.trim().toUpperCase()) {
+            case "NA": return null;
+            case "EMPTY": return "";
+            case "FUTURE": return LocalDate.now().plusDays(7).toString();
+            case "PAST": return LocalDate.now().minusDays(7).toString();
+            case "TODAY": return LocalDate.now().toString();
+            default: return dueDateInput;
+        }
     }
 
-where should I declret it ?
+    public String resolveDynamicText(String type) {
+        if (type == null || type.isEmpty()) return "";
+        if (type.equalsIgnoreCase("EMPTY")) return "";
+        if (type.equalsIgnoreCase("NA")) return null;
+
+        // Handle expression like "prefix + RANDOM_6 + suffix"
+        if (type.contains("+")) {
+            String[] parts = type.split("\\+");
+            StringBuilder result = new StringBuilder();
+            for (String part : parts) {
+                String trimmed = part.trim();
+                result.append(resolveDynamicText(trimmed));
+            }
+            return result.toString();
+        }
+
+        if (type.equalsIgnoreCase("RANDOM_LT_250")) {
+            return randomString(random.nextInt(249) + 1);
+        }
+
+        if (type.equalsIgnoreCase("RANDOM_GT_250")) {
+            return randomString(random.nextInt(500) + 251);
+        }
+
+        if (type.toUpperCase().startsWith("RANDOM_")) {
+            try {
+                int length = Integer.parseInt(type.substring(7));
+                return randomString(length);
+            } catch (NumberFormatException e) {
+                return type;
+            }
+        }
+
+        return type;
+    }
