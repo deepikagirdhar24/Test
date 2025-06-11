@@ -1,36 +1,137 @@
-public String resolveDynamicText(String type) {
-    if (type == null || type.isEmpty()) return "";
+My manager has suggested to remove static from JSONHlper, how to do that - 
 
-    // Handle expression like "prefix + RANDOM_6 + suffix"
-    if (type.contains("+")) {
-        String[] parts = type.split("\\+");
-        StringBuilder result = new StringBuilder();
-        for (String part : parts) {
-            String trimmed = part.trim();
-            result.append(resolveDynamicText(trimmed));
+public class JsonHelper {
+
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+
+    private static JsonNode getNodeByPath(JsonNode rootNode, String path) {
+        String[] keys = path.split("\\.");
+        for (String key : keys) {
+            if (rootNode == null) break;
+            rootNode = rootNode.path(key);
         }
-        return result.toString();
+        return rootNode;
     }
 
-    switch (type.trim().toUpperCase()) {
-        case "EMPTY":
-            return "";
-        case "NA":
-            return null;
-        case "RANDOM_LT_250":
-            return randomString(random.nextInt(249) + 1);
-        case "RANDOM_GT_250":
-            return randomString(random.nextInt(500) + 251);
-        default:
-            // Check if it's like RANDOM_6
-            if (type.toUpperCase().startsWith("RANDOM_")) {
-                try {
-                    int length = Integer.parseInt(type.substring(7));
-                    return randomString(length);
-                } catch (NumberFormatException e) {
-                    return type;
-                }
-            }
-            return type;
+    public static Object extractRawField(Response response, String fieldPath) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode node = getNodeByPath(rootNode, fieldPath);
+        return node.isMissingNode() || node.isNull() ? null : node;
     }
-}
+
+    public static String extractStringField(Response response, String fieldPath) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode node = getNodeByPath(rootNode, fieldPath);
+        return node.isMissingNode() || node.isNull() ? null : node.asText();
+    }
+
+    public static Boolean extractBooleanField(Response response, String fieldPath) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode node = getNodeByPath(rootNode, fieldPath);
+        return node.isMissingNode() || node.isNull() ? null : node.asBoolean();
+    }
+
+    public static boolean valueExistsInJsonArray(Response response, String jsonPath, String targetValue) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode arrayNode = getNodeByPath(rootNode, jsonPath);
+        if (arrayNode != null && arrayNode.isArray()) {
+            return iterateAndCheckArray(arrayNode, targetValue);
+        }
+        return false;
+    }
+
+    private static boolean iterateAndCheckArray(JsonNode arrayNode, String targetValue) {
+        for (JsonNode itemNode : arrayNode) {
+            String currentValue = itemNode.asText();
+            System.out.println("Checking item: " + currentValue);
+            if (targetValue.equals(currentValue)) {
+                logMatchFound(currentValue);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static void logMatchFound(String value) {
+        System.out.println("Match found: " + value);
+        ExtentCucumberAdapter.addTestStepLog("Actual value found: " + value);
+    }
+
+    public static List<String> extractListOfStringFieldsFromArray(Response response, String arrayField, String subField) {
+        List<Map<String, Object>> itemList = response.jsonPath().getList(arrayField);
+        List<String> result = new ArrayList<>();
+        for (Map<String, Object> item : itemList) {
+            Object value = item.get(subField);
+            if (value != null) {
+                result.add(value.toString());
+            }
+        }
+        return result;
+    }
+
+    public static void validateFieldExistsInArray(Response response, String arrayPath, String fieldName) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode arrayNode = rootNode.at(arrayPath); // Path should start with '/' for root level
+
+        if (!arrayNode.isArray()) {
+            throw new Exception("Expected an array at path: " + arrayPath);
+        }
+
+        for (JsonNode element : arrayNode) {
+            JsonNode fieldNode = element.get(fieldName);
+            if (fieldNode == null || fieldNode.asText().isEmpty()) {
+                throw new AssertionError("Missing or empty '" + fieldName + "' in one of the elements at: " + arrayPath);
+            }
+        }
+
+        ExtentCucumberAdapter.addTestStepLog("All elements in array " + arrayPath + " contain a valid '" + fieldName + "'");
+    }
+
+    public static String extractStringFieldFromArray(Response response, String arrayField, int index, String fieldName) {
+        return response.jsonPath().getString(arrayField + "[" + index + "]." + fieldName);
+    }
+
+    public static List<Map<String, Object>> extractListOfMapFromArray(Response response, String arrayFieldPath) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode arrayNode = getNodeByPath(rootNode, arrayFieldPath);
+
+        if (!arrayNode.isArray()) {
+            throw new Exception("Expected an array at path: " + arrayFieldPath);
+        }
+
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (JsonNode node : arrayNode) {
+            Map<String, Object> map = objectMapper.convertValue(node, new TypeReference<Map<String, Object>>() {});
+            result.add(map);
+        }
+
+        return result;
+    }
+
+also, how to use this in SD - 
+
+
+    // Create Address
+    public Response createAddress(String strEnvType, String strBearerToken, String strJWTToken,
+                                      Map<String, String> mapAddressDetails, ScenarioContext scenarioContext) throws Exception {
+
+        String strTYKURL = getTYKURL(strEnvType, "TYK.ADDRESS");
+        POJOAddressRequest pojoAddressRequest = payloads.buildAddressPayload(mapAddressDetails, true);
+        String strRequestBody = objObjectMapper.writeValueAsString(pojoAddressRequest);
+
+        ExtentCucumberAdapter.addTestStepLog("Sending request to Create Address");
+
+        Response objResponse = sendPostRequest(strTYKURL, strBearerToken, strJWTToken, strRequestBody, null);
+        String strResponseBody = devHelperLibrary.getResponseBody(objResponse);
+        objCucumberLogger.PrintStatus("Response is: " + strResponseBody);
+
+        String strAddressObjectId = JsonHelper.extractStringField(objResponse, "objectId");
+        String strAddressOrderId = JsonHelper.extractStringField(objResponse, "orderId");
+        String strAddressUuid = pojoAddressRequest.getStrUuid();
+
+        scenarioContext.setContext("AddressObjectId", strAddressObjectId);
+        scenarioContext.setContext("AddressOrderId", strAddressOrderId);
+        scenarioContext.setContext("AddressUuid", strAddressUuid);
+
+        return objResponse;
+    }
