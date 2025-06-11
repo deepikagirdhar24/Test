@@ -1,13 +1,17 @@
-public void verifyTopLevelAWSFields(Response objResponse, Map<String, String> mapExpectedFields) throws Exception {
-    String strActualType = JsonHelper.extractStringField(objResponse, "type");
-    String strActualTitle = JsonHelper.extractStringField(objResponse, "title");
-    String strActualDetail = JsonHelper.extractStringField(objResponse, "detail");
+    @And("I verify the Status Code for Work Request {string}")
+    public void iVerifyTheStatusCodeForWorkRequest(String strStatusCode) {
+        int responseCode= response.statusCode();
+        ExtentCucumberAdapter.addTestStepLog("Actual value of Status code is : " +responseCode);
+        Assert.assertEquals(Integer.parseInt(strStatusCode),responseCode);
+    }
 
-    ExtentCucumberAdapter.addTestStepLog("Actual type: " + strActualType);
-    ExtentCucumberAdapter.addTestStepLog("Actual title: " + strActualTitle);
-    ExtentCucumberAdapter.addTestStepLog("Actual detail: " + strActualDetail);
+    @And("I verify the {string} exists in Work Request response")
+    public void iVerifyTheKeyExistsInWorkRequestResponse(String key) throws Exception {
+        String strActualKeyValue = JsonHelper.extractStringField(response, key);
+        ExtentCucumberAdapter.addTestStepLog("Actual value of " + key + " is: " + strActualKeyValue);
 
-    Assert.assertEquals(strActualType, mapExpectedFields.get("type"), "Mismatch in 'type'");
-    Assert.assertEquals(strActualTitle, mapExpectedFields.get("title"), "Mismatch in 'title'");
-    Assert.assertEquals(strActualDetail, mapExpectedFields.get("detail"), "Mismatch in 'detail'");
-}
+        Assert.assertNotNull(strActualKeyValue, key + " should not be null");
+        Assert.assertFalse(strActualKeyValue.isEmpty(), key + " should not be empty");
+    }
+
+Can we add the implementaion in some reusable class ike ResponseVerifier, as the implementation is same for all APIs
