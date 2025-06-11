@@ -2,53 +2,53 @@ package utils;
 
 public class ErrorResponseVerifier {
 
-    public void verifyDescription(Response response, String expected) throws Exception {
-        String actual = JsonHelper.extractStringField(response, "description");
-        ExtentCucumberAdapter.addTestStepLog("Actual description: " + actual);
-        Assert.assertEquals(actual, expected, "Mismatch in description");
+    public void verifyDescription(Response objResponse, String strExpectedDescription) throws Exception {
+        String strActualDescription = JsonHelper.extractStringField(objResponse, "description");
+        ExtentCucumberAdapter.addTestStepLog("Actual description: " + strActualDescription);
+        Assert.assertEquals(strActualDescription, strExpectedDescription, "Mismatch in description");
     }
 
-    public void verifyValidationErrors(Response response, String expectedErrorsCSV) throws Exception {
-        List<String> actualErrors = JsonHelper.extractListOfStringFieldsFromArray(response, "validationErrors", "error");
-        ExtentCucumberAdapter.addTestStepLog("Actual error messages: " + actualErrors);
+    public void verifyValidationErrors(Response objResponse, String strExpectedErrorsCSV) throws Exception {
+        List<String> listActualErrors = JsonHelper.extractListOfStringFieldsFromArray(objResponse, "validationErrors", "error");
+        ExtentCucumberAdapter.addTestStepLog("Actual error messages: " + listActualErrors);
 
-        for (String expected : expectedErrorsCSV.split("\\s*,\\s*")) {
-            Assert.assertTrue(actualErrors.contains(expected), "Missing expected error: " + expected);
+        for (String strExpectedError : strExpectedErrorsCSV.split("\\s*,\\s*")) {
+            Assert.assertTrue(listActualErrors.contains(strExpectedError), "Missing expected error: " + strExpectedError);
         }
     }
 
-    public void verifyTopLevelAWSFields(Response response, Map<String, String> expected) throws Exception {
-        Assert.assertEquals(JsonHelper.extractStringField(response, "type"), expected.get("type"), "Mismatch in type");
-        Assert.assertEquals(JsonHelper.extractStringField(response, "title"), expected.get("title"), "Mismatch in title");
-        Assert.assertEquals(JsonHelper.extractStringField(response, "detail"), expected.get("detail"), "Mismatch in detail");
+    public void verifyTopLevelAWSFields(Response objResponse, Map<String, String> mapExpectedFields) throws Exception {
+        Assert.assertEquals(JsonHelper.extractStringField(objResponse, "type"), mapExpectedFields.get("type"), "Mismatch in type");
+        Assert.assertEquals(JsonHelper.extractStringField(objResponse, "title"), mapExpectedFields.get("title"), "Mismatch in title");
+        Assert.assertEquals(JsonHelper.extractStringField(objResponse, "detail"), mapExpectedFields.get("detail"), "Mismatch in detail");
     }
 
-    public void verifyErrorDetails(Response response, Map<String, String> expected) {
-        String field = JsonHelper.extractStringFieldFromArray(response, "errorDetails", 0, "field");
-        String title = JsonHelper.extractStringFieldFromArray(response, "errorDetails", 0, "title");
-        String detail = JsonHelper.extractStringFieldFromArray(response, "errorDetails", 0, "detail");
+    public void verifyErrorDetails(Response objResponse, Map<String, String> mapExpectedFields) {
+        String strField = JsonHelper.extractStringFieldFromArray(objResponse, "errorDetails", 0, "field");
+        String strTitle = JsonHelper.extractStringFieldFromArray(objResponse, "errorDetails", 0, "title");
+        String strDetail = JsonHelper.extractStringFieldFromArray(objResponse, "errorDetails", 0, "detail");
 
-        ExtentCucumberAdapter.addTestStepLog("errorDetails[0]: field=" + field + ", title=" + title + ", detail=" + detail);
+        ExtentCucumberAdapter.addTestStepLog("errorDetails[0]: field=" + strField + ", title=" + strTitle + ", detail=" + strDetail);
 
-        Assert.assertEquals(title, expected.get("errorDetails.title"), "Mismatch in errorDetails.title");
-        Assert.assertEquals(detail, expected.get("errorDetails.detail"), "Mismatch in errorDetails.detail");
-        Assert.assertNotNull(field, "errorDetails[0].field should not be null");
-        Assert.assertFalse(field.trim().isEmpty(), "errorDetails[0].field should not be empty");
+        Assert.assertEquals(strTitle, mapExpectedFields.get("errorDetails.title"), "Mismatch in errorDetails.title");
+        Assert.assertEquals(strDetail, mapExpectedFields.get("errorDetails.detail"), "Mismatch in errorDetails.detail");
+        Assert.assertNotNull(strField, "errorDetails[0].field should not be null");
+        Assert.assertFalse(strField.trim().isEmpty(), "errorDetails[0].field should not be empty");
     }
 }
 
-ErrorResponseVerifier errorVerifier = new ErrorResponseVerifier();
+ErrorResponseVerifier objErrorVerifier = new ErrorResponseVerifier();
 
 @And("I verify the Work Request API 400 error response with below details")
 public void iVerifyWorkRequest400ErrorResponse(DataTable dataTable) throws Exception {
-    Map<String, String> expected = dataTable.asMap(String.class, String.class);
-    errorVerifier.verifyDescription(response, expected.get("description"));
-    errorVerifier.verifyValidationErrors(response, expected.get("error message"));
+    Map<String, String> mapExpectedErrorDetails = dataTable.asMap(String.class, String.class);
+    objErrorVerifier.verifyDescription(response, mapExpectedErrorDetails.get("description"));
+    objErrorVerifier.verifyValidationErrors(response, mapExpectedErrorDetails.get("error message"));
 }
 
 @And("I verify the Work Request AWS-style 400 error response with below details")
 public void iVerifyWorkRequestAWS400ErrorResponse(DataTable dataTable) throws Exception {
-    Map<String, String> expected = dataTable.asMap(String.class, String.class);
-    errorVerifier.verifyTopLevelAWSFields(response, expected);
-    errorVerifier.verifyErrorDetails(response, expected);
+    Map<String, String> mapExpectedAWSErrorFields = dataTable.asMap(String.class, String.class);
+    objErrorVerifier.verifyTopLevelAWSFields(response, mapExpectedAWSErrorFields);
+    objErrorVerifier.verifyErrorDetails(response, mapExpectedAWSErrorFields);
 }
