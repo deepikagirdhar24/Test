@@ -2,13 +2,13 @@ package utils;
 
 public class ErrorResponseVerifier {
 
-    public static void verifyDescription(Response response, String expected) throws Exception {
+    public void verifyDescription(Response response, String expected) throws Exception {
         String actual = JsonHelper.extractStringField(response, "description");
         ExtentCucumberAdapter.addTestStepLog("Actual description: " + actual);
         Assert.assertEquals(actual, expected, "Mismatch in description");
     }
 
-    public static void verifyValidationErrors(Response response, String expectedErrorsCSV) throws Exception {
+    public void verifyValidationErrors(Response response, String expectedErrorsCSV) throws Exception {
         List<String> actualErrors = JsonHelper.extractListOfStringFieldsFromArray(response, "validationErrors", "error");
         ExtentCucumberAdapter.addTestStepLog("Actual error messages: " + actualErrors);
 
@@ -17,13 +17,13 @@ public class ErrorResponseVerifier {
         }
     }
 
-    public static void verifyTopLevelAWSFields(Response response, Map<String, String> expected) throws Exception {
+    public void verifyTopLevelAWSFields(Response response, Map<String, String> expected) throws Exception {
         Assert.assertEquals(JsonHelper.extractStringField(response, "type"), expected.get("type"), "Mismatch in type");
         Assert.assertEquals(JsonHelper.extractStringField(response, "title"), expected.get("title"), "Mismatch in title");
         Assert.assertEquals(JsonHelper.extractStringField(response, "detail"), expected.get("detail"), "Mismatch in detail");
     }
 
-    public static void verifyErrorDetails(Response response, Map<String, String> expected) {
+    public void verifyErrorDetails(Response response, Map<String, String> expected) {
         String field = JsonHelper.extractStringFieldFromArray(response, "errorDetails", 0, "field");
         String title = JsonHelper.extractStringFieldFromArray(response, "errorDetails", 0, "title");
         String detail = JsonHelper.extractStringFieldFromArray(response, "errorDetails", 0, "detail");
@@ -37,16 +37,18 @@ public class ErrorResponseVerifier {
     }
 }
 
+ErrorResponseVerifier errorVerifier = new ErrorResponseVerifier();
+
 @And("I verify the Work Request API 400 error response with below details")
 public void iVerifyWorkRequest400ErrorResponse(DataTable dataTable) throws Exception {
     Map<String, String> expected = dataTable.asMap(String.class, String.class);
-    ErrorResponseVerifier.verifyDescription(response, expected.get("description"));
-    ErrorResponseVerifier.verifyValidationErrors(response, expected.get("error message"));
+    errorVerifier.verifyDescription(response, expected.get("description"));
+    errorVerifier.verifyValidationErrors(response, expected.get("error message"));
 }
 
 @And("I verify the Work Request AWS-style 400 error response with below details")
 public void iVerifyWorkRequestAWS400ErrorResponse(DataTable dataTable) throws Exception {
-    Map<String, String> expectedData = dataTable.asMap(String.class, String.class);
-    ErrorResponseVerifier.verifyTopLevelError(expectedData);
-    ErrorResponseVerifier.verifyAwsErrorDetails(expectedData);
+    Map<String, String> expected = dataTable.asMap(String.class, String.class);
+    errorVerifier.verifyTopLevelAWSFields(response, expected);
+    errorVerifier.verifyErrorDetails(response, expected);
 }
