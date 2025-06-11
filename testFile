@@ -1,29 +1,52 @@
-private final PayloadHelper payloadHelper = new PayloadHelper();
+package ICOS;
 
+import ICOS.pojo.POJONewPersonRequest;
+import com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import commonLibrary.devHelperLibrary;
+import io.cucumber.datatable.DataTable;
+import io.restassured.response.Response;
+import org.testng.Assert;
+import utilities.*;
 
-public POJOAddressRequest buildAddressPayload(Map<String, String> mapAddressDetails, boolean includeUuid) {
-    POJOAddressRequest address = new POJOAddressRequest();
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-    if (includeUuid) {
-        address.setStrUuid(UUID.randomUUID().toString().substring(0, 7));
+public class NaturalPerson extends BaseApiClient {
+
+    private ObjectMapper objObjectMapper;
+    private CucumberLogger objCucumberLogger;
+    private EncryptionUtil objEncryptionUtil;
+
+    public NaturalPerson() throws Exception {
+        objObjectMapper = new ObjectMapper();
+        objCucumberLogger = new CucumberLogger();
+        objEncryptionUtil = new EncryptionUtil();
     }
 
-    address.setStrSalutation(payloadHelper.normalize(mapAddressDetails.get("salutation")));
-    address.setStrSalutationLetter(payloadHelper.normalize(mapAddressDetails.get("salutationLetter")));
-    address.setStrAttnOf(payloadHelper.normalize(mapAddressDetails.get("attnOf")));
-    address.setStrCrof(payloadHelper.normalize(mapAddressDetails.get("crof")));
-    address.setStrResidency(payloadHelper.normalize(mapAddressDetails.get("residency")));
-    address.setStrStreetNr(payloadHelper.normalize(mapAddressDetails.get("streetNr")));
+    // Create Natural Person
+    public Response createNewPerson(String strEnvType, String strBearerToken, String strJwtToken, Map<String, String> mapPersonDetails, ScenarioContext scenarioContext) throws Exception {
+        String strUrl = getTYKURL(strEnvType, "TYK.CREATENEWPERSON");
+        POJONewPersonRequest pojoNewPersonRequest = Payloads.buildNewPersonPayload(mapPersonDetails);
+        String strRequestBody = objObjectMapper.writeValueAsString(pojoNewPersonRequest);
 
-    String streetSuffix = payloadHelper.resolveDynamicText(mapAddressDetails.get("street"));
-    address.setStrStreet("teststreet" + streetSuffix);
+        ExtentCucumberAdapter.addTestStepLog("Sending request to create Natural Person");
 
-    address.setStrStreetAdd(payloadHelper.normalize(mapAddressDetails.get("streetAdd")));
-    address.setStrPoBox(payloadHelper.normalize(mapAddressDetails.get("poBox")));
-    address.setStrCity(payloadHelper.normalize(mapAddressDetails.get("city")));
-    address.setStrState(payloadHelper.resolveDynamicText(mapAddressDetails.get("state")));
-    address.setStrZip(payloadHelper.normalize(mapAddressDetails.get("zip")));
-    address.setStrCountry(payloadHelper.normalize(mapAddressDetails.get("country")));
+        Response objResponse = sendPostRequest(strUrl, strBearerToken, strJwtToken, strRequestBody, null);
+        String strResponseBody = devHelperLibrary.getResponseBody(objResponse);
+        objCucumberLogger.PrintStatus("Response is: " + strResponseBody);
 
-    return address;
-}
+        String strNaturalPersonObjectId = JsonHelper.extractStringField(objResponse, "objectId");
+        String strNaturalPersonOrderId = JsonHelper.extractStringField(objResponse, "orderId");
+        String strNaturalPersonUuid = pojoNewPersonRequest.getStrUuid();
+
+        scenarioContext.setContext("naturalPersonObjectId", strNaturalPersonObjectId);
+        scenarioContext.setContext("naturalPersonOrderId", strNaturalPersonOrderId);
+        scenarioContext.setContext("naturalPersonUuid", strNaturalPersonUuid);
+
+        return objResponse;
+    }
+
+where should I declret it ?
