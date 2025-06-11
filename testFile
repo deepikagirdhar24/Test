@@ -1,23 +1,13 @@
-Thsi is a functio used in reusable methods - 
+public void verifyTopLevelAWSFields(Response objResponse, Map<String, String> mapExpectedFields) throws Exception {
+    String strActualType = JsonHelper.extractStringField(objResponse, "type");
+    String strActualTitle = JsonHelper.extractStringField(objResponse, "title");
+    String strActualDetail = JsonHelper.extractStringField(objResponse, "detail");
 
-    public void verifyTopLevelAWSFields(Response objResponse, Map<String, String> mapExpectedFields) throws Exception {
-        Assert.assertEquals(JsonHelper.extractStringField(objResponse, "type"), mapExpectedFields.get("type"), "Mismatch in type");
-        Assert.assertEquals(JsonHelper.extractStringField(objResponse, "title"), mapExpectedFields.get("title"), "Mismatch in title");
-        Assert.assertEquals(JsonHelper.extractStringField(objResponse, "detail"), mapExpectedFields.get("detail"), "Mismatch in detail");
-    }
+    ExtentCucumberAdapter.addTestStepLog("Actual type: " + strActualType);
+    ExtentCucumberAdapter.addTestStepLog("Actual title: " + strActualTitle);
+    ExtentCucumberAdapter.addTestStepLog("Actual detail: " + strActualDetail);
 
-but I want to print also - 
-
-    private static void verifyTopLevelErrorFields(Response response, Map<String, String> expectedData) throws Exception {
-        String actualType = JsonHelper.extractStringField(response, "type");
-        String actualTitle = JsonHelper.extractStringField(response, "title");
-        String actualDetail = JsonHelper.extractStringField(response, "detail");
-
-        ExtentCucumberAdapter.addTestStepLog("Actual type: " + actualType);
-        ExtentCucumberAdapter.addTestStepLog("Actual title: " + actualTitle);
-        ExtentCucumberAdapter.addTestStepLog("Actual detail: " + actualDetail);
-
-        Assert.assertEquals(actualType, expectedData.get("type"), "Mismatch in 'type'");
-        Assert.assertEquals(actualTitle, expectedData.get("title"), "Mismatch in 'title'");
-        Assert.assertEquals(actualDetail, expectedData.get("detail"), "Mismatch in 'detail'");
-    }
+    Assert.assertEquals(strActualType, mapExpectedFields.get("type"), "Mismatch in 'type'");
+    Assert.assertEquals(strActualTitle, mapExpectedFields.get("title"), "Mismatch in 'title'");
+    Assert.assertEquals(strActualDetail, mapExpectedFields.get("detail"), "Mismatch in 'detail'");
+}
