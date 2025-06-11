@@ -1,42 +1,26 @@
-@And("I verify the following questions and answers in Document response")
-public void iVerifyAllQuestionAnswerPairs(DataTable dataTable) throws Exception {
-    List<Map<String, String>> listExpectedQAPairs = dataTable.asMaps(String.class, String.class);
-    List<Map<String, Object>> listActualQAPairs = JsonHelper.extractListOfMapFromArray(response, "questions");
+Can we use any reusable function in JSONHelper instead of jsonpath.getString
 
-    Assert.assertEquals(listActualQAPairs.size(), listExpectedQAPairs.size(), "Mismatch in number of question/answer pairs");
+    // Create Address
+    public Response createAddress(String strEnvType, String strBearerToken, String strJWTToken,
+                                      Map<String, String> mapAddressDetails, ScenarioContext scenarioContext) throws JsonProcessingException {
 
-    for (int i = 0; i < listExpectedQAPairs.size(); i++) {
-        Map<String, String> mapExpectedQA = listExpectedQAPairs.get(i);
-        Map<String, Object> mapActualQA = listActualQAPairs.get(i);
+        String strTYKURL = getTYKURL(strEnvType, "TYK.ADDRESS");
+        POJOAddressRequest pojoAddressRequest = Payloads.buildAddressPayload(mapAddressDetails, true);
+        String strRequestBody = objObjectMapper.writeValueAsString(pojoAddressRequest);
 
-        String strExpectedQuestion = mapExpectedQA.get("question");
-        String strExpectedAnswer = mapExpectedQA.get("answer");
-        String strActualQuestion = mapActualQA.get("question").toString();
-        String strActualAnswer = mapActualQA.get("answer").toString();
+        ExtentCucumberAdapter.addTestStepLog("Sending request to Create Address");
 
-        ExtentCucumberAdapter.addTestStepLog("Validating Q/A Pair " + (i + 1));
-        ExtentCucumberAdapter.addTestStepLog("Expected → Q: " + strExpectedQuestion + ", A: " + strExpectedAnswer);
-        ExtentCucumberAdapter.addTestStepLog("Actual   → Q: " + strActualQuestion + ", A: " + strActualAnswer);
+        Response objResponse = sendPostRequest(strTYKURL, strBearerToken, strJWTToken, strRequestBody, null);
+        String strResponseBody = devHelperLibrary.getResponseBody(objResponse);
+        objCucumberLogger.PrintStatus("Response is: " + strResponseBody);
 
-        Assert.assertEquals(strActualQuestion, strExpectedQuestion, "Mismatch in question at index " + (i + 1));
-        Assert.assertEquals(strActualAnswer, strExpectedAnswer, "Mismatch in answer at index " + (i + 1));
+        String strAddressObjectId = objResponse.jsonPath().getString("objectId");
+        String strAddressOrderId = objResponse.jsonPath().getString("orderId");
+        String strAddressUuid = pojoAddressRequest.getStrUuid();
+
+        scenarioContext.setContext("AddressObjectId", strAddressObjectId);
+        scenarioContext.setContext("AddressOrderId", strAddressOrderId);
+        scenarioContext.setContext("AddressUuid", strAddressUuid);
+
+        return objResponse;
     }
-}
-
-
-public static List<Map<String, Object>> extractListOfMapFromArray(Response response, String arrayFieldPath) throws Exception {
-    JsonNode rootNode = objectMapper.readTree(response.asString());
-    JsonNode arrayNode = getNodeByPath(rootNode, arrayFieldPath);
-
-    if (!arrayNode.isArray()) {
-        throw new Exception("Expected an array at path: " + arrayFieldPath);
-    }
-
-    List<Map<String, Object>> result = new ArrayList<>();
-    for (JsonNode node : arrayNode) {
-        Map<String, Object> map = objectMapper.convertValue(node, new TypeReference<Map<String, Object>>() {});
-        result.add(map);
-    }
-
-    return result;
-}
