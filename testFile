@@ -1,26 +1,7 @@
-Can we use any reusable function in JSONHelper instead of jsonpath.getString
+String strAddressObjectId = JsonHelper.extractStringField(objResponse, "objectId");
+String strAddressOrderId = JsonHelper.extractStringField(objResponse, "orderId");
+String strAddressUuid = pojoAddressRequest.getStrUuid();
 
-    // Create Address
-    public Response createAddress(String strEnvType, String strBearerToken, String strJWTToken,
-                                      Map<String, String> mapAddressDetails, ScenarioContext scenarioContext) throws JsonProcessingException {
-
-        String strTYKURL = getTYKURL(strEnvType, "TYK.ADDRESS");
-        POJOAddressRequest pojoAddressRequest = Payloads.buildAddressPayload(mapAddressDetails, true);
-        String strRequestBody = objObjectMapper.writeValueAsString(pojoAddressRequest);
-
-        ExtentCucumberAdapter.addTestStepLog("Sending request to Create Address");
-
-        Response objResponse = sendPostRequest(strTYKURL, strBearerToken, strJWTToken, strRequestBody, null);
-        String strResponseBody = devHelperLibrary.getResponseBody(objResponse);
-        objCucumberLogger.PrintStatus("Response is: " + strResponseBody);
-
-        String strAddressObjectId = objResponse.jsonPath().getString("objectId");
-        String strAddressOrderId = objResponse.jsonPath().getString("orderId");
-        String strAddressUuid = pojoAddressRequest.getStrUuid();
-
-        scenarioContext.setContext("AddressObjectId", strAddressObjectId);
-        scenarioContext.setContext("AddressOrderId", strAddressOrderId);
-        scenarioContext.setContext("AddressUuid", strAddressUuid);
-
-        return objResponse;
-    }
+scenarioContext.setContext("AddressObjectId", strAddressObjectId);
+scenarioContext.setContext("AddressOrderId", strAddressOrderId);
+scenarioContext.setContext("AddressUuid", strAddressUuid);
