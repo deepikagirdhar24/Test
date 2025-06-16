@@ -1,9 +1,41 @@
-    private final JsonHelper jsonHelper;
+Thsi is the payload response - 
 
-    // Constructor injection (recommended)
-    public ErrorResponseVerifier(JsonHelper jsonHelper) {
-        this.jsonHelper = jsonHelper;
-    }
+{
+    "id": "0",
+    "firstName": "First",
+    "middleName": "Middle",
+    "lastName": "Last",
+    "firm": "Firm",
+    "salutation": "mr",
+    "salutationLetter": "mr",
+    "attnOf": "Attention Of",
+    "crof": "c/0 Name",
+    "residency": "Residency",
+    "streetNr": "Street Nr",
+    "street": "Street name",
+    "streetAdd": "Street Addition",
+    "poBox": "P.O.Box 123",
+    "city": "Zurich",
+    "state": "ZH",
+    "zip": "8001",
+    "country": "CH"
+}
 
-JsonHelper jsonHelper = new JsonHelper();
-ErrorResponseVerifier verifier = new ErrorResponseVerifier(jsonHelper);
+Can you update feature file with Examples section also similar to 2 validations mentioned in feature file - 
+    And I verify the string field "id" is "<id>" in Address response
+    And I verify the string field "firstName" is "<firstName>" in Address response
+
+Feature: Verify Address API
+
+  Scenario Outline: Verify the Get Address API 
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    Then Send request to get Address Information
+    And I verify the Status Code for Address "200"
+    And I verify the string field "id" is "<id>" in Address response
+    And I verify the string field "firstName" is "<firstName>" in Address response
+
+    Examples:
+      | firstName    | middleName    | lastName    | salutation | salutationLetter | attnOf       | crof     | residency | streetNr | street                | streetAdd       | poBox       | city      | state     | zip      | country | 
+      | First        | Middlename    | Lastname    | mr         | mr               |              |          | 123       | 123      | teststreet + RANDOM_6 | Addition street | P.O.Box 123 | Zurich    | RANDOM_49 | 8001     | CH      | 
+
