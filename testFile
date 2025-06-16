@@ -1,30 +1,3 @@
-Thsi is the payload response - 
-
-{
-    "id": "0",
-    "firstName": "First",
-    "middleName": "Middle",
-    "lastName": "Last",
-    "firm": "Firm",
-    "salutation": "mr",
-    "salutationLetter": "mr",
-    "attnOf": "Attention Of",
-    "crof": "c/0 Name",
-    "residency": "Residency",
-    "streetNr": "Street Nr",
-    "street": "Street name",
-    "streetAdd": "Street Addition",
-    "poBox": "P.O.Box 123",
-    "city": "Zurich",
-    "state": "ZH",
-    "zip": "8001",
-    "country": "CH"
-}
-
-Can you update feature file with Examples section also similar to 2 validations mentioned in feature file - 
-    And I verify the string field "id" is "<id>" in Address response
-    And I verify the string field "firstName" is "<firstName>" in Address response
-
 Feature: Verify Address API
 
   Scenario Outline: Verify the Get Address API 
@@ -34,8 +7,23 @@ Feature: Verify Address API
     And I verify the Status Code for Address "200"
     And I verify the string field "id" is "<id>" in Address response
     And I verify the string field "firstName" is "<firstName>" in Address response
+    And I verify the string field "middleName" is "<middleName>" in Address response
+    And I verify the string field "lastName" is "<lastName>" in Address response
+    And I verify the string field "firm" is "<firm>" in Address response
+    And I verify the string field "salutation" is "<salutation>" in Address response
+    And I verify the string field "salutationLetter" is "<salutationLetter>" in Address response
+    And I verify the string field "attnOf" is "<attnOf>" in Address response
+    And I verify the string field "crof" is "<crof>" in Address response
+    And I verify the string field "residency" is "<residency>" in Address response
+    And I verify the string field "streetNr" is "<streetNr>" in Address response
+    And I verify the string field "street" is "<street>" in Address response
+    And I verify the string field "streetAdd" is "<streetAdd>" in Address response
+    And I verify the string field "poBox" is "<poBox>" in Address response
+    And I verify the string field "city" is "<city>" in Address response
+    And I verify the string field "state" is "<state>" in Address response
+    And I verify the string field "zip" is "<zip>" in Address response
+    And I verify the string field "country" is "<country>" in Address response
 
     Examples:
-      | firstName    | middleName    | lastName    | salutation | salutationLetter | attnOf       | crof     | residency | streetNr | street                | streetAdd       | poBox       | city      | state     | zip      | country | 
-      | First        | Middlename    | Lastname    | mr         | mr               |              |          | 123       | 123      | teststreet + RANDOM_6 | Addition street | P.O.Box 123 | Zurich    | RANDOM_49 | 8001     | CH      | 
-
+      | id | firstName | middleName | lastName | firm | salutation | salutationLetter | attnOf       | crof         | residency  | streetNr | street                 | streetAdd        | poBox       | city    | state     | zip   | country |
+      | 0  | First     | Middle     | Last     | Firm | mr         | mr               | Attention Of | c/0 Name     | Residency  | Street Nr| Street name           | Street Addition  | P.O.Box 123 | Zurich  | ZH        | 8001  | CH      |
