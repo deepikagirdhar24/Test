@@ -1,9 +1,57 @@
-public String getValue(Response response, String fieldPath) {
-    try {
-        return extractStringField(response, fieldPath);
-    } catch (Exception e) {
-        throw new RuntimeException("Failed to extract value from response for path: " + fieldPath, e);
-    }
-}
+Thsiis my feature file - 
 
-String actualValue = jsonHelper.getValue(response, fieldName);
+Feature: Verify Address API
+
+  Scenario Outline: Verify the Get Address API
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    Then Send request to get Address Information
+    And I verify the Status Code for Address "200"
+    And I verify the following fields in Address response
+      | id               | <id>               |
+      | firstName        | <firstName>        |
+      | middleName       | <middleName>       |
+      | lastName         | <lastName>         |
+      | firm             | <firm>             |
+      | salutation       | <salutation>       |
+      | salutationLetter | <salutationLetter> |
+      | attnOf           | <attnOf>           |
+      | crof             | <crof>             |
+      | residency        | <residency>        |
+      | streetNr         | <streetNr>         |
+      | street           | <street>           |
+      | streetAdd        | <streetAdd>        |
+      | poBox            | <poBox>            |
+      | city             | <city>             |
+      | state            | <state>            |
+      | zip              | <zip>              |
+      | country          | <country>          |
+
+    Examples:
+      | id | firstName | middleName | lastName | firm | salutation | salutationLetter | attnOf       | crof       | residency | streetNr  | street           | streetAdd       | poBox       | city   | state | zip  | country |
+      | 0  | First     | Middle     | Last     | Firm | mr         | mr               | Attention Of | c/0 Name   | Residency | Street Nr | Street name      | Street Addition | P.O.Box 123 | Zurich | ZH    | 8001 | CH      |
+
+
+    @Then("Send request to get Address Information")
+    public void sendRequestToGetAddressInformation() throws Exception {
+        String jwtToken = scenarioContext.getContext("JWTToken");
+        response = objAddress.getAddress(strEnvType, "Bearer", jwtToken);
+    }
+
+    // Get Address
+    public Response getAddress(String strEnvType, String strBearerToken, String strJWTToken) {
+
+        String strTYKURL = getTYKURL(strEnvType, "TYK.ADDRESS")+"/0";
+
+        ExtentCucumberAdapter.addTestStepLog("Sending GET request to fetch Address Information");
+
+        Response objResponse = sendGetRequest(strTYKURL, strBearerToken, strJWTToken, null, null);
+        String strResponseBody = devHelperLibrary.getResponseBody(objResponse);
+        objCucumberLogger.PrintStatus("Response is: " + strResponseBody);
+
+        return objResponse;
+    }
+
+I do not want to hardcode 0 here - how to pass it from feature file ?
+
+    String strTYKURL = getTYKURL(strEnvType, "TYK.ADDRESS")+"/0";
