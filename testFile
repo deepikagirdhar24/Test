@@ -1,41 +1,122 @@
-Feature: Verify Address API
+This is my JSONHleper - 
 
-  Scenario Outline: Verify the Get Address API 
-    Given Send Request to get Authentication Token for ICOS
-    When I generate the JWT Token
-    Then Send request to get Address Information
-    And I verify the Status Code for Address "200"
-    And I verify the following fields in Address response:
-      | id               | <id>               |
-      | firstName        | <firstName>        |
-      | middleName       | <middleName>       |
-      | lastName         | <lastName>         |
-      | firm             | <firm>             |
-      | salutation       | <salutation>       |
-      | salutationLetter | <salutationLetter> |
-      | attnOf           | <attnOf>           |
-      | crof             | <crof>             |
-      | residency        | <residency>        |
-      | streetNr         | <streetNr>         |
-      | street           | <street>           |
-      | streetAdd        | <streetAdd>        |
-      | poBox            | <poBox>            |
-      | city             | <city>             |
-      | state            | <state>            |
-      | zip              | <zip>              |
-      | country          | <country>          |
+package utilities;
 
-    Examples:
-      | id | firstName | middleName | lastName | firm | salutation | salutationLetter | attnOf       | crof       | residency | streetNr | street           | streetAdd       | poBox       | city   | state | zip  | country |
-      | 0  | First     | Middle     | Last     | Firm | mr         | mr               | Attention Of | c/0 Name   | Residency | StreetNr | Street name      | Street Addition | P.O.Box 123 | Zurich | ZH    | 8001 | CH      |
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.restassured.response.Response;
+import com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter;
+import org.json.JSONObject;
 
-@Then("I verify the following fields in Address response:")
-public void verifyMultipleFields(DataTable dataTable) {
-    Map<String, String> expectedValues = dataTable.asMap();
-    for (Map.Entry<String, String> entry : expectedValues.entrySet()) {
-        String key = entry.getKey();
-        String expectedValue = entry.getValue();
-        String actualValue = JsonHelper.getValue(response, key);
-        Assert.assertEquals(actualValue, expectedValue, "Mismatch for field: " + key);
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+public class JsonHelper {
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    private JsonNode getNodeByPath(JsonNode rootNode, String path) {
+        String[] keys = path.split("\\.");
+        for (String key : keys) {
+            if (rootNode == null) break;
+            rootNode = rootNode.path(key);
+        }
+        return rootNode;
     }
-}
+
+    public Object extractRawField(Response response, String fieldPath) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode node = getNodeByPath(rootNode, fieldPath);
+        return node.isMissingNode() || node.isNull() ? null : node;
+    }
+
+    public String extractStringField(Response response, String fieldPath) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode node = getNodeByPath(rootNode, fieldPath);
+        return node.isMissingNode() || node.isNull() ? null : node.asText();
+    }
+
+    public Boolean extractBooleanField(Response response, String fieldPath) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode node = getNodeByPath(rootNode, fieldPath);
+        return node.isMissingNode() || node.isNull() ? null : node.asBoolean();
+    }
+
+    public boolean valueExistsInJsonArray(Response response, String jsonPath, String targetValue) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode arrayNode = getNodeByPath(rootNode, jsonPath);
+        if (arrayNode != null && arrayNode.isArray()) {
+            return iterateAndCheckArray(arrayNode, targetValue);
+        }
+        return false;
+    }
+
+    private boolean iterateAndCheckArray(JsonNode arrayNode, String targetValue) {
+        for (JsonNode itemNode : arrayNode) {
+            String currentValue = itemNode.asText();
+            System.out.println("Checking item: " + currentValue);
+            if (targetValue.equals(currentValue)) {
+                logMatchFound(currentValue);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void logMatchFound(String value) {
+        System.out.println("Match found: " + value);
+        ExtentCucumberAdapter.addTestStepLog("Actual value found: " + value);
+    }
+
+    public List<String> extractListOfStringFieldsFromArray(Response response, String arrayField, String subField) {
+        List<Map<String, Object>> itemList = response.jsonPath().getList(arrayField);
+        List<String> result = new ArrayList<>();
+        for (Map<String, Object> item : itemList) {
+            Object value = item.get(subField);
+            if (value != null) {
+                result.add(value.toString());
+            }
+        }
+        return result;
+    }
+
+    public void validateFieldExistsInArray(Response response, String arrayPath, String fieldName) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode arrayNode = rootNode.at(arrayPath); // Path should start with '/' for root level
+
+        if (!arrayNode.isArray()) {
+            throw new Exception("Expected an array at path: " + arrayPath);
+        }
+
+        for (JsonNode element : arrayNode) {
+            JsonNode fieldNode = element.get(fieldName);
+            if (fieldNode == null || fieldNode.asText().isEmpty()) {
+                throw new AssertionError("Missing or empty '" + fieldName + "' in one of the elements at: " + arrayPath);
+            }
+        }
+
+        ExtentCucumberAdapter.addTestStepLog("All elements in array " + arrayPath + " contain a valid '" + fieldName + "'");
+    }
+
+    public String extractStringFieldFromArray(Response response, String arrayField, int index, String fieldName) {
+        return response.jsonPath().getString(arrayField + "[" + index + "]." + fieldName);
+    }
+
+    public List<Map<String, Object>> extractListOfMapFromArray(Response response, String arrayFieldPath) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode arrayNode = getNodeByPath(rootNode, arrayFieldPath);
+
+        if (!arrayNode.isArray()) {
+            throw new Exception("Expected an array at path: " + arrayFieldPath);
+        }
+
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (JsonNode node : arrayNode) {
+            Map<String, Object> map = objectMapper.convertValue(node, new TypeReference<Map<String, Object>>() {});
+            result.add(map);
+        }
+
+        return result;
+    } and you are using getValue in previous SD, what to do ?
