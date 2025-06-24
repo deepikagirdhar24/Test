@@ -1,51 +1,22 @@
-  Scenario Outline: Verify the Get Address API
-    Given Send Request to get Authentication Token for ICOS
-    When I generate the JWT Token
-    Then Send request to get Address Information for id "<id>"
-    And I verify the Status Code for Address "200"
-    And I verify the following fields in Address response
-      | id               | <id>               |
-      | firstName        | <firstName>        |
-      | middleName       | <middleName>       |
-      | lastName         | <lastName>         |
-      | firm             | <firm>             |
-      | salutation       | <salutation>       |
-      | salutationLetter | <salutationLetter> |
-      | attnOf           | <attnOf>           |
-      | crof             | <crof>             |
-      | residency        | <residency>        |
-      | streetNr         | <streetNr>         |
-      | street           | <street>           |
-      | streetAdd        | <streetAdd>        |
-      | poBox            | <poBox>            |
-      | city             | <city>             |
-      | state            | <state>            |
-      | zip              | <zip>              |
-      | country          | <country>          |
+@Then("I verify the following fields in Address response")
+public void verifyMultipleFields(DataTable dataTable) {
+    Map<String, String> mapResponseExpectedValues = dataTable.asMap();
+    
+    for (Map.Entry<String, String> entry : mapResponseExpectedValues.entrySet()) {
+        String strResponseKey = entry.getKey();
+        String strResponseExpectedValue = entry.getValue();
+        String strResponseActualValue = jsonHelper.getValue(response, strResponseKey);
 
-    Examples:
-      | id | firstName | middleName | lastName | firm | salutation | salutationLetter | attnOf       | crof       | residency | streetNr  | street           | streetAdd       | poBox       | city   | state | zip  | country |
-      | 0  | First     | Middle     | Last     | Firm | mr         | mr               | Attention Of | c/0 Name   | Residency | Street Nr | Street name      | Street Addition | P.O.Box 123 | Zurich | ZH    | 8001 | CH      |
+        // Log to Cucumber Report
+        ExtentCucumberAdapter.addTestStepLog(
+            "Validating field: '" + strResponseKey + "' | Expected: '" + strResponseExpectedValue + "' | Actual: '" + strResponseActualValue + "'"
+        );
 
-
-    @Then("I verify the following fields in Address response")
-    public void verifyMultipleFields(DataTable dataTable) {
-        Map<String, String> mapResponseExpectedValues = dataTable.asMap();
-        for (Map.Entry<String, String> entry : mapResponseExpectedValues.entrySet()) {
-            String strResponseKey = entry.getKey();
-            String strResponseExpectedValue = entry.getValue();
-            String strResponseActualValue = jsonHelper.getValue(response, strResponseKey);
-            Assert.assertEquals(strResponseActualValue, strResponseExpectedValue, "Mismatch for field: " + strResponseKey);
-        }
+        // Assertion
+        Assert.assertEquals(
+            strResponseActualValue,
+            strResponseExpectedValue,
+            "Mismatch for field: " + strResponseKey
+        );
     }
-
-In this step definition, I want to print in cucumber report - the expected actual result like below - 
-
-    @And("I verify the string field {string} is {string} in Document response")
-    public void iVerifyStringFieldEquals(String jsonPath, String expectedValue) throws Exception {
-        String actualValue = jsonHelper.extractStringField(response, jsonPath);
-        ExtentCucumberAdapter.addTestStepLog("Expected value at '" + jsonPath + "': " + expectedValue + ", Actual: " + actualValue);
-        Assert.assertEquals(actualValue, expectedValue, "Mismatch at: " + jsonPath);
-    }
-
-how to do this ?
+}
