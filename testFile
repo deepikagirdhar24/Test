@@ -1,11 +1,7 @@
-Thsiis my feature file - 
-
-Feature: Verify Address API
-
   Scenario Outline: Verify the Get Address API
     Given Send Request to get Authentication Token for ICOS
     When I generate the JWT Token
-    Then Send request to get Address Information
+    Then Send request to get Address Information for id "<id>"
     And I verify the Status Code for Address "200"
     And I verify the following fields in Address response
       | id               | <id>               |
@@ -32,26 +28,24 @@ Feature: Verify Address API
       | 0  | First     | Middle     | Last     | Firm | mr         | mr               | Attention Of | c/0 Name   | Residency | Street Nr | Street name      | Street Addition | P.O.Box 123 | Zurich | ZH    | 8001 | CH      |
 
 
-    @Then("Send request to get Address Information")
-    public void sendRequestToGetAddressInformation() throws Exception {
-        String jwtToken = scenarioContext.getContext("JWTToken");
-        response = objAddress.getAddress(strEnvType, "Bearer", jwtToken);
+    @Then("I verify the following fields in Address response")
+    public void verifyMultipleFields(DataTable dataTable) {
+        Map<String, String> mapResponseExpectedValues = dataTable.asMap();
+        for (Map.Entry<String, String> entry : mapResponseExpectedValues.entrySet()) {
+            String strResponseKey = entry.getKey();
+            String strResponseExpectedValue = entry.getValue();
+            String strResponseActualValue = jsonHelper.getValue(response, strResponseKey);
+            Assert.assertEquals(strResponseActualValue, strResponseExpectedValue, "Mismatch for field: " + strResponseKey);
+        }
     }
 
-    // Get Address
-    public Response getAddress(String strEnvType, String strBearerToken, String strJWTToken) {
+In this step definition, I want to print in cucumber report - the expected actual result like below - 
 
-        String strTYKURL = getTYKURL(strEnvType, "TYK.ADDRESS")+"/0";
-
-        ExtentCucumberAdapter.addTestStepLog("Sending GET request to fetch Address Information");
-
-        Response objResponse = sendGetRequest(strTYKURL, strBearerToken, strJWTToken, null, null);
-        String strResponseBody = devHelperLibrary.getResponseBody(objResponse);
-        objCucumberLogger.PrintStatus("Response is: " + strResponseBody);
-
-        return objResponse;
+    @And("I verify the string field {string} is {string} in Document response")
+    public void iVerifyStringFieldEquals(String jsonPath, String expectedValue) throws Exception {
+        String actualValue = jsonHelper.extractStringField(response, jsonPath);
+        ExtentCucumberAdapter.addTestStepLog("Expected value at '" + jsonPath + "': " + expectedValue + ", Actual: " + actualValue);
+        Assert.assertEquals(actualValue, expectedValue, "Mismatch at: " + jsonPath);
     }
 
-I do not want to hardcode 0 here - how to pass it from feature file ?
-
-    String strTYKURL = getTYKURL(strEnvType, "TYK.ADDRESS")+"/0";
+how to do this ?
