@@ -1,63 +1,19 @@
-This is POJO of Address - 
-
 package ICOS.pojo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class POJOAddressRequest {
+public class POJOWorkRequest {
 
     @JsonProperty("uuid")
     private String strUuid;
 
-    @JsonProperty("firstName")
-    private String strFirstName;
+    @JsonProperty("type")
+    private String strType;
 
-    @JsonProperty("middleName")
-    private String strMiddleName;
-
-    @JsonProperty("lastName")
-    private String strLastName;
-
-    @JsonProperty("salutation")
-    private String strSalutation;
-
-    @JsonProperty("salutationLetter")
-    private String strSalutationLetter;
-
-    @JsonProperty("attnOf")
-    private String strAttnOf;
-
-    @JsonProperty("crof")
-    private String strCrof;
-
-    @JsonProperty("residency")
-    private String strResidency;
-
-    @JsonProperty("streetNr")
-    private String strStreetNr;
-
-    @JsonProperty("street")
-    private String strStreet;
-
-    @JsonProperty("streetAdd")
-    private String strStreetAdd;
-
-    @JsonProperty("poBox")
-    private String strPoBox;
-
-    @JsonProperty("city")
-    private String strCity;
-
-    @JsonProperty("state")
-    private String strState;
-
-    @JsonProperty("zip")
-    private String strZip;
-
-    @JsonProperty("country")
-    private String strCountry;
+    @JsonProperty("bpId")
+    private String strBpId;
 
     // Getters and Setters
 
@@ -69,139 +25,19 @@ public class POJOAddressRequest {
         this.strUuid = strUuid;
     }
 
-    public String getStrFirstName() {
-        return strFirstName;
+    public String getStrType() {
+        return strType;
     }
 
-    public void setStrFirstName(String strFirstName) {
-        this.strFirstName = strFirstName;
+    public void setStrType(String strType) {
+        this.strType = strType;
     }
 
-    public String getStrMiddleName() {
-        return strMiddleName;
+    public String getStrBpId() {
+        return strBpId;
     }
 
-    public void setStrMiddleName(String strMiddleName) {
-        this.strMiddleName = strMiddleName;
+    public void setStrBpId(String strBpId) {
+        this.strBpId = strBpId;
     }
-
-    public String getStrLastName() {
-        return strLastName;
-    }
-
-    public void setStrLastName(String strLastName) {
-        this.strLastName = strLastName;
-    }
-
-    public String getStrSalutation() {
-        return strSalutation;
-    }
-
-    public void setStrSalutation(String strSalutation) {
-        this.strSalutation = strSalutation;
-    }
-
-    public String getStrSalutationLetter() {
-        return strSalutationLetter;
-    }
-
-    public void setStrSalutationLetter(String strSalutationLetter) {
-        this.strSalutationLetter = strSalutationLetter;
-    }
-
-    public String getStrAttnOf() {
-        return strAttnOf;
-    }
-
-    public void setStrAttnOf(String strAttnOf) {
-        this.strAttnOf = strAttnOf;
-    }
-
-    public String getStrCrof() {
-        return strCrof;
-    }
-
-    public void setStrCrof(String strCrof) {
-        this.strCrof = strCrof;
-    }
-
-    public String getStrResidency() {
-        return strResidency;
-    }
-
-    public void setStrResidency(String strResidency) {
-        this.strResidency = strResidency;
-    }
-
-    public String getStrStreetNr() {
-        return strStreetNr;
-    }
-
-    public void setStrStreetNr(String strStreetNr) {
-        this.strStreetNr = strStreetNr;
-    }
-
-    public String getStrStreet() {
-        return strStreet;
-    }
-
-    public void setStrStreet(String strStreet) {
-        this.strStreet = strStreet;
-    }
-
-    public String getStrStreetAdd() {
-        return strStreetAdd;
-    }
-
-    public void setStrStreetAdd(String strStreetAdd) {
-        this.strStreetAdd = strStreetAdd;
-    }
-
-    public String getStrPoBox() {
-        return strPoBox;
-    }
-
-    public void setStrPoBox(String strPoBox) {
-        this.strPoBox = strPoBox;
-    }
-
-    public String getStrCity() {
-        return strCity;
-    }
-
-    public void setStrCity(String strCity) {
-        this.strCity = strCity;
-    }
-
-    public String getStrState() {
-        return strState;
-    }
-
-    public void setStrState(String strState) {
-        this.strState = strState;
-    }
-
-    public String getStrZip() {
-        return strZip;
-    }
-
-    public void setStrZip(String strZip) {
-        this.strZip = strZip;
-    }
-
-    public String getStrCountry() {
-        return strCountry;
-    }
-
-    public void setStrCountry(String strCountry) {
-        this.strCountry = strCountry;
-    }
-}
-
-SImilar to this create POJO of the below payload - 
-
-{
-    "uuid": "12345",
-    "type": "banking",
-    "bpId": "66001371"
 }
