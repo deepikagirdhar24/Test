@@ -1,4 +1,18 @@
-We are calling it lik ethis - 
+public String resolveId(String input, String resolvedValue) {
+    if (input == null) {
+        return "";
+    }
 
-        String ownerId = payloadHelper.resolveId(mapMoneyAccountDetails.get("ownerId"), strContainerObjectId);
-        moneyAccount.setStrOwnerId((ownerId));
+    switch (input.trim().toUpperCase()) {
+        case "EMPTY":
+            return "";
+        case "NA":
+            return null;
+        case "NATURAL_PERSON_OBJECT_ID":
+        case "CONTAINER_OBJECT_ID":
+        case "ADDRESS_OBJECT_ID":
+            return resolvedValue;
+        default:
+            return input;
+    }
+}
