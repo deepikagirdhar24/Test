@@ -1,42 +1,45 @@
-public POJOMoneyAccountRequest buildMoneyAccountPayload(Map<String, String> mapAccountDetails, boolean includeUuid) {
-    POJOMoneyAccountRequest account = new POJOMoneyAccountRequest();
+In the THen send request to create Money Account beelow - Add the payload paramaters same as Address and COntainer - 
 
-    if (includeUuid) {
-        account.setUuid(UUID.randomUUID().toString().substring(0, 7));
-    }
+  Scenario Outline: Verify the Post Money Account API with valid data - <Comments>
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    Then Send Request to create Container with below details
+      | type   | banking   |
+      | bpId   | 66001416  |
+    Then Send request to create Address with below details
+      | firstName       | Firstname             |
+      | middleName      | Middlename            |
+      | lastName        | Lastname              |
+      | salutation      | mr                    |
+      | salutationLetter| mr                    |
+      | attnOf          |                       |
+      | crof            |                       |
+      | residency       | 123                   |
+      | streetNr        | 123                   |
+      | street          | teststreet + RANDOM_6 |
+      | streetAdd       | Addition street       |
+      | poBox           | P.O.Box 123           |
+      | city            | Zurich                |
+      | state           | RANDOM_49             |
+      | zip             | 8001                  |
+      | country         | CH                    |
+    Then Send Request to create Money Account with below details
+    And I verify the Status Code for Money Account "200"
+    And I verify the "objectId" exists in Money Account response
+    And I verify the "orderId" exists in Money Account response
 
-    account.setOwnerId(payloadHelper.normalize(mapAccountDetails.get("ownerId")));
-    account.setType(payloadHelper.normalize(mapAccountDetails.get("type")));
-    account.setCurrency(payloadHelper.normalize(mapAccountDetails.get("currency")));
-    account.setRubric(payloadHelper.normalize(mapAccountDetails.get("rubric")));
-
-    // Parse comma-separated address IDs into List<String>
-    String addressList = payloadHelper.normalize(mapAccountDetails.get("addressIds")); // "57853981,57853981"
-    if (addressList != null) {
-        List<String> addressIds = Arrays.asList(addressList.split(","));
-        account.setAddressIds(addressIds);
-    }
-
-    // Set optional numeric values, convert from String to Double
-    String offsetDay = mapAccountDetails.get("mailingOffsetDay");
-    if (offsetDay != null) {
-        account.setMailingOffsetDay(Double.parseDouble(offsetDay));
-    }
-
-    String offsetMonth = mapAccountDetails.get("mailingOffsetMonth");
-    if (offsetMonth != null) {
-        account.setMailingOffsetMonth(Double.parseDouble(offsetMonth));
-    }
-
-    String minimalNoticeDays = mapAccountDetails.get("minimalNoticeDays");
-    if (minimalNoticeDays != null) {
-        account.setMinimalNoticeDays(Double.parseDouble(minimalNoticeDays));
-    }
-
-    String isMailingPaper = mapAccountDetails.get("isMailingPaper"); // true/false as String
-    if (isMailingPaper != null) {
-        account.setIsMailingPaper(Boolean.parseBoolean(isMailingPaper));
-    }
-
-    return account;
+{
+    "uuid": "12345",
+    "ownerId": "66315578.1000",
+    "type": "privateCurrentAccount",
+    "currency": "GBP",
+    "rubric": "Test Rubric",
+    "addressIds": [
+        "57853981",
+        "57853981"
+    ],
+    "mailingOffsetDay": 7.0,
+    "mailingOffsetMonth": 2.2,
+    "minimalNoticeDays": 60.0,
+    "isMailingPaper": true
 }
