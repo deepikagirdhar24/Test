@@ -1,13 +1,169 @@
-public String resolveId(String input, String resolvedValue) {
-    if (input == null || input.trim().isEmpty() || input.equalsIgnoreCase("EMPTY")) {
-        return "";
+This is pojo of COntainer - 
+
+package ICOS.pojo;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class POJOContainerRequest {
+
+    @JsonProperty("uuid")
+    private String strUuid;
+
+    @JsonProperty("type")
+    private String strType;
+
+    @JsonProperty("bpId")
+    private String strBpId;
+
+    // Getters and Setters
+
+    public String getStrUuid() {
+        return strUuid;
     }
 
-    if (input.equalsIgnoreCase("NATURAL_PERSON_OBJECT_ID") ||
-        input.equalsIgnoreCase("CONTAINER_OBJECT_ID") ||
-        input.equalsIgnoreCase("ADDRESS_OBJECT_ID")) {
-        return resolvedValue;
+    public void setStrUuid(String strUuid) {
+        this.strUuid = strUuid;
     }
 
-    return input;
+    public String getStrType() {
+        return strType;
+    }
+
+    public void setStrType(String strType) {
+        this.strType = strType;
+    }
+
+    public String getStrBpId() {
+        return strBpId;
+    }
+
+    public void setStrBpId(String strBpId) {
+        this.strBpId = strBpId;
+    }
+}
+
+keep naming convention like str etc. in case of Money account pojo - 
+
+package ICOS.pojo;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.List;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class POJOMoneyAccountRequest {
+
+    @JsonProperty("uuid")
+    private String uuid;
+
+    @JsonProperty("ownerId")
+    private String ownerId;
+
+    @JsonProperty("type")
+    private String type;
+
+    @JsonProperty("currency")
+    private String currency;
+
+    @JsonProperty("rubric")
+    private String rubric;
+
+    @JsonProperty("addressIds")
+    private List<String> addressIds;
+
+    @JsonProperty("mailingOffsetDay")
+    private Double mailingOffsetDay;
+
+    @JsonProperty("mailingOffsetMonth")
+    private Double mailingOffsetMonth;
+
+    @JsonProperty("minimalNoticeDays")
+    private Double minimalNoticeDays;
+
+    @JsonProperty("isMailingPaper")
+    private Boolean isMailingPaper;
+
+    // Getters and Setters
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public String getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(String ownerId) {
+        this.ownerId = ownerId;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
+
+    public String getRubric() {
+        return rubric;
+    }
+
+    public void setRubric(String rubric) {
+        this.rubric = rubric;
+    }
+
+    public List<String> getAddressIds() {
+        return addressIds;
+    }
+
+    public void setAddressIds(List<String> addressIds) {
+        this.addressIds = addressIds;
+    }
+
+    public Double getMailingOffsetDay() {
+        return mailingOffsetDay;
+    }
+
+    public void setMailingOffsetDay(Double mailingOffsetDay) {
+        this.mailingOffsetDay = mailingOffsetDay;
+    }
+
+    public Double getMailingOffsetMonth() {
+        return mailingOffsetMonth;
+    }
+
+    public void setMailingOffsetMonth(Double mailingOffsetMonth) {
+        this.mailingOffsetMonth = mailingOffsetMonth;
+    }
+
+    public Double getMinimalNoticeDays() {
+        return minimalNoticeDays;
+    }
+
+    public void setMinimalNoticeDays(Double minimalNoticeDays) {
+        this.minimalNoticeDays = minimalNoticeDays;
+    }
+
+    public Boolean getIsMailingPaper() {
+        return isMailingPaper;
+    }
+
+    public void setIsMailingPaper(Boolean isMailingPaper) {
+        this.isMailingPaper = isMailingPaper;
+    }
 }
