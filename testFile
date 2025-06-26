@@ -1,21 +1,41 @@
-This is pojo of COntainer - 
-
 package ICOS.pojo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class POJOContainerRequest {
+public class POJOMoneyAccountRequest {
 
     @JsonProperty("uuid")
     private String strUuid;
 
+    @JsonProperty("ownerId")
+    private String strOwnerId;
+
     @JsonProperty("type")
     private String strType;
 
-    @JsonProperty("bpId")
-    private String strBpId;
+    @JsonProperty("currency")
+    private String strCurrency;
+
+    @JsonProperty("rubric")
+    private String strRubric;
+
+    @JsonProperty("addressIds")
+    private List<String> lstAddressIds;
+
+    @JsonProperty("mailingOffsetDay")
+    private Double dblMailingOffsetDay;
+
+    @JsonProperty("mailingOffsetMonth")
+    private Double dblMailingOffsetMonth;
+
+    @JsonProperty("minimalNoticeDays")
+    private Double dblMinimalNoticeDays;
+
+    @JsonProperty("isMailingPaper")
+    private Boolean blnIsMailingPaper;
 
     // Getters and Setters
 
@@ -27,6 +47,14 @@ public class POJOContainerRequest {
         this.strUuid = strUuid;
     }
 
+    public String getStrOwnerId() {
+        return strOwnerId;
+    }
+
+    public void setStrOwnerId(String strOwnerId) {
+        this.strOwnerId = strOwnerId;
+    }
+
     public String getStrType() {
         return strType;
     }
@@ -35,135 +63,59 @@ public class POJOContainerRequest {
         this.strType = strType;
     }
 
-    public String getStrBpId() {
-        return strBpId;
+    public String getStrCurrency() {
+        return strCurrency;
     }
 
-    public void setStrBpId(String strBpId) {
-        this.strBpId = strBpId;
-    }
-}
-
-keep naming convention like str etc. in case of Money account pojo - 
-
-package ICOS.pojo;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.List;
-
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class POJOMoneyAccountRequest {
-
-    @JsonProperty("uuid")
-    private String uuid;
-
-    @JsonProperty("ownerId")
-    private String ownerId;
-
-    @JsonProperty("type")
-    private String type;
-
-    @JsonProperty("currency")
-    private String currency;
-
-    @JsonProperty("rubric")
-    private String rubric;
-
-    @JsonProperty("addressIds")
-    private List<String> addressIds;
-
-    @JsonProperty("mailingOffsetDay")
-    private Double mailingOffsetDay;
-
-    @JsonProperty("mailingOffsetMonth")
-    private Double mailingOffsetMonth;
-
-    @JsonProperty("minimalNoticeDays")
-    private Double minimalNoticeDays;
-
-    @JsonProperty("isMailingPaper")
-    private Boolean isMailingPaper;
-
-    // Getters and Setters
-
-    public String getUuid() {
-        return uuid;
+    public void setStrCurrency(String strCurrency) {
+        this.strCurrency = strCurrency;
     }
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
+    public String getStrRubric() {
+        return strRubric;
     }
 
-    public String getOwnerId() {
-        return ownerId;
+    public void setStrRubric(String strRubric) {
+        this.strRubric = strRubric;
     }
 
-    public void setOwnerId(String ownerId) {
-        this.ownerId = ownerId;
+    public List<String> getLstAddressIds() {
+        return lstAddressIds;
     }
 
-    public String getType() {
-        return type;
+    public void setLstAddressIds(List<String> lstAddressIds) {
+        this.lstAddressIds = lstAddressIds;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public Double getDblMailingOffsetDay() {
+        return dblMailingOffsetDay;
     }
 
-    public String getCurrency() {
-        return currency;
+    public void setDblMailingOffsetDay(Double dblMailingOffsetDay) {
+        this.dblMailingOffsetDay = dblMailingOffsetDay;
     }
 
-    public void setCurrency(String currency) {
-        this.currency = currency;
+    public Double getDblMailingOffsetMonth() {
+        return dblMailingOffsetMonth;
     }
 
-    public String getRubric() {
-        return rubric;
+    public void setDblMailingOffsetMonth(Double dblMailingOffsetMonth) {
+        this.dblMailingOffsetMonth = dblMailingOffsetMonth;
     }
 
-    public void setRubric(String rubric) {
-        this.rubric = rubric;
+    public Double getDblMinimalNoticeDays() {
+        return dblMinimalNoticeDays;
     }
 
-    public List<String> getAddressIds() {
-        return addressIds;
+    public void setDblMinimalNoticeDays(Double dblMinimalNoticeDays) {
+        this.dblMinimalNoticeDays = dblMinimalNoticeDays;
     }
 
-    public void setAddressIds(List<String> addressIds) {
-        this.addressIds = addressIds;
+    public Boolean getBlnIsMailingPaper() {
+        return blnIsMailingPaper;
     }
 
-    public Double getMailingOffsetDay() {
-        return mailingOffsetDay;
-    }
-
-    public void setMailingOffsetDay(Double mailingOffsetDay) {
-        this.mailingOffsetDay = mailingOffsetDay;
-    }
-
-    public Double getMailingOffsetMonth() {
-        return mailingOffsetMonth;
-    }
-
-    public void setMailingOffsetMonth(Double mailingOffsetMonth) {
-        this.mailingOffsetMonth = mailingOffsetMonth;
-    }
-
-    public Double getMinimalNoticeDays() {
-        return minimalNoticeDays;
-    }
-
-    public void setMinimalNoticeDays(Double minimalNoticeDays) {
-        this.minimalNoticeDays = minimalNoticeDays;
-    }
-
-    public Boolean getIsMailingPaper() {
-        return isMailingPaper;
-    }
-
-    public void setIsMailingPaper(Boolean isMailingPaper) {
-        this.isMailingPaper = isMailingPaper;
+    public void setBlnIsMailingPaper(Boolean blnIsMailingPaper) {
+        this.blnIsMailingPaper = blnIsMailingPaper;
     }
 }
