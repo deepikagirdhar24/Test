@@ -1,10 +1,43 @@
+Scenario Outline: Verify the Post Money Account API with valid data - <Comments>
+  Given Send Request to get Authentication Token for ICOS
+  When I generate the JWT Token
+  Then Send Request to create Container with below details
+    | type | banking  |
+    | bpId | <bpId>   |
+
+  Then Send request to create Address with below details
+    | firstName        | Firstname             |
+    | middleName       | Middlename            |
+    | lastName         | Lastname              |
+    | salutation       | mr                    |
+    | salutationLetter | mr                    |
+    | attnOf           |                        |
+    | crof             |                        |
+    | residency        | 123                   |
+    | streetNr         | 123                   |
+    | street           | teststreet + RANDOM_6 |
+    | streetAdd        | Addition street       |
+    | poBox            | P.O.Box 123           |
+    | city             | Zurich                |
+    | state            | RANDOM_49             |
+    | zip              | 8001                  |
+    | country          | CH                    |
+
   Then Send Request to create Money Account with below details
-    | ownerId            | <ownerId>                     |
-    | type               | privateCurrentAccount         |
-    | currency           | GBP                           |
-    | rubric             | Test Rubric                   |
-    | addressIds         | <addressId>,<addressId>       |
-    | mailingOffsetDay   | 7.0                           |
-    | mailingOffsetMonth | 2.2                           |
-    | minimalNoticeDays  | 60.0                          |
-    | isMailingPaper     | true                          |
+    | ownerId            | <ownerId>             |
+    | type               | <type>                |
+    | currency           | <currency>            |
+    | rubric             | <rubric>              |
+    | addressIds         | <addressIds>          |
+    | mailingOffsetDay   | <mailingOffsetDay>    |
+    | mailingOffsetMonth | <mailingOffsetMonth>  |
+    | minimalNoticeDays  | <minimalNoticeDays>   |
+    | isMailingPaper     | <isMailingPaper>      |
+
+  And I verify the Status Code for Money Account "200"
+  And I verify the "objectId" exists in Money Account response
+  And I verify the "orderId" exists in Money Account response
+
+Examples:
+  | Comments       | bpId     | ownerId           | type                  | currency | rubric        | addressIds             | mailingOffsetDay | mailingOffsetMonth | minimalNoticeDays | isMailingPaper |
+  | Valid payload  | 66001416 | <to-be-replaced>  | privateCurrentAccount | GBP      | Test Rubric   | <to-be-replaced>,<to-be-replaced> | 7.0              | 2.2                | 60.0              | true            |
