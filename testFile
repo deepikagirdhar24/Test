@@ -1,121 +1,53 @@
-package ICOS.pojo;
+    public POJOMoneyAccountRequest buildMoneyAccountPayload(Map<String, String> mapMoneyAccountDetails, ScenarioContext scenarioContext) {
+        POJOMoneyAccountRequest moneyAccount = new POJOMoneyAccountRequest();
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.List;
+        String strContainerObjectId = scenarioContext.getContext("containerObjectId");
+        String strAddressObjectId = scenarioContext.getContext("addressObjectId");
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class POJOMoneyAccountRequest {
+        moneyAccount.setStrUuid(UUID.randomUUID().toString().substring(0, 7));
 
-    @JsonProperty("uuid")
-    private String strUuid;
+        String ownerId = payloadHelper.resolveId(mapMoneyAccountDetails.get("ownerId"), strContainerObjectId);
+        moneyAccount.setStrOwnerId((ownerId));
+        
+        moneyAccount.setStrType(payloadHelper.normalize(mapMoneyAccountDetails.get("type")));
+        moneyAccount.setStrCurrency(payloadHelper.normalize(mapMoneyAccountDetails.get("currency")));
+        moneyAccount.setStrRubric(payloadHelper.normalize(mapMoneyAccountDetails.get("rubric")));
 
-    @JsonProperty("ownerId")
-    private String strOwnerId;
+        // Parse comma-separated address IDs into List<String>
+//        String addressList = payloadHelper.normalize(mapMoneyAccountDetails.get("addressIds")); // "57853981,57853981"
+//        if (addressList != null) {
+//            List<String> addressIds = Arrays.asList(addressList.split(","));
+//            moneyAccount.setLstAddressIds(addressIds);
+//        }
 
-    @JsonProperty("type")
-    private String strType;
+        String addressList = payloadHelper.normalize(mapMoneyAccountDetails.get("addressIds")); // "57853981,57853981"
+        if (addressList != null) {
+            List<String> addressIds = Arrays.asList(addressList.split(","));
+            moneyAccount.setLstAddressIds(addressIds);
+        }
 
-    @JsonProperty("currency")
-    private String strCurrency;
+        // Set optional numeric values, convert from String to Double
+        String offsetDay = mapMoneyAccountDetails.get("mailingOffsetDay");
+        if (offsetDay != null) {
+            moneyAccount.setDblMailingOffsetDay(Double.parseDouble(offsetDay));
+        }
 
-    @JsonProperty("rubric")
-    private String strRubric;
+        String offsetMonth = mapMoneyAccountDetails.get("mailingOffsetMonth");
+        if (offsetMonth != null) {
+            moneyAccount.setDblMailingOffsetMonth(Double.parseDouble(offsetMonth));
+        }
 
-    @JsonProperty("addressIds")
-    private List<String> lstAddressIds;
+        String minimalNoticeDays = mapMoneyAccountDetails.get("minimalNoticeDays");
+        if (minimalNoticeDays != null) {
+            moneyAccount.setDblMinimalNoticeDays(Double.parseDouble(minimalNoticeDays));
+        }
 
-    @JsonProperty("mailingOffsetDay")
-    private Double dblMailingOffsetDay;
+        String isMailingPaper = mapMoneyAccountDetails.get("isMailingPaper"); // true/false as String
+        if (isMailingPaper != null) {
+            moneyAccount.setBlnIsMailingPaper(Boolean.parseBoolean(isMailingPaper));
+        }
 
-    @JsonProperty("mailingOffsetMonth")
-    private Double dblMailingOffsetMonth;
-
-    @JsonProperty("minimalNoticeDays")
-    private Double dblMinimalNoticeDays;
-
-    @JsonProperty("isMailingPaper")
-    private Boolean blnIsMailingPaper;
-
-    // Getters and Setters
-
-    public String getStrUuid() {
-        return strUuid;
+        return moneyAccount;
     }
 
-    public void setStrUuid(String strUuid) {
-        this.strUuid = strUuid;
-    }
-
-    public String getStrOwnerId() {
-        return strOwnerId;
-    }
-
-    public void setStrOwnerId(String strOwnerId) {
-        this.strOwnerId = strOwnerId;
-    }
-
-    public String getStrType() {
-        return strType;
-    }
-
-    public void setStrType(String strType) {
-        this.strType = strType;
-    }
-
-    public String getStrCurrency() {
-        return strCurrency;
-    }
-
-    public void setStrCurrency(String strCurrency) {
-        this.strCurrency = strCurrency;
-    }
-
-    public String getStrRubric() {
-        return strRubric;
-    }
-
-    public void setStrRubric(String strRubric) {
-        this.strRubric = strRubric;
-    }
-
-    public List<String> getLstAddressIds() {
-        return lstAddressIds;
-    }
-
-    public void setLstAddressIds(List<String> lstAddressIds) {
-        this.lstAddressIds = lstAddressIds;
-    }
-
-    public Double getDblMailingOffsetDay() {
-        return dblMailingOffsetDay;
-    }
-
-    public void setDblMailingOffsetDay(Double dblMailingOffsetDay) {
-        this.dblMailingOffsetDay = dblMailingOffsetDay;
-    }
-
-    public Double getDblMailingOffsetMonth() {
-        return dblMailingOffsetMonth;
-    }
-
-    public void setDblMailingOffsetMonth(Double dblMailingOffsetMonth) {
-        this.dblMailingOffsetMonth = dblMailingOffsetMonth;
-    }
-
-    public Double getDblMinimalNoticeDays() {
-        return dblMinimalNoticeDays;
-    }
-
-    public void setDblMinimalNoticeDays(Double dblMinimalNoticeDays) {
-        this.dblMinimalNoticeDays = dblMinimalNoticeDays;
-    }
-
-    public Boolean getBlnIsMailingPaper() {
-        return blnIsMailingPaper;
-    }
-
-    public void setBlnIsMailingPaper(Boolean blnIsMailingPaper) {
-        this.blnIsMailingPaper = blnIsMailingPaper;
-    }
-}
+similar t o how we ave set ownerID, set Address Id  and address Id can be strAdrressoBjectId also.
