@@ -1,19 +1,15 @@
-String offsetDay = payloadHelper.normalize(mapMoneyAccountDetails.get("mailingOffsetDay"));
-if (offsetDay != null && !offsetDay.isEmpty()) {
-    moneyAccount.setDblMailingOffsetDay(Double.parseDouble(offsetDay));
-}
+    public String resolveId(String input, String resolvedValue) {
+        if (input == null || input.trim().isEmpty() || input.equalsIgnoreCase("EMPTY")) {
+            return "";
+        }
 
-String offsetMonth = payloadHelper.normalize(mapMoneyAccountDetails.get("mailingOffsetMonth"));
-if (offsetMonth != null && !offsetMonth.isEmpty()) {
-    moneyAccount.setDblMailingOffsetMonth(Double.parseDouble(offsetMonth));
-}
+        if (input.equalsIgnoreCase("NATURAL_PERSON_OBJECT_ID") ||
+                input.equalsIgnoreCase("CONTAINER_OBJECT_ID") ||
+                input.equalsIgnoreCase("ADDRESS_OBJECT_ID")) {
+            return resolvedValue;
+        }
 
-String minimalNoticeDays = payloadHelper.normalize(mapMoneyAccountDetails.get("minimalNoticeDays"));
-if (minimalNoticeDays != null && !minimalNoticeDays.isEmpty()) {
-    moneyAccount.setDblMinimalNoticeDays(Double.parseDouble(minimalNoticeDays));
-}
+        return input;
+    }
 
-String isMailingPaper = payloadHelper.normalize(mapMoneyAccountDetails.get("isMailingPaper"));
-if (isMailingPaper != null && !isMailingPaper.isEmpty()) {
-    moneyAccount.setBlnIsMailingPaper(Boolean.parseBoolean(isMailingPaper));
-}
+In this function, if it is NA, then return null - add this line
