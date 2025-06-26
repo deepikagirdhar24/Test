@@ -1,121 +1,34 @@
-package ICOS.pojo;
+This is example of Address Payload - 
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.List;
+    public POJOAddressRequest buildAddressPayload(Map<String, String> mapAddressDetails, boolean includeUuid) {
+        POJOAddressRequest address = new POJOAddressRequest();
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class POJOAccountRequest {
+        if (includeUuid) {
+            address.setStrUuid(UUID.randomUUID().toString().substring(0, 7));
+        }
 
-    @JsonProperty("uuid")
-    private String uuid;
+        address.setStrSalutation(payloadHelper.normalize(mapAddressDetails.get("salutation")));
+        address.setStrSalutationLetter(payloadHelper.normalize(mapAddressDetails.get("salutationLetter")));
+        address.setStrAttnOf(payloadHelper.normalize(mapAddressDetails.get("attnOf")));
+        address.setStrCrof(payloadHelper.normalize(mapAddressDetails.get("crof")));
+        address.setStrResidency(payloadHelper.normalize(mapAddressDetails.get("residency")));
+        address.setStrStreetNr(payloadHelper.normalize(mapAddressDetails.get("streetNr")));
 
-    @JsonProperty("ownerId")
-    private String ownerId;
+        // Street = fixed prefix + RANDOM_6
+        String streetSuffix = payloadHelper.resolveDynamicText(mapAddressDetails.get("street"));
+        address.setStrStreet("teststreet" + streetSuffix);
 
-    @JsonProperty("type")
-    private String type;
+        address.setStrStreetAdd(payloadHelper.normalize(mapAddressDetails.get("streetAdd")));
+        address.setStrPoBox(payloadHelper.normalize(mapAddressDetails.get("poBox")));
+        address.setStrCity(payloadHelper.normalize(mapAddressDetails.get("city")));
 
-    @JsonProperty("currency")
-    private String currency;
+        // state = RANDOM_49 or any other dynamic rule
+        address.setStrState(payloadHelper.resolveDynamicText(mapAddressDetails.get("state")));
 
-    @JsonProperty("rubric")
-    private String rubric;
+        address.setStrZip(payloadHelper.normalize(mapAddressDetails.get("zip")));
+        address.setStrCountry(payloadHelper.normalize(mapAddressDetails.get("country")));
 
-    @JsonProperty("addressIds")
-    private List<String> addressIds;
-
-    @JsonProperty("mailingOffsetDay")
-    private Double mailingOffsetDay;
-
-    @JsonProperty("mailingOffsetMonth")
-    private Double mailingOffsetMonth;
-
-    @JsonProperty("minimalNoticeDays")
-    private Double minimalNoticeDays;
-
-    @JsonProperty("isMailingPaper")
-    private Boolean isMailingPaper;
-
-    // Getters and Setters
-
-    public String getUuid() {
-        return uuid;
+        return address;
     }
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
-    }
-
-    public String getOwnerId() {
-        return ownerId;
-    }
-
-    public void setOwnerId(String ownerId) {
-        this.ownerId = ownerId;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getCurrency() {
-        return currency;
-    }
-
-    public void setCurrency(String currency) {
-        this.currency = currency;
-    }
-
-    public String getRubric() {
-        return rubric;
-    }
-
-    public void setRubric(String rubric) {
-        this.rubric = rubric;
-    }
-
-    public List<String> getAddressIds() {
-        return addressIds;
-    }
-
-    public void setAddressIds(List<String> addressIds) {
-        this.addressIds = addressIds;
-    }
-
-    public Double getMailingOffsetDay() {
-        return mailingOffsetDay;
-    }
-
-    public void setMailingOffsetDay(Double mailingOffsetDay) {
-        this.mailingOffsetDay = mailingOffsetDay;
-    }
-
-    public Double getMailingOffsetMonth() {
-        return mailingOffsetMonth;
-    }
-
-    public void setMailingOffsetMonth(Double mailingOffsetMonth) {
-        this.mailingOffsetMonth = mailingOffsetMonth;
-    }
-
-    public Double getMinimalNoticeDays() {
-        return minimalNoticeDays;
-    }
-
-    public void setMinimalNoticeDays(Double minimalNoticeDays) {
-        this.minimalNoticeDays = minimalNoticeDays;
-    }
-
-    public Boolean getIsMailingPaper() {
-        return isMailingPaper;
-    }
-
-    public void setIsMailingPaper(Boolean isMailingPaper) {
-        this.isMailingPaper = isMailingPaper;
-    }
-}
+Create similar for Money Account 
