@@ -1,8 +1,51 @@
-    // Resolve addressIds
-    String addressList = payloadHelper.normalize(mapMoneyAccountDetails.get("addressIds")); // e.g., "ADDRESS_OBJECT_ID,STATIC_123"
-    if (addressList != null) {
-        List<String> resolvedAddressIds = Arrays.stream(addressList.split(","))
-                .map(id -> payloadHelper.resolveId(id.trim(), strAddressObjectId))
-                .collect(Collectors.toList());
-        moneyAccount.setLstAddressIds(resolvedAddressIds);
+public POJOMoneyAccountRequest buildMoneyAccountPayload(Map<String, String> mapMoneyAccountDetails, ScenarioContext scenarioContext) {
+        POJOMoneyAccountRequest moneyAccount = new POJOMoneyAccountRequest();
+
+        String strContainerObjectId = scenarioContext.getContext("containerObjectId");
+        String strAddressObjectId = scenarioContext.getContext("addressObjectId");
+
+        moneyAccount.setStrUuid(UUID.randomUUID().toString().substring(0, 7));
+
+        String ownerId = payloadHelper.resolveId(mapMoneyAccountDetails.get("ownerId"), strContainerObjectId);
+        moneyAccount.setStrOwnerId((ownerId));
+
+        moneyAccount.setStrType(payloadHelper.normalize(mapMoneyAccountDetails.get("type")));
+        moneyAccount.setStrCurrency(payloadHelper.normalize(mapMoneyAccountDetails.get("currency")));
+        moneyAccount.setStrRubric(payloadHelper.normalize(mapMoneyAccountDetails.get("rubric")));
+
+        // Resolve addressIds
+        String addressList = payloadHelper.normalize(mapMoneyAccountDetails.get("addressIds"));
+        if (addressList != null) {
+            List<String> resolvedAddressIds = Arrays.stream(addressList.split(","))
+                    .map(id -> payloadHelper.resolveId(id.trim(), strAddressObjectId))
+                    .collect(Collectors.toList());
+            moneyAccount.setLstAddressIds(resolvedAddressIds);
+        }
+
+        // Set optional numeric values, convert from String to Double
+        String offsetDay = mapMoneyAccountDetails.get("mailingOffsetDay");
+        if (offsetDay != null) {
+            moneyAccount.setDblMailingOffsetDay(Double.parseDouble(offsetDay));
+        }
+
+        String offsetMonth = mapMoneyAccountDetails.get("mailingOffsetMonth");
+        if (offsetMonth != null) {
+            moneyAccount.setDblMailingOffsetMonth(Double.parseDouble(offsetMonth));
+        }
+
+        String minimalNoticeDays = mapMoneyAccountDetails.get("minimalNoticeDays");
+        if (minimalNoticeDays != null) {
+            moneyAccount.setDblMinimalNoticeDays(Double.parseDouble(minimalNoticeDays));
+        }
+
+        String isMailingPaper = mapMoneyAccountDetails.get("isMailingPaper"); // true/false as String
+        if (isMailingPaper != null) {
+            moneyAccount.setBlnIsMailingPaper(Boolean.parseBoolean(isMailingPaper));
+        }
+
+        return moneyAccount;
     }
+
+for the last 4 functions - 
+
+in this also we can have NA, emppty etc. can we also apply normalize here ? 
