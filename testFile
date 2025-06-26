@@ -31,4 +31,22 @@ This is example of Address Payload -
         return address;
     }
 
-Create similar for Money Account 
+Create similar for Money Account payload - 
+
+{
+    "uuid": "12345",
+    "ownerId": "66315578.1000",
+    "type": "privateCurrentAccount",
+    "currency": "GBP",
+    "rubric": "Test Rubric",
+    "addressIds": [
+        "57853981",
+        "57853981"
+    ],
+    "mailingOffsetDay": 7.0,
+    "mailingOffsetMonth": 2.2,
+    "minimalNoticeDays": 60.0,
+    "isMailingPaper": true
+}
+
+
