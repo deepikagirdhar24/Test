@@ -1,64 +1,121 @@
-This is example of COntainer POJO - 
-
 package ICOS.pojo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class POJOContainerRequest {
+public class POJOAccountRequest {
 
     @JsonProperty("uuid")
-    private String strUuid;
+    private String uuid;
+
+    @JsonProperty("ownerId")
+    private String ownerId;
 
     @JsonProperty("type")
-    private String strType;
+    private String type;
 
-    @JsonProperty("bpId")
-    private String strBpId;
+    @JsonProperty("currency")
+    private String currency;
+
+    @JsonProperty("rubric")
+    private String rubric;
+
+    @JsonProperty("addressIds")
+    private List<String> addressIds;
+
+    @JsonProperty("mailingOffsetDay")
+    private Double mailingOffsetDay;
+
+    @JsonProperty("mailingOffsetMonth")
+    private Double mailingOffsetMonth;
+
+    @JsonProperty("minimalNoticeDays")
+    private Double minimalNoticeDays;
+
+    @JsonProperty("isMailingPaper")
+    private Boolean isMailingPaper;
 
     // Getters and Setters
 
-    public String getStrUuid() {
-        return strUuid;
+    public String getUuid() {
+        return uuid;
     }
 
-    public void setStrUuid(String strUuid) {
-        this.strUuid = strUuid;
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
-    public String getStrType() {
-        return strType;
+    public String getOwnerId() {
+        return ownerId;
     }
 
-    public void setStrType(String strType) {
-        this.strType = strType;
+    public void setOwnerId(String ownerId) {
+        this.ownerId = ownerId;
     }
 
-    public String getStrBpId() {
-        return strBpId;
+    public String getType() {
+        return type;
     }
 
-    public void setStrBpId(String strBpId) {
-        this.strBpId = strBpId;
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
+
+    public String getRubric() {
+        return rubric;
+    }
+
+    public void setRubric(String rubric) {
+        this.rubric = rubric;
+    }
+
+    public List<String> getAddressIds() {
+        return addressIds;
+    }
+
+    public void setAddressIds(List<String> addressIds) {
+        this.addressIds = addressIds;
+    }
+
+    public Double getMailingOffsetDay() {
+        return mailingOffsetDay;
+    }
+
+    public void setMailingOffsetDay(Double mailingOffsetDay) {
+        this.mailingOffsetDay = mailingOffsetDay;
+    }
+
+    public Double getMailingOffsetMonth() {
+        return mailingOffsetMonth;
+    }
+
+    public void setMailingOffsetMonth(Double mailingOffsetMonth) {
+        this.mailingOffsetMonth = mailingOffsetMonth;
+    }
+
+    public Double getMinimalNoticeDays() {
+        return minimalNoticeDays;
+    }
+
+    public void setMinimalNoticeDays(Double minimalNoticeDays) {
+        this.minimalNoticeDays = minimalNoticeDays;
+    }
+
+    public Boolean getIsMailingPaper() {
+        return isMailingPaper;
+    }
+
+    public void setIsMailingPaper(Boolean isMailingPaper) {
+        this.isMailingPaper = isMailingPaper;
     }
 }
-
-create POJO for this payload - 
-
-{
-    "uuid": "12345",
-    "ownerId": "66315578.1000",
-    "type": "privateCurrentAccount",
-    "currency": "GBP",
-    "rubric": "Test Rubric",
-    "addressIds": [
-        "57853981",
-        "57853981"
-    ],
-    "mailingOffsetDay": 7.0,
-    "mailingOffsetMonth": 2.2,
-    "minimalNoticeDays": 60.0,
-    "isMailingPaper": true
-}
-
