@@ -1,12 +1,19 @@
-In mormalize function, we already have below things - 
+String offsetDay = payloadHelper.normalize(mapMoneyAccountDetails.get("mailingOffsetDay"));
+if (offsetDay != null && !offsetDay.isEmpty()) {
+    moneyAccount.setDblMailingOffsetDay(Double.parseDouble(offsetDay));
+}
 
-    public String normalize(String value) {
-        if (value == null) return "";
-        switch (value.trim().toUpperCase()) {
-            case "NA": return null;
-            case "EMPTY": return "";
-            default: return value;
-        }
-    }
+String offsetMonth = payloadHelper.normalize(mapMoneyAccountDetails.get("mailingOffsetMonth"));
+if (offsetMonth != null && !offsetMonth.isEmpty()) {
+    moneyAccount.setDblMailingOffsetMonth(Double.parseDouble(offsetMonth));
+}
 
-so I think we can remove ! empty clause
+String minimalNoticeDays = payloadHelper.normalize(mapMoneyAccountDetails.get("minimalNoticeDays"));
+if (minimalNoticeDays != null && !minimalNoticeDays.isEmpty()) {
+    moneyAccount.setDblMinimalNoticeDays(Double.parseDouble(minimalNoticeDays));
+}
+
+String isMailingPaper = payloadHelper.normalize(mapMoneyAccountDetails.get("isMailingPaper"));
+if (isMailingPaper != null && !isMailingPaper.isEmpty()) {
+    moneyAccount.setBlnIsMailingPaper(Boolean.parseBoolean(isMailingPaper));
+}
