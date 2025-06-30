@@ -1,18 +1,3 @@
-public String resolveId(String input, String resolvedValue) {
-    if (input == null) {
-        return "";
-    }
+Dear [Manager's Name],
 
-    switch (input.trim().toUpperCase()) {
-        case "EMPTY":
-            return "";
-        case "NA":
-            return null;
-        case "NATURAL_PERSON_OBJECT_ID":
-        case "CONTAINER_OBJECT_ID":
-        case "ADDRESS_OBJECT_ID":
-            return resolvedValue;
-        default:
-            return input;
-    }
-}
+I hope you are well. I am writing to formally resign from my position at NatWest, with my last working day being [Your Last Working Day, e.g., 30th September 2024], in accordance with my notice period.
