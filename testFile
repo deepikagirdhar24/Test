@@ -56,4 +56,10 @@ Scenario: Verify Money Account with multiple addresses
   And I verify the "objectId" exists in Money Account response
   And I verify the "orderId" exists in Money Account response
 
+List<String> addressObjectIds = (List<String>) scenarioContext.getContext("addressObjectIds");
+if (addressObjectIds == null) {
+    addressObjectIds = new ArrayList<>();
+}
+addressObjectIds.add(strAddressObjectId);
+scenarioContext.setContext("addressObjectIds", addressObjectIds);
 
