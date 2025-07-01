@@ -1,44 +1,67 @@
-public Response createAddress(String strEnvType, String strBearerToken, String strJWTToken,
-                              Map<String, String> mapAddressDetails, ScenarioContext scenarioContext) throws Exception {
+ok, what changes to do here - 
 
-    String strTYKURL = getTYKURL(strEnvType, "TYK.ADDRESS");
-    POJOAddressRequest pojoAddressRequest = payloads.buildAddressPayload(mapAddressDetails, true);
-    String strRequestBody = objObjectMapper.writeValueAsString(pojoAddressRequest);
+public POJOMoneyAccountRequest buildMoneyAccountPayload(Map<String, String> mapMoneyAccountDetails, ScenarioContext scenarioContext) {
+        POJOMoneyAccountRequest moneyAccount = new POJOMoneyAccountRequest();
 
-    ExtentCucumberAdapter.addTestStepLog("Sending request to Create Address");
+        String strContainerObjectId = scenarioContext.getContext("containerObjectId");
+        String strAddressObjectId = scenarioContext.getContext("addressObjectId");
 
-    Response objResponse = sendPostRequest(strTYKURL, strBearerToken, strJWTToken, strRequestBody, null);
-    String strResponseBody = devHelperLibrary.getResponseBody(objResponse);
-    objCucumberLogger.PrintStatus("Response is: " + strResponseBody);
+        moneyAccount.setStrUuid(UUID.randomUUID().toString().substring(0, 8));
 
-    String strAddressObjectId = jsonHelper.extractStringField(objResponse, "objectId");
-    String strAddressOrderId = jsonHelper.extractStringField(objResponse, "orderId");
-    String strAddressUuid = pojoAddressRequest.getStrUuid();
+        String ownerId = payloadHelper.resolveId(mapMoneyAccountDetails.get("ownerId"), strContainerObjectId);
+        moneyAccount.setStrOwnerId((ownerId));
 
-    // Save latest (for backward compatibility)
-    scenarioContext.setContext("addressObjectId", strAddressObjectId);
-    scenarioContext.setContext("addressOrderId", strAddressOrderId);
-    scenarioContext.setContext("addressUuid", strAddressUuid);
+        moneyAccount.setStrType(payloadHelper.normalize(mapMoneyAccountDetails.get("type")));
+        moneyAccount.setStrCurrency(payloadHelper.normalize(mapMoneyAccountDetails.get("currency")));
+        moneyAccount.setStrRubric(payloadHelper.normalize(mapMoneyAccountDetails.get("rubric")));
 
-    // 🔁 Append to list for multiple address support
-    List<String> addressObjectIds = (List<String>) scenarioContext.getOrDefault("addressObjectIds", new ArrayList<>());
-    addressObjectIds.add(strAddressObjectId);
-    scenarioContext.setContext("addressObjectIds", addressObjectIds);
+        // Resolve addressIds
+        String addressList = payloadHelper.normalize(mapMoneyAccountDetails.get("addressIds"));
+        if (addressList != null) {
+            List<String> resolvedAddressIds = Arrays.stream(addressList.split(","))
+                    .map(id -> payloadHelper.resolveId(id.trim(), strAddressObjectId))
+                    .collect(Collectors.toList());
+            moneyAccount.setLstAddressIds(resolvedAddressIds);
+        }
 
-    return objResponse;
-}
+        String offsetDay = payloadHelper.normalize(mapMoneyAccountDetails.get("mailingOffsetDay"));
+        if (offsetDay != null && !offsetDay.isEmpty()) {
+            moneyAccount.setDblMailingOffsetDay(Double.parseDouble(offsetDay));
+        }
 
-@Then("Send request to create multiple Addresses with below details")
-public void sendRequestToCreateMultipleAddresses(DataTable dataTable) throws Exception {
-    String jwtToken = scenarioContext.getContext("JWTToken");
-    List<Map<String, String>> addressRows = dataTable.asMaps(String.class, String.class);
+        String offsetMonth = payloadHelper.normalize(mapMoneyAccountDetails.get("mailingOffsetMonth"));
+        if (offsetMonth != null && !offsetMonth.isEmpty()) {
+            moneyAccount.setDblMailingOffsetMonth(Double.parseDouble(offsetMonth));
+        }
 
-    for (Map<String, String> addressData : addressRows) {
-        objAddress.createAddress(strEnvType, "Bearer", jwtToken, addressData, scenarioContext);
+        String minimalNoticeDays = payloadHelper.normalize(mapMoneyAccountDetails.get("minimalNoticeDays"));
+        if (minimalNoticeDays != null && !minimalNoticeDays.isEmpty()) {
+            moneyAccount.setDblMinimalNoticeDays(Double.parseDouble(minimalNoticeDays));
+        }
+
+        String isMailingPaper = payloadHelper.normalize(mapMoneyAccountDetails.get("isMailingPaper"));
+        if (isMailingPaper != null && !isMailingPaper.isEmpty()) {
+            moneyAccount.setBlnIsMailingPaper(Boolean.parseBoolean(isMailingPaper));
+        }
+
+        return moneyAccount;
     }
 
-    ExtentCucumberAdapter.addTestStepLog("Created multiple addresses. IDs: " +
-        scenarioContext.getContext("addressObjectIds"));
-}
+    public String resolveId(String input, String resolvedValue) {
+        if (input == null || input.trim().isEmpty()) {
+            return "";
+        }
 
-
+        switch (input.trim().toUpperCase()) {
+            case "EMPTY":
+                return "";
+            case "NA":
+                return null;
+            case "NATURAL_PERSON_OBJECT_ID":
+            case "CONTAINER_OBJECT_ID":
+            case "ADDRESS_OBJECT_ID":
+                return resolvedValue;
+            default:
+                return input;
+        }
+    }
