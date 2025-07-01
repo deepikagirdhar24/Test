@@ -1,86 +1,45 @@
-    public POJOMoneyAccountRequest buildMoneyAccountPayload(Map<String, String> mapMoneyAccountDetails, ScenarioContext scenarioContext) {
-        POJOMoneyAccountRequest moneyAccount = new POJOMoneyAccountRequest();
-
-        String strContainerObjectId = scenarioContext.getContext("containerObjectId");
-        String strAddressObjectId = scenarioContext.getContext("addressObjectId");
-
-        moneyAccount.setStrUuid(UUID.randomUUID().toString().substring(0, 8));
-
-        String ownerId = payloadHelper.resolveId(mapMoneyAccountDetails.get("ownerId"), strContainerObjectId);
-        moneyAccount.setStrOwnerId((ownerId));
-
-        moneyAccount.setStrType(payloadHelper.normalize(mapMoneyAccountDetails.get("type")));
-        moneyAccount.setStrCurrency(payloadHelper.normalize(mapMoneyAccountDetails.get("currency")));
-        moneyAccount.setStrRubric(payloadHelper.normalize(mapMoneyAccountDetails.get("rubric")));
-
-        // Resolve addressIds
-        String addressList = payloadHelper.normalize(mapMoneyAccountDetails.get("addressIds"));
-        if (addressList != null) {
-//            List<String> resolvedAddressIds = Arrays.stream(addressList.split(","))
-//                    .map(id -> payloadHelper.resolveId(id.trim(), strAddressObjectId))
-//                    .collect(Collectors.toList());
-//            moneyAccount.setLstAddressIds(resolvedAddressIds);
-
-            List<String> resolvedAddressIds = payloadHelper.resolveIdList(addressList, scenarioContext, strAddressObjectId);
-            moneyAccount.setLstAddressIds(resolvedAddressIds);
-        }
-
-        String offsetDay = payloadHelper.normalize(mapMoneyAccountDetails.get("mailingOffsetDay"));
-        if (offsetDay != null && !offsetDay.isEmpty()) {
-            moneyAccount.setDblMailingOffsetDay(Double.parseDouble(offsetDay));
-        }
-
-        String offsetMonth = payloadHelper.normalize(mapMoneyAccountDetails.get("mailingOffsetMonth"));
-        if (offsetMonth != null && !offsetMonth.isEmpty()) {
-            moneyAccount.setDblMailingOffsetMonth(Double.parseDouble(offsetMonth));
-        }
-
-        String minimalNoticeDays = payloadHelper.normalize(mapMoneyAccountDetails.get("minimalNoticeDays"));
-        if (minimalNoticeDays != null && !minimalNoticeDays.isEmpty()) {
-            moneyAccount.setDblMinimalNoticeDays(Double.parseDouble(minimalNoticeDays));
-        }
-
-        String isMailingPaper = payloadHelper.normalize(mapMoneyAccountDetails.get("isMailingPaper"));
-        if (isMailingPaper != null && !isMailingPaper.isEmpty()) {
-            moneyAccount.setBlnIsMailingPaper(Boolean.parseBoolean(isMailingPaper));
-        }
-
-        return moneyAccount;
+public List<String> resolveIdList(String input, String fallbackSingleAddressId, List<String> addressObjectIds) {
+    if (input == null || input.trim().isEmpty()) {
+        return Collections.emptyList();
     }
 
-    public String resolveId(String input, String resolvedValue) {
-        if (input == null || input.trim().isEmpty()) {
-            return "";
-        }
-
-        switch (input.trim().toUpperCase()) {
-            case "EMPTY":
-                return "";
-            case "NA":
-                return null;
-            case "NATURAL_PERSON_OBJECT_ID":
-            case "CONTAINER_OBJECT_ID":
-            case "ADDRESS_OBJECT_ID":
-                return resolvedValue;
-            default:
-                return input;
-        }
+    if ("ADDRESS_OBJECT_ID_LIST".equalsIgnoreCase(input.trim())) {
+        return addressObjectIds != null ? addressObjectIds : Collections.emptyList();
     }
 
-    public List<String> resolveIdList(String input, ScenarioContext scenarioContext, String fallbackSingleAddressId) {
-        if (input == null || input.trim().isEmpty()) {
-            return Collections.emptyList();
-        }
+    // Resolve individual tokens
+    return Arrays.stream(input.split(","))
+            .map(id -> resolveId(id.trim(), fallbackSingleAddressId))
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
+}
 
-        if (input.trim().equalsIgnoreCase("ADDRESS_OBJECT_ID_LIST")) {
-            return scenarioContext.getContext("addressObjectIds");
-        }
+public POJOMoneyAccountRequest buildMoneyAccountPayload(Map<String, String> mapMoneyAccountDetails, ScenarioContext scenarioContext) {
+    POJOMoneyAccountRequest moneyAccount = new POJOMoneyAccountRequest();
 
-        // Fallback to resolving individual tokens (including ADDRESS_OBJECT_ID)
-        return Arrays.stream(input.split(","))
-                .map(id -> resolveId(id.trim(), fallbackSingleAddressId))
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+    String strContainerObjectId = scenarioContext.getContext("containerObjectId");
+    String strAddressObjectId = scenarioContext.getContext("addressObjectId");
+
+    // 👇 Fetch the list only once
+    @SuppressWarnings("unchecked")
+    List<String> addressObjectIds = (List<String>) scenarioContext.getContext("addressObjectIds");
+
+    moneyAccount.setStrUuid(UUID.randomUUID().toString().substring(0, 8));
+
+    String ownerId = payloadHelper.resolveId(mapMoneyAccountDetails.get("ownerId"), strContainerObjectId);
+    moneyAccount.setStrOwnerId(ownerId);
+
+    moneyAccount.setStrType(payloadHelper.normalize(mapMoneyAccountDetails.get("type")));
+    moneyAccount.setStrCurrency(payloadHelper.normalize(mapMoneyAccountDetails.get("currency")));
+    moneyAccount.setStrRubric(payloadHelper.normalize(mapMoneyAccountDetails.get("rubric")));
+
+    String addressList = payloadHelper.normalize(mapMoneyAccountDetails.get("addressIds"));
+    if (addressList != null) {
+        // 👇 Pass the pre-fetched list instead of accessing scenarioContext again
+        List<String> resolvedAddressIds = payloadHelper.resolveIdList(addressList, strAddressObjectId, addressObjectIds);
+        moneyAccount.setLstAddressIds(resolvedAddressIds);
     }
 
-can i add this line in paylod - scenarioContext.getContext("addressObjectIds"); similar to addressobjectId ?
+    // Other fields unchanged...
+    return moneyAccount;
+}
