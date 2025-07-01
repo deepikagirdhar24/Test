@@ -15,33 +15,30 @@ public Response createAddress(String strEnvType, String strBearerToken, String s
     String strAddressOrderId = jsonHelper.extractStringField(objResponse, "orderId");
     String strAddressUuid = pojoAddressRequest.getStrUuid();
 
-    // Store latest for backward compatibility (optional)
+    // Save latest (for backward compatibility)
     scenarioContext.setContext("addressObjectId", strAddressObjectId);
     scenarioContext.setContext("addressOrderId", strAddressOrderId);
     scenarioContext.setContext("addressUuid", strAddressUuid);
 
-    // ✅ NEW: Maintain list of address IDs for multiple address use
-    List<String> addressIds = (List<String>) scenarioContext.getOrDefault("addressObjectIds", new ArrayList<>());
-    addressIds.add(strAddressObjectId);
-    scenarioContext.setContext("addressObjectIds", addressIds);
+    // 🔁 Append to list for multiple address support
+    List<String> addressObjectIds = (List<String>) scenarioContext.getOrDefault("addressObjectIds", new ArrayList<>());
+    addressObjectIds.add(strAddressObjectId);
+    scenarioContext.setContext("addressObjectIds", addressObjectIds);
 
     return objResponse;
 }
 
-String addressList = payloadHelper.normalize(mapMoneyAccountDetails.get("addressIds"));
-if (addressList != null) {
-    List<String> resolvedAddressIds = Arrays.stream(addressList.split(","))
-        .map(id -> {
-            if ("ADDRESS_OBJECT_ID".equalsIgnoreCase(id.trim())) {
-                // Return all stored address IDs
-                List<String> addressIds = (List<String>) scenarioContext.getContext("addressObjectIds");
-                return String.join(",", addressIds); // returns single comma-separated string
-            } else {
-                return payloadHelper.resolveId(id.trim(), strAddressObjectId);
-            }
-        })
-        .flatMap(ids -> Arrays.stream(ids.split(","))) // handle nested commas
-        .collect(Collectors.toList());
+@Then("Send request to create multiple Addresses with below details")
+public void sendRequestToCreateMultipleAddresses(DataTable dataTable) throws Exception {
+    String jwtToken = scenarioContext.getContext("JWTToken");
+    List<Map<String, String>> addressRows = dataTable.asMaps(String.class, String.class);
 
-    moneyAccount.setLstAddressIds(resolvedAddressIds);
+    for (Map<String, String> addressData : addressRows) {
+        objAddress.createAddress(strEnvType, "Bearer", jwtToken, addressData, scenarioContext);
+    }
+
+    ExtentCucumberAdapter.addTestStepLog("Created multiple addresses. IDs: " +
+        scenarioContext.getContext("addressObjectIds"));
 }
+
+
