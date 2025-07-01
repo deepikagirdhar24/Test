@@ -1,65 +1,86 @@
-public List<String> resolveIdList(String input, ScenarioContext scenarioContext, String fallbackSingleAddressId) {
-    if (input == null || input.trim().isEmpty()) {
-        return Collections.emptyList();
+    public POJOMoneyAccountRequest buildMoneyAccountPayload(Map<String, String> mapMoneyAccountDetails, ScenarioContext scenarioContext) {
+        POJOMoneyAccountRequest moneyAccount = new POJOMoneyAccountRequest();
+
+        String strContainerObjectId = scenarioContext.getContext("containerObjectId");
+        String strAddressObjectId = scenarioContext.getContext("addressObjectId");
+
+        moneyAccount.setStrUuid(UUID.randomUUID().toString().substring(0, 8));
+
+        String ownerId = payloadHelper.resolveId(mapMoneyAccountDetails.get("ownerId"), strContainerObjectId);
+        moneyAccount.setStrOwnerId((ownerId));
+
+        moneyAccount.setStrType(payloadHelper.normalize(mapMoneyAccountDetails.get("type")));
+        moneyAccount.setStrCurrency(payloadHelper.normalize(mapMoneyAccountDetails.get("currency")));
+        moneyAccount.setStrRubric(payloadHelper.normalize(mapMoneyAccountDetails.get("rubric")));
+
+        // Resolve addressIds
+        String addressList = payloadHelper.normalize(mapMoneyAccountDetails.get("addressIds"));
+        if (addressList != null) {
+//            List<String> resolvedAddressIds = Arrays.stream(addressList.split(","))
+//                    .map(id -> payloadHelper.resolveId(id.trim(), strAddressObjectId))
+//                    .collect(Collectors.toList());
+//            moneyAccount.setLstAddressIds(resolvedAddressIds);
+
+            List<String> resolvedAddressIds = payloadHelper.resolveIdList(addressList, scenarioContext, strAddressObjectId);
+            moneyAccount.setLstAddressIds(resolvedAddressIds);
+        }
+
+        String offsetDay = payloadHelper.normalize(mapMoneyAccountDetails.get("mailingOffsetDay"));
+        if (offsetDay != null && !offsetDay.isEmpty()) {
+            moneyAccount.setDblMailingOffsetDay(Double.parseDouble(offsetDay));
+        }
+
+        String offsetMonth = payloadHelper.normalize(mapMoneyAccountDetails.get("mailingOffsetMonth"));
+        if (offsetMonth != null && !offsetMonth.isEmpty()) {
+            moneyAccount.setDblMailingOffsetMonth(Double.parseDouble(offsetMonth));
+        }
+
+        String minimalNoticeDays = payloadHelper.normalize(mapMoneyAccountDetails.get("minimalNoticeDays"));
+        if (minimalNoticeDays != null && !minimalNoticeDays.isEmpty()) {
+            moneyAccount.setDblMinimalNoticeDays(Double.parseDouble(minimalNoticeDays));
+        }
+
+        String isMailingPaper = payloadHelper.normalize(mapMoneyAccountDetails.get("isMailingPaper"));
+        if (isMailingPaper != null && !isMailingPaper.isEmpty()) {
+            moneyAccount.setBlnIsMailingPaper(Boolean.parseBoolean(isMailingPaper));
+        }
+
+        return moneyAccount;
     }
 
-    if (input.trim().equalsIgnoreCase("ADDRESS_OBJECT_ID_LIST")) {
-        return scenarioContext.getContext("addressObjectIds");
+    public String resolveId(String input, String resolvedValue) {
+        if (input == null || input.trim().isEmpty()) {
+            return "";
+        }
+
+        switch (input.trim().toUpperCase()) {
+            case "EMPTY":
+                return "";
+            case "NA":
+                return null;
+            case "NATURAL_PERSON_OBJECT_ID":
+            case "CONTAINER_OBJECT_ID":
+            case "ADDRESS_OBJECT_ID":
+                return resolvedValue;
+            default:
+                return input;
+        }
     }
 
-    // Fallback to resolving individual tokens (including ADDRESS_OBJECT_ID)
-    return Arrays.stream(input.split(","))
-            .map(id -> resolveId(id.trim(), fallbackSingleAddressId))
-            .filter(Objects::nonNull)
-            .collect(Collectors.toList());
-}
+    public List<String> resolveIdList(String input, ScenarioContext scenarioContext, String fallbackSingleAddressId) {
+        if (input == null || input.trim().isEmpty()) {
+            return Collections.emptyList();
+        }
 
-🔁 Replace this block:
-java
-Copy
-Edit
-List<String> resolvedAddressIds = Arrays.stream(addressList.split(","))
-        .map(id -> payloadHelper.resolveId(id.trim(), strAddressObjectId))
-        .collect(Collectors.toList());
-moneyAccount.setLstAddressIds(resolvedAddressIds);
-✅ With this:
-java
-Copy
-Edit
-List<String> resolvedAddressIds = payloadHelper.resolveIdList(addressList, scenarioContext, strAddressObjectId);
-moneyAccount.setLstAddressIds(resolvedAddressIds);
+        if (input.trim().equalsIgnoreCase("ADDRESS_OBJECT_ID_LIST")) {
+            return scenarioContext.getContext("addressObjectIds");
+        }
 
-Scenario: Verify Money Account with multiple addresses
-  Given Send Request to get Authentication Token for ICOS
-  When I generate the JWT Token
-  Then Send Request to create Container with below details
-    | type | banking  |
-    | bpId | 66001416 |
+        // Fallback to resolving individual tokens (including ADDRESS_OBJECT_ID)
+        return Arrays.stream(input.split(","))
+                .map(id -> resolveId(id.trim(), fallbackSingleAddressId))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
 
-  Then Send request to create multiple Addresses with below details
-    | firstName | middleName | lastName | salutation | salutationLetter | attnOf | crof | residency | streetNr | street               | streetAdd        | poBox       | city   | state       | zip  | country |
-    | John      | A.         | Doe      | mr         | mr               |        |      | 123       | 123      | teststreet + RANDOM_6 | Addition Street | P.O.Box 123 | Zurich | RANDOM_49   | 8001 | CH      |
-    | Jane      | B.         | Smith    | ms         | ms               |        |      | 456       | 456      | teststreet + RANDOM_6 | Another Street  | P.O.Box 456 | Bern   | RANDOM_49   | 3000 | CH      |
-
-  Then Send Request to create Money Account with below details
-    | ownerId            | CONTAINER_OBJECT_ID     |
-    | type               | privateCurrentAccount   |
-    | currency           | GBP                     |
-    | rubric             | Standard                |
-    | addressIds         | ADDRESS_OBJECT_ID_LIST  |
-    | mailingOffsetDay   | NA                      |
-    | mailingOffsetMonth | NA                      |
-    | minimalNoticeDays  | NA                      |
-    | isMailingPaper     | false                   |
-
-  And I verify the Status Code for Money Account "200"
-  And I verify the "objectId" exists in Money Account response
-  And I verify the "orderId" exists in Money Account response
-
-List<String> addressObjectIds = (List<String>) scenarioContext.getContext("addressObjectIds");
-if (addressObjectIds == null) {
-    addressObjectIds = new ArrayList<>();
-}
-addressObjectIds.add(strAddressObjectId);
-scenarioContext.setContext("addressObjectIds", addressObjectIds);
-
+can i add this line in paylod - scenarioContext.getContext("addressObjectIds"); similar to addressobjectId ?
