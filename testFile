@@ -1,220 +1,42 @@
-In payload class, the ofssetDay offsetMonth and minimlaNotice Days can accept numeric values (Integer + double) and its type is not string, isMailingPaper is boolean only. COrrect it please.
-
-     public POJOMoneyAccountRequest buildMoneyAccountPayload(Map<String, String> mapMoneyAccountDetails, ScenarioContext scenarioContext) {
-        POJOMoneyAccountRequest moneyAccount = new POJOMoneyAccountRequest();
-
-        String strContainerObjectId = scenarioContext.getContext("containerObjectId");
-        String strAddressObjectId = scenarioContext.getContext("addressObjectId");
-
-        // Fetch the list only once
-        @SuppressWarnings("unchecked")
-        List<String> addressObjectIds = (List<String>) scenarioContext.getContext("addressObjectIds");
-
-        moneyAccount.setStrUuid(UUID.randomUUID().toString().substring(0, 8));
-
-        String ownerId = payloadHelper.resolveId(mapMoneyAccountDetails.get("ownerId"), strContainerObjectId);
-        moneyAccount.setStrOwnerId((ownerId));
-
-        moneyAccount.setStrType(payloadHelper.normalize(mapMoneyAccountDetails.get("type")));
-        moneyAccount.setStrCurrency(payloadHelper.normalize(mapMoneyAccountDetails.get("currency")));
-        moneyAccount.setStrRubric(payloadHelper.normalize(mapMoneyAccountDetails.get("rubric")));
-
-        // Resolve addressIds
-        String addressList = payloadHelper.normalize(mapMoneyAccountDetails.get("addressIds"));
-        if (addressList != null && !addressList.trim().isEmpty()) {
-//            List<String> resolvedAddressIds = Arrays.stream(addressList.split(","))
-//                    .map(id -> payloadHelper.resolveId(id.trim(), strAddressObjectId))
-//                    .collect(Collectors.toList());
-//            moneyAccount.setLstAddressIds(resolvedAddressIds);
-
-//            List<String> resolvedAddressIds = payloadHelper.resolveIdList(addressList, scenarioContext, strAddressObjectId);
-//            moneyAccount.setLstAddressIds(resolvedAddressIds);
-
-            List<String> resolvedAddressIds = payloadHelper.resolveIdList(addressList, strAddressObjectId, addressObjectIds);
-            moneyAccount.setLstAddressIds(resolvedAddressIds);
-        }
-
-        String offsetDay = payloadHelper.normalize(mapMoneyAccountDetails.get("mailingOffsetDay"));
-        if (offsetDay != null && !offsetDay.isEmpty()) {
-            moneyAccount.setDblMailingOffsetDay(Double.parseDouble(offsetDay));
-        }
-
-        String offsetMonth = payloadHelper.normalize(mapMoneyAccountDetails.get("mailingOffsetMonth"));
-        if (offsetMonth != null && !offsetMonth.isEmpty()) {
-            moneyAccount.setDblMailingOffsetMonth(Double.parseDouble(offsetMonth));
-        }
-
-        String minimalNoticeDays = payloadHelper.normalize(mapMoneyAccountDetails.get("minimalNoticeDays"));
-        if (minimalNoticeDays != null && !minimalNoticeDays.isEmpty()) {
-            moneyAccount.setDblMinimalNoticeDays(Double.parseDouble(minimalNoticeDays));
-        }
-
-        String isMailingPaper = payloadHelper.normalize(mapMoneyAccountDetails.get("isMailingPaper"));
-        if (isMailingPaper != null && !isMailingPaper.isEmpty()) {
-            moneyAccount.setBlnIsMailingPaper(Boolean.parseBoolean(isMailingPaper));
-        }
-
-        return moneyAccount;
-    }
-
-package utilities;
-
-import ICOS.pojo.POJONewDocumentRequest;
-
-import java.time.LocalDate;
-import java.util.*;
-import java.util.stream.Collectors;
-
-public class PayloadHelper {
-
-    private final Random random = new Random();
-
-    public String normalize(String value) {
-        if (value == null) return "";
-        switch (value.trim().toUpperCase()) {
-            case "NA": return null;
-            case "EMPTY": return "";
-            default: return value;
-        }
-    }
-
-    public String resolveDueDate(String dueDateInput) {
-        if (dueDateInput == null || dueDateInput.trim().isEmpty()) return "";
-        switch (dueDateInput.trim().toUpperCase()) {
-            case "NA": return null;
-            case "EMPTY": return "";
-            case "FUTURE": return LocalDate.now().plusDays(7).toString();
-            case "PAST": return LocalDate.now().minusDays(7).toString();
-            case "TODAY": return LocalDate.now().toString();
-            default: return dueDateInput;
-        }
-    }
-
-    public String resolveDynamicText(String type) {
-        if (type == null || type.isEmpty()) return "";
-
-        // Handle expression like "prefix + RANDOM_6 + suffix"
-        if (type.contains("+")) {
-            String[] parts = type.split("\\+");
-            StringBuilder result = new StringBuilder();
-            for (String part : parts) {
-                String trimmed = part.trim();
-                result.append(resolveDynamicText(trimmed));
+public void applyDoubleField(String rawValue, String fieldName, POJOMoneyAccountRequest account) {
+    String normalized = normalize(rawValue);
+    if (normalized != null && !normalized.isEmpty()) {
+        try {
+            double parsed = Double.parseDouble(normalized);
+            switch (fieldName) {
+                case "mailingOffsetDay":
+                    account.setDblMailingOffsetDay(parsed);
+                    break;
+                case "mailingOffsetMonth":
+                    account.setDblMailingOffsetMonth(parsed);
+                    break;
+                case "minimalNoticeDays":
+                    account.setDblMinimalNoticeDays(parsed);
+                    break;
+                default:
+                    System.err.println("Unknown double field: " + fieldName);
             }
-            return result.toString();
-        }
-
-        switch (type.trim().toUpperCase()) {
-            case "EMPTY":
-                return "";
-            case "NA":
-                return null;
-            case "RANDOM_LT_250":
-                return randomString(random.nextInt(249) + 1);
-            case "RANDOM_GT_250":
-                return randomString(random.nextInt(500) + 251);
-            default:
-                // Check if it's like RANDOM_6
-                if (type.toUpperCase().startsWith("RANDOM_")) {
-                    try {
-                        int length = Integer.parseInt(type.substring(7));
-                        return randomString(length);
-                    } catch (NumberFormatException e) {
-                        return type;
-                    }
-                }
-                return type;
+        } catch (NumberFormatException e) {
+            System.err.println("Invalid numeric value for " + fieldName + ": " + normalized);
         }
     }
-
-    private String randomString(int length) {
-        int leftLimit = 97; // 'a'
-        int rightLimit = 122; // 'z'
-        return random.ints(leftLimit, rightLimit + 1)
-                .limit(length)
-                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-                .toString();
-    }
-
-    public List<String> parseNationalities(String commaSeparated) {
-        if (commaSeparated == null || commaSeparated.trim().isEmpty()) return Collections.emptyList();
-        return Arrays.stream(commaSeparated.split(","))
-                .map(String::trim)
-                .filter(s -> !s.isEmpty())
-                .collect(Collectors.toList());
-    }
-
-    public List<POJONewDocumentRequest.QuestionAnswer> parseQuestionAnswers(String qaPairs) {
-        List<POJONewDocumentRequest.QuestionAnswer> qaList = new ArrayList<>();
-        if (qaPairs != null && !qaPairs.trim().isEmpty()) {
-            String[] pairs = qaPairs.split(";");
-            for (String pair : pairs) {
-                String[] qa = pair.split("=", 2);
-                if (qa.length == 2) {
-                    POJONewDocumentRequest.QuestionAnswer qaObj = new POJONewDocumentRequest.QuestionAnswer();
-                    qaObj.setStrQuestion(resolveDynamicText(qa[0].trim()));
-                    qaObj.setStrAnswer(resolveDynamicText(qa[1].trim()));
-                    qaList.add(qaObj);
-                }
-            }
-        }
-        return qaList;
-    }
-
-    public String getOrEmpty(Map<String, String> map, String key) {
-        return Optional.ofNullable(map.get(key)).orElse("");
-    }
-
-    public String resolveId(String input, String resolvedValue) {
-        if (input == null || input.trim().isEmpty()) {
-            return "";
-        }
-
-        switch (input.trim().toUpperCase()) {
-            case "EMPTY":
-                return "";
-            case "NA":
-                return null;
-            case "NATURAL_PERSON_OBJECT_ID":
-            case "CONTAINER_OBJECT_ID":
-            case "ADDRESS_OBJECT_ID":
-                return resolvedValue;
-            default:
-                return input;
-        }
-    }
-
-//    public List<String> resolveIdList(String input, ScenarioContext scenarioContext, String fallbackSingleAddressId) {
-//        if (input == null || input.trim().isEmpty()) {
-//            return Collections.emptyList();
-//        }
-//
-//        if (input.trim().equalsIgnoreCase("ADDRESS_OBJECT_ID_LIST")) {
-//            return scenarioContext.getContext("addressObjectIds");
-//        }
-//
-//        // Fallback to resolving individual tokens (including ADDRESS_OBJECT_ID)
-//        return Arrays.stream(input.split(","))
-//                .map(id -> resolveId(id.trim(), fallbackSingleAddressId))
-//                .filter(Objects::nonNull)
-//                .collect(Collectors.toList());
-//    }
-
-    public List<String> resolveIdList(String input, String fallbackSingleAddressId, List<String> addressObjectIds) {
-        if (input == null || input.trim().isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        if ("ADDRESS_OBJECT_ID_LIST".equalsIgnoreCase(input.trim())) {
-            return addressObjectIds != null ? addressObjectIds : Collections.emptyList();
-        }
-
-        // Resolve individual tokens
-        return Arrays.stream(input.split(","))
-                .map(id -> resolveId(id.trim(), fallbackSingleAddressId))
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-    }
-
-
 }
+
+public void applyBooleanField(String rawValue, String fieldName, POJOMoneyAccountRequest account) {
+    String normalized = normalize(rawValue);
+    if (normalized != null && !normalized.isEmpty()) {
+        boolean parsed = Boolean.parseBoolean(normalized);
+        switch (fieldName) {
+            case "isMailingPaper":
+                account.setBlnIsMailingPaper(parsed);
+                break;
+            default:
+                System.err.println("Unknown boolean field: " + fieldName);
+        }
+    }
+}
+
+payloadHelper.applyDoubleField(mapMoneyAccountDetails.get("mailingOffsetDay"), "mailingOffsetDay", moneyAccount);
+payloadHelper.applyDoubleField(mapMoneyAccountDetails.get("mailingOffsetMonth"), "mailingOffsetMonth", moneyAccount);
+payloadHelper.applyDoubleField(mapMoneyAccountDetails.get("minimalNoticeDays"), "minimalNoticeDays", moneyAccount);
+payloadHelper.applyBooleanField(mapMoneyAccountDetails.get("isMailingPaper"), "isMailingPaper", moneyAccount);
