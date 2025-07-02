@@ -1,68 +1,123 @@
-This is the paylod where I am passing sometimes Integer and sometimes Decimal values in offset fields, I want if I pass integer it takes it as Integer only, not as doubles and if
-it is double, then it takes as double, kindly update code
+Updat emy POJO also - 
 
-    public POJOMoneyAccountRequest buildMoneyAccountPayload(Map<String, String> mapMoneyAccountDetails, ScenarioContext scenarioContext) {
-        POJOMoneyAccountRequest moneyAccount = new POJOMoneyAccountRequest();
+package ICOS.pojo;
 
-        String strContainerObjectId = scenarioContext.getContext("containerObjectId");
-        String strAddressObjectId = scenarioContext.getContext("addressObjectId");
-        @SuppressWarnings("unchecked")
-        List<String> addressObjectIds = (List<String>) scenarioContext.getContext("addressObjectIds");
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.List;
 
-        moneyAccount.setStrUuid(UUID.randomUUID().toString().substring(0, 8));
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class POJOMoneyAccountRequest {
 
-        String ownerId = payloadHelper.resolveId(mapMoneyAccountDetails.get("ownerId"), strContainerObjectId);
-        moneyAccount.setStrOwnerId((ownerId));
+    @JsonProperty("uuid")
+    private String strUuid;
 
-        moneyAccount.setStrType(payloadHelper.normalize(mapMoneyAccountDetails.get("type")));
-        moneyAccount.setStrCurrency(payloadHelper.normalize(mapMoneyAccountDetails.get("currency")));
-        moneyAccount.setStrRubric(payloadHelper.normalize(mapMoneyAccountDetails.get("rubric")));
+    @JsonProperty("ownerId")
+    private String strOwnerId;
 
-        List<String> resolvedAddressIds = payloadHelper.resolveIdList(mapMoneyAccountDetails.get("addressIds"), strAddressObjectId, addressObjectIds);
-        moneyAccount.setLstAddressIds(resolvedAddressIds);
+    @JsonProperty("type")
+    private String strType;
 
-        payloadHelper.applyDoubleField(mapMoneyAccountDetails.get("mailingOffsetDay"), "mailingOffsetDay", moneyAccount);
-        payloadHelper.applyDoubleField(mapMoneyAccountDetails.get("mailingOffsetMonth"), "mailingOffsetMonth", moneyAccount);
-        payloadHelper.applyDoubleField(mapMoneyAccountDetails.get("minimalNoticeDays"), "minimalNoticeDays", moneyAccount);
-        payloadHelper.applyBooleanField(mapMoneyAccountDetails.get("isMailingPaper"), "isMailingPaper", moneyAccount);
+    @JsonProperty("currency")
+    private String strCurrency;
 
-        return moneyAccount;
+    @JsonProperty("rubric")
+    private String strRubric;
+
+    @JsonProperty("addressIds")
+    private List<String> lstAddressIds;
+
+    @JsonProperty("mailingOffsetDay")
+    private Double dblMailingOffsetDay;
+
+    @JsonProperty("mailingOffsetMonth")
+    private Double dblMailingOffsetMonth;
+
+    @JsonProperty("minimalNoticeDays")
+    private Double dblMinimalNoticeDays;
+
+    @JsonProperty("isMailingPaper")
+    private Boolean blnIsMailingPaper;
+
+    // Getters and Setters
+
+    public String getStrUuid() {
+        return strUuid;
     }
 
-public void applyDoubleField(String rawValue, String fieldName, POJOMoneyAccountRequest account) {
-        String normalized = normalize(rawValue);
-        if (normalized != null && !normalized.isEmpty()) {
-            try {
-                double parsed = Double.parseDouble(normalized);
-                switch (fieldName) {
-                    case "mailingOffsetDay":
-                        account.setDblMailingOffsetDay(parsed);
-                        break;
-                    case "mailingOffsetMonth":
-                        account.setDblMailingOffsetMonth(parsed);
-                        break;
-                    case "minimalNoticeDays":
-                        account.setDblMinimalNoticeDays(parsed);
-                        break;
-                    default:
-                        System.err.println("Unknown double field: " + fieldName);
-                }
-            } catch (NumberFormatException e) {
-                System.err.println("Invalid numeric value for " + fieldName + ": " + normalized);
-            }
-        }
+    public void setStrUuid(String strUuid) {
+        this.strUuid = strUuid;
     }
 
-    public void applyBooleanField(String rawValue, String fieldName, POJOMoneyAccountRequest account) {
-        String normalized = normalize(rawValue);
-        if (normalized != null && !normalized.isEmpty()) {
-            boolean parsed = Boolean.parseBoolean(normalized);
-            switch (fieldName) {
-                case "isMailingPaper":
-                    account.setBlnIsMailingPaper(parsed);
-                    break;
-                default:
-                    System.err.println("Unknown boolean field: " + fieldName);
-            }
-        }
+    public String getStrOwnerId() {
+        return strOwnerId;
     }
+
+    public void setStrOwnerId(String strOwnerId) {
+        this.strOwnerId = strOwnerId;
+    }
+
+    public String getStrType() {
+        return strType;
+    }
+
+    public void setStrType(String strType) {
+        this.strType = strType;
+    }
+
+    public String getStrCurrency() {
+        return strCurrency;
+    }
+
+    public void setStrCurrency(String strCurrency) {
+        this.strCurrency = strCurrency;
+    }
+
+    public String getStrRubric() {
+        return strRubric;
+    }
+
+    public void setStrRubric(String strRubric) {
+        this.strRubric = strRubric;
+    }
+
+    public List<String> getLstAddressIds() {
+        return lstAddressIds;
+    }
+
+    public void setLstAddressIds(List<String> lstAddressIds) {
+        this.lstAddressIds = lstAddressIds;
+    }
+
+    public Double getDblMailingOffsetDay() {
+        return dblMailingOffsetDay;
+    }
+
+    public void setDblMailingOffsetDay(Double dblMailingOffsetDay) {
+        this.dblMailingOffsetDay = dblMailingOffsetDay;
+    }
+
+    public Double getDblMailingOffsetMonth() {
+        return dblMailingOffsetMonth;
+    }
+
+    public void setDblMailingOffsetMonth(Double dblMailingOffsetMonth) {
+        this.dblMailingOffsetMonth = dblMailingOffsetMonth;
+    }
+
+    public Double getDblMinimalNoticeDays() {
+        return dblMinimalNoticeDays;
+    }
+
+    public void setDblMinimalNoticeDays(Double dblMinimalNoticeDays) {
+        this.dblMinimalNoticeDays = dblMinimalNoticeDays;
+    }
+
+    public Boolean getBlnIsMailingPaper() {
+        return blnIsMailingPaper;
+    }
+
+    public void setBlnIsMailingPaper(Boolean blnIsMailingPaper) {
+        this.blnIsMailingPaper = blnIsMailingPaper;
+    }
+}
