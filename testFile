@@ -1,42 +1,47 @@
-public void applyDoubleField(String rawValue, String fieldName, POJOMoneyAccountRequest account) {
-    String normalized = normalize(rawValue);
-    if (normalized != null && !normalized.isEmpty()) {
-        try {
-            double parsed = Double.parseDouble(normalized);
-            switch (fieldName) {
-                case "mailingOffsetDay":
-                    account.setDblMailingOffsetDay(parsed);
-                    break;
-                case "mailingOffsetMonth":
-                    account.setDblMailingOffsetMonth(parsed);
-                    break;
-                case "minimalNoticeDays":
-                    account.setDblMinimalNoticeDays(parsed);
-                    break;
-                default:
-                    System.err.println("Unknown double field: " + fieldName);
-            }
-        } catch (NumberFormatException e) {
-            System.err.println("Invalid numeric value for " + fieldName + ": " + normalized);
-        }
-    }
-}
+I have this feature file - 
 
-public void applyBooleanField(String rawValue, String fieldName, POJOMoneyAccountRequest account) {
-    String normalized = normalize(rawValue);
-    if (normalized != null && !normalized.isEmpty()) {
-        boolean parsed = Boolean.parseBoolean(normalized);
-        switch (fieldName) {
-            case "isMailingPaper":
-                account.setBlnIsMailingPaper(parsed);
-                break;
-            default:
-                System.err.println("Unknown boolean field: " + fieldName);
-        }
-    }
-}
+  Scenario Outline: Verify the Post Money Account API with invalid data and 500 error response - <Comments>
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    Then Send Request to create Container with below details
+      | type   | banking   |
+      | bpId   | 66001416  |
+    Then Send request to create Address with below details
+      | firstName       | Firstname             |
+      | middleName      | Middlename            |
+      | lastName        | Lastname              |
+      | salutation      | mr                    |
+      | salutationLetter| mr                    |
+      | attnOf          |                       |
+      | crof            |                       |
+      | residency       | 123                   |
+      | streetNr        | 123                   |
+      | street          | teststreet + RANDOM_6 |
+      | streetAdd       | Addition street       |
+      | poBox           | P.O.Box 123           |
+      | city            | Zurich                |
+      | state           | RANDOM_49             |
+      | zip             | 8001                  |
+      | country         | CH                    |
+    Then Send Request to create Money Account with below details
+      | ownerId            | <ownerId>             |
+      | type               | <type>                |
+      | currency           | <currency>            |
+      | rubric             | <rubric>              |
+      | addressIds         | <addressIds>          |
+      | mailingOffsetDay   | <mailingOffsetDay>    |
+      | mailingOffsetMonth | <mailingOffsetMonth>  |
+      | minimalNoticeDays  | <minimalNoticeDays>   |
+      | isMailingPaper     | <isMailingPaper>      |
+    And I verify the Status Code for Money Account "500"
+    And I verify the Money Account API 500 error response with message "<error>"
+    And I verify that "orderId" is null in Money Account response
 
-payloadHelper.applyDoubleField(mapMoneyAccountDetails.get("mailingOffsetDay"), "mailingOffsetDay", moneyAccount);
-payloadHelper.applyDoubleField(mapMoneyAccountDetails.get("mailingOffsetMonth"), "mailingOffsetMonth", moneyAccount);
-payloadHelper.applyDoubleField(mapMoneyAccountDetails.get("minimalNoticeDays"), "minimalNoticeDays", moneyAccount);
-payloadHelper.applyBooleanField(mapMoneyAccountDetails.get("isMailingPaper"), "isMailingPaper", moneyAccount);
+    Examples:
+      | ownerId              | type                  | currency | rubric        | addressIds         | mailingOffsetDay | mailingOffsetMonth | minimalNoticeDays | isMailingPaper | error                                                       | Comments                                                      |
+      | CONTAINER_OBJECT_ID  | privateCurrentAccount | GBP      | NA            | 123                | NA               | NA                 | NA                | false          | More than one address found with key 123                    | 017 - privateCurrentAccount, AddressId not unique             |
+      | CONTAINER_OBJECT_ID  | privateCurrentAccount | GBP      | NA            | ADDRESS_OBJECT_ID  | -1               | NA                 | NA                | false          | Invalid Generation Offset Expression:  +-1d                 | 024 - privateCurrentAccount, MailingOffsetDay<0               |
+      | CONTAINER_OBJECT_ID  | privateCurrentAccount | GBP      | NA            | ADDRESS_OBJECT_ID  | 31               | NA                 | NA                | false          | Invalid Generation Offset Expression:  +31d                 | 027 - privateCurrentAccount, MailingOffsetDay>30              |
+      | CONTAINER_OBJECT_ID  | privateCurrentAccount | GBP      | NA            | ADDRESS_OBJECT_ID  | 7.1              | NA                 | NA                | false          | Invalid Generation Offset Expression:  +7.0999999999999996d | 028 - privateCurrentAccount, MailingOffsetDay=Decimal Number  |
+
+FOr Example these errors - Invalid Generation Offset Expression:  +7.0999999999999996d, I do not want to har code this feature file, I just want to write like this - Invalid Generation Offset Expression:  *, will it take it ?
