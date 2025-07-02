@@ -1,13 +1,14 @@
 @And("I verify the Money Account API 500 error response with message {string}")
 public void iVerify500ErrorResponse(String expectedError) throws Exception {
     String actualError = jsonHelper.extractStringField(response, "error");
-    ExtentCucumberAdapter.addTestStepLog("Actual error: " + actualError);
+    ExtentCucumberAdapter.addTestStepLog("Actual error message: " + actualError);
+    ExtentCucumberAdapter.addTestStepLog("Expected error pattern: " + expectedError);
 
     if (expectedError.endsWith("*")) {
         String prefix = expectedError.substring(0, expectedError.length() - 1).trim();
         Assert.assertTrue(
             actualError.startsWith(prefix),
-            "Expected error to start with: \"" + prefix + "\", but was: \"" + actualError + "\""
+            "Expected error to start with: " + prefix + ", but was: " + actualError
         );
     } else {
         Assert.assertEquals(actualError, expectedError, "Mismatch in error message");
