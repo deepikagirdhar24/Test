@@ -1,16 +1,68 @@
-@And("I verify the Money Account API 500 error response with message {string}")
-public void iVerify500ErrorResponse(String expectedError) throws Exception {
-    String actualError = jsonHelper.extractStringField(response, "error");
-    ExtentCucumberAdapter.addTestStepLog("Actual error message: " + actualError);
-    ExtentCucumberAdapter.addTestStepLog("Expected error pattern: " + expectedError);
+This is the paylod where I am passing sometimes Integer and sometimes Decimal values in offset fields, I want if I pass integer it takes it as Integer only, not as doubles and if
+it is double, then it takes as double, kindly update code
 
-    if (expectedError.endsWith("*")) {
-        String prefix = expectedError.substring(0, expectedError.length() - 1).trim();
-        Assert.assertTrue(
-            actualError.startsWith(prefix),
-            "Expected error to start with: " + prefix + ", but was: " + actualError
-        );
-    } else {
-        Assert.assertEquals(actualError, expectedError, "Mismatch in error message");
+    public POJOMoneyAccountRequest buildMoneyAccountPayload(Map<String, String> mapMoneyAccountDetails, ScenarioContext scenarioContext) {
+        POJOMoneyAccountRequest moneyAccount = new POJOMoneyAccountRequest();
+
+        String strContainerObjectId = scenarioContext.getContext("containerObjectId");
+        String strAddressObjectId = scenarioContext.getContext("addressObjectId");
+        @SuppressWarnings("unchecked")
+        List<String> addressObjectIds = (List<String>) scenarioContext.getContext("addressObjectIds");
+
+        moneyAccount.setStrUuid(UUID.randomUUID().toString().substring(0, 8));
+
+        String ownerId = payloadHelper.resolveId(mapMoneyAccountDetails.get("ownerId"), strContainerObjectId);
+        moneyAccount.setStrOwnerId((ownerId));
+
+        moneyAccount.setStrType(payloadHelper.normalize(mapMoneyAccountDetails.get("type")));
+        moneyAccount.setStrCurrency(payloadHelper.normalize(mapMoneyAccountDetails.get("currency")));
+        moneyAccount.setStrRubric(payloadHelper.normalize(mapMoneyAccountDetails.get("rubric")));
+
+        List<String> resolvedAddressIds = payloadHelper.resolveIdList(mapMoneyAccountDetails.get("addressIds"), strAddressObjectId, addressObjectIds);
+        moneyAccount.setLstAddressIds(resolvedAddressIds);
+
+        payloadHelper.applyDoubleField(mapMoneyAccountDetails.get("mailingOffsetDay"), "mailingOffsetDay", moneyAccount);
+        payloadHelper.applyDoubleField(mapMoneyAccountDetails.get("mailingOffsetMonth"), "mailingOffsetMonth", moneyAccount);
+        payloadHelper.applyDoubleField(mapMoneyAccountDetails.get("minimalNoticeDays"), "minimalNoticeDays", moneyAccount);
+        payloadHelper.applyBooleanField(mapMoneyAccountDetails.get("isMailingPaper"), "isMailingPaper", moneyAccount);
+
+        return moneyAccount;
     }
-}
+
+public void applyDoubleField(String rawValue, String fieldName, POJOMoneyAccountRequest account) {
+        String normalized = normalize(rawValue);
+        if (normalized != null && !normalized.isEmpty()) {
+            try {
+                double parsed = Double.parseDouble(normalized);
+                switch (fieldName) {
+                    case "mailingOffsetDay":
+                        account.setDblMailingOffsetDay(parsed);
+                        break;
+                    case "mailingOffsetMonth":
+                        account.setDblMailingOffsetMonth(parsed);
+                        break;
+                    case "minimalNoticeDays":
+                        account.setDblMinimalNoticeDays(parsed);
+                        break;
+                    default:
+                        System.err.println("Unknown double field: " + fieldName);
+                }
+            } catch (NumberFormatException e) {
+                System.err.println("Invalid numeric value for " + fieldName + ": " + normalized);
+            }
+        }
+    }
+
+    public void applyBooleanField(String rawValue, String fieldName, POJOMoneyAccountRequest account) {
+        String normalized = normalize(rawValue);
+        if (normalized != null && !normalized.isEmpty()) {
+            boolean parsed = Boolean.parseBoolean(normalized);
+            switch (fieldName) {
+                case "isMailingPaper":
+                    account.setBlnIsMailingPaper(parsed);
+                    break;
+                default:
+                    System.err.println("Unknown boolean field: " + fieldName);
+            }
+        }
+    }
