@@ -1,45 +1,22 @@
-public List<String> resolveIdList(String input, String fallbackSingleAddressId, List<String> addressObjectIds) {
-    if (input == null || input.trim().isEmpty()) {
-        return Collections.emptyList();
-    }
+In payload class, the 1st three can accept numeric values (Integer + double) and its type is not string, last one is boolean only. COrrect it please.
 
-    if ("ADDRESS_OBJECT_ID_LIST".equalsIgnoreCase(input.trim())) {
-        return addressObjectIds != null ? addressObjectIds : Collections.emptyList();
-    }
+        String offsetDay = payloadHelper.normalize(mapMoneyAccountDetails.get("mailingOffsetDay"));
+        if (offsetDay != null && !offsetDay.isEmpty()) {
+            moneyAccount.setDblMailingOffsetDay(Double.parseDouble(offsetDay));
+        }
 
-    // Resolve individual tokens
-    return Arrays.stream(input.split(","))
-            .map(id -> resolveId(id.trim(), fallbackSingleAddressId))
-            .filter(Objects::nonNull)
-            .collect(Collectors.toList());
-}
+        String offsetMonth = payloadHelper.normalize(mapMoneyAccountDetails.get("mailingOffsetMonth"));
+        if (offsetMonth != null && !offsetMonth.isEmpty()) {
+            moneyAccount.setDblMailingOffsetMonth(Double.parseDouble(offsetMonth));
+        }
 
-public POJOMoneyAccountRequest buildMoneyAccountPayload(Map<String, String> mapMoneyAccountDetails, ScenarioContext scenarioContext) {
-    POJOMoneyAccountRequest moneyAccount = new POJOMoneyAccountRequest();
+        String minimalNoticeDays = payloadHelper.normalize(mapMoneyAccountDetails.get("minimalNoticeDays"));
+        if (minimalNoticeDays != null && !minimalNoticeDays.isEmpty()) {
+            moneyAccount.setDblMinimalNoticeDays(Double.parseDouble(minimalNoticeDays));
+        }
 
-    String strContainerObjectId = scenarioContext.getContext("containerObjectId");
-    String strAddressObjectId = scenarioContext.getContext("addressObjectId");
+        String isMailingPaper = payloadHelper.normalize(mapMoneyAccountDetails.get("isMailingPaper"));
+        if (isMailingPaper != null && !isMailingPaper.isEmpty()) {
+            moneyAccount.setBlnIsMailingPaper(Boolean.parseBoolean(isMailingPaper));
+        }
 
-    // 👇 Fetch the list only once
-    @SuppressWarnings("unchecked")
-    List<String> addressObjectIds = (List<String>) scenarioContext.getContext("addressObjectIds");
-
-    moneyAccount.setStrUuid(UUID.randomUUID().toString().substring(0, 8));
-
-    String ownerId = payloadHelper.resolveId(mapMoneyAccountDetails.get("ownerId"), strContainerObjectId);
-    moneyAccount.setStrOwnerId(ownerId);
-
-    moneyAccount.setStrType(payloadHelper.normalize(mapMoneyAccountDetails.get("type")));
-    moneyAccount.setStrCurrency(payloadHelper.normalize(mapMoneyAccountDetails.get("currency")));
-    moneyAccount.setStrRubric(payloadHelper.normalize(mapMoneyAccountDetails.get("rubric")));
-
-    String addressList = payloadHelper.normalize(mapMoneyAccountDetails.get("addressIds"));
-    if (addressList != null) {
-        // 👇 Pass the pre-fetched list instead of accessing scenarioContext again
-        List<String> resolvedAddressIds = payloadHelper.resolveIdList(addressList, strAddressObjectId, addressObjectIds);
-        moneyAccount.setLstAddressIds(resolvedAddressIds);
-    }
-
-    // Other fields unchanged...
-    return moneyAccount;
-}
