@@ -1,9 +1,9 @@
-Updat emy POJO also - 
-
 package ICOS.pojo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.math.BigDecimal;
 import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -28,13 +28,13 @@ public class POJOMoneyAccountRequest {
     private List<String> lstAddressIds;
 
     @JsonProperty("mailingOffsetDay")
-    private Double dblMailingOffsetDay;
+    private BigDecimal mailingOffsetDay;
 
     @JsonProperty("mailingOffsetMonth")
-    private Double dblMailingOffsetMonth;
+    private BigDecimal mailingOffsetMonth;
 
     @JsonProperty("minimalNoticeDays")
-    private Double dblMinimalNoticeDays;
+    private BigDecimal minimalNoticeDays;
 
     @JsonProperty("isMailingPaper")
     private Boolean blnIsMailingPaper;
@@ -89,28 +89,28 @@ public class POJOMoneyAccountRequest {
         this.lstAddressIds = lstAddressIds;
     }
 
-    public Double getDblMailingOffsetDay() {
-        return dblMailingOffsetDay;
+    public BigDecimal getMailingOffsetDay() {
+        return mailingOffsetDay;
     }
 
-    public void setDblMailingOffsetDay(Double dblMailingOffsetDay) {
-        this.dblMailingOffsetDay = dblMailingOffsetDay;
+    public void setMailingOffsetDay(BigDecimal mailingOffsetDay) {
+        this.mailingOffsetDay = mailingOffsetDay;
     }
 
-    public Double getDblMailingOffsetMonth() {
-        return dblMailingOffsetMonth;
+    public BigDecimal getMailingOffsetMonth() {
+        return mailingOffsetMonth;
     }
 
-    public void setDblMailingOffsetMonth(Double dblMailingOffsetMonth) {
-        this.dblMailingOffsetMonth = dblMailingOffsetMonth;
+    public void setMailingOffsetMonth(BigDecimal mailingOffsetMonth) {
+        this.mailingOffsetMonth = mailingOffsetMonth;
     }
 
-    public Double getDblMinimalNoticeDays() {
-        return dblMinimalNoticeDays;
+    public BigDecimal getMinimalNoticeDays() {
+        return minimalNoticeDays;
     }
 
-    public void setDblMinimalNoticeDays(Double dblMinimalNoticeDays) {
-        this.dblMinimalNoticeDays = dblMinimalNoticeDays;
+    public void setMinimalNoticeDays(BigDecimal minimalNoticeDays) {
+        this.minimalNoticeDays = minimalNoticeDays;
     }
 
     public Boolean getBlnIsMailingPaper() {
@@ -121,3 +121,33 @@ public class POJOMoneyAccountRequest {
         this.blnIsMailingPaper = blnIsMailingPaper;
     }
 }
+
+
+public void applyBigDecimalField(String rawValue, String fieldName, POJOMoneyAccountRequest account) {
+    String normalized = normalize(rawValue);
+    if (normalized != null && !normalized.isEmpty()) {
+        try {
+            BigDecimal parsed = new BigDecimal(normalized);
+            switch (fieldName) {
+                case "mailingOffsetDay":
+                    account.setMailingOffsetDay(parsed);
+                    break;
+                case "mailingOffsetMonth":
+                    account.setMailingOffsetMonth(parsed);
+                    break;
+                case "minimalNoticeDays":
+                    account.setMinimalNoticeDays(parsed);
+                    break;
+                default:
+                    System.err.println("Unknown field: " + fieldName);
+            }
+        } catch (NumberFormatException e) {
+            System.err.println("Invalid numeric value for " + fieldName + ": " + normalized);
+        }
+    }
+}
+
+
+payloadHelper.applyBigDecimalField(mapMoneyAccountDetails.get("mailingOffsetDay"), "mailingOffsetDay", moneyAccount);
+payloadHelper.applyBigDecimalField(mapMoneyAccountDetails.get("mailingOffsetMonth"), "mailingOffsetMonth", moneyAccount);
+payloadHelper.applyBigDecimalField(mapMoneyAccountDetails.get("minimalNoticeDays"), "minimalNoticeDays", moneyAccount);
