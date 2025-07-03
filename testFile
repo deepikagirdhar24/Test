@@ -1,153 +1,68 @@
-package ICOS.pojo;
+  Scenario Outline: Verify the Post Money Account API with invalid data and 500 error response - <Comments>
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    Then Send Request to create Container with below details
+      | type   | banking   |
+      | bpId   | 66001416  |
+    Then Send request to create Address with below details
+      | firstName       | Firstname             |
+      | middleName      | Middlename            |
+      | lastName        | Lastname              |
+      | salutation      | mr                    |
+      | salutationLetter| mr                    |
+      | attnOf          |                       |
+      | crof            |                       |
+      | residency       | 123                   |
+      | streetNr        | 123                   |
+      | street          | teststreet + RANDOM_6 |
+      | streetAdd       | Addition street       |
+      | poBox           | P.O.Box 123           |
+      | city            | Zurich                |
+      | state           | RANDOM_49             |
+      | zip             | 8001                  |
+      | country         | CH                    |
+    Then Send Request to create Money Account with below details
+      | ownerId            | <ownerId>             |
+      | type               | <type>                |
+      | currency           | <currency>            |
+      | rubric             | <rubric>              |
+      | addressIds         | <addressIds>          |
+      | mailingOffsetDay   | <mailingOffsetDay>    |
+      | mailingOffsetMonth | <mailingOffsetMonth>  |
+      | minimalNoticeDays  | <minimalNoticeDays>   |
+      | isMailingPaper     | <isMailingPaper>      |
+    And I verify the Status Code for Money Account "500"
+    And I verify the Money Account API 500 error response with message "<error>"
+    And I verify that "orderId" is null in Money Account response
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+    Examples:
+      | ownerId              | type                  | currency | rubric        | addressIds         | mailingOffsetDay | mailingOffsetMonth | minimalNoticeDays | isMailingPaper | error                                              | Comments                                                      |
+      | CONTAINER_OBJECT_ID  | privateCurrentAccount | GBP      | NA            | 123                | NA               | NA                 | NA                | false          | More than one address found with key *             | 017 - privateCurrentAccount, AddressId not unique             |
+      | CONTAINER_OBJECT_ID  | privateCurrentAccount | GBP      | NA            | ADDRESS_OBJECT_ID  | -1               | NA                 | NA                | false          | Invalid Generation Offset Expression:  *           | 024 - privateCurrentAccount, MailingOffsetDay<0               |
+      | CONTAINER_OBJECT_ID  | privateCurrentAccount | GBP      | NA            | ADDRESS_OBJECT_ID  | 31               | NA                 | NA                | false          | Invalid Generation Offset Expression:  *           | 027 - privateCurrentAccount, MailingOffsetDay>30              |
+      | CONTAINER_OBJECT_ID  | privateCurrentAccount | GBP      | NA            | ADDRESS_OBJECT_ID  | 7.1              | NA                 | NA                | false          | Invalid Generation Offset Expression:  *           | 028 - privateCurrentAccount, MailingOffsetDay=Decimal Number  |
+      | CONTAINER_OBJECT_ID  | privateNoticeAccount  | GBP      | NA            | 123                | NA               | NA                 | 60                | false          | More than one address found with key *             | 044 - privateNoticeAccount, AddressId not unique              |
+      | CONTAINER_OBJECT_ID  | privateNoticeAccount  | GBP      | NA            | ADDRESS_OBJECT_ID  | NA               | NA                 | NA                | false          | *Undefined notice days for private notice account* | 047 - privateNoticeAccount, MinimalNoticeDays=NA              |
+      | CONTAINER_OBJECT_ID  | privateNoticeAccount  | GBP      | NA            | ADDRESS_OBJECT_ID  | NA               | NA                 | 45                | false          | *Undefined notice days for private notice account* | 050 - privateNoticeAccount, MinimalNoticeDays=Invalid         |
+      | CONTAINER_OBJECT_ID  | privateNoticeAccount  | GBP      | NA            | ADDRESS_OBJECT_ID  | NA               | NA                 |                   | false          | *Undefined notice days for private notice account* | 051 - privateNoticeAccount, MinimalNoticeDays=Empty           |
 
-import java.math.BigDecimal;
-import java.util.List;
+This is the SD - 
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class POJOMoneyAccountRequest {
+    @And("I verify the Money Account API 500 error response with message {string}")
+    public void iVerify500ErrorResponse(String expectedError) throws Exception {
+        String actualError = jsonHelper.extractStringField(response, "error");
+        ExtentCucumberAdapter.addTestStepLog("Actual error message: " + actualError);
+        ExtentCucumberAdapter.addTestStepLog("Expected error pattern: " + expectedError);
 
-    @JsonProperty("uuid")
-    private String strUuid;
-
-    @JsonProperty("ownerId")
-    private String strOwnerId;
-
-    @JsonProperty("type")
-    private String strType;
-
-    @JsonProperty("currency")
-    private String strCurrency;
-
-    @JsonProperty("rubric")
-    private String strRubric;
-
-    @JsonProperty("addressIds")
-    private List<String> lstAddressIds;
-
-    @JsonProperty("mailingOffsetDay")
-    private BigDecimal mailingOffsetDay;
-
-    @JsonProperty("mailingOffsetMonth")
-    private BigDecimal mailingOffsetMonth;
-
-    @JsonProperty("minimalNoticeDays")
-    private BigDecimal minimalNoticeDays;
-
-    @JsonProperty("isMailingPaper")
-    private Boolean blnIsMailingPaper;
-
-    // Getters and Setters
-
-    public String getStrUuid() {
-        return strUuid;
-    }
-
-    public void setStrUuid(String strUuid) {
-        this.strUuid = strUuid;
-    }
-
-    public String getStrOwnerId() {
-        return strOwnerId;
-    }
-
-    public void setStrOwnerId(String strOwnerId) {
-        this.strOwnerId = strOwnerId;
-    }
-
-    public String getStrType() {
-        return strType;
-    }
-
-    public void setStrType(String strType) {
-        this.strType = strType;
-    }
-
-    public String getStrCurrency() {
-        return strCurrency;
-    }
-
-    public void setStrCurrency(String strCurrency) {
-        this.strCurrency = strCurrency;
-    }
-
-    public String getStrRubric() {
-        return strRubric;
-    }
-
-    public void setStrRubric(String strRubric) {
-        this.strRubric = strRubric;
-    }
-
-    public List<String> getLstAddressIds() {
-        return lstAddressIds;
-    }
-
-    public void setLstAddressIds(List<String> lstAddressIds) {
-        this.lstAddressIds = lstAddressIds;
-    }
-
-    public BigDecimal getMailingOffsetDay() {
-        return mailingOffsetDay;
-    }
-
-    public void setMailingOffsetDay(BigDecimal mailingOffsetDay) {
-        this.mailingOffsetDay = mailingOffsetDay;
-    }
-
-    public BigDecimal getMailingOffsetMonth() {
-        return mailingOffsetMonth;
-    }
-
-    public void setMailingOffsetMonth(BigDecimal mailingOffsetMonth) {
-        this.mailingOffsetMonth = mailingOffsetMonth;
-    }
-
-    public BigDecimal getMinimalNoticeDays() {
-        return minimalNoticeDays;
-    }
-
-    public void setMinimalNoticeDays(BigDecimal minimalNoticeDays) {
-        this.minimalNoticeDays = minimalNoticeDays;
-    }
-
-    public Boolean getBlnIsMailingPaper() {
-        return blnIsMailingPaper;
-    }
-
-    public void setBlnIsMailingPaper(Boolean blnIsMailingPaper) {
-        this.blnIsMailingPaper = blnIsMailingPaper;
-    }
-}
-
-
-public void applyBigDecimalField(String rawValue, String fieldName, POJOMoneyAccountRequest account) {
-    String normalized = normalize(rawValue);
-    if (normalized != null && !normalized.isEmpty()) {
-        try {
-            BigDecimal parsed = new BigDecimal(normalized);
-            switch (fieldName) {
-                case "mailingOffsetDay":
-                    account.setMailingOffsetDay(parsed);
-                    break;
-                case "mailingOffsetMonth":
-                    account.setMailingOffsetMonth(parsed);
-                    break;
-                case "minimalNoticeDays":
-                    account.setMinimalNoticeDays(parsed);
-                    break;
-                default:
-                    System.err.println("Unknown field: " + fieldName);
-            }
-        } catch (NumberFormatException e) {
-            System.err.println("Invalid numeric value for " + fieldName + ": " + normalized);
+        if (expectedError.endsWith("*")) {
+            String prefix = expectedError.substring(0, expectedError.length() - 1).trim();
+            Assert.assertTrue(
+                    actualError.startsWith(prefix),
+                    "Expected error to start with: " + prefix + ", but was: " + actualError
+            );
+        } else {
+            Assert.assertEquals(actualError, expectedError, "Mismatch in error message");
         }
     }
-}
 
-
-payloadHelper.applyBigDecimalField(mapMoneyAccountDetails.get("mailingOffsetDay"), "mailingOffsetDay", moneyAccount);
-payloadHelper.applyBigDecimalField(mapMoneyAccountDetails.get("mailingOffsetMonth"), "mailingOffsetMonth", moneyAccount);
-payloadHelper.applyBigDecimalField(mapMoneyAccountDetails.get("minimalNoticeDays"), "minimalNoticeDays", moneyAccount);
+Now, how can I handle the last 3 scenarios where we have wildcard at first and last, can you give me any updated SD for that ?
