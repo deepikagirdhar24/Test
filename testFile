@@ -1,4 +1,4 @@
-Error on this - 
+Error on this - what is the error here, I have pasted the code.
 
 [ERROR] Verify Money Account API.Verify the Post Money Account API with invalid data and 500 error response - 017 - privateCurrentAccount, AddressId not unique  Time elapsed: 1.181 s  <<< FAILURE!
 java.lang.AssertionError: expected [401] but found [500]
