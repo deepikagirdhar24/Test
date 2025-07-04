@@ -1,16 +1,139 @@
-import org.apache.commons.lang3.StringUtils;
+Error on this - 
 
-@And("I verify the Money Account API 500 error response with message {string}")
-public void iVerify500ErrorResponse(String expectedError) throws Exception {
-    String actualError = jsonHelper.extractStringField(response, "error");
-    ExtentCucumberAdapter.addTestStepLog("Actual: " + actualError + " | Expected: " + expectedError);
+[ERROR] Verify Money Account API.Verify the Post Money Account API with invalid data and 500 error response - 017 - privateCurrentAccount, AddressId not unique  Time elapsed: 1.181 s  <<< FAILURE!
+java.lang.AssertionError: expected [401] but found [500]
 
-    String expected = StringUtils.strip(expectedError, "*").trim();
+  Scenario Outline: Verify the Post Money Account API with invalid data and 500 error response - <Comments>
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    Then Send Request to create Container with below details
+      | type   | banking   |
+      | bpId   | 66001416  |
+    Then Send request to create Address with below details
+      | firstName       | Firstname             |
+      | middleName      | Middlename            |
+      | lastName        | Lastname              |
+      | salutation      | mr                    |
+      | salutationLetter| mr                    |
+      | attnOf          |                       |
+      | crof            |                       |
+      | residency       | 123                   |
+      | streetNr        | 123                   |
+      | street          | teststreet + RANDOM_6 |
+      | streetAdd       | Addition street       |
+      | poBox           | P.O.Box 123           |
+      | city            | Zurich                |
+      | state           | RANDOM_49             |
+      | zip             | 8001                  |
+      | country         | CH                    |
+    Then Send Request to create Money Account with below details
+      | ownerId            | <ownerId>             |
+      | type               | <type>                |
+      | currency           | <currency>            |
+      | rubric             | <rubric>              |
+      | addressIds         | <addressIds>          |
+      | mailingOffsetDay   | <mailingOffsetDay>    |
+      | mailingOffsetMonth | <mailingOffsetMonth>  |
+      | minimalNoticeDays  | <minimalNoticeDays>   |
+      | isMailingPaper     | <isMailingPaper>      |
+    And I verify the Status Code for Money Account "500"
+    And I verify the Money Account API 500 error response with message "<error>"
+    And I verify that "orderId" is null in Money Account response
 
-    boolean matches = expectedError.startsWith("*") && expectedError.endsWith("*") ? actualError.contains(expected)
-                    : expectedError.startsWith("*")                               ? actualError.endsWith(expected)
-                    : expectedError.endsWith("*")                                 ? actualError.startsWith(expected)
-                    : actualError.equals(expected);
+    Examples:
+      | ownerId              | type                  | currency | rubric        | addressIds         | mailingOffsetDay | mailingOffsetMonth | minimalNoticeDays | isMailingPaper | error                                              | Comments                                                      |
+      | CONTAINER_OBJECT_ID  | privateCurrentAccount | GBP      | NA            | 123                | NA               | NA                 | NA                | false          | More than one address found with key *             | 017 - privateCurrentAccount, AddressId not unique             |
 
-    Assert.assertTrue(matches, "Expected pattern mismatch. Actual: " + actualError);
-}
+    @Then("Send Request to create Money Account with below details")
+    public void sendRequestToCreateMoneyAccountWithDetails(DataTable dataTable) throws Exception {
+        Map<String, String> mapMoneyAccountDetails = dataTable.asMap(String.class, String.class);
+        String jwtToken = scenarioContext.getContext("JWTToken");
+        response = objMoneyAccount.createMoneyAccount(strEnvType, "Bearer", jwtToken, mapMoneyAccountDetails, scenarioContext);
+    }
+
+// Create Money Account
+    public Response createMoneyAccount(String strEnvType, String strBearerToken, String strJWTToken,
+                                      Map<String, String> mapMoneyAccountDetails, ScenarioContext scenarioContext) throws Exception {
+
+        String strTYKURL = getTYKURL(strEnvType, "TYK.MONEYACCOUNT");
+
+        POJOMoneyAccountRequest pojoMoneyAccountRequest = payloads.buildMoneyAccountPayload(mapMoneyAccountDetails, scenarioContext);
+        String strRequestBody = objObjectMapper.writeValueAsString(pojoMoneyAccountRequest);
+
+        ExtentCucumberAdapter.addTestStepLog("Sending request to Create Money Account");
+
+        Response objResponse = sendPostRequest(strTYKURL, strBearerToken, strJWTToken, strRequestBody, null);
+        String strResponseBody = devHelperLibrary.getResponseBody(objResponse);
+        objCucumberLogger.PrintStatus("Response is: " + strResponseBody);
+
+        String strMoneyAccountObjectId = jsonHelper.extractStringField(objResponse, "objectId");
+        String strMoneyAccountOrderId = jsonHelper.extractStringField(objResponse, "orderId");
+
+        scenarioContext.setContext("moneyAccountObjectId", strMoneyAccountObjectId);
+        scenarioContext.setContext("moneyAccountOrderId", strMoneyAccountOrderId);
+
+        return objResponse;
+    }
+
+public POJOMoneyAccountRequest buildMoneyAccountPayload(Map<String, String> mapMoneyAccountDetails, ScenarioContext scenarioContext) {
+        POJOMoneyAccountRequest moneyAccount = new POJOMoneyAccountRequest();
+
+        String strContainerObjectId = scenarioContext.getContext("containerObjectId");
+        String strAddressObjectId = scenarioContext.getContext("addressObjectId");
+        @SuppressWarnings("unchecked")
+        List<String> addressObjectIds = (List<String>) scenarioContext.getContext("addressObjectIds");
+
+        moneyAccount.setStrUuid(UUID.randomUUID().toString().substring(0, 8));
+
+        String ownerId = payloadHelper.resolveId(mapMoneyAccountDetails.get("ownerId"), strContainerObjectId);
+        moneyAccount.setStrOwnerId((ownerId));
+
+        moneyAccount.setStrType(payloadHelper.normalize(mapMoneyAccountDetails.get("type")));
+        moneyAccount.setStrCurrency(payloadHelper.normalize(mapMoneyAccountDetails.get("currency")));
+        moneyAccount.setStrRubric(payloadHelper.normalize(mapMoneyAccountDetails.get("rubric")));
+
+        List<String> resolvedAddressIds = payloadHelper.resolveIdList(mapMoneyAccountDetails.get("addressIds"), strAddressObjectId, addressObjectIds);
+        moneyAccount.setLstAddressIds(resolvedAddressIds);
+
+        payloadHelper.applyBigDecimalField(mapMoneyAccountDetails.get("mailingOffsetDay"), "mailingOffsetDay", moneyAccount);
+        payloadHelper.applyBigDecimalField(mapMoneyAccountDetails.get("mailingOffsetMonth"), "mailingOffsetMonth", moneyAccount);
+        payloadHelper.applyBigDecimalField(mapMoneyAccountDetails.get("minimalNoticeDays"), "minimalNoticeDays", moneyAccount);
+        payloadHelper.applyBooleanField(mapMoneyAccountDetails.get("isMailingPaper"), "isMailingPaper", moneyAccount);
+
+        return moneyAccount;
+    }
+
+    public String resolveId(String input, String resolvedValue) {
+        if (input == null || input.trim().isEmpty()) {
+            return "";
+        }
+
+        switch (input.trim().toUpperCase()) {
+            case "EMPTY":
+                return "";
+            case "NA":
+                return null;
+            case "NATURAL_PERSON_OBJECT_ID":
+            case "CONTAINER_OBJECT_ID":
+            case "ADDRESS_OBJECT_ID":
+                return resolvedValue;
+            default:
+                return input;
+        }
+    }
+
+    public List<String> resolveIdList(String input, String fallbackSingleAddressId, List<String> addressObjectIds) {
+        if (input == null || input.trim().isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        if ("ADDRESS_OBJECT_ID_LIST".equalsIgnoreCase(input.trim())) {
+            return addressObjectIds != null ? addressObjectIds : Collections.emptyList();
+        }
+
+        // Resolve individual tokens
+        return Arrays.stream(input.split(","))
+                .map(id -> resolveId(id.trim(), fallbackSingleAddressId))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
