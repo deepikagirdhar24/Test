@@ -1,138 +1,143 @@
-Is there something wrong here - 
+Is there anything wrong in code - 
 
-Feature: Verify Debit Card API
+    @Then("Send Request to create Money Account with below details")
+    public void sendRequestToCreateMoneyAccountWithDetails(DataTable dataTable) throws Exception {
+        Map<String, String> mapMoneyAccountDetails = dataTable.asMap(String.class, String.class);
+        String jwtToken = scenarioContext.getContext("JWTToken");
+        response = objMoneyAccount.createMoneyAccount(strEnvType, "Bearer", jwtToken, mapMoneyAccountDetails, scenarioContext);
+    }
 
-  Scenario Outline: Verify the Post Debit Card API with valid data - <Comments>
-    Given Send Request to get Authentication Token for ICOS
-    When I generate the JWT Token
-    Then Send Request to create Container with below details
-      | type   | banking   |
-      | bpId   | 66001416  |
-    Then Send request to create Address with below details
-      | firstName       | Firstname             |
-      | middleName      | Middlename            |
-      | lastName        | Lastname              |
-      | salutation      | mr                    |
-      | salutationLetter| mr                    |
-      | attnOf          |                       |
-      | crof            |                       |
-      | residency       | 123                   |
-      | streetNr        | 123                   |
-      | street          | teststreet + RANDOM_6 |
-      | streetAdd       | Addition street       |
-      | poBox           | P.O.Box 123           |
-      | city            | Zurich                |
-      | state           | RANDOM_49             |
-      | zip             | 8001                  |
-      | country         | CH                    |
-    Then Send Request to create Money Account with below details
-      | ownerId            | CONTAINER_OBJECT_ID     |
-      | type               | privateCurrentAccount   |
-      | currency           | GBP                     |
-      | rubric             | NA                      |
-      | addressIds         | ADDRESS_OBJECT_ID       |
-      | mailingOffsetDay   | NA                      |
-      | mailingOffsetMonth | NA                      |
-      | minimalNoticeDays  | NA                      |
-      | isMailingPaper     | false                   |
-    Then Send Request to create Debit Card with below details
-      | type        | <type>        |
-      | maccId      | <maccId>      |
-      | ownerId     | <ownerId>     |
-      | label       | <label>       |
-      | dailyLimit  | <dailyLimit>  |
-      | addressId   | <addressId>   |
-    And I verify the Status Code for Debit Card "200"
-    And I verify the "objectId" exists in Debit Card response
-    And I verify the "orderId" exists in Debit Card response
+// Create Money Account
+    public Response createMoneyAccount(String strEnvType, String strBearerToken, String strJWTToken,
+                                      Map<String, String> mapMoneyAccountDetails, ScenarioContext scenarioContext) throws Exception {
 
-    Examples:
-      | type    | maccId                   | ownerId    | label     | dailyLimit | addressId         | Comments                 |
-      | DEBIT   | MONEY_ACCOUNT_OBJECT_ID  | 665041400  | LABEL123  | 555        | ADDRESS_OBJECT_ID | 001 - StraightThrough    |
+        String strTYKURL = getTYKURL(strEnvType, "TYK.MONEYACCOUNT");
 
+        POJOMoneyAccountRequest pojoMoneyAccountRequest = payloads.buildMoneyAccountPayload(mapMoneyAccountDetails, scenarioContext);
+        String strRequestBody = objObjectMapper.writeValueAsString(pojoMoneyAccountRequest);
 
+        ExtentCucumberAdapter.addTestStepLog("Sending request to Create Money Account");
 
-[INFO] 
-[INFO] --- maven-surefire-plugin:3.0.0-M5:test (default-test) @ wealth-icos-api ---
-[INFO] 
-[INFO] -------------------------------------------------------
-[INFO]  T E S T S
-[INFO] -------------------------------------------------------
-[INFO] Running testRunner.Runner
-Scenario Outline: Verify the Post Debit Card API with valid data - 001 - StraightThrough # src/test/resources/Features/DebitCard.feature:49
-Before All
-Jul 09, 2025 1:43:36 PM hooks.CucumberHooks beforeScenario
-INFO: Before Scenario: Test is starting!
-  Given Send Request to get Authentication Token for ICOS                                # stepDefinations.GetUserSteps.sendRequestToGetAuthenticationTokenForICOS()
-  When I generate the JWT Token                                                          # stepDefinations.GetUserSteps.iGenerateTheJWTToken()
-Jul 09, 2025 1:43:55 PM utilities.CucumberLogger PrintStatus
-INFO: Value is: Response is: {"objectId":"66001416.1000","orderId":"2910386003"}
-  Then Send Request to create Container with below details              Jul 09, 2025 1:43:59 PM utilities.CucumberLogger PrintStatus
-INFO: Value is: Response is: {"objectId":"665809939","orderId":"2910386018"}
-Jul 09, 2025 1:44:05 PM utilities.CucumberLogger PrintStatus
-INFO: Value is: Response is: {"objectId":"66001416.2555","orderId":"2910386019"}
-Jul 09, 2025 1:44:07 PM utilities.CucumberLogger PrintStatus
-INFO: Value is: Response is: {"orderId":"2910386023","error":"MAILING ADDRESS\nEither Name or Firm is mandatory."}
-                 # stepDefinations.ContainerSteps.sendRequestToCreateContainerWithDetails(io.cucumber.datatable.DataTable)
-    | type | banking  |
-    | bpId | 66001416 |
-  Then Send request to create Address with below details                                 # stepDefinations.AddressSteps.sendRequestToCreateAddressWithDetails(io.cucumber.datatable.DataTable)
-    | firstName        | Firstname             |
-    | middleName       | Middlename            |
-    | lastName         | Lastname              |
-    | salutation       | mr                    |
-    | salutationLetter | mr                    |
-    | attnOf           | [empty]               |
-    | crof             | [empty]               |
-    | residency        | 123                   |
-    | streetNr         | 123                   |
-    | street           | teststreet + RANDOM_6 |
-    | streetAdd        | Addition street       |
-    | poBox            | P.O.Box 123           |
-    | city             | Zurich                |
-    | state            | RANDOM_49             |
-    | zip              | 8001                  |
-    | country          | CH                    |
-  Then Send Request to create Money Account with below details                           # stepDefinations.MoneyAccountSteps.sendRequestToCreateMoneyAccountWithDetails(io.cucumber.datatable.DataTable)
-    | ownerId            | CONTAINER_OBJECT_ID   |
-    | type               | privateCurrentAccount |
-    | currency           | GBP                   |
-    | rubric             | NA                    |
-    | addressIds         | ADDRESS_OBJECT_ID     |
-    | mailingOffsetDay   | NA                    |
-    | mailingOffsetMonth | NA                    |
-    | minimalNoticeDays  | NA                    |
-    | isMailingPaper     | false                 |
-  Then Send Request to create Debit Card with below details                              # stepDefinations.DebitCardSteps.sendRequestToCreateDebitCardWithDetails(io.cucumber.datatable.DataTable)
-    | type       | DEBIT                   |
-    | maccId     | MONEY_ACCOUNT_OBJECT_ID |
-    | ownerId    | 665041400               |
-    | label      | LABEL123                |
-    | dailyLimit | 555                     |
-    | addressId  | ADDRESS_OBJECT_ID       |
-  And I verify the Status Code for Debit Card "200"                                      # stepDefinations.DebitCardSteps.iVerifyTheStatusCodeForDebitCard(java.lang.String)
-      java.lang.AssertionError: expected [500] but found [200]
-	at org.testng.Assert.fail(Assert.java:111)
-	at org.testng.Assert.failNotEquals(Assert.java:1578)
-	at org.testng.Assert.assertEqualsImpl(Assert.java:150)
-	at org.testng.Assert.assertEquals(Assert.java:132)
-	at org.testng.Assert.assertEquals(Assert.java:1419)
-	at org.testng.Assert.assertEquals(Assert.java:1383)
-	at org.testng.Assert.assertEquals(Assert.java:1429)
-	at stepDefinations.DebitCardSteps.iVerifyTheStatusCodeForDebitCard(DebitCardSteps.java:82)
-	at âœ½.I verify the Status Code for Debit Card "200"(file:///C:/Users/girdd/IdeaProjects/icosapitests/src/test/resources/Features/DebitCard.feature:43)
-  And I verify the "objectId" exists in Debit Card response                              # stepDefinations.DebitCardSteps.iVerifyTheKeyExistsInDebitCardResponse(java.lang.String)
-  And I verify the "orderId" exists in Debit Card response                               # stepDefinations.DebitCardSteps.iVerifyTheKeyExistsInDebitCardResponse(java.lang.String)
-Jul 09, 2025 1:44:10 PM tech.grasshopper.pdf.PDFCucumberReport collectReportConfiguration
-INFO: PDF report configuration YAML file not found. Using default settings.
-[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 37.251 s <<< FAILURE! - in testRunner.Runner
-[ERROR] Verify Debit Card API.Verify the Post Debit Card API with valid data - 001 - StraightThrough  Time elapsed: 32.719 s  <<< FAILURE!
-java.lang.AssertionError: expected [500] but found [200]
-[INFO] 
-[INFO] Results:
-[INFO] 
-[ERROR] Failures: 
-[ERROR]   expected [500] but found [200]
-[INFO] 
-[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0
-[INFO] 
+        Response objResponse = sendPostRequest(strTYKURL, strBearerToken, strJWTToken, strRequestBody, null);
+        String strResponseBody = devHelperLibrary.getResponseBody(objResponse);
+        objCucumberLogger.PrintStatus("Response is: " + strResponseBody);
+
+        String strMoneyAccountObjectId = jsonHelper.extractStringField(objResponse, "objectId");
+        String strMoneyAccountOrderId = jsonHelper.extractStringField(objResponse, "orderId");
+
+        scenarioContext.setContext("moneyAccountObjectId", strMoneyAccountObjectId);
+        scenarioContext.setContext("moneyAccountOrderId", strMoneyAccountOrderId);
+
+        return objResponse;
+    }
+
+public POJOMoneyAccountRequest buildMoneyAccountPayload(Map<String, String> mapMoneyAccountDetails, ScenarioContext scenarioContext) {
+        POJOMoneyAccountRequest moneyAccount = new POJOMoneyAccountRequest();
+
+        String strContainerObjectId = scenarioContext.getContext("containerObjectId");
+        String strAddressObjectId = scenarioContext.getContext("addressObjectId");
+        @SuppressWarnings("unchecked")
+        List<String> addressObjectIds = (List<String>) scenarioContext.getContext("addressObjectIds");
+
+        moneyAccount.setStrUuid(UUID.randomUUID().toString().substring(0, 8));
+
+        String ownerId = payloadHelper.resolveId(mapMoneyAccountDetails.get("ownerId"), strContainerObjectId);
+        moneyAccount.setStrOwnerId((ownerId));
+
+        moneyAccount.setStrType(payloadHelper.normalize(mapMoneyAccountDetails.get("type")));
+        moneyAccount.setStrCurrency(payloadHelper.normalize(mapMoneyAccountDetails.get("currency")));
+        moneyAccount.setStrRubric(payloadHelper.normalize(mapMoneyAccountDetails.get("rubric")));
+
+        List<String> resolvedAddressIds = payloadHelper.resolveIdList(mapMoneyAccountDetails.get("addressIds"), strAddressObjectId, addressObjectIds);
+        moneyAccount.setLstAddressIds(resolvedAddressIds);
+
+        payloadHelper.applyBigDecimalField(mapMoneyAccountDetails.get("mailingOffsetDay"), "mailingOffsetDay", moneyAccount);
+        payloadHelper.applyBigDecimalField(mapMoneyAccountDetails.get("mailingOffsetMonth"), "mailingOffsetMonth", moneyAccount);
+        payloadHelper.applyBigDecimalField(mapMoneyAccountDetails.get("minimalNoticeDays"), "minimalNoticeDays", moneyAccount);
+        payloadHelper.applyBooleanField(mapMoneyAccountDetails.get("isMailingPaper"), "isMailingPaper", moneyAccount);
+
+        return moneyAccount;
+    }
+
+public String normalize(String value) {
+        if (value == null) return "";
+        switch (value.trim().toUpperCase()) {
+            case "NA": return null;
+            case "EMPTY": return "";
+            default: return value;
+        }
+    }
+
+public String resolveId(String input, String resolvedValue) {
+        if (input == null || input.trim().isEmpty()) {
+            return "";
+        }
+
+        switch (input.trim().toUpperCase()) {
+            case "EMPTY":
+                return "";
+            case "NA":
+                return null;
+            case "NATURAL_PERSON_OBJECT_ID":
+            case "CONTAINER_OBJECT_ID":
+            case "ADDRESS_OBJECT_ID":
+            case "MONEY_ACCOUNT_OBJECT_ID":
+                return resolvedValue;
+            default:
+                return input;
+        }
+    }
+
+    public List<String> resolveIdList(String input, String fallbackSingleAddressId, List<String> addressObjectIds) {
+        if (input == null || input.trim().isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        if ("ADDRESS_OBJECT_ID_LIST".equalsIgnoreCase(input.trim())) {
+            return addressObjectIds != null ? addressObjectIds : Collections.emptyList();
+        }
+
+        // Resolve individual tokens
+        return Arrays.stream(input.split(","))
+                .map(id -> resolveId(id.trim(), fallbackSingleAddressId))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+
+    public void applyBigDecimalField(String rawValue, String fieldName, POJOMoneyAccountRequest account) {
+        String normalized = normalize(rawValue);
+        if (normalized != null && !normalized.isEmpty()) {
+            try {
+                BigDecimal parsed = new BigDecimal(normalized);
+                switch (fieldName) {
+                    case "mailingOffsetDay":
+                        account.setMailingOffsetDay(parsed);
+                        break;
+                    case "mailingOffsetMonth":
+                        account.setMailingOffsetMonth(parsed);
+                        break;
+                    case "minimalNoticeDays":
+                        account.setMinimalNoticeDays(parsed);
+                        break;
+                    default:
+                        System.err.println("Unknown field: " + fieldName);
+                }
+            } catch (NumberFormatException e) {
+                System.err.println("Invalid numeric value for " + fieldName + ": " + normalized);
+            }
+        }
+    }
+
+    public void applyBooleanField(String rawValue, String fieldName, POJOMoneyAccountRequest account) {
+        String normalized = normalize(rawValue);
+        if (normalized != null && !normalized.isEmpty()) {
+            boolean parsed = Boolean.parseBoolean(normalized);
+            switch (fieldName) {
+                case "isMailingPaper":
+                    account.setBlnIsMailingPaper(parsed);
+                    break;
+                default:
+                    System.err.println("Unknown boolean field: " + fieldName);
+            }
+        }
+    }
