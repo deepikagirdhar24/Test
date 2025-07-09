@@ -1,17 +1,24 @@
-public void applyBigDecimalField(String rawValue, String fieldName, POJOMoneyAccountSimple account) {
-    String normalized = normalize(rawValue);
-    if (normalized != null && !normalized.isEmpty()) {
-        try {
-            BigDecimal parsed = new BigDecimal(normalized);
-            switch (fieldName) {
-                case "dailyLimit":
-                    account.setBdDailyLimit(parsed);
-                    break;
-                default:
-                    System.err.println("Unknown field: " + fieldName);
-            }
-        } catch (NumberFormatException e) {
-            System.err.println("Invalid numeric value for " + fieldName + ": " + normalized);
-        }
-    }
+public POJOMoneyAccountSimple buildPOJODebitCardPayload(Map<String, String> mapDetails, ScenarioContext scenarioContext) {
+    POJOMoneyAccountSimple debitCardPayload = new POJOMoneyAccountSimple();
+
+    String strContainerObjectId = scenarioContext.getContext("containerObjectId");
+    String strAddressObjectId = scenarioContext.getContext("addressObjectId");
+
+    // Set UUID (random 7-character)
+    debitCardPayload.setStrUuid(UUID.randomUUID().toString().substring(0, 7));
+
+    // Resolve and set fields
+    String resolvedOwnerId = payloadHelper.resolveId(mapDetails.get("ownerId"), strContainerObjectId);
+    debitCardPayload.setStrOwnerId(resolvedOwnerId);
+
+    String resolvedAddressId = payloadHelper.resolveId(mapDetails.get("addressId"), strAddressObjectId);
+    debitCardPayload.setStrAddressId(resolvedAddressId);
+
+    debitCardPayload.setStrType(payloadHelper.normalize(mapDetails.get("type")));
+    debitCardPayload.setStrMaccId(payloadHelper.normalize(mapDetails.get("maccId")));
+    debitCardPayload.setStrLabel(payloadHelper.normalize(mapDetails.get("label")));
+
+    payloadHelper.applyBigDecimalField(mapDetails.get("dailyLimit"), "dailyLimit", debitCardPayload);
+
+    return debitCardPayload;
 }
