@@ -1,58 +1,33 @@
-Please make POJO for this payload - 
-
-{
-    "uuid": "12345",
-    "type": "DEBIT",
-    "maccId": "66359382.2003",
-    "ownerId": "665321803",
-    "label": "LABEL",
-    "dailyLimit": 555.0,
-    "addressId": "661812429"
-}
-
-
-similar to the POJO you have created earlier - 
-
 package ICOS.pojo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class POJOMoneyAccountRequest {
+public class POJOMoneyAccountSimple {
 
     @JsonProperty("uuid")
     private String strUuid;
 
-    @JsonProperty("ownerId")
-    private String strOwnerId;
-
     @JsonProperty("type")
     private String strType;
 
-    @JsonProperty("currency")
-    private String strCurrency;
+    @JsonProperty("maccId")
+    private String strMaccId;
 
-    @JsonProperty("rubric")
-    private String strRubric;
+    @JsonProperty("ownerId")
+    private String strOwnerId;
 
-    @JsonProperty("addressIds")
-    private List<String> lstAddressIds;
+    @JsonProperty("label")
+    private String strLabel;
 
-    @JsonProperty("mailingOffsetDay")
-    private BigDecimal mailingOffsetDay;
+    @JsonProperty("dailyLimit")
+    private BigDecimal bdDailyLimit;
 
-    @JsonProperty("mailingOffsetMonth")
-    private BigDecimal mailingOffsetMonth;
-
-    @JsonProperty("minimalNoticeDays")
-    private BigDecimal minimalNoticeDays;
-
-    @JsonProperty("isMailingPaper")
-    private Boolean blnIsMailingPaper;
+    @JsonProperty("addressId")
+    private String strAddressId;
 
     // Getters and Setters
 
@@ -64,14 +39,6 @@ public class POJOMoneyAccountRequest {
         this.strUuid = strUuid;
     }
 
-    public String getStrOwnerId() {
-        return strOwnerId;
-    }
-
-    public void setStrOwnerId(String strOwnerId) {
-        this.strOwnerId = strOwnerId;
-    }
-
     public String getStrType() {
         return strType;
     }
@@ -80,59 +47,43 @@ public class POJOMoneyAccountRequest {
         this.strType = strType;
     }
 
-    public String getStrCurrency() {
-        return strCurrency;
+    public String getStrMaccId() {
+        return strMaccId;
     }
 
-    public void setStrCurrency(String strCurrency) {
-        this.strCurrency = strCurrency;
+    public void setStrMaccId(String strMaccId) {
+        this.strMaccId = strMaccId;
     }
 
-    public String getStrRubric() {
-        return strRubric;
+    public String getStrOwnerId() {
+        return strOwnerId;
     }
 
-    public void setStrRubric(String strRubric) {
-        this.strRubric = strRubric;
+    public void setStrOwnerId(String strOwnerId) {
+        this.strOwnerId = strOwnerId;
     }
 
-    public List<String> getLstAddressIds() {
-        return lstAddressIds;
+    public String getStrLabel() {
+        return strLabel;
     }
 
-    public void setLstAddressIds(List<String> lstAddressIds) {
-        this.lstAddressIds = lstAddressIds;
+    public void setStrLabel(String strLabel) {
+        this.strLabel = strLabel;
     }
 
-    public BigDecimal getMailingOffsetDay() {
-        return mailingOffsetDay;
+    public BigDecimal getBdDailyLimit() {
+        return bdDailyLimit;
     }
 
-    public void setMailingOffsetDay(BigDecimal mailingOffsetDay) {
-        this.mailingOffsetDay = mailingOffsetDay;
+    public void setBdDailyLimit(BigDecimal bdDailyLimit) {
+        this.bdDailyLimit = bdDailyLimit;
     }
 
-    public BigDecimal getMailingOffsetMonth() {
-        return mailingOffsetMonth;
+    public String getStrAddressId() {
+        return strAddressId;
     }
 
-    public void setMailingOffsetMonth(BigDecimal mailingOffsetMonth) {
-        this.mailingOffsetMonth = mailingOffsetMonth;
-    }
-
-    public BigDecimal getMinimalNoticeDays() {
-        return minimalNoticeDays;
-    }
-
-    public void setMinimalNoticeDays(BigDecimal minimalNoticeDays) {
-        this.minimalNoticeDays = minimalNoticeDays;
-    }
-
-    public Boolean getBlnIsMailingPaper() {
-        return blnIsMailingPaper;
-    }
-
-    public void setBlnIsMailingPaper(Boolean blnIsMailingPaper) {
-        this.blnIsMailingPaper = blnIsMailingPaper;
+    public void setStrAddressId(String strAddressId) {
+        this.strAddressId = strAddressId;
     }
 }
