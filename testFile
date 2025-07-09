@@ -1,89 +1,116 @@
-package ICOS.pojo;
+Create a payload similar to Maoney account as shown below - 
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+public POJOMoneyAccountRequest buildMoneyAccountPayload(Map<String, String> mapMoneyAccountDetails, ScenarioContext scenarioContext) {
+        POJOMoneyAccountRequest moneyAccount = new POJOMoneyAccountRequest();
 
-import java.math.BigDecimal;
+        String strContainerObjectId = scenarioContext.getContext("containerObjectId");
+        String strAddressObjectId = scenarioContext.getContext("addressObjectId");
+        @SuppressWarnings("unchecked")
+        List<String> addressObjectIds = (List<String>) scenarioContext.getContext("addressObjectIds");
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class POJOMoneyAccountSimple {
+        moneyAccount.setStrUuid(UUID.randomUUID().toString().substring(0, 8));
 
-    @JsonProperty("uuid")
-    private String strUuid;
+        String ownerId = payloadHelper.resolveId(mapMoneyAccountDetails.get("ownerId"), strContainerObjectId);
+        moneyAccount.setStrOwnerId((ownerId));
 
-    @JsonProperty("type")
-    private String strType;
+        moneyAccount.setStrType(payloadHelper.normalize(mapMoneyAccountDetails.get("type")));
+        moneyAccount.setStrCurrency(payloadHelper.normalize(mapMoneyAccountDetails.get("currency")));
+        moneyAccount.setStrRubric(payloadHelper.normalize(mapMoneyAccountDetails.get("rubric")));
 
-    @JsonProperty("maccId")
-    private String strMaccId;
+        List<String> resolvedAddressIds = payloadHelper.resolveIdList(mapMoneyAccountDetails.get("addressIds"), strAddressObjectId, addressObjectIds);
+        moneyAccount.setLstAddressIds(resolvedAddressIds);
 
-    @JsonProperty("ownerId")
-    private String strOwnerId;
+        payloadHelper.applyBigDecimalField(mapMoneyAccountDetails.get("mailingOffsetDay"), "mailingOffsetDay", moneyAccount);
+        payloadHelper.applyBigDecimalField(mapMoneyAccountDetails.get("mailingOffsetMonth"), "mailingOffsetMonth", moneyAccount);
+        payloadHelper.applyBigDecimalField(mapMoneyAccountDetails.get("minimalNoticeDays"), "minimalNoticeDays", moneyAccount);
+        payloadHelper.applyBooleanField(mapMoneyAccountDetails.get("isMailingPaper"), "isMailingPaper", moneyAccount);
 
-    @JsonProperty("label")
-    private String strLabel;
-
-    @JsonProperty("dailyLimit")
-    private BigDecimal bdDailyLimit;
-
-    @JsonProperty("addressId")
-    private String strAddressId;
-
-    // Getters and Setters
-
-    public String getStrUuid() {
-        return strUuid;
+        return moneyAccount;
     }
 
-    public void setStrUuid(String strUuid) {
-        this.strUuid = strUuid;
+Helper methods - 
+
+public String resolveId(String input, String resolvedValue) {
+        if (input == null || input.trim().isEmpty()) {
+            return "";
+        }
+
+        switch (input.trim().toUpperCase()) {
+            case "EMPTY":
+                return "";
+            case "NA":
+                return null;
+            case "NATURAL_PERSON_OBJECT_ID":
+            case "CONTAINER_OBJECT_ID":
+            case "ADDRESS_OBJECT_ID":
+                return resolvedValue;
+            default:
+                return input;
+        }
     }
 
-    public String getStrType() {
-        return strType;
+    public List<String> resolveIdList(String input, String fallbackSingleAddressId, List<String> addressObjectIds) {
+        if (input == null || input.trim().isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        if ("ADDRESS_OBJECT_ID_LIST".equalsIgnoreCase(input.trim())) {
+            return addressObjectIds != null ? addressObjectIds : Collections.emptyList();
+        }
+
+        // Resolve individual tokens
+        return Arrays.stream(input.split(","))
+                .map(id -> resolveId(id.trim(), fallbackSingleAddressId))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
-    public void setStrType(String strType) {
-        this.strType = strType;
+    public void applyBigDecimalField(String rawValue, String fieldName, POJOMoneyAccountRequest account) {
+        String normalized = normalize(rawValue);
+        if (normalized != null && !normalized.isEmpty()) {
+            try {
+                BigDecimal parsed = new BigDecimal(normalized);
+                switch (fieldName) {
+                    case "mailingOffsetDay":
+                        account.setMailingOffsetDay(parsed);
+                        break;
+                    case "mailingOffsetMonth":
+                        account.setMailingOffsetMonth(parsed);
+                        break;
+                    case "minimalNoticeDays":
+                        account.setMinimalNoticeDays(parsed);
+                        break;
+                    default:
+                        System.err.println("Unknown field: " + fieldName);
+                }
+            } catch (NumberFormatException e) {
+                System.err.println("Invalid numeric value for " + fieldName + ": " + normalized);
+            }
+        }
     }
 
-    public String getStrMaccId() {
-        return strMaccId;
+    public void applyBooleanField(String rawValue, String fieldName, POJOMoneyAccountRequest account) {
+        String normalized = normalize(rawValue);
+        if (normalized != null && !normalized.isEmpty()) {
+            boolean parsed = Boolean.parseBoolean(normalized);
+            switch (fieldName) {
+                case "isMailingPaper":
+                    account.setBlnIsMailingPaper(parsed);
+                    break;
+                default:
+                    System.err.println("Unknown boolean field: " + fieldName);
+            }
+        }
     }
 
-    public void setStrMaccId(String strMaccId) {
-        this.strMaccId = strMaccId;
-    }
+for this payload create please - 
 
-    public String getStrOwnerId() {
-        return strOwnerId;
-    }
-
-    public void setStrOwnerId(String strOwnerId) {
-        this.strOwnerId = strOwnerId;
-    }
-
-    public String getStrLabel() {
-        return strLabel;
-    }
-
-    public void setStrLabel(String strLabel) {
-        this.strLabel = strLabel;
-    }
-
-    public BigDecimal getBdDailyLimit() {
-        return bdDailyLimit;
-    }
-
-    public void setBdDailyLimit(BigDecimal bdDailyLimit) {
-        this.bdDailyLimit = bdDailyLimit;
-    }
-
-    public String getStrAddressId() {
-        return strAddressId;
-    }
-
-    public void setStrAddressId(String strAddressId) {
-        this.strAddressId = strAddressId;
-    }
+{
+    "uuid": "12345",
+    "type": "DEBIT",
+    "maccId": "66359382.2003",
+    "ownerId": "665321803",
+    "label": "LABEL",
+    "dailyLimit": 555.0,
+    "addressId": "661812429"
 }
