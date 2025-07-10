@@ -105,5 +105,111 @@ public POJODebitCardRequest buildDebitCardPayload(Map<String, String> mapDebitCa
         return debitCard;
     }
 
+EXECUTION=LOCAL
+ENV=UAT
+TACB.ENV=ANDR
+TACB.ENV.FDS=ANDR
+TACB.DB=TACB40
+EIAM.ENV=https://eiam-idp-uat.svc.srvco.net/as/token.oauth2
+TYK.ENV.ANDR=https://tyk-gateway.andromeda.uat01-fds.wealth.banksvcs.net
+TYK.ENV.TADP=https://tyk-gateway.tadpole.uat01-fds.wealth.banksvcs.net
+TYK.CONTACTNOTES=/avq/acpr/sas-contact-note/v1/contact-notes
+TYK.CREATENEWPERSON=/avq/acpr/sas-person/v1/natural-persons
+TYK.CREATELEGALPERSON = /avq/acpr/sas-person/v1/legal-persons
+TYK.WORKREQUESTS=/avq/acpr/sas-work-request/v1/work-requests
+TYK.DOCUMENT=/avq/acpr/sas-document/v1/id-questions
+TYK.GETPROSPECT=/avq/acpr/sas-prospect/v1/prospects
+TYK.ADDRESS=/avq/acpr/sas-address/v1/addresses
+TYK.CONTAINER=/avq/acpr/ops-container/v1/containers
+TYK.MONEYACCOUNT=/avq/acpr/ops-money-account/v1/money-accounts
+
+[INFO] 
+[INFO] --- maven-surefire-plugin:3.0.0-M5:test (default-test) @ wealth-icos-api ---
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running testRunner.Runner
+Scenario Outline: Verify the Post Debit Card API with valid data - 001 - StraightThrough # src/test/resources/Features/DebitCard.feature:49
+Before All
+Jul 10, 2025 7:09:14 AM hooks.CucumberHooks beforeScenario
+INFO: Before Scenario: Test is starting!
+  Given Send Request to get Authentication Token for ICOS                                # stepDefinations.GetUserSteps.sendRequestToGetAuthenticationTokenForICOS()
+  When I generate the JWT Token                                                          # stepDefinations.GetUserSteps.iGenerateTheJWTToken()
+Jul 10, 2025 7:09:46 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: Response for Container is: {"objectId":"66001416.1000","orderId":"2910604835"}
+  Then Send Request to create Container with below details                               # stepDefinations.ContainerSteps.sendRequestToCreateContainerWithDetails(io.cucumber.datatable.DataTable)
+    | type | banking  |
+    | bpId | 66001416 |
+Jul 10, 2025 7:09:54 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: Response for Address is: {"objectId":"665809962","orderId":"2910604840"}
+  Then Send request to create Address with below details                                 # stepDefinations.AddressSteps.sendRequestToCreateAddressWithDetails(io.cucumber.datatable.DataTable)
+    | firstName        | Firstname             |
+    | middleName       | Middlename            |
+    | lastName         | Lastname              |
+    | salutation       | mr                    |
+    | salutationLetter | mr                    |
+    | attnOf           | [empty]               |
+    | crof             | [empty]               |
+    | residency        | 123                   |
+    | streetNr         | 123                   |
+    | street           | teststreet + RANDOM_6 |
+    | streetAdd        | Addition street       |
+    | poBox            | P.O.Box 123           |
+    | city             | Zurich                |
+    | state            | RANDOM_49             |
+    | zip              | 8001                  |
+    | country          | CH                    |
+Jul 10, 2025 7:10:05 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: Response for Money Address is: {"objectId":"66001416.2560","orderId":"2910604841"}
+  Then Send Request to create Money Account with below details                           # stepDefinations.MoneyAccountSteps.sendRequestToCreateMoneyAccountWithDetails(io.cucumber.datatable.DataTable)
+    | ownerId            | CONTAINER_OBJECT_ID   |
+    | type               | privateCurrentAccount |
+    | currency           | GBP                   |
+    | rubric             | NA                    |
+    | addressIds         | ADDRESS_OBJECT_ID     |
+    | mailingOffsetDay   | NA                    |
+    | mailingOffsetMonth | NA                    |
+    | minimalNoticeDays  | NA                    |
+    | isMailingPaper     | false                 |
+Jul 10, 2025 7:10:05 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: Request for Debit Card is: {"uuid":"1fab62e","type":"DEBIT","maccId":"66001416.2560","ownerId":"665041400","label":"LABEL 123","dailyLimit":555,"addressId":"665809962"}
+Jul 10, 2025 7:10:08 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: Response for Debit Card is: {"orderId":"2910604859","error":"MAILING ADDRESS\nEither Name or Firm is mandatory."}
+  Then Send Request to create Debit Card with below details                              # stepDefinations.DebitCardSteps.sendRequestToCreateDebitCardWithDetails(io.cucumber.datatable.DataTable)
+    | type       | DEBIT                   |
+    | maccId     | MONEY_ACCOUNT_OBJECT_ID |
+    | ownerId    | 665041400               |
+    | label      | LABEL 123               |
+    | dailyLimit | 555                     |
+    | addressId  | ADDRESS_OBJECT_ID       |
+  And I verify the Status Code for Debit Card "200"                                      # stepDefinations.DebitCardSteps.iVerifyTheStatusCodeForDebitCard(java.lang.String)
+      java.lang.AssertionError: expected [500] but found [200]
+	at org.testng.Assert.fail(Assert.java:111)
+	at org.testng.Assert.failNotEquals(Assert.java:1578)
+	at org.testng.Assert.assertEqualsImpl(Assert.java:150)
+	at org.testng.Assert.assertEquals(Assert.java:132)
+	at org.testng.Assert.assertEquals(Assert.java:1419)
+	at org.testng.Assert.assertEquals(Assert.java:1383)
+	at org.testng.Assert.assertEquals(Assert.java:1429)
+	at stepDefinations.DebitCardSteps.iVerifyTheStatusCodeForDebitCard(DebitCardSteps.java:82)
+	at âœ½.I verify the Status Code for Debit Card "200"(file:///C:/Users/girdd/IdeaProjects/icosapitests/src/test/resources/Features/DebitCard.feature:43)
+  And I verify the "objectId" exists in Debit Card response                              # stepDefinations.DebitCardSteps.iVerifyTheKeyExistsInDebitCardResponse(java.lang.String)
+  And I verify the "orderId" exists in Debit Card response                               # stepDefinations.DebitCardSteps.iVerifyTheKeyExistsInDebitCardResponse(java.lang.String)
+Jul 10, 2025 7:10:10 AM tech.grasshopper.pdf.PDFCucumberReport collectReportConfiguration
+INFO: PDF report configuration YAML file not found. Using default settings.
+[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 61.933 s <<< FAILURE! - in testRunner.Runner
+[ERROR] Verify Debit Card API.Verify the Post Debit Card API with valid data - 001 - StraightThrough  Time elapsed: 55.27 s  <<< FAILURE!
+java.lang.AssertionError: expected [500] but found [200]
+[INFO] 
+[INFO] Results:
+[INFO] 
+[ERROR] Failures: 
+[ERROR]   expected [500] but found [200]
+[INFO] 
+[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0
+[INFO] 
+
+
 Although on postman it is working fine - 
 
