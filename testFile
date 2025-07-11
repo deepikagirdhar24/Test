@@ -1,28 +1,21 @@
-  Scenario Outline: Verify the Get Money Account API - Read Money Account valid type - <Comments>
-    Given Send Request to get Authentication Token for ICOS
-    When I generate the JWT Token
-    Then Send Request to get Money Account for id "<id>" and type "<type>"
-    And I verify the Status Code for Container "200"
-    And I verify the string field "ownerId" is "<ownerId>" in Money Account response
-    And I verify the string field "type" is "<type>" in Money Account response
-    And I verify the string field "currency" is "<currency>" in Money Account response
-    And I verify the string field "rubric" is "<rubric>" in Money Account response
-    And I verify the array field "addressIds" contains "<addressIds>" in Money Account response
-    And I verify the string field "mailingOffsetDay" is "<mailingOffsetDay>" in Money Account response
-    And I verify the string field "isMailingPaper" is "<isMailingPaper>" in Money Account response
-
-
-    Examples:
-      | id | ownerId         | type                  | currency | rubric        | addressIds  | mailingOffsetDay | minimalNoticeDays | isMailingPaper | Comments                     |
-      | 0  | 66315578.1000   | privateCurrentAccount | GBP      | Test Rubric   | 57853981    | 7.0              | NA                | true           | 001 - privateCurrentAccount  |
-      | 0  | 66315578.1000   | privateNoticeAccount  | GBP      | NA            | 57853981    | NA               | 60                | false          | 002 - privateNoticeAccount   |
-      | 0  | 66315578.1000   | privateReserveAccount | GBP      | NA            | 57853981    | NA               | NA                | false          | 003 - privateReserveAccount  |
-
-Here in 2nd and 3rd case where fields are NA, that means this filed should not populate in response - Will the below SD work in this case ?
-
-    @And("I verify the string field {string} is {string} in Money Account response")
-    public void iVerifyStringFieldEquals(String jsonPath, String expectedValue) throws Exception {
+@And("I verify the string field {string} is {string} in Money Account response")
+public void iVerifyStringFieldEquals(String jsonPath, String expectedValue) throws Exception {
+    if ("NA".equalsIgnoreCase(expectedValue)) {
+        boolean exists = jsonHelper.hasField(response, jsonPath);
+        ExtentCucumberAdapter.addTestStepLog("Checking absence of field '" + jsonPath + "'");
+        Assert.assertFalse(exists, "Expected field '" + jsonPath + "' to be absent, but it was found.");
+    } else {
         String actualValue = jsonHelper.extractStringField(response, jsonPath);
         ExtentCucumberAdapter.addTestStepLog("Expected value at '" + jsonPath + "': " + expectedValue + ", Actual: " + actualValue);
         Assert.assertEquals(actualValue, expectedValue, "Mismatch at: " + jsonPath);
     }
+}
+
+public boolean hasField(Response response, String jsonPath) {
+    try {
+        Object fieldValue = response.jsonPath().get(jsonPath);
+        return fieldValue != null;
+    } catch (Exception e) {
+        return false; // Path does not exist
+    }
+}
