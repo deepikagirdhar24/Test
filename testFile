@@ -1,21 +1,130 @@
-@And("I verify the string field {string} is {string} in Money Account response")
-public void iVerifyStringFieldEquals(String jsonPath, String expectedValue) throws Exception {
-    if ("NA".equalsIgnoreCase(expectedValue)) {
-        boolean exists = jsonHelper.hasField(response, jsonPath);
-        ExtentCucumberAdapter.addTestStepLog("Checking absence of field '" + jsonPath + "'");
-        Assert.assertFalse(exists, "Expected field '" + jsonPath + "' to be absent, but it was found.");
-    } else {
-        String actualValue = jsonHelper.extractStringField(response, jsonPath);
-        ExtentCucumberAdapter.addTestStepLog("Expected value at '" + jsonPath + "': " + expectedValue + ", Actual: " + actualValue);
-        Assert.assertEquals(actualValue, expectedValue, "Mismatch at: " + jsonPath);
-    }
-}
+Can we use any existing method in JSONHelper instead of newly created hasField - 
 
-public boolean hasField(Response response, String jsonPath) {
-    try {
-        Object fieldValue = response.jsonPath().get(jsonPath);
-        return fieldValue != null;
-    } catch (Exception e) {
-        return false; // Path does not exist
+package utilities;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.restassured.response.Response;
+import com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+public class JsonHelper {
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    private JsonNode getNodeByPath(JsonNode rootNode, String path) {
+        String[] keys = path.split("\\.");
+        for (String key : keys) {
+            if (rootNode == null) break;
+            rootNode = rootNode.path(key);
+        }
+        return rootNode;
     }
-}
+
+    public Object extractRawField(Response response, String fieldPath) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode node = getNodeByPath(rootNode, fieldPath);
+        return node.isMissingNode() || node.isNull() ? null : node;
+    }
+
+    public String extractStringField(Response response, String fieldPath) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode node = getNodeByPath(rootNode, fieldPath);
+        return node.isMissingNode() || node.isNull() ? null : node.asText();
+    }
+
+    public Boolean extractBooleanField(Response response, String fieldPath) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode node = getNodeByPath(rootNode, fieldPath);
+        return node.isMissingNode() || node.isNull() ? null : node.asBoolean();
+    }
+
+    public boolean valueExistsInJsonArray(Response response, String jsonPath, String targetValue) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode arrayNode = getNodeByPath(rootNode, jsonPath);
+        if (arrayNode != null && arrayNode.isArray()) {
+            return iterateAndCheckArray(arrayNode, targetValue);
+        }
+        return false;
+    }
+
+    private boolean iterateAndCheckArray(JsonNode arrayNode, String targetValue) {
+        for (JsonNode itemNode : arrayNode) {
+            String currentValue = itemNode.asText();
+            System.out.println("Checking item: " + currentValue);
+            if (targetValue.equals(currentValue)) {
+                logMatchFound(currentValue);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void logMatchFound(String value) {
+        System.out.println("Match found: " + value);
+        ExtentCucumberAdapter.addTestStepLog("Actual value found: " + value);
+    }
+
+    public List<String> extractListOfStringFieldsFromArray(Response response, String arrayField, String subField) {
+        List<Map<String, Object>> itemList = response.jsonPath().getList(arrayField);
+        List<String> result = new ArrayList<>();
+        for (Map<String, Object> item : itemList) {
+            Object value = item.get(subField);
+            if (value != null) {
+                result.add(value.toString());
+            }
+        }
+        return result;
+    }
+
+    public void validateFieldExistsInArray(Response response, String arrayPath, String fieldName) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode arrayNode = rootNode.at(arrayPath); // Path should start with '/' for root level
+
+        if (!arrayNode.isArray()) {
+            throw new Exception("Expected an array at path: " + arrayPath);
+        }
+
+        for (JsonNode element : arrayNode) {
+            JsonNode fieldNode = element.get(fieldName);
+            if (fieldNode == null || fieldNode.asText().isEmpty()) {
+                throw new AssertionError("Missing or empty '" + fieldName + "' in one of the elements at: " + arrayPath);
+            }
+        }
+
+        ExtentCucumberAdapter.addTestStepLog("All elements in array " + arrayPath + " contain a valid '" + fieldName + "'");
+    }
+
+    public String extractStringFieldFromArray(Response response, String arrayField, int index, String fieldName) {
+        return response.jsonPath().getString(arrayField + "[" + index + "]." + fieldName);
+    }
+
+    public List<Map<String, Object>> extractListOfMapFromArray(Response response, String arrayFieldPath) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode arrayNode = getNodeByPath(rootNode, arrayFieldPath);
+
+        if (!arrayNode.isArray()) {
+            throw new Exception("Expected an array at path: " + arrayFieldPath);
+        }
+
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (JsonNode node : arrayNode) {
+            Map<String, Object> map = objectMapper.convertValue(node, new TypeReference<Map<String, Object>>() {});
+            result.add(map);
+        }
+
+        return result;
+    }
+
+    public String getValue(Response response, String fieldPath) {
+        try {
+            return extractStringField(response, fieldPath);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to extract value from response for path: " + fieldPath, e);
+        }
+    }
