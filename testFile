@@ -1,215 +1,28 @@
-WHat is the problem in this ?
-
-Feature: Verify Debit Card API
-
-  Scenario Outline: Verify the Post Debit Card API with valid data - <Comments>
+  Scenario Outline: Verify the Get Money Account API - Read Money Account valid type - <Comments>
     Given Send Request to get Authentication Token for ICOS
     When I generate the JWT Token
-    Then Send Request to create Container with below details
-      | type   | banking   |
-      | bpId   | 66001416  |
-    Then Send request to create Address with below details
-      | firstName       | Firstname             |
-      | middleName      | Middlename            |
-      | lastName        | Lastname              |
-      | salutation      | mr                    |
-      | salutationLetter| mr                    |
-      | attnOf          |                       |
-      | crof            |                       |
-      | residency       | 123                   |
-      | streetNr        | 123                   |
-      | street          | teststreet + RANDOM_6 |
-      | streetAdd       | Addition street       |
-      | poBox           | P.O.Box 123           |
-      | city            | Zurich                |
-      | state           | RANDOM_49             |
-      | zip             | 8001                  |
-      | country         | CH                    |
-    Then Send Request to create Money Account with below details
-      | ownerId            | CONTAINER_OBJECT_ID     |
-      | type               | privateCurrentAccount   |
-      | currency           | GBP                     |
-      | rubric             | NA                      |
-      | addressIds         | ADDRESS_OBJECT_ID       |
-      | mailingOffsetDay   | NA                      |
-      | mailingOffsetMonth | NA                      |
-      | minimalNoticeDays  | NA                      |
-      | isMailingPaper     | false                   |
-    Then Send Request to create Debit Card with below details
-      | type        | <type>        |
-      | maccId      | <maccId>      |
-      | ownerId     | <ownerId>     |
-      | label       | <label>       |
-      | dailyLimit  | <dailyLimit>  |
-      | addressId   | <addressId>   |
-    And I verify the Status Code for Debit Card "200"
-    And I verify the "objectId" exists in Debit Card response
-    And I verify the "orderId" exists in Debit Card response
+    Then Send Request to get Money Account for id "<id>" and type "<type>"
+    And I verify the Status Code for Container "200"
+    And I verify the string field "ownerId" is "<ownerId>" in Money Account response
+    And I verify the string field "type" is "<type>" in Money Account response
+    And I verify the string field "currency" is "<currency>" in Money Account response
+    And I verify the string field "rubric" is "<rubric>" in Money Account response
+    And I verify the array field "addressIds" contains "<addressIds>" in Money Account response
+    And I verify the string field "mailingOffsetDay" is "<mailingOffsetDay>" in Money Account response
+    And I verify the string field "isMailingPaper" is "<isMailingPaper>" in Money Account response
+
 
     Examples:
-      | type    | maccId                   | ownerId    | label      | dailyLimit | addressId         | Comments                 |
-      | DEBIT   | MONEY_ACCOUNT_OBJECT_ID  | 665041400  | LABEL 123  | 555        | ADDRESS_OBJECT_ID | 001 - StraightThrough    |
+      | id | ownerId         | type                  | currency | rubric        | addressIds  | mailingOffsetDay | minimalNoticeDays | isMailingPaper | Comments                     |
+      | 0  | 66315578.1000   | privateCurrentAccount | GBP      | Test Rubric   | 57853981    | 7.0              | NA                | true           | 001 - privateCurrentAccount  |
+      | 0  | 66315578.1000   | privateNoticeAccount  | GBP      | NA            | 57853981    | NA               | 60                | false          | 002 - privateNoticeAccount   |
+      | 0  | 66315578.1000   | privateReserveAccount | GBP      | NA            | 57853981    | NA               | NA                | false          | 003 - privateReserveAccount  |
 
-    @Then("Send Request to create Debit Card with below details")
-    public void sendRequestToCreateDebitCardWithDetails(DataTable dataTable) throws Exception {
-        Map<String, String> mapDebitCardDetails = dataTable.asMap(String.class, String.class);
-        String jwtToken = scenarioContext.getContext("JWTToken");
-        response = objDebitCard.createDebitCard(strEnvType, "Bearer", jwtToken, mapDebitCardDetails, scenarioContext);
+Here in 2nd and 3rd case where fields are NA, that means this filed should not populate in response - Will the below SD work in this case ?
+
+    @And("I verify the string field {string} is {string} in Money Account response")
+    public void iVerifyStringFieldEquals(String jsonPath, String expectedValue) throws Exception {
+        String actualValue = jsonHelper.extractStringField(response, jsonPath);
+        ExtentCucumberAdapter.addTestStepLog("Expected value at '" + jsonPath + "': " + expectedValue + ", Actual: " + actualValue);
+        Assert.assertEquals(actualValue, expectedValue, "Mismatch at: " + jsonPath);
     }
-
-// Create Debit Card
-    public Response createDebitCard(String strEnvType, String strBearerToken, String strJWTToken,
-                                      Map<String, String> mapDebitCardDetails, ScenarioContext scenarioContext) throws Exception {
-
-        String strTYKURL = getTYKURL(strEnvType, "TYK.DEBITCARD");
-
-        POJODebitCardRequest pojoDebitCardRequest = payloads.buildDebitCardPayload(mapDebitCardDetails, scenarioContext);
-        String strRequestBody = objObjectMapper.writeValueAsString(pojoDebitCardRequest);
-        objCucumberLogger.PrintStatus("Request for Debit Card is: " + strRequestBody);
-
-        ExtentCucumberAdapter.addTestStepLog("Sending request to Create Debit Card");
-
-        Response objResponse = sendPostRequest(strTYKURL, strBearerToken, strJWTToken, strRequestBody, null);
-        String strResponseBody = devHelperLibrary.getResponseBody(objResponse);
-        objCucumberLogger.PrintStatus("Response for Debit Card is: " + strResponseBody);
-
-        String strDebitCardObjectId = jsonHelper.extractStringField(objResponse, "objectId");
-        String strDebitCardOrderId = jsonHelper.extractStringField(objResponse, "orderId");
-
-        scenarioContext.setContext("debitCardObjectId", strDebitCardObjectId);
-        scenarioContext.setContext("debitCardOrderId", strDebitCardOrderId);
-
-        return objResponse;
-    }
-
-public POJODebitCardRequest buildDebitCardPayload(Map<String, String> mapDebitCardDetails, ScenarioContext scenarioContext) {
-        POJODebitCardRequest debitCard = new POJODebitCardRequest();
-
-        String strMoneyAccountObjectId = scenarioContext.getContext("moneyAccountObjectId");
-        String strAddressObjectId = scenarioContext.getContext("addressObjectId");
-
-        debitCard.setStrUuid(UUID.randomUUID().toString().substring(0, 7));
-        debitCard.setStrType(payloadHelper.normalize(mapDebitCardDetails.get("type")));
-
-        String resolvedMaccId = payloadHelper.resolveId(mapDebitCardDetails.get("maccId"), strMoneyAccountObjectId);
-        debitCard.setStrMaccId(resolvedMaccId);
-
-        debitCard.setStrOwnerId(payloadHelper.normalize(mapDebitCardDetails.get("ownerId")));
-
-        debitCard.setStrLabel(payloadHelper.normalize(mapDebitCardDetails.get("label")));
-        payloadHelper.applyBigDecimalField(mapDebitCardDetails.get("dailyLimit"), "dailyLimit", debitCard);
-
-        String resolvedAddressId = payloadHelper.resolveId(mapDebitCardDetails.get("addressId"), strAddressObjectId);
-        debitCard.setStrAddressId(resolvedAddressId);
-
-        return debitCard;
-    }
-
-EXECUTION=LOCAL
-ENV=UAT
-TACB.ENV=ANDR
-TACB.ENV.FDS=ANDR
-TACB.DB=TACB40
-EIAM.ENV=https://eiam-idp-uat.svc.srvco.net/as/token.oauth2
-TYK.ENV.ANDR=https://tyk-gateway.andromeda.uat01-fds.wealth.banksvcs.net
-TYK.ENV.TADP=https://tyk-gateway.tadpole.uat01-fds.wealth.banksvcs.net
-TYK.CONTACTNOTES=/avq/acpr/sas-contact-note/v1/contact-notes
-TYK.CREATENEWPERSON=/avq/acpr/sas-person/v1/natural-persons
-TYK.CREATELEGALPERSON = /avq/acpr/sas-person/v1/legal-persons
-TYK.WORKREQUESTS=/avq/acpr/sas-work-request/v1/work-requests
-TYK.DOCUMENT=/avq/acpr/sas-document/v1/id-questions
-TYK.GETPROSPECT=/avq/acpr/sas-prospect/v1/prospects
-TYK.ADDRESS=/avq/acpr/sas-address/v1/addresses
-TYK.CONTAINER=/avq/acpr/ops-container/v1/containers
-TYK.MONEYACCOUNT=/avq/acpr/ops-money-account/v1/money-accounts
-
-[INFO] 
-[INFO] --- maven-surefire-plugin:3.0.0-M5:test (default-test) @ wealth-icos-api ---
-[INFO] 
-[INFO] -------------------------------------------------------
-[INFO]  T E S T S
-[INFO] -------------------------------------------------------
-[INFO] Running testRunner.Runner
-Scenario Outline: Verify the Post Debit Card API with valid data - 001 - StraightThrough # src/test/resources/Features/DebitCard.feature:49
-Before All
-Jul 10, 2025 7:09:14 AM hooks.CucumberHooks beforeScenario
-INFO: Before Scenario: Test is starting!
-  Given Send Request to get Authentication Token for ICOS                                # stepDefinations.GetUserSteps.sendRequestToGetAuthenticationTokenForICOS()
-  When I generate the JWT Token                                                          # stepDefinations.GetUserSteps.iGenerateTheJWTToken()
-Jul 10, 2025 7:09:46 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Response for Container is: {"objectId":"66001416.1000","orderId":"2910604835"}
-  Then Send Request to create Container with below details                               # stepDefinations.ContainerSteps.sendRequestToCreateContainerWithDetails(io.cucumber.datatable.DataTable)
-    | type | banking  |
-    | bpId | 66001416 |
-Jul 10, 2025 7:09:54 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Response for Address is: {"objectId":"665809962","orderId":"2910604840"}
-  Then Send request to create Address with below details                                 # stepDefinations.AddressSteps.sendRequestToCreateAddressWithDetails(io.cucumber.datatable.DataTable)
-    | firstName        | Firstname             |
-    | middleName       | Middlename            |
-    | lastName         | Lastname              |
-    | salutation       | mr                    |
-    | salutationLetter | mr                    |
-    | attnOf           | [empty]               |
-    | crof             | [empty]               |
-    | residency        | 123                   |
-    | streetNr         | 123                   |
-    | street           | teststreet + RANDOM_6 |
-    | streetAdd        | Addition street       |
-    | poBox            | P.O.Box 123           |
-    | city             | Zurich                |
-    | state            | RANDOM_49             |
-    | zip              | 8001                  |
-    | country          | CH                    |
-Jul 10, 2025 7:10:05 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Response for Money Address is: {"objectId":"66001416.2560","orderId":"2910604841"}
-  Then Send Request to create Money Account with below details                           # stepDefinations.MoneyAccountSteps.sendRequestToCreateMoneyAccountWithDetails(io.cucumber.datatable.DataTable)
-    | ownerId            | CONTAINER_OBJECT_ID   |
-    | type               | privateCurrentAccount |
-    | currency           | GBP                   |
-    | rubric             | NA                    |
-    | addressIds         | ADDRESS_OBJECT_ID     |
-    | mailingOffsetDay   | NA                    |
-    | mailingOffsetMonth | NA                    |
-    | minimalNoticeDays  | NA                    |
-    | isMailingPaper     | false                 |
-Jul 10, 2025 7:10:05 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Request for Debit Card is: {"uuid":"1fab62e","type":"DEBIT","maccId":"66001416.2560","ownerId":"665041400","label":"LABEL 123","dailyLimit":555,"addressId":"665809962"}
-Jul 10, 2025 7:10:08 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Response for Debit Card is: {"orderId":"2910604859","error":"MAILING ADDRESS\nEither Name or Firm is mandatory."}
-  Then Send Request to create Debit Card with below details                              # stepDefinations.DebitCardSteps.sendRequestToCreateDebitCardWithDetails(io.cucumber.datatable.DataTable)
-    | type       | DEBIT                   |
-    | maccId     | MONEY_ACCOUNT_OBJECT_ID |
-    | ownerId    | 665041400               |
-    | label      | LABEL 123               |
-    | dailyLimit | 555                     |
-    | addressId  | ADDRESS_OBJECT_ID       |
-  And I verify the Status Code for Debit Card "200"                                      # stepDefinations.DebitCardSteps.iVerifyTheStatusCodeForDebitCard(java.lang.String)
-      java.lang.AssertionError: expected [500] but found [200]
-	at org.testng.Assert.fail(Assert.java:111)
-	at org.testng.Assert.failNotEquals(Assert.java:1578)
-	at org.testng.Assert.assertEqualsImpl(Assert.java:150)
-	at org.testng.Assert.assertEquals(Assert.java:132)
-	at org.testng.Assert.assertEquals(Assert.java:1419)
-	at org.testng.Assert.assertEquals(Assert.java:1383)
-	at org.testng.Assert.assertEquals(Assert.java:1429)
-	at stepDefinations.DebitCardSteps.iVerifyTheStatusCodeForDebitCard(DebitCardSteps.java:82)
-	at âœ½.I verify the Status Code for Debit Card "200"(file:///C:/Users/girdd/IdeaProjects/icosapitests/src/test/resources/Features/DebitCard.feature:43)
-  And I verify the "objectId" exists in Debit Card response                              # stepDefinations.DebitCardSteps.iVerifyTheKeyExistsInDebitCardResponse(java.lang.String)
-  And I verify the "orderId" exists in Debit Card response                               # stepDefinations.DebitCardSteps.iVerifyTheKeyExistsInDebitCardResponse(java.lang.String)
-Jul 10, 2025 7:10:10 AM tech.grasshopper.pdf.PDFCucumberReport collectReportConfiguration
-INFO: PDF report configuration YAML file not found. Using default settings.
-[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 61.933 s <<< FAILURE! - in testRunner.Runner
-[ERROR] Verify Debit Card API.Verify the Post Debit Card API with valid data - 001 - StraightThrough  Time elapsed: 55.27 s  <<< FAILURE!
-java.lang.AssertionError: expected [500] but found [200]
-[INFO] 
-[INFO] Results:
-[INFO] 
-[ERROR] Failures: 
-[ERROR]   expected [500] but found [200]
-[INFO] 
-[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0
-[INFO] 
-
-
-Although on postman it is working fine - 
-
