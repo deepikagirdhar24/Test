@@ -1,52 +1,19 @@
-    public POJODebitCardRequest buildDebitCardPayload(Map<String, String> mapDebitCardDetails, ScenarioContext scenarioContext) {
-        POJODebitCardRequest debitCard = new POJODebitCardRequest();
-
-        String strMoneyAccountObjectId = scenarioContext.getContext("moneyAccountObjectId");
-        String strAddressObjectId = scenarioContext.getContext("addressObjectId");
-//        String strAddressObjectId = scenarioContext.getContext("addressObjectIdCard");
-
-        debitCard.setStrUuid(UUID.randomUUID().toString().substring(0, 7));
-        debitCard.setStrType(payloadHelper.normalize(mapDebitCardDetails.get("type")));
-
-        String resolvedMaccId = payloadHelper.resolveId(mapDebitCardDetails.get("maccId"), strMoneyAccountObjectId);
-        debitCard.setStrMaccId(resolvedMaccId);
-
-        debitCard.setStrOwnerId(payloadHelper.normalize(mapDebitCardDetails.get("ownerId")));
-
-        debitCard.setStrLabel(payloadHelper.normalize(mapDebitCardDetails.get("label")));
-        payloadHelper.applyBigDecimalField(mapDebitCardDetails.get("dailyLimit"), "dailyLimit", debitCard);
-
-        String resolvedAddressId = payloadHelper.resolveId(mapDebitCardDetails.get("addressId"), strAddressObjectId);
-        debitCard.setStrAddressId(resolvedAddressId);
-
-        return debitCard;
-    }
-
 public void applyBigDecimalField(String rawValue, String fieldName, POJODebitCardRequest card) {
-        String normalized = normalize(rawValue);
-        if (normalized != null && !normalized.isEmpty()) {
-            try {
-                BigDecimal parsed = new BigDecimal(normalized);
-                switch (fieldName) {
-                    case "dailyLimit":
-                        card.setBdDailyLimit(parsed);
-                        break;
-                    default:
-                        System.err.println("Unknown field: " + fieldName);
+    String normalized = normalize(rawValue);
+    switch (fieldName) {
+        case "dailyLimit":
+            if (normalized == null || normalized.isEmpty()) {
+                card.setBdDailyLimit(null); // or skip setting if you want it omitted
+            } else {
+                try {
+                    card.setBdDailyLimit(new BigDecimal(normalized));
+                } catch (NumberFormatException e) {
+                    System.err.println("Invalid value for dailyLimit: " + normalized);
+                    card.setBdDailyLimit(null); // or throw error
                 }
-            } catch (NumberFormatException e) {
-                System.err.println("Invalid numeric value for " + fieldName + ": " + normalized);
             }
-        }
+            break;
+        default:
+            System.err.println("Unknown field: " + fieldName);
     }
-
-    public String normalize(String value) {
-        if (value == null) return "";
-        switch (value.trim().toUpperCase()) {
-            case "NA": return null;
-            case "EMPTY": return "";
-            default: return value;
-        }
-    }
-
-if value returned from normalize is "" or EMPTY, then I want to set the value of Daily Limit field. How to do that ?
+}
