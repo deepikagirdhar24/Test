@@ -1,130 +1,144 @@
-Can we use any existing method in JSONHelper instead of newly created hasField - 
+See the below code - 
 
-package utilities;
+package ICOS.pojo;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.restassured.response.Response;
-import com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter;
-import org.json.JSONObject;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.math.BigDecimal;
 
-public class JsonHelper {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class POJODebitCardRequest {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @JsonProperty("uuid")
+    private String strUuid;
 
-    private JsonNode getNodeByPath(JsonNode rootNode, String path) {
-        String[] keys = path.split("\\.");
-        for (String key : keys) {
-            if (rootNode == null) break;
-            rootNode = rootNode.path(key);
-        }
-        return rootNode;
+    @JsonProperty("type")
+    private String strType;
+
+    @JsonProperty("maccId")
+    private String strMaccId;
+
+    @JsonProperty("ownerId")
+    private String strOwnerId;
+
+    @JsonProperty("label")
+    private String strLabel;
+
+    @JsonProperty("dailyLimit")
+    private BigDecimal bdDailyLimit;
+
+    @JsonProperty("addressId")
+    private String strAddressId;
+
+    // Getters and Setters
+
+    public String getStrUuid() {
+        return strUuid;
     }
 
-    public Object extractRawField(Response response, String fieldPath) throws Exception {
-        JsonNode rootNode = objectMapper.readTree(response.asString());
-        JsonNode node = getNodeByPath(rootNode, fieldPath);
-        return node.isMissingNode() || node.isNull() ? null : node;
+    public void setStrUuid(String strUuid) {
+        this.strUuid = strUuid;
     }
 
-    public String extractStringField(Response response, String fieldPath) throws Exception {
-        JsonNode rootNode = objectMapper.readTree(response.asString());
-        JsonNode node = getNodeByPath(rootNode, fieldPath);
-        return node.isMissingNode() || node.isNull() ? null : node.asText();
+    public String getStrType() {
+        return strType;
     }
 
-    public Boolean extractBooleanField(Response response, String fieldPath) throws Exception {
-        JsonNode rootNode = objectMapper.readTree(response.asString());
-        JsonNode node = getNodeByPath(rootNode, fieldPath);
-        return node.isMissingNode() || node.isNull() ? null : node.asBoolean();
+    public void setStrType(String strType) {
+        this.strType = strType;
     }
 
-    public boolean valueExistsInJsonArray(Response response, String jsonPath, String targetValue) throws Exception {
-        JsonNode rootNode = objectMapper.readTree(response.asString());
-        JsonNode arrayNode = getNodeByPath(rootNode, jsonPath);
-        if (arrayNode != null && arrayNode.isArray()) {
-            return iterateAndCheckArray(arrayNode, targetValue);
-        }
-        return false;
+    public String getStrMaccId() {
+        return strMaccId;
     }
 
-    private boolean iterateAndCheckArray(JsonNode arrayNode, String targetValue) {
-        for (JsonNode itemNode : arrayNode) {
-            String currentValue = itemNode.asText();
-            System.out.println("Checking item: " + currentValue);
-            if (targetValue.equals(currentValue)) {
-                logMatchFound(currentValue);
-                return true;
+    public void setStrMaccId(String strMaccId) {
+        this.strMaccId = strMaccId;
+    }
+
+    public String getStrOwnerId() {
+        return strOwnerId;
+    }
+
+    public void setStrOwnerId(String strOwnerId) {
+        this.strOwnerId = strOwnerId;
+    }
+
+    public String getStrLabel() {
+        return strLabel;
+    }
+
+    public void setStrLabel(String strLabel) {
+        this.strLabel = strLabel;
+    }
+
+    public BigDecimal getBdDailyLimit() {
+        return bdDailyLimit;
+    }
+
+    public void setBdDailyLimit(BigDecimal bdDailyLimit) {
+        this.bdDailyLimit = bdDailyLimit;
+    }
+
+    public String getStrAddressId() {
+        return strAddressId;
+    }
+
+    public void setStrAddressId(String strAddressId) {
+        this.strAddressId = strAddressId;
+    }
+}
+
+ public POJODebitCardRequest buildDebitCardPayload(Map<String, String> mapDebitCardDetails, ScenarioContext scenarioContext) {
+        POJODebitCardRequest debitCard = new POJODebitCardRequest();
+
+        String strMoneyAccountObjectId = scenarioContext.getContext("moneyAccountObjectId");
+        String strAddressObjectId = scenarioContext.getContext("addressObjectId");
+//        String strAddressObjectId = scenarioContext.getContext("addressObjectIdCard");
+
+        debitCard.setStrUuid(UUID.randomUUID().toString().substring(0, 7));
+        debitCard.setStrType(payloadHelper.normalize(mapDebitCardDetails.get("type")));
+
+        String resolvedMaccId = payloadHelper.resolveId(mapDebitCardDetails.get("maccId"), strMoneyAccountObjectId);
+        debitCard.setStrMaccId(resolvedMaccId);
+
+        debitCard.setStrOwnerId(payloadHelper.normalize(mapDebitCardDetails.get("ownerId")));
+
+        debitCard.setStrLabel(payloadHelper.normalize(mapDebitCardDetails.get("label")));
+        payloadHelper.applyBigDecimalField(mapDebitCardDetails.get("dailyLimit"), "dailyLimit", debitCard);
+
+        String resolvedAddressId = payloadHelper.resolveId(mapDebitCardDetails.get("addressId"), strAddressObjectId);
+        debitCard.setStrAddressId(resolvedAddressId);
+
+        return debitCard;
+    }
+
+public void applyBigDecimalField(String rawValue, String fieldName, POJODebitCardRequest card) {
+        String normalized = normalize(rawValue);
+        if (normalized != null && !normalized.isEmpty()) {
+            try {
+                BigDecimal parsed = new BigDecimal(normalized);
+                switch (fieldName) {
+                    case "dailyLimit":
+                        card.setBdDailyLimit(parsed);
+                        break;
+                    default:
+                        System.err.println("Unknown field: " + fieldName);
+                }
+            } catch (NumberFormatException e) {
+                System.err.println("Invalid numeric value for " + fieldName + ": " + normalized);
             }
         }
-        return false;
-    }
+}
 
-    private void logMatchFound(String value) {
-        System.out.println("Match found: " + value);
-        ExtentCucumberAdapter.addTestStepLog("Actual value found: " + value);
-    }
-
-    public List<String> extractListOfStringFieldsFromArray(Response response, String arrayField, String subField) {
-        List<Map<String, Object>> itemList = response.jsonPath().getList(arrayField);
-        List<String> result = new ArrayList<>();
-        for (Map<String, Object> item : itemList) {
-            Object value = item.get(subField);
-            if (value != null) {
-                result.add(value.toString());
-            }
-        }
-        return result;
-    }
-
-    public void validateFieldExistsInArray(Response response, String arrayPath, String fieldName) throws Exception {
-        JsonNode rootNode = objectMapper.readTree(response.asString());
-        JsonNode arrayNode = rootNode.at(arrayPath); // Path should start with '/' for root level
-
-        if (!arrayNode.isArray()) {
-            throw new Exception("Expected an array at path: " + arrayPath);
-        }
-
-        for (JsonNode element : arrayNode) {
-            JsonNode fieldNode = element.get(fieldName);
-            if (fieldNode == null || fieldNode.asText().isEmpty()) {
-                throw new AssertionError("Missing or empty '" + fieldName + "' in one of the elements at: " + arrayPath);
-            }
-        }
-
-        ExtentCucumberAdapter.addTestStepLog("All elements in array " + arrayPath + " contain a valid '" + fieldName + "'");
-    }
-
-    public String extractStringFieldFromArray(Response response, String arrayField, int index, String fieldName) {
-        return response.jsonPath().getString(arrayField + "[" + index + "]." + fieldName);
-    }
-
-    public List<Map<String, Object>> extractListOfMapFromArray(Response response, String arrayFieldPath) throws Exception {
-        JsonNode rootNode = objectMapper.readTree(response.asString());
-        JsonNode arrayNode = getNodeByPath(rootNode, arrayFieldPath);
-
-        if (!arrayNode.isArray()) {
-            throw new Exception("Expected an array at path: " + arrayFieldPath);
-        }
-
-        List<Map<String, Object>> result = new ArrayList<>();
-        for (JsonNode node : arrayNode) {
-            Map<String, Object> map = objectMapper.convertValue(node, new TypeReference<Map<String, Object>>() {});
-            result.add(map);
-        }
-
-        return result;
-    }
-
-    public String getValue(Response response, String fieldPath) {
-        try {
-            return extractStringField(response, fieldPath);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to extract value from response for path: " + fieldPath, e);
+    public String normalize(String value) {
+        if (value == null) return "";
+        switch (value.trim().toUpperCase()) {
+            case "NA": return null;
+            case "EMPTY": return "";
+            default: return value;
         }
     }
+
+but I am gettig the error on below 2 test cases - 
