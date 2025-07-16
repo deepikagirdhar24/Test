@@ -1,29 +1,15 @@
-This is feature file  -
+@And("I verify the number field {string} is {string} in Debit Card response")
+public void iVerifyNumberFieldEquals(String jsonPath, String expectedValue) throws Exception {
+    BigDecimal actual = jsonHelper.extractBigDecimalField(response, jsonPath);
+    BigDecimal expected = new BigDecimal(expectedValue);
+    ExtentCucumberAdapter.addTestStepLog("Expected value at '" + jsonPath + "': " + expected + ", Actual: " + actual);
+    Assert.assertEquals(actual, expected, "Mismatch at: " + jsonPath);
+}
 
-  Scenario Outline: Verify the Get Debit Card API
-    Given Send Request to get Authentication Token for ICOS
-    When I generate the JWT Token
-    Then Send Request to get Debit Card for id "<id>"
-    And I verify the Status Code for Debit Card "200"
-    And I verify the string field "type" is "<type>" in Debit Card response
-    And I verify the string field "maccId" is "<maccId>" in Debit Card response
-    And I verify the string field "ownerId" is "<ownerId>" in Debit Card response
-    And I verify the string field "label" is "<label>" in Debit Card response
-    And I verify the string field "dailyLimit" is "<dailyLimit>" in Debit Card response
-    And I verify the string field "addressId" is "<addressId>" in Debit Card response
 
-    Examples:
-    Examples:
-      | type    | maccId          | ownerId    | label    | dailyLimit | addressId     |
-      | DEBIT   | 66288906.2003   | 665321803  | LABEL    | 555        | 57853981      |
+And I verify the number field "dailyLimit" is "<dailyLimit>" in Debit Card response
 
-This is a generic step to validate the string fields - 
 
-    @And("I verify the string field {string} is {string} in Debit Card response")
-    public void iVerifyStringFieldEquals(String jsonPath, String expectedValue) throws Exception {
-        String actualValue = jsonHelper.extractStringField(response, jsonPath);
-        ExtentCucumberAdapter.addTestStepLog("Expected value at '" + jsonPath + "': " + expectedValue + ", Actual: " + actualValue);
-        Assert.assertEquals(actualValue, expectedValue, "Mismatch at: " + jsonPath);
-    }
-
-But dailyLimit is a number field, do we need diff SD for that ?
+public BigDecimal extractBigDecimalField(Response response, String path) {
+    return new BigDecimal(response.jsonPath().getString(path));
+}
