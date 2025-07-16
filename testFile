@@ -1,19 +1,3 @@
-public void applyBigDecimalField(String rawValue, String fieldName, POJODebitCardRequest card) {
-    String normalized = normalize(rawValue);
-    switch (fieldName) {
-        case "dailyLimit":
-            if (normalized == null || normalized.isEmpty()) {
-                card.setBdDailyLimit(null); // or skip setting if you want it omitted
-            } else {
-                try {
-                    card.setBdDailyLimit(new BigDecimal(normalized));
-                } catch (NumberFormatException e) {
-                    System.err.println("Invalid value for dailyLimit: " + normalized);
-                    card.setBdDailyLimit(null); // or throw error
-                }
-            }
-            break;
-        default:
-            System.err.println("Unknown field: " + fieldName);
-    }
-}
+@JsonInclude(JsonInclude.Include.ALWAYS)
+@JsonProperty("dailyLimit")
+private BigDecimal bdDailyLimit;
