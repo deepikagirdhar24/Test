@@ -1,98 +1,14 @@
-package ICOS.pojo;
+    public POJOContainerRequest buildContainerPayload(Map<String, String> mapContainerDetails) {
+        POJOContainerRequest container = new POJOContainerRequest();
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+        container.setStrUuid(UUID.randomUUID().toString().substring(0, 7));
+        container.setStrType(payloadHelper.normalize(mapContainerDetails.get("type")));
+        container.setStrBpId(payloadHelper.normalize(mapContainerDetails.get("bpId")));
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class POJOChqBookProfileRequest {
-
-    @JsonProperty("uuid")
-    private String uuid;
-
-    @JsonProperty("type")
-    private String type;
-
-    @JsonProperty("narrativeType")
-    private String narrativeType;
-
-    @JsonProperty("ownerId")
-    private String ownerId;
-
-    @JsonProperty("maccId")
-    private String maccId;
-
-    @JsonProperty("addressId")
-    private String addressId;
-
-    @JsonProperty("embossingName")
-    private String embossingName;
-
-    @JsonProperty("mailingOption")
-    private String mailingOption;
-
-    // Getters and Setters
-
-    public String getUuid() {
-        return uuid;
+        return container;
     }
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
-    }
+Similar to this, create payload for this ChqBookProfile - 
 
-    public String getType() {
-        return type;
-    }
 
-    public void setType(String type) {
-        this.type = type;
-    }
 
-    public String getNarrativeType() {
-        return narrativeType;
-    }
-
-    public void setNarrativeType(String narrativeType) {
-        this.narrativeType = narrativeType;
-    }
-
-    public String getOwnerId() {
-        return ownerId;
-    }
-
-    public void setOwnerId(String ownerId) {
-        this.ownerId = ownerId;
-    }
-
-    public String getMaccId() {
-        return maccId;
-    }
-
-    public void setMaccId(String maccId) {
-        this.maccId = maccId;
-    }
-
-    public String getAddressId() {
-        return addressId;
-    }
-
-    public void setAddressId(String addressId) {
-        this.addressId = addressId;
-    }
-
-    public String getEmbossingName() {
-        return embossingName;
-    }
-
-    public void setEmbossingName(String embossingName) {
-        this.embossingName = embossingName;
-    }
-
-    public String getMailingOption() {
-        return mailingOption;
-    }
-
-    public void setMailingOption(String mailingOption) {
-        this.mailingOption = mailingOption;
-    }
-}
