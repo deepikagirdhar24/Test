@@ -1,15 +1,56 @@
-@And("I verify the number field {string} is {string} in Debit Card response")
-public void iVerifyNumberFieldEquals(String jsonPath, String expectedValue) throws Exception {
-    BigDecimal actual = jsonHelper.extractBigDecimalField(response, jsonPath);
-    BigDecimal expected = new BigDecimal(expectedValue);
-    ExtentCucumberAdapter.addTestStepLog("Expected value at '" + jsonPath + "': " + expected + ", Actual: " + actual);
-    Assert.assertEquals(actual, expected, "Mismatch at: " + jsonPath);
+package ICOS.pojo;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class POJOContainerRequest {
+
+    @JsonProperty("uuid")
+    private String strUuid;
+
+    @JsonProperty("type")
+    private String strType;
+
+    @JsonProperty("bpId")
+    private String strBpId;
+
+    // Getters and Setters
+
+    public String getStrUuid() {
+        return strUuid;
+    }
+
+    public void setStrUuid(String strUuid) {
+        this.strUuid = strUuid;
+    }
+
+    public String getStrType() {
+        return strType;
+    }
+
+    public void setStrType(String strType) {
+        this.strType = strType;
+    }
+
+    public String getStrBpId() {
+        return strBpId;
+    }
+
+    public void setStrBpId(String strBpId) {
+        this.strBpId = strBpId;
+    }
 }
 
+Similar to this create pojo for ChqBookProfile payload is below - 
 
-And I verify the number field "dailyLimit" is "<dailyLimit>" in Debit Card response
-
-
-public BigDecimal extractBigDecimalField(Response response, String path) {
-    return new BigDecimal(response.jsonPath().getString(path));
+{
+    "uuid": "12345",
+    "type": "rbsc$cuk_chqbk_typ_r",
+    "narrativeType": "rbsc$chq_n_cred_narr",
+    "ownerId": null,
+    "maccId": "66288906.2005",
+    "addressId": null,
+    "embossingName": "Embossing Name",
+    "mailingOption": "chqbkprf_fbtbotc"
 }
