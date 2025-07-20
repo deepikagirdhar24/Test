@@ -4,53 +4,95 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class POJOContainerRequest {
+public class POJOChqBookProfileRequest {
 
     @JsonProperty("uuid")
-    private String strUuid;
+    private String uuid;
 
     @JsonProperty("type")
-    private String strType;
+    private String type;
 
-    @JsonProperty("bpId")
-    private String strBpId;
+    @JsonProperty("narrativeType")
+    private String narrativeType;
+
+    @JsonProperty("ownerId")
+    private String ownerId;
+
+    @JsonProperty("maccId")
+    private String maccId;
+
+    @JsonProperty("addressId")
+    private String addressId;
+
+    @JsonProperty("embossingName")
+    private String embossingName;
+
+    @JsonProperty("mailingOption")
+    private String mailingOption;
 
     // Getters and Setters
 
-    public String getStrUuid() {
-        return strUuid;
+    public String getUuid() {
+        return uuid;
     }
 
-    public void setStrUuid(String strUuid) {
-        this.strUuid = strUuid;
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
-    public String getStrType() {
-        return strType;
+    public String getType() {
+        return type;
     }
 
-    public void setStrType(String strType) {
-        this.strType = strType;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public String getStrBpId() {
-        return strBpId;
+    public String getNarrativeType() {
+        return narrativeType;
     }
 
-    public void setStrBpId(String strBpId) {
-        this.strBpId = strBpId;
+    public void setNarrativeType(String narrativeType) {
+        this.narrativeType = narrativeType;
     }
-}
 
-Similar to this create pojo for ChqBookProfile payload is below - 
+    public String getOwnerId() {
+        return ownerId;
+    }
 
-{
-    "uuid": "12345",
-    "type": "rbsc$cuk_chqbk_typ_r",
-    "narrativeType": "rbsc$chq_n_cred_narr",
-    "ownerId": null,
-    "maccId": "66288906.2005",
-    "addressId": null,
-    "embossingName": "Embossing Name",
-    "mailingOption": "chqbkprf_fbtbotc"
+    public void setOwnerId(String ownerId) {
+        this.ownerId = ownerId;
+    }
+
+    public String getMaccId() {
+        return maccId;
+    }
+
+    public void setMaccId(String maccId) {
+        this.maccId = maccId;
+    }
+
+    public String getAddressId() {
+        return addressId;
+    }
+
+    public void setAddressId(String addressId) {
+        this.addressId = addressId;
+    }
+
+    public String getEmbossingName() {
+        return embossingName;
+    }
+
+    public void setEmbossingName(String embossingName) {
+        this.embossingName = embossingName;
+    }
+
+    public String getMailingOption() {
+        return mailingOption;
+    }
+
+    public void setMailingOption(String mailingOption) {
+        this.mailingOption = mailingOption;
+    }
 }
