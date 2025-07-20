@@ -1,14 +1,14 @@
-    public POJOContainerRequest buildContainerPayload(Map<String, String> mapContainerDetails) {
-        POJOContainerRequest container = new POJOContainerRequest();
+public POJOChqBookProfileRequest buildChqBookProfilePayload(Map<String, String> mapChqBookDetails) {
+    POJOChqBookProfileRequest chqBookProfile = new POJOChqBookProfileRequest();
 
-        container.setStrUuid(UUID.randomUUID().toString().substring(0, 7));
-        container.setStrType(payloadHelper.normalize(mapContainerDetails.get("type")));
-        container.setStrBpId(payloadHelper.normalize(mapContainerDetails.get("bpId")));
+    chqBookProfile.setUuid(UUID.randomUUID().toString().substring(0, 7));
+    chqBookProfile.setType(payloadHelper.normalize(mapChqBookDetails.get("type")));
+    chqBookProfile.setNarrativeType(payloadHelper.normalize(mapChqBookDetails.get("narrativeType")));
+    chqBookProfile.setOwnerId(payloadHelper.normalize(mapChqBookDetails.get("ownerId")));
+    chqBookProfile.setMaccId(payloadHelper.normalize(mapChqBookDetails.get("maccId")));
+    chqBookProfile.setAddressId(payloadHelper.normalize(mapChqBookDetails.get("addressId")));
+    chqBookProfile.setEmbossingName(payloadHelper.normalize(mapChqBookDetails.get("embossingName")));
+    chqBookProfile.setMailingOption(payloadHelper.normalize(mapChqBookDetails.get("mailingOption")));
 
-        return container;
-    }
-
-Similar to this, create payload for this ChqBookProfile - 
-
-
-
+    return chqBookProfile;
+}
