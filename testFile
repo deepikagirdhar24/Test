@@ -1,14 +1,98 @@
-public POJOChqBookProfileRequest buildChqBookProfilePayload(Map<String, String> mapChqBookDetails) {
-    POJOChqBookProfileRequest chqBookProfile = new POJOChqBookProfileRequest();
+package ICOS.pojo;
 
-    chqBookProfile.setUuid(UUID.randomUUID().toString().substring(0, 7));
-    chqBookProfile.setType(payloadHelper.normalize(mapChqBookDetails.get("type")));
-    chqBookProfile.setNarrativeType(payloadHelper.normalize(mapChqBookDetails.get("narrativeType")));
-    chqBookProfile.setOwnerId(payloadHelper.normalize(mapChqBookDetails.get("ownerId")));
-    chqBookProfile.setMaccId(payloadHelper.normalize(mapChqBookDetails.get("maccId")));
-    chqBookProfile.setAddressId(payloadHelper.normalize(mapChqBookDetails.get("addressId")));
-    chqBookProfile.setEmbossingName(payloadHelper.normalize(mapChqBookDetails.get("embossingName")));
-    chqBookProfile.setMailingOption(payloadHelper.normalize(mapChqBookDetails.get("mailingOption")));
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-    return chqBookProfile;
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class POJOChqBookProfileRequest {
+
+    @JsonProperty("uuid")
+    private String strUuid;
+
+    @JsonProperty("type")
+    private String strType;
+
+    @JsonProperty("narrativeType")
+    private String strNarrativeType;
+
+    @JsonProperty("ownerId")
+    private String strOwnerId;
+
+    @JsonProperty("maccId")
+    private String strMaccId;
+
+    @JsonProperty("addressId")
+    private String strAddressId;
+
+    @JsonProperty("embossingName")
+    private String strEmbossingName;
+
+    @JsonProperty("mailingOption")
+    private String strMailingOption;
+
+    // Getters and Setters
+
+    public String getStrUuid() {
+        return strUuid;
+    }
+
+    public void setStrUuid(String strUuid) {
+        this.strUuid = strUuid;
+    }
+
+    public String getStrType() {
+        return strType;
+    }
+
+    public void setStrType(String strType) {
+        this.strType = strType;
+    }
+
+    public String getStrNarrativeType() {
+        return strNarrativeType;
+    }
+
+    public void setStrNarrativeType(String strNarrativeType) {
+        this.strNarrativeType = strNarrativeType;
+    }
+
+    public String getStrOwnerId() {
+        return strOwnerId;
+    }
+
+    public void setStrOwnerId(String strOwnerId) {
+        this.strOwnerId = strOwnerId;
+    }
+
+    public String getStrMaccId() {
+        return strMaccId;
+    }
+
+    public void setStrMaccId(String strMaccId) {
+        this.strMaccId = strMaccId;
+    }
+
+    public String getStrAddressId() {
+        return strAddressId;
+    }
+
+    public void setStrAddressId(String strAddressId) {
+        this.strAddressId = strAddressId;
+    }
+
+    public String getStrEmbossingName() {
+        return strEmbossingName;
+    }
+
+    public void setStrEmbossingName(String strEmbossingName) {
+        this.strEmbossingName = strEmbossingName;
+    }
+
+    public String getStrMailingOption() {
+        return strMailingOption;
+    }
+
+    public void setStrMailingOption(String strMailingOption) {
+        this.strMailingOption = strMailingOption;
+    }
 }
