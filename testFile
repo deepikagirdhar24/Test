@@ -59,12 +59,20 @@ WHy is this not working here -
 @CreateDC
 Scenario Outline: Verify the Post Debit Card API with valid data - 001 - StraightThrough # src/test/resources/Features/DebitCard.feature:67
 Before All
-Jul 22, 2025 10:30:55 AM hooks.CucumberHooks beforeScenario
+Jul 22, 2025 10:46:57 AM hooks.CucumberHooks beforeScenario
 INFO: Before Scenario: Test is starting!
   Given Send Request to get Authentication Token for ICOS                                # stepDefinations.GetUserSteps.sendRequestToGetAuthenticationTokenForICOS()
   When I generate the JWT Token                                                          # stepDefinations.GetUserSteps.iGenerateTheJWTToken()
-Jul 22, 2025 10:31:04 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Response for Address is: {"objectId":"665830399","orderId":"2931249288"}
+Jul 22, 2025 10:47:06 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: Response for Address is: {"objectId":"665830401","orderId":"2931249480"}
+Jul 22, 2025 10:47:12 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: Response for Container is: {"objectId":"66022644.1000","orderId":"2931249481"}
+Jul 22, 2025 10:47:14 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: Response for Money Account is: {"objectId":"66022644.2056","orderId":"2931249492"}
+Jul 22, 2025 10:47:14 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: Request for Debit Card is: {"uuid":"8ec311c","type":"DEBIT","maccId":"66022644.2056","ownerId":"665041400","label":"LABEL 123","dailyLimit":555,"addressId":"665830401"}
+Jul 22, 2025 10:47:15 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: Response for Debit Card is: {"orderId":"2931249495","error":"MAILING ADDRESS\nEither Name or Firm is mandatory."}
   Then Send request to create Address with below details                                 # stepDefinations.AddressSteps.sendRequestToCreateAddressWithDetails(io.cucumber.datatable.DataTable)
     | firstName        | Firstname             |
     | middleName       | Middlename            |
@@ -82,13 +90,9 @@ INFO: Value is: Response for Address is: {"objectId":"665830399","orderId":"2931
     | state            | RANDOM_49             |
     | zip              | 8001                  |
     | country          | CH                    |
-Jul 22, 2025 10:31:11 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Response for Container is: {"objectId":"66022644.1000","orderId":"2931249290"}
   Then Send Request to create Container with below details                               # stepDefinations.ContainerSteps.sendRequestToCreateContainerWithDetails(io.cucumber.datatable.DataTable)
     | type | banking  |
     | bpId | 66022644 |
-Jul 22, 2025 10:31:13 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Response for Money Account is: {"objectId":"66022644.2055","orderId":"2931249293"}
   Then Send Request to create Money Account with below details                           # stepDefinations.MoneyAccountSteps.sendRequestToCreateMoneyAccountWithDetails(io.cucumber.datatable.DataTable)
     | ownerId            | CONTAINER_OBJECT_ID   |
     | type               | privateCurrentAccount |
@@ -99,29 +103,6 @@ INFO: Value is: Response for Money Account is: {"objectId":"66022644.2055","orde
     | mailingOffsetMonth | NA                    |
     | minimalNoticeDays  | NA                    |
     | isMailingPaper     | false                 |
-Jul 22, 2025 10:31:15 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Response for Address is: {"objectId":"665830400","orderId":"2931249295"}
-  Then Send request to create Address with below details                                 # stepDefinations.AddressSteps.sendRequestToCreateAddressWithDetails(io.cucumber.datatable.DataTable)
-    | firstName        | Firstname             |
-    | middleName       | Middlename            |
-    | lastName         | Lastname              |
-    | salutation       | mr                    |
-    | salutationLetter | mr                    |
-    | attnOf           | [empty]               |
-    | crof             | [empty]               |
-    | residency        | 123                   |
-    | streetNr         | 123                   |
-    | street           | teststreet + RANDOM_6 |
-    | streetAdd        | Addition street       |
-    | poBox            | P.O.Box 123           |
-    | city             | Zurich                |
-    | state            | RANDOM_49             |
-    | zip              | 8001                  |
-    | country          | CH                    |
-Jul 22, 2025 10:31:15 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Request for Debit Card is: {"uuid":"49d3e79","type":"DEBIT","maccId":"66022644.2055","ownerId":"665041400","label":"LABEL 123","dailyLimit":555,"addressId":"665830400"}
-Jul 22, 2025 10:31:16 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Response for Debit Card is: {"orderId":"2931249297","error":"MAILING ADDRESS\nEither Name or Firm is mandatory."}
   Then Send Request to create Debit Card with below details                              # stepDefinations.DebitCardSteps.sendRequestToCreateDebitCardWithDetails(io.cucumber.datatable.DataTable)
     | type       | DEBIT                   |
     | maccId     | MONEY_ACCOUNT_OBJECT_ID |
@@ -142,10 +123,10 @@ INFO: Value is: Response for Debit Card is: {"orderId":"2931249297","error":"MAI
 	at âœ½.I verify the Status Code for Debit Card "200"(file:///C:/Users/girdd/IdeaProjects/icosapitests/src/test/resources/Features/DebitCard.feature:61)
   And I verify the "objectId" exists in Debit Card response                              # stepDefinations.DebitCardSteps.iVerifyTheKeyExistsInDebitCardResponse(java.lang.String)
   And I verify the "orderId" exists in Debit Card response                               # stepDefinations.DebitCardSteps.iVerifyTheKeyExistsInDebitCardResponse(java.lang.String)
-Jul 22, 2025 10:31:19 AM tech.grasshopper.pdf.PDFCucumberReport collectReportConfiguration
+Jul 22, 2025 10:47:18 AM tech.grasshopper.pdf.PDFCucumberReport collectReportConfiguration
 INFO: PDF report configuration YAML file not found. Using default settings.
-[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 28.521 s <<< FAILURE! - in testRunner.Runner
-[ERROR] Verify Debit Card API.Verify the Post Debit Card API with valid data - 001 - StraightThrough  Time elapsed: 22.252 s  <<< FAILURE!
+[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 25.059 s <<< FAILURE! - in testRunner.Runner
+[ERROR] Verify Debit Card API.Verify the Post Debit Card API with valid data - 001 - StraightThrough  Time elapsed: 19.776 s  <<< FAILURE!
 java.lang.AssertionError: expected [500] but found [200]
 [INFO] 
 [INFO] Results:
@@ -155,6 +136,7 @@ java.lang.AssertionError: expected [500] but found [200]
 [INFO] 
 [ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0
 [INFO] 
+
 
 
     @Then("Send request to create Address with below details")
