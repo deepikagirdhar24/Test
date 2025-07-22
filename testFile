@@ -1,32 +1,16 @@
-package ICOS.pojo;
+Create a payloadfor below payload similar to below - 
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class POJOCreditRequest {
-
-    @JsonProperty("bpId")
-    private String strBpId;
-
-    @JsonProperty("maccId")
-    private String strMaccId;
-
-    // Getters and Setters
-
-    public String getStrBpId() {
-        return strBpId;
-    }
-
-    public void setStrBpId(String strBpId) {
-        this.strBpId = strBpId;
-    }
-
-    public String getStrMaccId() {
-        return strMaccId;
-    }
-
-    public void setStrMaccId(String strMaccId) {
-        this.strMaccId = strMaccId;
-    }
+{
+    "bpId": "66288906",
+    "maccId": "66288906.2003"
 }
+
+    public POJOContainerRequest buildContainerPayload(Map<String, String> mapContainerDetails) {
+        POJOContainerRequest container = new POJOContainerRequest();
+
+        container.setStrUuid(UUID.randomUUID().toString().substring(0, 7));
+        container.setStrType(payloadHelper.normalize(mapContainerDetails.get("type")));
+        container.setStrBpId(payloadHelper.normalize(mapContainerDetails.get("bpId")));
+
+        return container;
+    }
