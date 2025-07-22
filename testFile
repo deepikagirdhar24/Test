@@ -47,6 +47,13 @@
       | type    | maccId                   | ownerId                   | label      | dailyLimit | addressId              | Comments                               |
       | DEBIT   | MONEY_ACCOUNT_OBJECT_ID  | 665041400                 | LABEL 123  | 555        | ADDRESS_OBJECT_ID      | 001 - StraightThrough                  |
 
+    @And("I verify the Status Code for Debit Card {string}")
+    public void iVerifyTheStatusCodeForDebitCard(String strStatusCode) {
+        int responseCode= response.statusCode();
+        ExtentCucumberAdapter.addTestStepLog("Actual value of Status code is : " +responseCode);
+        Assert.assertEquals(Integer.parseInt(strStatusCode),responseCode);
+    }
+
 WHy is this not working here - 
 
 [INFO] 
