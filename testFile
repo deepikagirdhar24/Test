@@ -1,16 +1,8 @@
-Create a payloadfor below payload similar to below - 
+public POJOCreditRequest buildCreditPayload(Map<String, String> mapCreditDetails) {
+    POJOCreditRequest creditRequest = new POJOCreditRequest();
 
-{
-    "bpId": "66288906",
-    "maccId": "66288906.2003"
+    creditRequest.setStrBpId(payloadHelper.normalize(mapCreditDetails.get("bpId")));
+    creditRequest.setStrMaccId(payloadHelper.normalize(mapCreditDetails.get("maccId")));
+
+    return creditRequest;
 }
-
-    public POJOContainerRequest buildContainerPayload(Map<String, String> mapContainerDetails) {
-        POJOContainerRequest container = new POJOContainerRequest();
-
-        container.setStrUuid(UUID.randomUUID().toString().substring(0, 7));
-        container.setStrType(payloadHelper.normalize(mapContainerDetails.get("type")));
-        container.setStrBpId(payloadHelper.normalize(mapContainerDetails.get("bpId")));
-
-        return container;
-    }
