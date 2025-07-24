@@ -5,13 +5,13 @@
                 BigDecimal parsed = new BigDecimal(normalized);
                 switch (fieldName) {
                     case "mailingOffsetDay":
-                        account.setMailingOffsetDay(parsed);
+                        account.setBdMailingOffsetDay(parsed);
                         break;
                     case "mailingOffsetMonth":
-                        account.setMailingOffsetMonth(parsed);
+                        account.setBdMailingOffsetMonth(parsed);
                         break;
                     case "minimalNoticeDays":
-                        account.setMinimalNoticeDays(parsed);
+                        account.setBdMinimalNoticeDays(parsed);
                         break;
                     default:
                         System.err.println("Unknown field: " + fieldName);
