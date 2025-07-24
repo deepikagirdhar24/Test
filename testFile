@@ -1,53 +1,61 @@
-There is a due date function already implemented below for Work Request API below - 
-
-    public String resolveDueDate(String dueDateInput) {
-        if (dueDateInput == null || dueDateInput.trim().isEmpty()) return "";
-        switch (dueDateInput.trim().toUpperCase()) {
-            case "NA": return null;
-            case "EMPTY": return "";
-            case "FUTURE": return LocalDate.now().plusDays(7).toString();
-            case "PAST": return LocalDate.now().minusDays(7).toString();
-            case "TODAY": return LocalDate.now().toString();
-            default: return dueDateInput;
-        }
+public String resolveDate(String context, String fieldName, String dateInput) {
+    if (dateInput == null || dateInput.trim().equalsIgnoreCase("DEFAULT")) {
+        return getDefaultDateForField(fieldName);
     }
 
-    public POJOWorkRequest buildWorkRequestPayload(Map<String, String> mapWorkRequestDetails) {
-        POJOWorkRequest workRequest = new POJOWorkRequest();
+    String input = dateInput.trim().toUpperCase();
 
-        workRequest.setStrBpId(payloadHelper.normalize(mapWorkRequestDetails.get("bpId")));
-        workRequest.setStrType(payloadHelper.normalize(mapWorkRequestDetails.get("type")));
-        workRequest.setStrSubject(payloadHelper.normalize(mapWorkRequestDetails.get("subject")));
-        workRequest.setStrDescription(payloadHelper.normalize(mapWorkRequestDetails.get("description")));
-        workRequest.setStrDueDate(payloadHelper.resolveDueDate(mapWorkRequestDetails.get("dueDate")));
-
-        return workRequest;
+    switch (input) {
+        case "NA":
+            return null;
+        case "EMPTY":
+            return "";
+        case "TODAY":
+            return LocalDate.now().toString();
+        case "PAST":
+            return resolvePastDate(context);
+        case "FUTURE":
+            return resolveFutureDate(context);
+        default:
+            return input; // assume fixed date like "2025-07-01"
     }
+}
 
-  Scenario Outline: Verify the Post Work Request API with valid data - <Comments>
-    Given Send Request to get Authentication Token for ICOS
-    When I generate the JWT Token
-    Then Send Request to create Work Request with below details
-      | bpId          | <bpId>        |
-      | type          | <type>        |
-      | dueDate       | <dueDate>     |
-      | subject       | <subject>     |
-      | description   | <description> |
-    And I verify the Status Code for Work Request "<statusCode>"
-    And I verify the "orderId" exists in Work Request response
+private String resolvePastDate(String context) {
+    LocalDate today = LocalDate.now();
+    if ("WorkRequest".equalsIgnoreCase(context)) {
+        return today.minusDays(7).toString();
+    } else {
+        return today.minusDays(1).toString();
+    }
+}
 
-    Examples:
-      | bpId      | type       | dueDate | subject | description  | statusCode | Comments                                                               |
-      | 66329769  | pay_domq   | FUTURE  | Subject | Description  | 200        | all valid inputs and type as Domestic Payment                          |
-
-Now, similar to this, teher is another API for update Natural Person in which there are some date fileds as shown below - 
-
-birthDate = default as : Date-40 years
-issuedate = default as : DATE-1 day
-validUntil = default as : DATE+1 Day
-ukTaxResidenceFromDate = default as : DATE-10 years
-
-NOw, these dates are passed from features files with Input as either NA, EMPTY, FUTURE, PAST, TODAY  and default as mentioned above.
-Can you suggest how to implement the helper function for this ?
+private String resolveFutureDate(String context) {
+    LocalDate today = LocalDate.now();
+    if ("WorkRequest".equalsIgnoreCase(context)) {
+        return today.plusDays(7).toString();
+    } else {
+        return today.plusDays(1).toString();
+    }
+}
 
 
+private String getDefaultDateForField(String fieldName) {
+    LocalDate today = LocalDate.now();
+
+    switch (fieldName.toLowerCase()) {
+        case "birthdate":
+            return today.minusYears(40).toString();
+        case "issuedate":
+            return today.minusDays(1).toString();
+        case "validuntil":
+            return today.plusDays(1).toString();
+        case "uktaxresidencefromdate":
+            return today.minusYears(10).toString();
+        default:
+            throw new IllegalArgumentException("Unknown date field: " + fieldName);
+    }
+}
+
+
+ wr.setStrDueDate(payloadHelper.resolveDate("WorkRequest", "dueDate", map.get("dueDate")));
