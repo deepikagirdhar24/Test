@@ -1,79 +1,76 @@
-public POJONaturalPerson buildUpdateNaturalPersonPayload(Map<String, String> mapPersonDetails) {
-    POJONaturalPerson person = new POJONaturalPerson();
-
-    person.setStrUuid(payloadHelper.normalize(mapPersonDetails.get("uuid")));
-    person.setStrId(payloadHelper.normalize(mapPersonDetails.get("id")));
-    person.setStrSubType(payloadHelper.normalize(mapPersonDetails.get("subType")));
-    person.setStrDomiCountry(payloadHelper.normalize(mapPersonDetails.get("domiCountry")));
-    person.setStrFirstName(payloadHelper.normalize(mapPersonDetails.get("firstName")));
-    person.setStrMiddleName(payloadHelper.normalize(mapPersonDetails.get("middleName")));
-    person.setStrLastName(payloadHelper.normalize(mapPersonDetails.get("lastName")));
-    person.setStrBirthDate(payloadHelper.resolveDate("UpdateNaturalPerson", "birthDate", mapPersonDetails.get("birthDate")));
-    person.setStrGender(payloadHelper.normalize(mapPersonDetails.get("gender")));
-    person.setListStrNationalities(payloadHelper.parseCommaSeparated(mapPersonDetails.get("nationalities")));
-    person.setStrTitle(payloadHelper.normalize(mapPersonDetails.get("title")));
-    person.setStrBirthPlace(payloadHelper.normalize(mapPersonDetails.get("birthPlace")));
-    person.setStrBirthCountry(payloadHelper.normalize(mapPersonDetails.get("birthCountry")));
-    person.setListObjElectronicAddresses(payloadHelper.buildElectronicAddresses(mapPersonDetails.get("electronicAddresses")));
-    payloadHelper.applyBooleanField(mapPersonDetails.get("isEmployee"), "isEmployee", person);
-    person.setListObjTaxResidences(payloadHelper.buildTaxResidences(mapPersonDetails.get("taxResidences")));
-    person.setListObjDocumentationIdentity(payloadHelper.buildDocumentationIdentity(
-        mapPersonDetails.get("documentationIdentity"), "UpdateNaturalPerson"
-    ));
-    person.setStrPepAssociationCountry(payloadHelper.normalize(mapPersonDetails.get("pepAssociationCountry")));
-    person.setStrPepClassificationReason(payloadHelper.normalize(mapPersonDetails.get("pepClassificationReason")));
-    person.setStrPepCategory(payloadHelper.normalize(mapPersonDetails.get("pepCategory")));
-    payloadHelper.applyBooleanField(mapPersonDetails.get("isMarketingOptOut"), "isMarketingOptOut", person);
-    person.setStrFatcaStatus(payloadHelper.normalize(mapPersonDetails.get("fatcaStatus")));
-    person.setStrCrsType(payloadHelper.normalize(mapPersonDetails.get("crsType")));
-    person.setStrUkTaxResidenceFromDate(payloadHelper.resolveDate("UpdateNaturalPerson", "ukTaxResidenceFromDate", mapPersonDetails.get("ukTaxResidenceFromDate")));
-    payloadHelper.applyBooleanField(mapPersonDetails.get("hasTaxAvoidanceSchemes"), "hasTaxAvoidanceSchemes", person);
-    payloadHelper.applyBooleanField(mapPersonDetails.get("isHoldingBearerShares"), "isHoldingBearerShares", person);
-    payloadHelper.applyBooleanField(mapPersonDetails.get("hasInvestableAssets10M"), "hasInvestableAssets10M", person);
-    payloadHelper.applyBooleanField(mapPersonDetails.get("hasHistoricTaxIssues"), "hasHistoricTaxIssues", person);
-    payloadHelper.applyBooleanField(mapPersonDetails.get("hasTaxChgDomiStatus"), "hasTaxChgDomiStatus", person);
-    payloadHelper.applyBooleanField(mapPersonDetails.get("hasTaxChgUkDomiStatus"), "hasTaxChgUkDomiStatus", person);
-    payloadHelper.applyBooleanField(mapPersonDetails.get("hasTaxPrevClaimRemitanceBasis"), "hasTaxPrevClaimRemitanceBasis", person);
-    payloadHelper.applyBooleanField(mapPersonDetails.get("hasTaxIntendClaimRemitanceBasis"), "hasTaxIntendClaimRemitanceBasis", person);
-    person.setListObjAccountants(payloadHelper.buildAccountants(mapPersonDetails.get("accountants")));
-    payloadHelper.applyBooleanField(mapPersonDetails.get("hasTravelProtection"), "hasTravelProtection", person);
-    payloadHelper.applyBooleanField(mapPersonDetails.get("hasCouttsOnline"), "hasCouttsOnline", person);
-    payloadHelper.applyBooleanField(mapPersonDetails.get("hasCouttsId"), "hasCouttsId", person);
-    person.setListObjAssociations(payloadHelper.buildAssociations(mapPersonDetails.get("associations")));
-    person.setStrIdQuestionId(payloadHelper.normalize(mapPersonDetails.get("idQuestionId")));
-    person.setStrCorrespondanceAddressId(payloadHelper.normalize(mapPersonDetails.get("correspondanceAddressId")));
-
-    return person;
-}
-
-
-public void applyBooleanField(String rawValue, String fieldName, POJONaturalPerson person) {
-    String normalized = normalize(rawValue);
-    if (normalized != null && !normalized.isEmpty()) {
-        boolean parsed = Boolean.parseBoolean(normalized);
-        switch (fieldName) {
-            case "isEmployee": person.setBlnIsEmployee(parsed); break;
-            case "isMarketingOptOut": person.setBlnIsMarketingOptOut(parsed); break;
-            case "hasTaxAvoidanceSchemes": person.setBlnHasTaxAvoidanceSchemes(parsed); break;
-            case "isHoldingBearerShares": person.setBlnIsHoldingBearerShares(parsed); break;
-            case "hasInvestableAssets10M": person.setBlnHasInvestableAssets10M(parsed); break;
-            case "hasHistoricTaxIssues": person.setBlnHasHistoricTaxIssues(parsed); break;
-            case "hasTaxChgDomiStatus": person.setBlnHasTaxChgDomiStatus(parsed); break;
-            case "hasTaxChgUkDomiStatus": person.setBlnHasTaxChgUkDomiStatus(parsed); break;
-            case "hasTaxPrevClaimRemitanceBasis": person.setBlnHasTaxPrevClaimRemitanceBasis(parsed); break;
-            case "hasTaxIntendClaimRemitanceBasis": person.setBlnHasTaxIntendClaimRemitanceBasis(parsed); break;
-            case "hasTravelProtection": person.setBlnHasTravelProtection(parsed); break;
-            case "hasCouttsOnline": person.setBlnHasCouttsOnline(parsed); break;
-            case "hasCouttsId": person.setBlnHasCouttsId(parsed); break;
-        }
-    }
-}
-
-
-public List<String> parseCommaSeparated(String input) {
+public List<POJOElectronicAddress> buildElectronicAddresses(String input) {
     if (input == null || input.trim().isEmpty()) return Collections.emptyList();
-    return Arrays.stream(input.split(","))
-                 .map(String::trim)
-                 .filter(s -> !s.isEmpty())
-                 .collect(Collectors.toList());
+
+    List<POJOElectronicAddress> list = new ArrayList<>();
+    for (String entry : input.split(";")) {
+        String[] parts = entry.split(",");
+        POJOElectronicAddress e = new POJOElectronicAddress();
+        e.setStrType(payloadHelper.normalize(parts[0]));
+        e.setStrValue(payloadHelper.normalize(parts[1]));
+        list.add(e);
+    }
+    return list;
 }
+
+public List<POJOTaxResidence> buildTaxResidences(String input) {
+    if (input == null || input.trim().isEmpty()) return Collections.emptyList();
+
+    List<POJOTaxResidence> list = new ArrayList<>();
+    for (String entry : input.split(";")) {
+        String[] parts = entry.split(",");
+        POJOTaxResidence tr = new POJOTaxResidence();
+        tr.setStrCountry(payloadHelper.normalize(parts[0]));
+        tr.setStrTin(payloadHelper.normalize(parts[1]));
+        list.add(tr);
+    }
+    return list;
+}
+
+public List<POJODocumentationIdentity> buildDocumentationIdentity(String input, String context) {
+    if (input == null || input.trim().isEmpty()) return Collections.emptyList();
+
+    List<POJODocumentationIdentity> list = new ArrayList<>();
+    for (String entry : input.split(";")) {
+        String[] parts = entry.split(",");
+        POJODocumentationIdentity doc = new POJODocumentationIdentity();
+        doc.setStrType(payloadHelper.normalize(parts[0]));
+        doc.setStrNumber(payloadHelper.normalize(parts[1]));
+        doc.setStrIssueDate(payloadHelper.resolveDate(context, "issueDate", parts[2]));
+        doc.setStrExpiryDate(payloadHelper.resolveDate(context, "expiryDate", parts[3]));
+        list.add(doc);
+    }
+    return list;
+}
+
+
+public List<POJOAccountant> buildAccountants(String input) {
+    if (input == null || input.trim().isEmpty()) return Collections.emptyList();
+
+    List<POJOAccountant> list = new ArrayList<>();
+    for (String entry : input.split(";")) {
+        String[] parts = entry.split(",");
+        POJOAccountant acc = new POJOAccountant();
+        acc.setStrName(payloadHelper.normalize(parts[0]));
+        acc.setStrFirm(payloadHelper.normalize(parts[1]));
+        acc.setStrEmail(payloadHelper.normalize(parts[2]));
+        list.add(acc);
+    }
+    return list;
+}
+
+
+public List<POJOAssociation> buildAssociations(String input) {
+    if (input == null || input.trim().isEmpty()) return Collections.emptyList();
+
+    List<POJOAssociation> list = new ArrayList<>();
+    for (String entry : input.split(";")) {
+        String[] parts = entry.split(",");
+        POJOAssociation assoc = new POJOAssociation();
+        assoc.setStrType(payloadHelper.normalize(parts[0]));
+        assoc.setStrId(payloadHelper.normalize(parts[1]));
+        assoc.setStrRole(payloadHelper.normalize(parts[2]));
+        list.add(assoc);
+    }
+    return list;
+}
+
