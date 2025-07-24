@@ -24,6 +24,22 @@ There is a due date function already implemented below for Work Request API belo
         return workRequest;
     }
 
+  Scenario Outline: Verify the Post Work Request API with valid data - <Comments>
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    Then Send Request to create Work Request with below details
+      | bpId          | <bpId>        |
+      | type          | <type>        |
+      | dueDate       | <dueDate>     |
+      | subject       | <subject>     |
+      | description   | <description> |
+    And I verify the Status Code for Work Request "<statusCode>"
+    And I verify the "orderId" exists in Work Request response
+
+    Examples:
+      | bpId      | type       | dueDate | subject | description  | statusCode | Comments                                                               |
+      | 66329769  | pay_domq   | FUTURE  | Subject | Description  | 200        | all valid inputs and type as Domestic Payment                          |
+
 Now, similar to this, teher is another API for update Natural Person in which there are some date fileds as shown below - 
 
 birthDate = default as : Date-40 years
@@ -31,7 +47,7 @@ issuedate = default as : DATE-1 day
 validUntil = default as : DATE+1 Day
 ukTaxResidenceFromDate = default as : DATE-10 years
 
-NOw, these dates are passed from features files with Input as either NA, EMPTY, FUTURE, PAST, TODAY .
+NOw, these dates are passed from features files with Input as either NA, EMPTY, FUTURE, PAST, TODAY  and default as mentioned above.
 Can you suggest how to implement the helper function for this ?
 
 
