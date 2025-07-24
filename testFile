@@ -1,61 +1,132 @@
-public String resolveDate(String context, String fieldName, String dateInput) {
-    if (dateInput == null || dateInput.trim().isEmpty()) {
-        return ""; // Treat null/empty input as empty string
+NOw, similar ot bleow payload of workrequest - 
+
+    public POJOWorkRequest buildWorkRequestPayload(Map<String, String> mapWorkRequestDetails) {
+        POJOWorkRequest workRequest = new POJOWorkRequest();
+
+        workRequest.setStrBpId(payloadHelper.normalize(mapWorkRequestDetails.get("bpId")));
+        workRequest.setStrType(payloadHelper.normalize(mapWorkRequestDetails.get("type")));
+        workRequest.setStrSubject(payloadHelper.normalize(mapWorkRequestDetails.get("subject")));
+        workRequest.setStrDescription(payloadHelper.normalize(mapWorkRequestDetails.get("description")));
+        //workRequest.setStrDueDate(payloadHelper.resolveDueDate(mapWorkRequestDetails.get("dueDate")));
+        workRequest.setStrDueDate(payloadHelper.resolveDate("WorkRequest", "dueDate", mapWorkRequestDetails.get("dueDate")));
+
+        return workRequest;
     }
 
-    String input = dateInput.trim().toUpperCase();
+Create payload for UpdNaturalPerson - 
 
-    switch (input) {
-        case "NA":
-            return null;
-        case "EMPTY":
-            return "";
-        case "DEFAULT":
-            return getDefaultDateForField(fieldName);
-        case "TODAY":
-            return LocalDate.now().toString();
-        case "PAST":
-            return resolvePastDate(context);
-        case "FUTURE":
-            return resolveFutureDate(context);
-        default:
-            return input; // Assume valid yyyy-MM-dd format
-    }
+{
+    "uuid": "12345",
+    "id": "0",
+    "subType": "pers_form_doc",
+    "domiCountry": "GB",
+    "firstName": "Firstname",
+    "middleName": "Middlename",
+    "lastName": "Lastname",
+    "birthDate": "1990-10-01",
+    "gender": "male",
+    "nationalities": [
+        "GB",
+        "CH"
+    ],
+    "title": "mr",
+    "birthPlace": "Zurich",
+    "birthCountry": "CH",
+    "electronicAddresses": [
+        {
+            "medium": "email",
+            "kind": "private",
+            "value": "first.last@gmail.com",
+            "isPreferred": false
+        },
+        {
+            "medium": "mobile",
+            "kind": "business",
+            "value": "+44791234567",
+            "isPreferred": true
+        }
+    ],
+    "isEmployee": false,
+    "taxResidences": [
+        {
+            "country": "GB",
+            "taxNumber": "123456789",
+            "identityType": "nin"
+        },
+        {
+            "country": "US",
+            "taxNumber": "553518830",
+            "identityType": "tin"
+        }
+    ],
+    "documentationIdentity": [
+        {
+            "identityType": "pass",
+            "number": "GB1234567890",
+            "issueCountry": "GB",
+            "issuePlace": "London",
+            "issueDate": "2018-01-01",
+            "validUntil": "2028-12-31"
+        },
+        {
+            "identityType": "xxx",
+            "number": "123",
+            "issueCountry": "xx",
+            "issuePlace": "123",
+            "issueDate": "2018-01-01",
+            "validUntil": "2028-12-31"
+        }
+    ],
+    "pepAssociationCountry": "IR",
+    "pepClassificationReason": "Test Reason",
+    "pepCategory": "none",
+    "isMarketingOptOut": true,
+    "fatcaStatus": "rbsc$fatca_non_us_person",
+    "crsType": "rbsc$crs_np_doc",
+    "ukTaxResidenceFromDate": "2010-01-01",
+    "hasTaxAvoidanceSchemes": false,
+    "isHoldingBearerShares": true,
+    "hasInvestableAssets10M": true,
+    "hasHistoricTaxIssues": false,
+    "hasTaxChgDomiStatus": false,
+    "hasTaxChgUkDomiStatus": false,
+    "hasTaxPrevClaimRemitanceBasis": false,
+    "hasTaxIntendClaimRemitanceBasis": false,
+    "accountants": [
+        {
+            "name": "Primary Accountant Name",
+            "companyId": "665992478",
+            "role": "rbsc$tax_adviser_primary",
+            "addressId": "661830651",
+            "email": "accountant.person@acccomp.com",
+            "hasConsent": true,
+            "doSendCopy": true
+        },
+        {
+            "name": "Secondary Accountant Name",
+            "companyId": "665992478",
+            "role": "rbsc$tax_adviser_second",
+            "addressId": "661830651",
+            "email": "accountant2.person@acccomp.com",
+            "hasConsent": false,
+            "doSendCopy": false
+        }
+    ],
+    "hasTravelProtection": false,
+    "hasCouttsOnline": true,
+    "hasCouttsId": true,
+    "associations": [
+        {
+            "personId": "665992477",
+            "role": "rbsc$is_sibling_of"
+        },
+        {
+            "personId": "665992477",
+            "role": "rbsc$has_director"
+        }
+    ],
+    "idQuestionId": "665984551",
+    "correspondanceAddressId": "661830651"
 }
 
-private String resolvePastDate(String context) {
-    LocalDate today = LocalDate.now();
-    if ("WorkRequest".equalsIgnoreCase(context)) {
-        return today.minusDays(7).toString();
-    } else {
-        return today.minusDays(1).toString();
-    }
-}
-
-private String resolveFutureDate(String context) {
-    LocalDate today = LocalDate.now();
-    if ("WorkRequest".equalsIgnoreCase(context)) {
-        return today.plusDays(7).toString();
-    } else {
-        return today.plusDays(1).toString();
-    }
-}
-
-private String getDefaultDateForField(String fieldName) {
-    LocalDate today = LocalDate.now();
-
-    switch (fieldName.toLowerCase()) {
-        case "birthdate":
-            return today.minusYears(40).toString();
-        case "issuedate":
-            return today.minusDays(1).toString();
-        case "validuntil":
-            return today.plusDays(1).toString();
-        case "uktaxresidencefromdate":
-            return today.minusYears(10).toString();
-        default:
-            throw new IllegalArgumentException("Unknown date field: " + fieldName);
-    }
-}
-
-wr.setStrDueDate(payloadHelper.resolveDate("WorkRequest", "dueDate", map.get("dueDate")));
+for the 4 date fileds, use resolveDate function.
