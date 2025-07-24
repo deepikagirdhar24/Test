@@ -1,51 +1,43 @@
-public void applyBooleanField(Object targetObject, String fieldName, String rawValue) {
-    String normalized = normalize(rawValue);
-    if (normalized != null && !normalized.isEmpty()) {
-        boolean parsed = Boolean.parseBoolean(normalized);
-        String setterName = "setBln" + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1);
-        try {
-            Method setter = targetObject.getClass().getMethod(setterName, boolean.class);
-            setter.invoke(targetObject, parsed);
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException("Unable to set boolean field: " + setterName + " on " + targetObject.getClass().getSimpleName(), e);
+    public void applyBigDecimalField(String rawValue, String fieldName, POJOMoneyAccountRequest account) {
+        String normalized = normalize(rawValue);
+        if (normalized != null && !normalized.isEmpty()) {
+            try {
+                BigDecimal parsed = new BigDecimal(normalized);
+                switch (fieldName) {
+                    case "mailingOffsetDay":
+                        account.setMailingOffsetDay(parsed);
+                        break;
+                    case "mailingOffsetMonth":
+                        account.setMailingOffsetMonth(parsed);
+                        break;
+                    case "minimalNoticeDays":
+                        account.setMinimalNoticeDays(parsed);
+                        break;
+                    default:
+                        System.err.println("Unknown field: " + fieldName);
+                }
+            } catch (NumberFormatException e) {
+                System.err.println("Invalid numeric value for " + fieldName + ": " + normalized);
+            }
         }
     }
-}
 
-public List<POJOElectronicAddress> buildElectronicAddresses(String input) {
-    if (input == null || input.trim().isEmpty()) return null;
-
-    List<POJOElectronicAddress> listElectronicAddresses = new ArrayList<>();
-    String[] entries = input.split("\\|");
-    for (String entry : entries) {
-        String[] parts = entry.split(";");
-        POJOElectronicAddress address = new POJOElectronicAddress();
-        address.setStrMedium(normalize(parts[0]));
-        address.setStrKind(normalize(parts[1]));
-        address.setStrValue(normalize(parts[2]));
-        applyBooleanField(address, "isPreferred", parts[3]);  // instead of direct set
-        listElectronicAddresses.add(address);
+    public void applyBigDecimalField(String rawValue, String fieldName, POJODebitCardRequest card) {
+        String normalized = normalize(rawValue);
+        if (normalized != null && !normalized.isEmpty()) {
+            try {
+                BigDecimal parsed = new BigDecimal(normalized);
+                switch (fieldName) {
+                    case "dailyLimit":
+                        card.setBdDailyLimit(parsed);
+                        break;
+                    default:
+                        System.err.println("Unknown field: " + fieldName);
+                }
+            } catch (NumberFormatException e) {
+                System.err.println("Invalid numeric value for " + fieldName + ": " + normalized);
+            }
+        }
     }
-    return listElectronicAddresses;
-}
 
-
-public List<POJOAccountant> buildAccountants(String input) {
-    if (input == null || input.trim().isEmpty()) return null;
-
-    List<POJOAccountant> listAccountants = new ArrayList<>();
-    String[] entries = input.split("\\|");
-    for (String entry : entries) {
-        String[] parts = entry.split(";");
-        POJOAccountant accountant = new POJOAccountant();
-        accountant.setStrName(normalize(parts[0]));
-        accountant.setStrCompanyId(normalize(parts[1]));
-        accountant.setStrRole(normalize(parts[2]));
-        accountant.setStrAddressId(normalize(parts[3]));
-        accountant.setStrEmail(normalize(parts[4]));
-        applyBooleanField(accountant, "hasConsent", parts[5]);
-        applyBooleanField(accountant, "doSendCopy", parts[6]);
-        listAccountants.add(accountant);
-    }
-    return listAccountants;
-}
+Can this also be gneralized please ?
