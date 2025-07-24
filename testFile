@@ -1,8 +1,175 @@
-public POJOCreditRequest buildCreditPayload(Map<String, String> mapCreditDetails) {
-    POJOCreditRequest creditRequest = new POJOCreditRequest();
+SImilar to below POJO - 
 
-    creditRequest.setStrBpId(payloadHelper.normalize(mapCreditDetails.get("bpId")));
-    creditRequest.setStrMaccId(payloadHelper.normalize(mapCreditDetails.get("maccId")));
+package ICOS.pojo;
 
-    return creditRequest;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class POJOContainerRequest {
+
+    @JsonProperty("uuid")
+    private String strUuid;
+
+    @JsonProperty("type")
+    private String strType;
+
+    @JsonProperty("bpId")
+    private String strBpId;
+
+    // Getters and Setters
+
+    public String getStrUuid() {
+        return strUuid;
+    }
+
+    public void setStrUuid(String strUuid) {
+        this.strUuid = strUuid;
+    }
+
+    public String getStrType() {
+        return strType;
+    }
+
+    public void setStrType(String strType) {
+        this.strType = strType;
+    }
+
+    public String getStrBpId() {
+        return strBpId;
+    }
+
+    public void setStrBpId(String strBpId) {
+        this.strBpId = strBpId;
+    }
 }
+
+Create a POJO class for UpdNaturalPerson for given payload - 
+
+{
+    "uuid": "12345",
+    "id": "0",
+    "subType": "pers_form_doc",
+    "domiCountry": "GB",
+    "firstName": "Firstname",
+    "middleName": "Middlename",
+    "lastName": "Lastname",
+    "birthDate": "1990-10-01",
+    "gender": "male",
+    "nationalities": [
+        "GB",
+        "CH"
+    ],
+    "title": "mr",
+    "birthPlace": "Zurich",
+    "birthCountry": "CH",
+    "electronicAddresses": [
+        {
+            "medium": "email",
+            "kind": "private",
+            "value": "first.last@gmail.com",
+            "isPreferred": false
+        },
+        {
+            "medium": "mobile",
+            "kind": "business",
+            "value": "+44791234567",
+            "isPreferred": true
+        }
+    ],
+    "isEmployee": false,
+    "taxResidences": [
+        {
+            "country": "GB",
+            "taxNumber": "123456789",
+            "identityType": "nin"
+        },
+        {
+            "country": "US",
+            "taxNumber": "553518830",
+            "identityType": "tin"
+        }
+    ],
+    "documentationIdentity": [
+        {
+            "identityType": "pass",
+            "number": "GB1234567890",
+            "issueCountry": "GB",
+            "issuePlace": "London",
+            "issueDate": "2018-01-01",
+            "validUntil": "2028-12-31"
+        },
+        {
+            "identityType": "xxx",
+            "number": "123",
+            "issueCountry": "xx",
+            "issuePlace": "123",
+            "issueDate": "2018-01-01",
+            "validUntil": "2028-12-31"
+        }
+    ],
+    "pepAssociationCountry": "IR",
+    "pepClassificationReason": "Test Reason",
+    "pepCategory": "none",
+    "isMarketingOptOut": true,
+    "fatcaStatus": "rbsc$fatca_non_us_person",
+    "crsType": "rbsc$crs_np_doc",
+    "ukTaxResidenceFromDate": "2010-01-01",
+    "hasTaxAvoidanceSchemes": false,
+    "isHoldingBearerShares": true,
+    "hasInvestableAssets10M": true,
+    "hasHistoricTaxIssues": false,
+    "hasTaxChgDomiStatus": false,
+    "hasTaxChgUkDomiStatus": false,
+    "hasTaxPrevClaimRemitanceBasis": false,
+    "hasTaxIntendClaimRemitanceBasis": false,
+    "accountants": [
+        {
+            "name": "Primary Accountant Name",
+            "companyId": "665992478",
+            "role": "rbsc$tax_adviser_primary",
+            "addressId": "661830651",
+            "email": "accountant.person@acccomp.com",
+            "hasConsent": true,
+            "doSendCopy": true
+        },
+        {
+            "name": "Secondary Accountant Name",
+            "companyId": "665992478",
+            "role": "rbsc$tax_adviser_second",
+            "addressId": "661830651",
+            "email": "accountant2.person@acccomp.com",
+            "hasConsent": false,
+            "doSendCopy": false
+        }
+    ],
+    "hasTravelProtection": false,
+    "hasCouttsOnline": true,
+    "hasCouttsId": true,
+    "associations": [
+        {
+            "personId": "665992477",
+            "role": "rbsc$is_sibling_of"
+        },
+        {
+            "personId": "665992477",
+            "role": "rbsc$has_director"
+        }
+    ],
+    "idQuestionId": "665984551",
+    "correspondanceAddressId": "661830651"
+}
+
+Also, there are 4 date functions defined as shown in snapshot, can we use the date functionw hich is used in payload helper below - 
+
+public String resolveDueDate(String dueDateInput) {
+        if (dueDateInput == null || dueDateInput.trim().isEmpty()) return "";
+        switch (dueDateInput.trim().toUpperCase()) {
+            case "NA": return null;
+            case "EMPTY": return "";
+            case "FUTURE": return LocalDate.now().plusDays(7).toString();
+            case "PAST": return LocalDate.now().minusDays(7).toString();
+            case "TODAY": return LocalDate.now().toString();
+            default: return dueDateInput;
+        }
+    }
