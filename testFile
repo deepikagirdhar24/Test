@@ -1,6 +1,6 @@
 public String resolveDate(String context, String fieldName, String dateInput) {
-    if (dateInput == null || dateInput.trim().equalsIgnoreCase("DEFAULT")) {
-        return getDefaultDateForField(fieldName);
+    if (dateInput == null || dateInput.trim().isEmpty()) {
+        return ""; // Treat null/empty input as empty string
     }
 
     String input = dateInput.trim().toUpperCase();
@@ -10,6 +10,8 @@ public String resolveDate(String context, String fieldName, String dateInput) {
             return null;
         case "EMPTY":
             return "";
+        case "DEFAULT":
+            return getDefaultDateForField(fieldName);
         case "TODAY":
             return LocalDate.now().toString();
         case "PAST":
@@ -17,7 +19,7 @@ public String resolveDate(String context, String fieldName, String dateInput) {
         case "FUTURE":
             return resolveFutureDate(context);
         default:
-            return input; // assume fixed date like "2025-07-01"
+            return input; // Assume valid yyyy-MM-dd format
     }
 }
 
@@ -39,7 +41,6 @@ private String resolveFutureDate(String context) {
     }
 }
 
-
 private String getDefaultDateForField(String fieldName) {
     LocalDate today = LocalDate.now();
 
@@ -57,5 +58,4 @@ private String getDefaultDateForField(String fieldName) {
     }
 }
 
-
- wr.setStrDueDate(payloadHelper.resolveDate("WorkRequest", "dueDate", map.get("dueDate")));
+wr.setStrDueDate(payloadHelper.resolveDate("WorkRequest", "dueDate", map.get("dueDate")));
