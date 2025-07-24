@@ -1,175 +1,246 @@
-SImilar to below POJO - 
-
 package ICOS.pojo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.List;
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class POJOContainerRequest {
+public class POJOUpsNaturalPersonRequest {
 
     @JsonProperty("uuid")
     private String strUuid;
 
-    @JsonProperty("type")
-    private String strType;
+    @JsonProperty("id")
+    private String strId;
 
-    @JsonProperty("bpId")
-    private String strBpId;
+    @JsonProperty("subType")
+    private String strSubType;
 
-    // Getters and Setters
+    @JsonProperty("domiCountry")
+    private String strDomiCountry;
 
-    public String getStrUuid() {
-        return strUuid;
-    }
+    @JsonProperty("firstName")
+    private String strFirstName;
 
-    public void setStrUuid(String strUuid) {
-        this.strUuid = strUuid;
-    }
+    @JsonProperty("middleName")
+    private String strMiddleName;
 
-    public String getStrType() {
-        return strType;
-    }
+    @JsonProperty("lastName")
+    private String strLastName;
 
-    public void setStrType(String strType) {
-        this.strType = strType;
-    }
+    @JsonProperty("birthDate")
+    private String strBirthDate;
 
-    public String getStrBpId() {
-        return strBpId;
-    }
+    @JsonProperty("gender")
+    private String strGender;
 
-    public void setStrBpId(String strBpId) {
-        this.strBpId = strBpId;
-    }
+    @JsonProperty("nationalities")
+    private List<String> lstNationalities;
+
+    @JsonProperty("title")
+    private String strTitle;
+
+    @JsonProperty("birthPlace")
+    private String strBirthPlace;
+
+    @JsonProperty("birthCountry")
+    private String strBirthCountry;
+
+    @JsonProperty("electronicAddresses")
+    private List<POJOElectronicAddress> lstElectronicAddresses;
+
+    @JsonProperty("isEmployee")
+    private Boolean blnIsEmployee;
+
+    @JsonProperty("taxResidences")
+    private List<POJOTaxResidence> lstTaxResidences;
+
+    @JsonProperty("documentationIdentity")
+    private List<POJODocumentationIdentity> lstDocumentationIdentity;
+
+    @JsonProperty("pepAssociationCountry")
+    private String strPepAssociationCountry;
+
+    @JsonProperty("pepClassificationReason")
+    private String strPepClassificationReason;
+
+    @JsonProperty("pepCategory")
+    private String strPepCategory;
+
+    @JsonProperty("isMarketingOptOut")
+    private Boolean blnIsMarketingOptOut;
+
+    @JsonProperty("fatcaStatus")
+    private String strFatcaStatus;
+
+    @JsonProperty("crsType")
+    private String strCrsType;
+
+    @JsonProperty("ukTaxResidenceFromDate")
+    private String strUkTaxResidenceFromDate;
+
+    @JsonProperty("hasTaxAvoidanceSchemes")
+    private Boolean blnHasTaxAvoidanceSchemes;
+
+    @JsonProperty("isHoldingBearerShares")
+    private Boolean blnIsHoldingBearerShares;
+
+    @JsonProperty("hasInvestableAssets10M")
+    private Boolean blnHasInvestableAssets10M;
+
+    @JsonProperty("hasHistoricTaxIssues")
+    private Boolean blnHasHistoricTaxIssues;
+
+    @JsonProperty("hasTaxChgDomiStatus")
+    private Boolean blnHasTaxChgDomiStatus;
+
+    @JsonProperty("hasTaxChgUkDomiStatus")
+    private Boolean blnHasTaxChgUkDomiStatus;
+
+    @JsonProperty("hasTaxPrevClaimRemitanceBasis")
+    private Boolean blnHasTaxPrevClaimRemitanceBasis;
+
+    @JsonProperty("hasTaxIntendClaimRemitanceBasis")
+    private Boolean blnHasTaxIntendClaimRemitanceBasis;
+
+    @JsonProperty("accountants")
+    private List<POJOAccountant> lstAccountants;
+
+    @JsonProperty("hasTravelProtection")
+    private Boolean blnHasTravelProtection;
+
+    @JsonProperty("hasCouttsOnline")
+    private Boolean blnHasCouttsOnline;
+
+    @JsonProperty("hasCouttsId")
+    private Boolean blnHasCouttsId;
+
+    @JsonProperty("associations")
+    private List<POJOAssociation> lstAssociations;
+
+    @JsonProperty("idQuestionId")
+    private String strIdQuestionId;
+
+    @JsonProperty("correspondanceAddressId")
+    private String strCorrespondanceAddressId;
+
+    // ---------- Getters & Setters ----------
+
+    public String getStrUuid() { return strUuid; }
+    public void setStrUuid(String strUuid) { this.strUuid = strUuid; }
+
+    public String getStrId() { return strId; }
+    public void setStrId(String strId) { this.strId = strId; }
+
+    public String getStrSubType() { return strSubType; }
+    public void setStrSubType(String strSubType) { this.strSubType = strSubType; }
+
+    public String getStrDomiCountry() { return strDomiCountry; }
+    public void setStrDomiCountry(String strDomiCountry) { this.strDomiCountry = strDomiCountry; }
+
+    public String getStrFirstName() { return strFirstName; }
+    public void setStrFirstName(String strFirstName) { this.strFirstName = strFirstName; }
+
+    public String getStrMiddleName() { return strMiddleName; }
+    public void setStrMiddleName(String strMiddleName) { this.strMiddleName = strMiddleName; }
+
+    public String getStrLastName() { return strLastName; }
+    public void setStrLastName(String strLastName) { this.strLastName = strLastName; }
+
+    public String getStrBirthDate() { return strBirthDate; }
+    public void setStrBirthDate(String strBirthDate) { this.strBirthDate = strBirthDate; }
+
+    public String getStrGender() { return strGender; }
+    public void setStrGender(String strGender) { this.strGender = strGender; }
+
+    public List<String> getLstNationalities() { return lstNationalities; }
+    public void setLstNationalities(List<String> lstNationalities) { this.lstNationalities = lstNationalities; }
+
+    public String getStrTitle() { return strTitle; }
+    public void setStrTitle(String strTitle) { this.strTitle = strTitle; }
+
+    public String getStrBirthPlace() { return strBirthPlace; }
+    public void setStrBirthPlace(String strBirthPlace) { this.strBirthPlace = strBirthPlace; }
+
+    public String getStrBirthCountry() { return strBirthCountry; }
+    public void setStrBirthCountry(String strBirthCountry) { this.strBirthCountry = strBirthCountry; }
+
+    public List<POJOElectronicAddress> getLstElectronicAddresses() { return lstElectronicAddresses; }
+    public void setLstElectronicAddresses(List<POJOElectronicAddress> lstElectronicAddresses) { this.lstElectronicAddresses = lstElectronicAddresses; }
+
+    public Boolean getBlnIsEmployee() { return blnIsEmployee; }
+    public void setBlnIsEmployee(Boolean blnIsEmployee) { this.blnIsEmployee = blnIsEmployee; }
+
+    public List<POJOTaxResidence> getLstTaxResidences() { return lstTaxResidences; }
+    public void setLstTaxResidences(List<POJOTaxResidence> lstTaxResidences) { this.lstTaxResidences = lstTaxResidences; }
+
+    public List<POJODocumentationIdentity> getLstDocumentationIdentity() { return lstDocumentationIdentity; }
+    public void setLstDocumentationIdentity(List<POJODocumentationIdentity> lstDocumentationIdentity) { this.lstDocumentationIdentity = lstDocumentationIdentity; }
+
+    public String getStrPepAssociationCountry() { return strPepAssociationCountry; }
+    public void setStrPepAssociationCountry(String strPepAssociationCountry) { this.strPepAssociationCountry = strPepAssociationCountry; }
+
+    public String getStrPepClassificationReason() { return strPepClassificationReason; }
+    public void setStrPepClassificationReason(String strPepClassificationReason) { this.strPepClassificationReason = strPepClassificationReason; }
+
+    public String getStrPepCategory() { return strPepCategory; }
+    public void setStrPepCategory(String strPepCategory) { this.strPepCategory = strPepCategory; }
+
+    public Boolean getBlnIsMarketingOptOut() { return blnIsMarketingOptOut; }
+    public void setBlnIsMarketingOptOut(Boolean blnIsMarketingOptOut) { this.blnIsMarketingOptOut = blnIsMarketingOptOut; }
+
+    public String getStrFatcaStatus() { return strFatcaStatus; }
+    public void setStrFatcaStatus(String strFatcaStatus) { this.strFatcaStatus = strFatcaStatus; }
+
+    public String getStrCrsType() { return strCrsType; }
+    public void setStrCrsType(String strCrsType) { this.strCrsType = strCrsType; }
+
+    public String getStrUkTaxResidenceFromDate() { return strUkTaxResidenceFromDate; }
+    public void setStrUkTaxResidenceFromDate(String strUkTaxResidenceFromDate) { this.strUkTaxResidenceFromDate = strUkTaxResidenceFromDate; }
+
+    public Boolean getBlnHasTaxAvoidanceSchemes() { return blnHasTaxAvoidanceSchemes; }
+    public void setBlnHasTaxAvoidanceSchemes(Boolean blnHasTaxAvoidanceSchemes) { this.blnHasTaxAvoidanceSchemes = blnHasTaxAvoidanceSchemes; }
+
+    public Boolean getBlnIsHoldingBearerShares() { return blnIsHoldingBearerShares; }
+    public void setBlnIsHoldingBearerShares(Boolean blnIsHoldingBearerShares) { this.blnIsHoldingBearerShares = blnIsHoldingBearerShares; }
+
+    public Boolean getBlnHasInvestableAssets10M() { return blnHasInvestableAssets10M; }
+    public void setBlnHasInvestableAssets10M(Boolean blnHasInvestableAssets10M) { this.blnHasInvestableAssets10M = blnHasInvestableAssets10M; }
+
+    public Boolean getBlnHasHistoricTaxIssues() { return blnHasHistoricTaxIssues; }
+    public void setBlnHasHistoricTaxIssues(Boolean blnHasHistoricTaxIssues) { this.blnHasHistoricTaxIssues = blnHasHistoricTaxIssues; }
+
+    public Boolean getBlnHasTaxChgDomiStatus() { return blnHasTaxChgDomiStatus; }
+    public void setBlnHasTaxChgDomiStatus(Boolean blnHasTaxChgDomiStatus) { this.blnHasTaxChgDomiStatus = blnHasTaxChgDomiStatus; }
+
+    public Boolean getBlnHasTaxChgUkDomiStatus() { return blnHasTaxChgUkDomiStatus; }
+    public void setBlnHasTaxChgUkDomiStatus(Boolean blnHasTaxChgUkDomiStatus) { this.blnHasTaxChgUkDomiStatus = blnHasTaxChgUkDomiStatus; }
+
+    public Boolean getBlnHasTaxPrevClaimRemitanceBasis() { return blnHasTaxPrevClaimRemitanceBasis; }
+    public void setBlnHasTaxPrevClaimRemitanceBasis(Boolean blnHasTaxPrevClaimRemitanceBasis) { this.blnHasTaxPrevClaimRemitanceBasis = blnHasTaxPrevClaimRemitanceBasis; }
+
+    public Boolean getBlnHasTaxIntendClaimRemitanceBasis() { return blnHasTaxIntendClaimRemitanceBasis; }
+    public void setBlnHasTaxIntendClaimRemitanceBasis(Boolean blnHasTaxIntendClaimRemitanceBasis) { this.blnHasTaxIntendClaimRemitanceBasis = blnHasTaxIntendClaimRemitanceBasis; }
+
+    public List<POJOAccountant> getLstAccountants() { return lstAccountants; }
+    public void setLstAccountants(List<POJOAccountant> lstAccountants) { this.lstAccountants = lstAccountants; }
+
+    public Boolean getBlnHasTravelProtection() { return blnHasTravelProtection; }
+    public void setBlnHasTravelProtection(Boolean blnHasTravelProtection) { this.blnHasTravelProtection = blnHasTravelProtection; }
+
+    public Boolean getBlnHasCouttsOnline() { return blnHasCouttsOnline; }
+    public void setBlnHasCouttsOnline(Boolean blnHasCouttsOnline) { this.blnHasCouttsOnline = blnHasCouttsOnline; }
+
+    public Boolean getBlnHasCouttsId() { return blnHasCouttsId; }
+    public void setBlnHasCouttsId(Boolean blnHasCouttsId) { this.blnHasCouttsId = blnHasCouttsId; }
+
+    public List<POJOAssociation> getLstAssociations() { return lstAssociations; }
+    public void setLstAssociations(List<POJOAssociation> lstAssociations) { this.lstAssociations = lstAssociations; }
+
+    public String getStrIdQuestionId() { return strIdQuestionId; }
+    public void setStrIdQuestionId(String strIdQuestionId) { this.strIdQuestionId = strIdQuestionId; }
+
+    public String getStrCorrespondanceAddressId() { return strCorrespondanceAddressId; }
+    public void setStrCorrespondanceAddressId(String strCorrespondanceAddressId) { this.strCorrespondanceAddressId = strCorrespondanceAddressId; }
 }
-
-Create a POJO class for UpdNaturalPerson for given payload - 
-
-{
-    "uuid": "12345",
-    "id": "0",
-    "subType": "pers_form_doc",
-    "domiCountry": "GB",
-    "firstName": "Firstname",
-    "middleName": "Middlename",
-    "lastName": "Lastname",
-    "birthDate": "1990-10-01",
-    "gender": "male",
-    "nationalities": [
-        "GB",
-        "CH"
-    ],
-    "title": "mr",
-    "birthPlace": "Zurich",
-    "birthCountry": "CH",
-    "electronicAddresses": [
-        {
-            "medium": "email",
-            "kind": "private",
-            "value": "first.last@gmail.com",
-            "isPreferred": false
-        },
-        {
-            "medium": "mobile",
-            "kind": "business",
-            "value": "+44791234567",
-            "isPreferred": true
-        }
-    ],
-    "isEmployee": false,
-    "taxResidences": [
-        {
-            "country": "GB",
-            "taxNumber": "123456789",
-            "identityType": "nin"
-        },
-        {
-            "country": "US",
-            "taxNumber": "553518830",
-            "identityType": "tin"
-        }
-    ],
-    "documentationIdentity": [
-        {
-            "identityType": "pass",
-            "number": "GB1234567890",
-            "issueCountry": "GB",
-            "issuePlace": "London",
-            "issueDate": "2018-01-01",
-            "validUntil": "2028-12-31"
-        },
-        {
-            "identityType": "xxx",
-            "number": "123",
-            "issueCountry": "xx",
-            "issuePlace": "123",
-            "issueDate": "2018-01-01",
-            "validUntil": "2028-12-31"
-        }
-    ],
-    "pepAssociationCountry": "IR",
-    "pepClassificationReason": "Test Reason",
-    "pepCategory": "none",
-    "isMarketingOptOut": true,
-    "fatcaStatus": "rbsc$fatca_non_us_person",
-    "crsType": "rbsc$crs_np_doc",
-    "ukTaxResidenceFromDate": "2010-01-01",
-    "hasTaxAvoidanceSchemes": false,
-    "isHoldingBearerShares": true,
-    "hasInvestableAssets10M": true,
-    "hasHistoricTaxIssues": false,
-    "hasTaxChgDomiStatus": false,
-    "hasTaxChgUkDomiStatus": false,
-    "hasTaxPrevClaimRemitanceBasis": false,
-    "hasTaxIntendClaimRemitanceBasis": false,
-    "accountants": [
-        {
-            "name": "Primary Accountant Name",
-            "companyId": "665992478",
-            "role": "rbsc$tax_adviser_primary",
-            "addressId": "661830651",
-            "email": "accountant.person@acccomp.com",
-            "hasConsent": true,
-            "doSendCopy": true
-        },
-        {
-            "name": "Secondary Accountant Name",
-            "companyId": "665992478",
-            "role": "rbsc$tax_adviser_second",
-            "addressId": "661830651",
-            "email": "accountant2.person@acccomp.com",
-            "hasConsent": false,
-            "doSendCopy": false
-        }
-    ],
-    "hasTravelProtection": false,
-    "hasCouttsOnline": true,
-    "hasCouttsId": true,
-    "associations": [
-        {
-            "personId": "665992477",
-            "role": "rbsc$is_sibling_of"
-        },
-        {
-            "personId": "665992477",
-            "role": "rbsc$has_director"
-        }
-    ],
-    "idQuestionId": "665984551",
-    "correspondanceAddressId": "661830651"
-}
-
-Also, there are 4 date functions defined as shown in snapshot, can we use the date functionw hich is used in payload helper below - 
-
-public String resolveDueDate(String dueDateInput) {
-        if (dueDateInput == null || dueDateInput.trim().isEmpty()) return "";
-        switch (dueDateInput.trim().toUpperCase()) {
-            case "NA": return null;
-            case "EMPTY": return "";
-            case "FUTURE": return LocalDate.now().plusDays(7).toString();
-            case "PAST": return LocalDate.now().minusDays(7).toString();
-            case "TODAY": return LocalDate.now().toString();
-            default: return dueDateInput;
-        }
-    }
