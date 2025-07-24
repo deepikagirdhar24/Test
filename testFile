@@ -1,43 +1,15 @@
-    public void applyBigDecimalField(String rawValue, String fieldName, POJOMoneyAccountRequest account) {
-        String normalized = normalize(rawValue);
-        if (normalized != null && !normalized.isEmpty()) {
-            try {
-                BigDecimal parsed = new BigDecimal(normalized);
-                switch (fieldName) {
-                    case "mailingOffsetDay":
-                        account.setBdMailingOffsetDay(parsed);
-                        break;
-                    case "mailingOffsetMonth":
-                        account.setBdMailingOffsetMonth(parsed);
-                        break;
-                    case "minimalNoticeDays":
-                        account.setBdMinimalNoticeDays(parsed);
-                        break;
-                    default:
-                        System.err.println("Unknown field: " + fieldName);
-                }
-            } catch (NumberFormatException e) {
-                System.err.println("Invalid numeric value for " + fieldName + ": " + normalized);
-            }
+public void applyBigDecimalField(String rawValue, String fieldName, Object targetObject) {
+    String normalized = normalize(rawValue);
+    if (normalized != null && !normalized.isEmpty()) {
+        try {
+            BigDecimal parsed = new BigDecimal(normalized);
+            String setterName = "setBd" + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1);
+            Method setter = targetObject.getClass().getMethod(setterName, BigDecimal.class);
+            setter.invoke(targetObject, parsed);
+        } catch (NumberFormatException e) {
+            System.err.println("Invalid numeric value for " + fieldName + ": " + normalized);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException("Unable to set BigDecimal field: " + fieldName + " on " + targetObject.getClass().getSimpleName(), e);
         }
     }
-
-    public void applyBigDecimalField(String rawValue, String fieldName, POJODebitCardRequest card) {
-        String normalized = normalize(rawValue);
-        if (normalized != null && !normalized.isEmpty()) {
-            try {
-                BigDecimal parsed = new BigDecimal(normalized);
-                switch (fieldName) {
-                    case "dailyLimit":
-                        card.setBdDailyLimit(parsed);
-                        break;
-                    default:
-                        System.err.println("Unknown field: " + fieldName);
-                }
-            } catch (NumberFormatException e) {
-                System.err.println("Invalid numeric value for " + fieldName + ": " + normalized);
-            }
-        }
-    }
-
-Can this also be gneralized please ?
+}
