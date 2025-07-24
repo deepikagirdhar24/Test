@@ -1,269 +1,79 @@
-These all methods I have in payload helper - 
+public POJONaturalPerson buildUpdateNaturalPersonPayload(Map<String, String> mapPersonDetails) {
+    POJONaturalPerson person = new POJONaturalPerson();
 
-package utilities;
+    person.setStrUuid(payloadHelper.normalize(mapPersonDetails.get("uuid")));
+    person.setStrId(payloadHelper.normalize(mapPersonDetails.get("id")));
+    person.setStrSubType(payloadHelper.normalize(mapPersonDetails.get("subType")));
+    person.setStrDomiCountry(payloadHelper.normalize(mapPersonDetails.get("domiCountry")));
+    person.setStrFirstName(payloadHelper.normalize(mapPersonDetails.get("firstName")));
+    person.setStrMiddleName(payloadHelper.normalize(mapPersonDetails.get("middleName")));
+    person.setStrLastName(payloadHelper.normalize(mapPersonDetails.get("lastName")));
+    person.setStrBirthDate(payloadHelper.resolveDate("UpdateNaturalPerson", "birthDate", mapPersonDetails.get("birthDate")));
+    person.setStrGender(payloadHelper.normalize(mapPersonDetails.get("gender")));
+    person.setListStrNationalities(payloadHelper.parseCommaSeparated(mapPersonDetails.get("nationalities")));
+    person.setStrTitle(payloadHelper.normalize(mapPersonDetails.get("title")));
+    person.setStrBirthPlace(payloadHelper.normalize(mapPersonDetails.get("birthPlace")));
+    person.setStrBirthCountry(payloadHelper.normalize(mapPersonDetails.get("birthCountry")));
+    person.setListObjElectronicAddresses(payloadHelper.buildElectronicAddresses(mapPersonDetails.get("electronicAddresses")));
+    payloadHelper.applyBooleanField(mapPersonDetails.get("isEmployee"), "isEmployee", person);
+    person.setListObjTaxResidences(payloadHelper.buildTaxResidences(mapPersonDetails.get("taxResidences")));
+    person.setListObjDocumentationIdentity(payloadHelper.buildDocumentationIdentity(
+        mapPersonDetails.get("documentationIdentity"), "UpdateNaturalPerson"
+    ));
+    person.setStrPepAssociationCountry(payloadHelper.normalize(mapPersonDetails.get("pepAssociationCountry")));
+    person.setStrPepClassificationReason(payloadHelper.normalize(mapPersonDetails.get("pepClassificationReason")));
+    person.setStrPepCategory(payloadHelper.normalize(mapPersonDetails.get("pepCategory")));
+    payloadHelper.applyBooleanField(mapPersonDetails.get("isMarketingOptOut"), "isMarketingOptOut", person);
+    person.setStrFatcaStatus(payloadHelper.normalize(mapPersonDetails.get("fatcaStatus")));
+    person.setStrCrsType(payloadHelper.normalize(mapPersonDetails.get("crsType")));
+    person.setStrUkTaxResidenceFromDate(payloadHelper.resolveDate("UpdateNaturalPerson", "ukTaxResidenceFromDate", mapPersonDetails.get("ukTaxResidenceFromDate")));
+    payloadHelper.applyBooleanField(mapPersonDetails.get("hasTaxAvoidanceSchemes"), "hasTaxAvoidanceSchemes", person);
+    payloadHelper.applyBooleanField(mapPersonDetails.get("isHoldingBearerShares"), "isHoldingBearerShares", person);
+    payloadHelper.applyBooleanField(mapPersonDetails.get("hasInvestableAssets10M"), "hasInvestableAssets10M", person);
+    payloadHelper.applyBooleanField(mapPersonDetails.get("hasHistoricTaxIssues"), "hasHistoricTaxIssues", person);
+    payloadHelper.applyBooleanField(mapPersonDetails.get("hasTaxChgDomiStatus"), "hasTaxChgDomiStatus", person);
+    payloadHelper.applyBooleanField(mapPersonDetails.get("hasTaxChgUkDomiStatus"), "hasTaxChgUkDomiStatus", person);
+    payloadHelper.applyBooleanField(mapPersonDetails.get("hasTaxPrevClaimRemitanceBasis"), "hasTaxPrevClaimRemitanceBasis", person);
+    payloadHelper.applyBooleanField(mapPersonDetails.get("hasTaxIntendClaimRemitanceBasis"), "hasTaxIntendClaimRemitanceBasis", person);
+    person.setListObjAccountants(payloadHelper.buildAccountants(mapPersonDetails.get("accountants")));
+    payloadHelper.applyBooleanField(mapPersonDetails.get("hasTravelProtection"), "hasTravelProtection", person);
+    payloadHelper.applyBooleanField(mapPersonDetails.get("hasCouttsOnline"), "hasCouttsOnline", person);
+    payloadHelper.applyBooleanField(mapPersonDetails.get("hasCouttsId"), "hasCouttsId", person);
+    person.setListObjAssociations(payloadHelper.buildAssociations(mapPersonDetails.get("associations")));
+    person.setStrIdQuestionId(payloadHelper.normalize(mapPersonDetails.get("idQuestionId")));
+    person.setStrCorrespondanceAddressId(payloadHelper.normalize(mapPersonDetails.get("correspondanceAddressId")));
 
-import ICOS.pojo.POJODebitCardRequest;
-import ICOS.pojo.POJOMoneyAccountRequest;
-import ICOS.pojo.POJONewDocumentRequest;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.*;
-import java.util.stream.Collectors;
-
-public class PayloadHelper {
-
-    private final Random random = new Random();
-
-    public String normalize(String value) {
-        if (value == null) return "";
-        switch (value.trim().toUpperCase()) {
-            case "NA": return null;
-            case "EMPTY": return "";
-            default: return value;
-        }
-    }
-
-//    public String resolveDueDate(String dueDateInput) {
-//        if (dueDateInput == null || dueDateInput.trim().isEmpty()) return "";
-//        switch (dueDateInput.trim().toUpperCase()) {
-//            case "NA": return null;
-//            case "EMPTY": return "";
-//            case "FUTURE": return LocalDate.now().plusDays(7).toString();
-//            case "PAST": return LocalDate.now().minusDays(7).toString();
-//            case "TODAY": return LocalDate.now().toString();
-//            default: return dueDateInput;
-//        }
-//    }
-
-    public String resolveDynamicText(String type) {
-        if (type == null || type.isEmpty()) return "";
-
-        // Handle expression like "prefix + RANDOM_6 + suffix"
-        if (type.contains("+")) {
-            String[] parts = type.split("\\+");
-            StringBuilder result = new StringBuilder();
-            for (String part : parts) {
-                String trimmed = part.trim();
-                result.append(resolveDynamicText(trimmed));
-            }
-            return result.toString();
-        }
-
-        switch (type.trim().toUpperCase()) {
-            case "EMPTY":
-                return "";
-            case "NA":
-                return null;
-            case "RANDOM_LT_250":
-                return randomString(random.nextInt(249) + 1);
-            case "RANDOM_GT_250":
-                return randomString(random.nextInt(500) + 251);
-            default:
-                // Check if it's like RANDOM_6
-                if (type.toUpperCase().startsWith("RANDOM_")) {
-                    try {
-                        int length = Integer.parseInt(type.substring(7));
-                        return randomString(length);
-                    } catch (NumberFormatException e) {
-                        return type;
-                    }
-                }
-                return type;
-        }
-    }
-
-    private String randomString(int length) {
-        int leftLimit = 97; // 'a'
-        int rightLimit = 122; // 'z'
-        return random.ints(leftLimit, rightLimit + 1)
-                .limit(length)
-                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-                .toString();
-    }
-
-    public List<String> parseNationalities(String commaSeparated) {
-        if (commaSeparated == null || commaSeparated.trim().isEmpty()) return Collections.emptyList();
-        return Arrays.stream(commaSeparated.split(","))
-                .map(String::trim)
-                .filter(s -> !s.isEmpty())
-                .collect(Collectors.toList());
-    }
-
-    public List<POJONewDocumentRequest.QuestionAnswer> parseQuestionAnswers(String qaPairs) {
-        List<POJONewDocumentRequest.QuestionAnswer> qaList = new ArrayList<>();
-        if (qaPairs != null && !qaPairs.trim().isEmpty()) {
-            String[] pairs = qaPairs.split(";");
-            for (String pair : pairs) {
-                String[] qa = pair.split("=", 2);
-                if (qa.length == 2) {
-                    POJONewDocumentRequest.QuestionAnswer qaObj = new POJONewDocumentRequest.QuestionAnswer();
-                    qaObj.setStrQuestion(resolveDynamicText(qa[0].trim()));
-                    qaObj.setStrAnswer(resolveDynamicText(qa[1].trim()));
-                    qaList.add(qaObj);
-                }
-            }
-        }
-        return qaList;
-    }
-
-    public String getOrEmpty(Map<String, String> map, String key) {
-        return Optional.ofNullable(map.get(key)).orElse("");
-    }
-
-    public String resolveId(String input, String resolvedValue) {
-        if (input == null || input.trim().isEmpty()) {
-            return "";
-        }
-
-        switch (input.trim().toUpperCase()) {
-            case "EMPTY":
-                return "";
-            case "NA":
-                return null;
-            case "NATURAL_PERSON_OBJECT_ID":
-            case "CONTAINER_OBJECT_ID":
-            case "ADDRESS_OBJECT_ID":
-//            case "ADDRESS_OBJECT_ID_CARD":
-            case "MONEY_ACCOUNT_OBJECT_ID":
-                return resolvedValue;
-            default:
-                return input;
-        }
-    }
-
-    public List<String> resolveIdList(String input, String fallbackSingleAddressId, List<String> addressObjectIds) {
-        if (input == null || input.trim().isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        if ("ADDRESS_OBJECT_ID_LIST".equalsIgnoreCase(input.trim())) {
-            return addressObjectIds != null ? addressObjectIds : Collections.emptyList();
-        }
-
-        // Resolve individual tokens
-        return Arrays.stream(input.split(","))
-                .map(id -> resolveId(id.trim(), fallbackSingleAddressId))
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-    }
-
-    public void applyBigDecimalField(String rawValue, String fieldName, POJOMoneyAccountRequest account) {
-        String normalized = normalize(rawValue);
-        if (normalized != null && !normalized.isEmpty()) {
-            try {
-                BigDecimal parsed = new BigDecimal(normalized);
-                switch (fieldName) {
-                    case "mailingOffsetDay":
-                        account.setMailingOffsetDay(parsed);
-                        break;
-                    case "mailingOffsetMonth":
-                        account.setMailingOffsetMonth(parsed);
-                        break;
-                    case "minimalNoticeDays":
-                        account.setMinimalNoticeDays(parsed);
-                        break;
-                    default:
-                        System.err.println("Unknown field: " + fieldName);
-                }
-            } catch (NumberFormatException e) {
-                System.err.println("Invalid numeric value for " + fieldName + ": " + normalized);
-            }
-        }
-    }
-
-    public void applyBooleanField(String rawValue, String fieldName, POJOMoneyAccountRequest account) {
-        String normalized = normalize(rawValue);
-        if (normalized != null && !normalized.isEmpty()) {
-            boolean parsed = Boolean.parseBoolean(normalized);
-            switch (fieldName) {
-                case "isMailingPaper":
-                    account.setBlnIsMailingPaper(parsed);
-                    break;
-                default:
-                    System.err.println("Unknown boolean field: " + fieldName);
-            }
-        }
-    }
-
-    public void applyBigDecimalField(String rawValue, String fieldName, POJODebitCardRequest card) {
-        String normalized = normalize(rawValue);
-        if (normalized != null && !normalized.isEmpty()) {
-            try {
-                BigDecimal parsed = new BigDecimal(normalized);
-                switch (fieldName) {
-                    case "dailyLimit":
-                        card.setBdDailyLimit(parsed);
-                        break;
-                    default:
-                        System.err.println("Unknown field: " + fieldName);
-                }
-            } catch (NumberFormatException e) {
-                System.err.println("Invalid numeric value for " + fieldName + ": " + normalized);
-            }
-        }
-    }
-
-    public String resolveDate(String context, String fieldName, String dateInput) {
-        if (dateInput == null || dateInput.trim().isEmpty()) {
-            return ""; // Treat null/empty input as empty string
-        }
-
-        String input = dateInput.trim().toUpperCase();
-
-        switch (input) {
-            case "NA":
-                return null;
-            case "EMPTY":
-                return "";
-            case "DEFAULT":
-                return getDefaultDateForField(fieldName);
-            case "TODAY":
-                return LocalDate.now().toString();
-            case "PAST":
-                return resolvePastDate(context);
-            case "FUTURE":
-                return resolveFutureDate(context);
-            default:
-                return input; // Assume valid yyyy-MM-dd format
-        }
-    }
-
-    private String resolvePastDate(String context) {
-        LocalDate today = LocalDate.now();
-        if ("WorkRequest".equalsIgnoreCase(context)) {
-            return today.minusDays(7).toString();
-        } else {
-            return today.minusDays(1).toString();
-        }
-    }
-
-    private String resolveFutureDate(String context) {
-        LocalDate today = LocalDate.now();
-        if ("WorkRequest".equalsIgnoreCase(context)) {
-            return today.plusDays(7).toString();
-        } else {
-            return today.plusDays(1).toString();
-        }
-    }
-
-    private String getDefaultDateForField(String fieldName) {
-        LocalDate today = LocalDate.now();
-
-        switch (fieldName.toLowerCase()) {
-            case "birthdate":
-                return today.minusYears(40).toString();
-            case "issuedate":
-                return today.minusDays(1).toString();
-            case "validuntil":
-                return today.plusDays(1).toString();
-            case "uktaxresidencefromdate":
-                return today.minusYears(10).toString();
-            default:
-                throw new IllegalArgumentException("Unknown date field: " + fieldName);
-        }
-    }
-
+    return person;
 }
 
-kindly use this
+
+public void applyBooleanField(String rawValue, String fieldName, POJONaturalPerson person) {
+    String normalized = normalize(rawValue);
+    if (normalized != null && !normalized.isEmpty()) {
+        boolean parsed = Boolean.parseBoolean(normalized);
+        switch (fieldName) {
+            case "isEmployee": person.setBlnIsEmployee(parsed); break;
+            case "isMarketingOptOut": person.setBlnIsMarketingOptOut(parsed); break;
+            case "hasTaxAvoidanceSchemes": person.setBlnHasTaxAvoidanceSchemes(parsed); break;
+            case "isHoldingBearerShares": person.setBlnIsHoldingBearerShares(parsed); break;
+            case "hasInvestableAssets10M": person.setBlnHasInvestableAssets10M(parsed); break;
+            case "hasHistoricTaxIssues": person.setBlnHasHistoricTaxIssues(parsed); break;
+            case "hasTaxChgDomiStatus": person.setBlnHasTaxChgDomiStatus(parsed); break;
+            case "hasTaxChgUkDomiStatus": person.setBlnHasTaxChgUkDomiStatus(parsed); break;
+            case "hasTaxPrevClaimRemitanceBasis": person.setBlnHasTaxPrevClaimRemitanceBasis(parsed); break;
+            case "hasTaxIntendClaimRemitanceBasis": person.setBlnHasTaxIntendClaimRemitanceBasis(parsed); break;
+            case "hasTravelProtection": person.setBlnHasTravelProtection(parsed); break;
+            case "hasCouttsOnline": person.setBlnHasCouttsOnline(parsed); break;
+            case "hasCouttsId": person.setBlnHasCouttsId(parsed); break;
+        }
+    }
+}
+
+
+public List<String> parseCommaSeparated(String input) {
+    if (input == null || input.trim().isEmpty()) return Collections.emptyList();
+    return Arrays.stream(input.split(","))
+                 .map(String::trim)
+                 .filter(s -> !s.isEmpty())
+                 .collect(Collectors.toList());
+}
