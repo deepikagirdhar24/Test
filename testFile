@@ -1,255 +1,37 @@
-package ICOS.pojo;
+There is a due date function already implemented below for Work Request API below - 
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-public class POJOElectronicAddress {
-    @JsonProperty("medium")
-    private String strMedium;
-
-    @JsonProperty("kind")
-    private String strKind;
-
-    @JsonProperty("value")
-    private String strValue;
-
-    @JsonProperty("isPreferred")
-    private Boolean blnIsPreferred;
-
-    public String getStrMedium() {
-        return strMedium;
+    public String resolveDueDate(String dueDateInput) {
+        if (dueDateInput == null || dueDateInput.trim().isEmpty()) return "";
+        switch (dueDateInput.trim().toUpperCase()) {
+            case "NA": return null;
+            case "EMPTY": return "";
+            case "FUTURE": return LocalDate.now().plusDays(7).toString();
+            case "PAST": return LocalDate.now().minusDays(7).toString();
+            case "TODAY": return LocalDate.now().toString();
+            default: return dueDateInput;
+        }
     }
 
-    public void setStrMedium(String strMedium) {
-        this.strMedium = strMedium;
+    public POJOWorkRequest buildWorkRequestPayload(Map<String, String> mapWorkRequestDetails) {
+        POJOWorkRequest workRequest = new POJOWorkRequest();
+
+        workRequest.setStrBpId(payloadHelper.normalize(mapWorkRequestDetails.get("bpId")));
+        workRequest.setStrType(payloadHelper.normalize(mapWorkRequestDetails.get("type")));
+        workRequest.setStrSubject(payloadHelper.normalize(mapWorkRequestDetails.get("subject")));
+        workRequest.setStrDescription(payloadHelper.normalize(mapWorkRequestDetails.get("description")));
+        workRequest.setStrDueDate(payloadHelper.resolveDueDate(mapWorkRequestDetails.get("dueDate")));
+
+        return workRequest;
     }
 
-    public String getStrKind() {
-        return strKind;
-    }
+Now, similar to this, teher is another API for update Natural Person in which there are some date fileds as shown below - 
 
-    public void setStrKind(String strKind) {
-        this.strKind = strKind;
-    }
+birthDate = default as : Date-40 years
+issuedate = default as : DATE-1 day
+validUntil = default as : DATE+1 Day
+ukTaxResidenceFromDate = default as : DATE-10 years
 
-    public String getStrValue() {
-        return strValue;
-    }
+NOw, these dates are passed from features files with Input as either NA, EMPTY, FUTURE, PAST, TODAY .
+Can you suggest how to implement the helper function for this ?
 
-    public void setStrValue(String strValue) {
-        this.strValue = strValue;
-    }
 
-    public Boolean getBlnIsPreferred() {
-        return blnIsPreferred;
-    }
-
-    public void setBlnIsPreferred(Boolean blnIsPreferred) {
-        this.blnIsPreferred = blnIsPreferred;
-    }
-}
-
-class POJOTaxResidence {
-    @JsonProperty("country")
-    private String strCountry;
-
-    @JsonProperty("taxNumber")
-    private String strTaxNumber;
-
-    @JsonProperty("identityType")
-    private String strIdentityType;
-
-    public String getStrCountry() {
-        return strCountry;
-    }
-
-    public void setStrCountry(String strCountry) {
-        this.strCountry = strCountry;
-    }
-
-    public String getStrTaxNumber() {
-        return strTaxNumber;
-    }
-
-    public void setStrTaxNumber(String strTaxNumber) {
-        this.strTaxNumber = strTaxNumber;
-    }
-
-    public String getStrIdentityType() {
-        return strIdentityType;
-    }
-
-    public void setStrIdentityType(String strIdentityType) {
-        this.strIdentityType = strIdentityType;
-    }
-}
-
-class POJODocumentationIdentity {
-    @JsonProperty("identityType")
-    private String strIdentityType;
-
-    @JsonProperty("number")
-    private String strNumber;
-
-    @JsonProperty("issueCountry")
-    private String strIssueCountry;
-
-    @JsonProperty("issuePlace")
-    private String strIssuePlace;
-
-    @JsonProperty("issueDate")
-    private String strIssueDate;
-
-    @JsonProperty("validUntil")
-    private String strValidUntil;
-
-    public String getStrIdentityType() {
-        return strIdentityType;
-    }
-
-    public void setStrIdentityType(String strIdentityType) {
-        this.strIdentityType = strIdentityType;
-    }
-
-    public String getStrNumber() {
-        return strNumber;
-    }
-
-    public void setStrNumber(String strNumber) {
-        this.strNumber = strNumber;
-    }
-
-    public String getStrIssueCountry() {
-        return strIssueCountry;
-    }
-
-    public void setStrIssueCountry(String strIssueCountry) {
-        this.strIssueCountry = strIssueCountry;
-    }
-
-    public String getStrIssuePlace() {
-        return strIssuePlace;
-    }
-
-    public void setStrIssuePlace(String strIssuePlace) {
-        this.strIssuePlace = strIssuePlace;
-    }
-
-    public String getStrIssueDate() {
-        return strIssueDate;
-    }
-
-    public void setStrIssueDate(String strIssueDate) {
-        this.strIssueDate = strIssueDate;
-    }
-
-    public String getStrValidUntil() {
-        return strValidUntil;
-    }
-
-    public void setStrValidUntil(String strValidUntil) {
-        this.strValidUntil = strValidUntil;
-    }
-}
-
-class POJOAccountant {
-    @JsonProperty("name")
-    private String strName;
-
-    @JsonProperty("companyId")
-    private String strCompanyId;
-
-    @JsonProperty("role")
-    private String strRole;
-
-    @JsonProperty("addressId")
-    private String strAddressId;
-
-    @JsonProperty("email")
-    private String strEmail;
-
-    @JsonProperty("hasConsent")
-    private Boolean blnHasConsent;
-
-    @JsonProperty("doSendCopy")
-    private Boolean blnDoSendCopy;
-
-    public String getStrName() {
-        return strName;
-    }
-
-    public void setStrName(String strName) {
-        this.strName = strName;
-    }
-
-    public String getStrCompanyId() {
-        return strCompanyId;
-    }
-
-    public void setStrCompanyId(String strCompanyId) {
-        this.strCompanyId = strCompanyId;
-    }
-
-    public String getStrRole() {
-        return strRole;
-    }
-
-    public void setStrRole(String strRole) {
-        this.strRole = strRole;
-    }
-
-    public String getStrAddressId() {
-        return strAddressId;
-    }
-
-    public void setStrAddressId(String strAddressId) {
-        this.strAddressId = strAddressId;
-    }
-
-    public String getStrEmail() {
-        return strEmail;
-    }
-
-    public void setStrEmail(String strEmail) {
-        this.strEmail = strEmail;
-    }
-
-    public Boolean getBlnHasConsent() {
-        return blnHasConsent;
-    }
-
-    public void setBlnHasConsent(Boolean blnHasConsent) {
-        this.blnHasConsent = blnHasConsent;
-    }
-
-    public Boolean getBlnDoSendCopy() {
-        return blnDoSendCopy;
-    }
-
-    public void setBlnDoSendCopy(Boolean blnDoSendCopy) {
-        this.blnDoSendCopy = blnDoSendCopy;
-    }
-}
-
-class POJOAssociation {
-    @JsonProperty("personId")
-    private String strPersonId;
-
-    @JsonProperty("role")
-    private String strRole;
-
-    public String getStrPersonId() {
-        return strPersonId;
-    }
-
-    public void setStrPersonId(String strPersonId) {
-        this.strPersonId = strPersonId;
-    }
-
-    public String getStrRole() {
-        return strRole;
-    }
-
-    public void setStrRole(String strRole) {
-        this.strRole = strRole;
-    }
-}
