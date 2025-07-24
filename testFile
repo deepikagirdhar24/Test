@@ -1,246 +1,255 @@
 package ICOS.pojo;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.List;
+public class POJOElectronicAddress {
+    @JsonProperty("medium")
+    private String strMedium;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class POJOUpsNaturalPersonRequest {
+    @JsonProperty("kind")
+    private String strKind;
 
-    @JsonProperty("uuid")
-    private String strUuid;
+    @JsonProperty("value")
+    private String strValue;
 
-    @JsonProperty("id")
-    private String strId;
+    @JsonProperty("isPreferred")
+    private Boolean blnIsPreferred;
 
-    @JsonProperty("subType")
-    private String strSubType;
+    public String getStrMedium() {
+        return strMedium;
+    }
 
-    @JsonProperty("domiCountry")
-    private String strDomiCountry;
+    public void setStrMedium(String strMedium) {
+        this.strMedium = strMedium;
+    }
 
-    @JsonProperty("firstName")
-    private String strFirstName;
+    public String getStrKind() {
+        return strKind;
+    }
 
-    @JsonProperty("middleName")
-    private String strMiddleName;
+    public void setStrKind(String strKind) {
+        this.strKind = strKind;
+    }
 
-    @JsonProperty("lastName")
-    private String strLastName;
+    public String getStrValue() {
+        return strValue;
+    }
 
-    @JsonProperty("birthDate")
-    private String strBirthDate;
+    public void setStrValue(String strValue) {
+        this.strValue = strValue;
+    }
 
-    @JsonProperty("gender")
-    private String strGender;
+    public Boolean getBlnIsPreferred() {
+        return blnIsPreferred;
+    }
 
-    @JsonProperty("nationalities")
-    private List<String> lstNationalities;
+    public void setBlnIsPreferred(Boolean blnIsPreferred) {
+        this.blnIsPreferred = blnIsPreferred;
+    }
+}
 
-    @JsonProperty("title")
-    private String strTitle;
+class POJOTaxResidence {
+    @JsonProperty("country")
+    private String strCountry;
 
-    @JsonProperty("birthPlace")
-    private String strBirthPlace;
+    @JsonProperty("taxNumber")
+    private String strTaxNumber;
 
-    @JsonProperty("birthCountry")
-    private String strBirthCountry;
+    @JsonProperty("identityType")
+    private String strIdentityType;
 
-    @JsonProperty("electronicAddresses")
-    private List<POJOElectronicAddress> lstElectronicAddresses;
+    public String getStrCountry() {
+        return strCountry;
+    }
 
-    @JsonProperty("isEmployee")
-    private Boolean blnIsEmployee;
+    public void setStrCountry(String strCountry) {
+        this.strCountry = strCountry;
+    }
 
-    @JsonProperty("taxResidences")
-    private List<POJOTaxResidence> lstTaxResidences;
+    public String getStrTaxNumber() {
+        return strTaxNumber;
+    }
 
-    @JsonProperty("documentationIdentity")
-    private List<POJODocumentationIdentity> lstDocumentationIdentity;
+    public void setStrTaxNumber(String strTaxNumber) {
+        this.strTaxNumber = strTaxNumber;
+    }
 
-    @JsonProperty("pepAssociationCountry")
-    private String strPepAssociationCountry;
+    public String getStrIdentityType() {
+        return strIdentityType;
+    }
 
-    @JsonProperty("pepClassificationReason")
-    private String strPepClassificationReason;
+    public void setStrIdentityType(String strIdentityType) {
+        this.strIdentityType = strIdentityType;
+    }
+}
 
-    @JsonProperty("pepCategory")
-    private String strPepCategory;
+class POJODocumentationIdentity {
+    @JsonProperty("identityType")
+    private String strIdentityType;
 
-    @JsonProperty("isMarketingOptOut")
-    private Boolean blnIsMarketingOptOut;
+    @JsonProperty("number")
+    private String strNumber;
 
-    @JsonProperty("fatcaStatus")
-    private String strFatcaStatus;
+    @JsonProperty("issueCountry")
+    private String strIssueCountry;
 
-    @JsonProperty("crsType")
-    private String strCrsType;
+    @JsonProperty("issuePlace")
+    private String strIssuePlace;
 
-    @JsonProperty("ukTaxResidenceFromDate")
-    private String strUkTaxResidenceFromDate;
+    @JsonProperty("issueDate")
+    private String strIssueDate;
 
-    @JsonProperty("hasTaxAvoidanceSchemes")
-    private Boolean blnHasTaxAvoidanceSchemes;
+    @JsonProperty("validUntil")
+    private String strValidUntil;
 
-    @JsonProperty("isHoldingBearerShares")
-    private Boolean blnIsHoldingBearerShares;
+    public String getStrIdentityType() {
+        return strIdentityType;
+    }
 
-    @JsonProperty("hasInvestableAssets10M")
-    private Boolean blnHasInvestableAssets10M;
+    public void setStrIdentityType(String strIdentityType) {
+        this.strIdentityType = strIdentityType;
+    }
 
-    @JsonProperty("hasHistoricTaxIssues")
-    private Boolean blnHasHistoricTaxIssues;
+    public String getStrNumber() {
+        return strNumber;
+    }
 
-    @JsonProperty("hasTaxChgDomiStatus")
-    private Boolean blnHasTaxChgDomiStatus;
+    public void setStrNumber(String strNumber) {
+        this.strNumber = strNumber;
+    }
 
-    @JsonProperty("hasTaxChgUkDomiStatus")
-    private Boolean blnHasTaxChgUkDomiStatus;
+    public String getStrIssueCountry() {
+        return strIssueCountry;
+    }
 
-    @JsonProperty("hasTaxPrevClaimRemitanceBasis")
-    private Boolean blnHasTaxPrevClaimRemitanceBasis;
+    public void setStrIssueCountry(String strIssueCountry) {
+        this.strIssueCountry = strIssueCountry;
+    }
 
-    @JsonProperty("hasTaxIntendClaimRemitanceBasis")
-    private Boolean blnHasTaxIntendClaimRemitanceBasis;
+    public String getStrIssuePlace() {
+        return strIssuePlace;
+    }
 
-    @JsonProperty("accountants")
-    private List<POJOAccountant> lstAccountants;
+    public void setStrIssuePlace(String strIssuePlace) {
+        this.strIssuePlace = strIssuePlace;
+    }
 
-    @JsonProperty("hasTravelProtection")
-    private Boolean blnHasTravelProtection;
+    public String getStrIssueDate() {
+        return strIssueDate;
+    }
 
-    @JsonProperty("hasCouttsOnline")
-    private Boolean blnHasCouttsOnline;
+    public void setStrIssueDate(String strIssueDate) {
+        this.strIssueDate = strIssueDate;
+    }
 
-    @JsonProperty("hasCouttsId")
-    private Boolean blnHasCouttsId;
+    public String getStrValidUntil() {
+        return strValidUntil;
+    }
 
-    @JsonProperty("associations")
-    private List<POJOAssociation> lstAssociations;
+    public void setStrValidUntil(String strValidUntil) {
+        this.strValidUntil = strValidUntil;
+    }
+}
 
-    @JsonProperty("idQuestionId")
-    private String strIdQuestionId;
+class POJOAccountant {
+    @JsonProperty("name")
+    private String strName;
 
-    @JsonProperty("correspondanceAddressId")
-    private String strCorrespondanceAddressId;
+    @JsonProperty("companyId")
+    private String strCompanyId;
 
-    // ---------- Getters & Setters ----------
+    @JsonProperty("role")
+    private String strRole;
 
-    public String getStrUuid() { return strUuid; }
-    public void setStrUuid(String strUuid) { this.strUuid = strUuid; }
+    @JsonProperty("addressId")
+    private String strAddressId;
 
-    public String getStrId() { return strId; }
-    public void setStrId(String strId) { this.strId = strId; }
+    @JsonProperty("email")
+    private String strEmail;
 
-    public String getStrSubType() { return strSubType; }
-    public void setStrSubType(String strSubType) { this.strSubType = strSubType; }
+    @JsonProperty("hasConsent")
+    private Boolean blnHasConsent;
 
-    public String getStrDomiCountry() { return strDomiCountry; }
-    public void setStrDomiCountry(String strDomiCountry) { this.strDomiCountry = strDomiCountry; }
+    @JsonProperty("doSendCopy")
+    private Boolean blnDoSendCopy;
 
-    public String getStrFirstName() { return strFirstName; }
-    public void setStrFirstName(String strFirstName) { this.strFirstName = strFirstName; }
+    public String getStrName() {
+        return strName;
+    }
 
-    public String getStrMiddleName() { return strMiddleName; }
-    public void setStrMiddleName(String strMiddleName) { this.strMiddleName = strMiddleName; }
+    public void setStrName(String strName) {
+        this.strName = strName;
+    }
 
-    public String getStrLastName() { return strLastName; }
-    public void setStrLastName(String strLastName) { this.strLastName = strLastName; }
+    public String getStrCompanyId() {
+        return strCompanyId;
+    }
 
-    public String getStrBirthDate() { return strBirthDate; }
-    public void setStrBirthDate(String strBirthDate) { this.strBirthDate = strBirthDate; }
+    public void setStrCompanyId(String strCompanyId) {
+        this.strCompanyId = strCompanyId;
+    }
 
-    public String getStrGender() { return strGender; }
-    public void setStrGender(String strGender) { this.strGender = strGender; }
+    public String getStrRole() {
+        return strRole;
+    }
 
-    public List<String> getLstNationalities() { return lstNationalities; }
-    public void setLstNationalities(List<String> lstNationalities) { this.lstNationalities = lstNationalities; }
+    public void setStrRole(String strRole) {
+        this.strRole = strRole;
+    }
 
-    public String getStrTitle() { return strTitle; }
-    public void setStrTitle(String strTitle) { this.strTitle = strTitle; }
+    public String getStrAddressId() {
+        return strAddressId;
+    }
 
-    public String getStrBirthPlace() { return strBirthPlace; }
-    public void setStrBirthPlace(String strBirthPlace) { this.strBirthPlace = strBirthPlace; }
+    public void setStrAddressId(String strAddressId) {
+        this.strAddressId = strAddressId;
+    }
 
-    public String getStrBirthCountry() { return strBirthCountry; }
-    public void setStrBirthCountry(String strBirthCountry) { this.strBirthCountry = strBirthCountry; }
+    public String getStrEmail() {
+        return strEmail;
+    }
 
-    public List<POJOElectronicAddress> getLstElectronicAddresses() { return lstElectronicAddresses; }
-    public void setLstElectronicAddresses(List<POJOElectronicAddress> lstElectronicAddresses) { this.lstElectronicAddresses = lstElectronicAddresses; }
+    public void setStrEmail(String strEmail) {
+        this.strEmail = strEmail;
+    }
 
-    public Boolean getBlnIsEmployee() { return blnIsEmployee; }
-    public void setBlnIsEmployee(Boolean blnIsEmployee) { this.blnIsEmployee = blnIsEmployee; }
+    public Boolean getBlnHasConsent() {
+        return blnHasConsent;
+    }
 
-    public List<POJOTaxResidence> getLstTaxResidences() { return lstTaxResidences; }
-    public void setLstTaxResidences(List<POJOTaxResidence> lstTaxResidences) { this.lstTaxResidences = lstTaxResidences; }
+    public void setBlnHasConsent(Boolean blnHasConsent) {
+        this.blnHasConsent = blnHasConsent;
+    }
 
-    public List<POJODocumentationIdentity> getLstDocumentationIdentity() { return lstDocumentationIdentity; }
-    public void setLstDocumentationIdentity(List<POJODocumentationIdentity> lstDocumentationIdentity) { this.lstDocumentationIdentity = lstDocumentationIdentity; }
+    public Boolean getBlnDoSendCopy() {
+        return blnDoSendCopy;
+    }
 
-    public String getStrPepAssociationCountry() { return strPepAssociationCountry; }
-    public void setStrPepAssociationCountry(String strPepAssociationCountry) { this.strPepAssociationCountry = strPepAssociationCountry; }
+    public void setBlnDoSendCopy(Boolean blnDoSendCopy) {
+        this.blnDoSendCopy = blnDoSendCopy;
+    }
+}
 
-    public String getStrPepClassificationReason() { return strPepClassificationReason; }
-    public void setStrPepClassificationReason(String strPepClassificationReason) { this.strPepClassificationReason = strPepClassificationReason; }
+class POJOAssociation {
+    @JsonProperty("personId")
+    private String strPersonId;
 
-    public String getStrPepCategory() { return strPepCategory; }
-    public void setStrPepCategory(String strPepCategory) { this.strPepCategory = strPepCategory; }
+    @JsonProperty("role")
+    private String strRole;
 
-    public Boolean getBlnIsMarketingOptOut() { return blnIsMarketingOptOut; }
-    public void setBlnIsMarketingOptOut(Boolean blnIsMarketingOptOut) { this.blnIsMarketingOptOut = blnIsMarketingOptOut; }
+    public String getStrPersonId() {
+        return strPersonId;
+    }
 
-    public String getStrFatcaStatus() { return strFatcaStatus; }
-    public void setStrFatcaStatus(String strFatcaStatus) { this.strFatcaStatus = strFatcaStatus; }
+    public void setStrPersonId(String strPersonId) {
+        this.strPersonId = strPersonId;
+    }
 
-    public String getStrCrsType() { return strCrsType; }
-    public void setStrCrsType(String strCrsType) { this.strCrsType = strCrsType; }
+    public String getStrRole() {
+        return strRole;
+    }
 
-    public String getStrUkTaxResidenceFromDate() { return strUkTaxResidenceFromDate; }
-    public void setStrUkTaxResidenceFromDate(String strUkTaxResidenceFromDate) { this.strUkTaxResidenceFromDate = strUkTaxResidenceFromDate; }
-
-    public Boolean getBlnHasTaxAvoidanceSchemes() { return blnHasTaxAvoidanceSchemes; }
-    public void setBlnHasTaxAvoidanceSchemes(Boolean blnHasTaxAvoidanceSchemes) { this.blnHasTaxAvoidanceSchemes = blnHasTaxAvoidanceSchemes; }
-
-    public Boolean getBlnIsHoldingBearerShares() { return blnIsHoldingBearerShares; }
-    public void setBlnIsHoldingBearerShares(Boolean blnIsHoldingBearerShares) { this.blnIsHoldingBearerShares = blnIsHoldingBearerShares; }
-
-    public Boolean getBlnHasInvestableAssets10M() { return blnHasInvestableAssets10M; }
-    public void setBlnHasInvestableAssets10M(Boolean blnHasInvestableAssets10M) { this.blnHasInvestableAssets10M = blnHasInvestableAssets10M; }
-
-    public Boolean getBlnHasHistoricTaxIssues() { return blnHasHistoricTaxIssues; }
-    public void setBlnHasHistoricTaxIssues(Boolean blnHasHistoricTaxIssues) { this.blnHasHistoricTaxIssues = blnHasHistoricTaxIssues; }
-
-    public Boolean getBlnHasTaxChgDomiStatus() { return blnHasTaxChgDomiStatus; }
-    public void setBlnHasTaxChgDomiStatus(Boolean blnHasTaxChgDomiStatus) { this.blnHasTaxChgDomiStatus = blnHasTaxChgDomiStatus; }
-
-    public Boolean getBlnHasTaxChgUkDomiStatus() { return blnHasTaxChgUkDomiStatus; }
-    public void setBlnHasTaxChgUkDomiStatus(Boolean blnHasTaxChgUkDomiStatus) { this.blnHasTaxChgUkDomiStatus = blnHasTaxChgUkDomiStatus; }
-
-    public Boolean getBlnHasTaxPrevClaimRemitanceBasis() { return blnHasTaxPrevClaimRemitanceBasis; }
-    public void setBlnHasTaxPrevClaimRemitanceBasis(Boolean blnHasTaxPrevClaimRemitanceBasis) { this.blnHasTaxPrevClaimRemitanceBasis = blnHasTaxPrevClaimRemitanceBasis; }
-
-    public Boolean getBlnHasTaxIntendClaimRemitanceBasis() { return blnHasTaxIntendClaimRemitanceBasis; }
-    public void setBlnHasTaxIntendClaimRemitanceBasis(Boolean blnHasTaxIntendClaimRemitanceBasis) { this.blnHasTaxIntendClaimRemitanceBasis = blnHasTaxIntendClaimRemitanceBasis; }
-
-    public List<POJOAccountant> getLstAccountants() { return lstAccountants; }
-    public void setLstAccountants(List<POJOAccountant> lstAccountants) { this.lstAccountants = lstAccountants; }
-
-    public Boolean getBlnHasTravelProtection() { return blnHasTravelProtection; }
-    public void setBlnHasTravelProtection(Boolean blnHasTravelProtection) { this.blnHasTravelProtection = blnHasTravelProtection; }
-
-    public Boolean getBlnHasCouttsOnline() { return blnHasCouttsOnline; }
-    public void setBlnHasCouttsOnline(Boolean blnHasCouttsOnline) { this.blnHasCouttsOnline = blnHasCouttsOnline; }
-
-    public Boolean getBlnHasCouttsId() { return blnHasCouttsId; }
-    public void setBlnHasCouttsId(Boolean blnHasCouttsId) { this.blnHasCouttsId = blnHasCouttsId; }
-
-    public List<POJOAssociation> getLstAssociations() { return lstAssociations; }
-    public void setLstAssociations(List<POJOAssociation> lstAssociations) { this.lstAssociations = lstAssociations; }
-
-    public String getStrIdQuestionId() { return strIdQuestionId; }
-    public void setStrIdQuestionId(String strIdQuestionId) { this.strIdQuestionId = strIdQuestionId; }
-
-    public String getStrCorrespondanceAddressId() { return strCorrespondanceAddressId; }
-    public void setStrCorrespondanceAddressId(String strCorrespondanceAddressId) { this.strCorrespondanceAddressId = strCorrespondanceAddressId; }
+    public void setStrRole(String strRole) {
+        this.strRole = strRole;
+    }
 }
