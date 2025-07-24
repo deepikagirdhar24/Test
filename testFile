@@ -1,21 +1,51 @@
-    public void applyBooleanField(String rawValue, String fieldName, POJOUpdNaturalPersonRequest updNaturalPerson) {
-        String normalized = normalize(rawValue);
-        if (normalized != null && !normalized.isEmpty()) {
-            boolean parsed = Boolean.parseBoolean(normalized);
-            switch (fieldName) {
-                case "isEmployee": updNaturalPerson.setBlnIsEmployee(parsed); break;
-                case "isMarketingOptOut": updNaturalPerson.setBlnIsMarketingOptOut(parsed); break;
-                case "hasTaxAvoidanceSchemes": updNaturalPerson.setBlnHasTaxAvoidanceSchemes(parsed); break;
-                case "isHoldingBearerShares": updNaturalPerson.setBlnIsHoldingBearerShares(parsed); break;
-                case "hasInvestableAssets10M": updNaturalPerson.setBlnHasInvestableAssets10M(parsed); break;
-                case "hasHistoricTaxIssues": updNaturalPerson.setBlnHasHistoricTaxIssues(parsed); break;
-                case "hasTaxChgDomiStatus": updNaturalPerson.setBlnHasTaxChgDomiStatus(parsed); break;
-                case "hasTaxChgUkDomiStatus": updNaturalPerson.setBlnHasTaxChgUkDomiStatus(parsed); break;
-                case "hasTaxPrevClaimRemitanceBasis": updNaturalPerson.setBlnHasTaxPrevClaimRemitanceBasis(parsed); break;
-                case "hasTaxIntendClaimRemitanceBasis": updNaturalPerson.setBlnHasTaxIntendClaimRemitanceBasis(parsed); break;
-                case "hasTravelProtection": updNaturalPerson.setBlnHasTravelProtection(parsed); break;
-                case "hasCouttsOnline": updNaturalPerson.setBlnHasCouttsOnline(parsed); break;
-                case "hasCouttsId": updNaturalPerson.setBlnHasCouttsId(parsed); break;
-            }
+public void applyBooleanField(Object targetObject, String fieldName, String rawValue) {
+    String normalized = normalize(rawValue);
+    if (normalized != null && !normalized.isEmpty()) {
+        boolean parsed = Boolean.parseBoolean(normalized);
+        String setterName = "setBln" + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1);
+        try {
+            Method setter = targetObject.getClass().getMethod(setterName, boolean.class);
+            setter.invoke(targetObject, parsed);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException("Unable to set boolean field: " + setterName + " on " + targetObject.getClass().getSimpleName(), e);
         }
     }
+}
+
+public List<POJOElectronicAddress> buildElectronicAddresses(String input) {
+    if (input == null || input.trim().isEmpty()) return null;
+
+    List<POJOElectronicAddress> listElectronicAddresses = new ArrayList<>();
+    String[] entries = input.split("\\|");
+    for (String entry : entries) {
+        String[] parts = entry.split(";");
+        POJOElectronicAddress address = new POJOElectronicAddress();
+        address.setStrMedium(normalize(parts[0]));
+        address.setStrKind(normalize(parts[1]));
+        address.setStrValue(normalize(parts[2]));
+        applyBooleanField(address, "isPreferred", parts[3]);  // instead of direct set
+        listElectronicAddresses.add(address);
+    }
+    return listElectronicAddresses;
+}
+
+
+public List<POJOAccountant> buildAccountants(String input) {
+    if (input == null || input.trim().isEmpty()) return null;
+
+    List<POJOAccountant> listAccountants = new ArrayList<>();
+    String[] entries = input.split("\\|");
+    for (String entry : entries) {
+        String[] parts = entry.split(";");
+        POJOAccountant accountant = new POJOAccountant();
+        accountant.setStrName(normalize(parts[0]));
+        accountant.setStrCompanyId(normalize(parts[1]));
+        accountant.setStrRole(normalize(parts[2]));
+        accountant.setStrAddressId(normalize(parts[3]));
+        accountant.setStrEmail(normalize(parts[4]));
+        applyBooleanField(accountant, "hasConsent", parts[5]);
+        applyBooleanField(accountant, "doSendCopy", parts[6]);
+        listAccountants.add(accountant);
+    }
+    return listAccountants;
+}
