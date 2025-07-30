@@ -1,22 +1,12 @@
-public void applyBooleanField(String rawValue, String fieldName, Object targetObject) {
-    String normalized = normalize(rawValue);
-    if (normalized != null && !normalized.isEmpty()) {
-        boolean parsed = Boolean.parseBoolean(normalized);
-        String setterName = "setBln" + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1);
+  Scenario Outline: Verify the Post Natural Persons API with valid data - <Comments>
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    Then Send request to update Natural Person with below details
+      | subType       | <subType >    |
+      | domiCountry   | <domiCountry> |
 
-        try {
-            Method setter;
-            try {
-                // Try primitive boolean first
-                setter = targetObject.getClass().getMethod(setterName, boolean.class);
-                setter.invoke(targetObject, parsed);
-            } catch (NoSuchMethodException e) {
-                // Fallback to Boolean wrapper
-                setter = targetObject.getClass().getMethod(setterName, Boolean.class);
-                setter.invoke(targetObject, parsed);
-            }
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException("Unable to set boolean field: " + setterName + " on " + targetObject.getClass().getSimpleName(), e);
-        }
-    }
-}
+Examples:
+
+Add the fields in this SD and add values in Example section.
+
+See screenshot of values - 
