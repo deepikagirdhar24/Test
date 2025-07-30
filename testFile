@@ -1,12 +1,40 @@
-  Scenario Outline: Verify the Post Natural Persons API with valid data - <Comments>
-    Given Send Request to get Authentication Token for ICOS
-    When I generate the JWT Token
-    Then Send request to update Natural Person with below details
-      | subType       | <subType >    |
-      | domiCountry   | <domiCountry> |
+Scenario Outline: Verify the Post Natural Persons API with valid data - <Comments>
+  Given Send Request to get Authentication Token for ICOS
+  When I generate the JWT Token
+  Then Send request to update Natural Person with below details
+    | subType                      | <subType>                    |
+    | domiCountry                  | <domiCountry>                |
+    | firstName                   | <firstName>                 |
+    | middleName                  | <middleName>               |
+    | lastName                    | <lastName>                  |
+    | birthDate                   | <birthDate>                 |
+    | gender                      | <gender>                    |
+    | nationalities               | <nationalities>             |
+    | title                       | <title>                     |
+    | birthPlace                  | <birthPlace>                |
+    | birthCountry                | <birthCountry>              |
+    | isEmployee                  | <isEmployee>                |
+    | pepAssociationCountry       | <pepAssociationCountry>     |
+    | pepClassificationReason     | <pepClassificationReason>   |
+    | pepCategory                 | <pepCategory>               |
+    | isMarketingOptOut           | <isMarketingOptOut>         |
+    | fatcaStatus                 | <fatcaStatus>               |
+    | crsType                     | <crsType>                   |
+    | ukTaxResidenceFromDate      | <ukTaxResidenceFromDate>    |
+    | hasTaxAvoidanceSchemes      | <hasTaxAvoidanceSchemes>    |
+    | hasHoldingBearerShares      | <hasHoldingBearerShares>    |
+    | hasInvestableAssets10M      | <hasInvestableAssets10M>    |
+    | hasHistoricTaxIssues        | <hasHistoricTaxIssues>      |
+    | hasTaxChgDomiStatus         | <hasTaxChgDomiStatus>       |
+    | hasTaxChgUkDomiStatus       | <hasTaxChgUkDomiStatus>     |
+    | hasTaxPrevClaimRemitBasis   | <hasTaxPrevClaimRemitBasis> |
+    | hasTaxIntendClaimRemitBasis | <hasTaxIntendClaimRemitBasis> |
+    | hasTravelProtection         | <hasTravelProtection>       |
+    | hasCouttsOnline             | <hasCouttsOnline>           |
+    | hasCouttsId                 | <hasCouttsId>               |
+    | idQuestionId                | <idQuestionId>              |
+    | correspondanceAddressId     | <correspondanceAddressId>   |
 
 Examples:
-
-Add the fields in this SD and add values in Example section.
-
-See screenshot of values - 
+  | subType        | domiCountry | firstName | middleName | lastName | birthDate | gender | nationalities | title | birthPlace | birthCountry | isEmployee | pepAssociationCountry | pepClassificationReason | pepCategory | isMarketingOptOut | fatcaStatus              | crsType            | ukTaxResidenceFromDate | hasTaxAvoidanceSchemes | hasHoldingBearerShares | hasInvestableAssets10M | hasHistoricTaxIssues | hasTaxChgDomiStatus | hasTaxChgUkDomiStatus | hasTaxPrevClaimRemitBasis | hasTaxIntendClaimRemitBasis | hasTravelProtection | hasCouttsOnline | hasCouttsId | idQuestionId | correspondanceAddressId | Comments |
+  | pers_form_doc  | GB          | Firstname | Middlename | Lastname | DATE:-40y | male   | GB            | mr    | London     | GB           | false      | GB                    | Testreason              | none        | false             | rbsc$fatca_non_us_person | rbsc$crs_np_doc   | DATE:-10y              | false                  | false                  | false                 | false               | false               | false                 | false                     | false                      | false               | false          | false       | ObjectId_IDQ | AddressId_Correspondence | Valid    |
