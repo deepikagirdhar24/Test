@@ -1,40 +1,150 @@
-Scenario Outline: Verify the Post Natural Persons API with valid data - <Comments>
-  Given Send Request to get Authentication Token for ICOS
-  When I generate the JWT Token
-  Then Send request to update Natural Person with below details
-    | subType                      | <subType>                    |
-    | domiCountry                  | <domiCountry>                |
-    | firstName                   | <firstName>                 |
-    | middleName                  | <middleName>               |
-    | lastName                    | <lastName>                  |
-    | birthDate                   | <birthDate>                 |
-    | gender                      | <gender>                    |
-    | nationalities               | <nationalities>             |
-    | title                       | <title>                     |
-    | birthPlace                  | <birthPlace>                |
-    | birthCountry                | <birthCountry>              |
-    | isEmployee                  | <isEmployee>                |
-    | pepAssociationCountry       | <pepAssociationCountry>     |
-    | pepClassificationReason     | <pepClassificationReason>   |
-    | pepCategory                 | <pepCategory>               |
-    | isMarketingOptOut           | <isMarketingOptOut>         |
-    | fatcaStatus                 | <fatcaStatus>               |
-    | crsType                     | <crsType>                   |
-    | ukTaxResidenceFromDate      | <ukTaxResidenceFromDate>    |
-    | hasTaxAvoidanceSchemes      | <hasTaxAvoidanceSchemes>    |
-    | hasHoldingBearerShares      | <hasHoldingBearerShares>    |
-    | hasInvestableAssets10M      | <hasInvestableAssets10M>    |
-    | hasHistoricTaxIssues        | <hasHistoricTaxIssues>      |
-    | hasTaxChgDomiStatus         | <hasTaxChgDomiStatus>       |
-    | hasTaxChgUkDomiStatus       | <hasTaxChgUkDomiStatus>     |
-    | hasTaxPrevClaimRemitBasis   | <hasTaxPrevClaimRemitBasis> |
-    | hasTaxIntendClaimRemitBasis | <hasTaxIntendClaimRemitBasis> |
-    | hasTravelProtection         | <hasTravelProtection>       |
-    | hasCouttsOnline             | <hasCouttsOnline>           |
-    | hasCouttsId                 | <hasCouttsId>               |
-    | idQuestionId                | <idQuestionId>              |
-    | correspondanceAddressId     | <correspondanceAddressId>   |
+I have this POJO - 
 
-Examples:
-  | subType        | domiCountry | firstName | middleName | lastName | birthDate | gender | nationalities | title | birthPlace | birthCountry | isEmployee | pepAssociationCountry | pepClassificationReason | pepCategory | isMarketingOptOut | fatcaStatus              | crsType            | ukTaxResidenceFromDate | hasTaxAvoidanceSchemes | hasHoldingBearerShares | hasInvestableAssets10M | hasHistoricTaxIssues | hasTaxChgDomiStatus | hasTaxChgUkDomiStatus | hasTaxPrevClaimRemitBasis | hasTaxIntendClaimRemitBasis | hasTravelProtection | hasCouttsOnline | hasCouttsId | idQuestionId | correspondanceAddressId | Comments |
-  | pers_form_doc  | GB          | Firstname | Middlename | Lastname | DATE:-40y | male   | GB            | mr    | London     | GB           | false      | GB                    | Testreason              | none        | false             | rbsc$fatca_non_us_person | rbsc$crs_np_doc   | DATE:-10y              | false                  | false                  | false                 | false               | false               | false                 | false                     | false                      | false               | false          | false       | ObjectId_IDQ | AddressId_Correspondence | Valid    |
+public POJOUpdNaturalPersonRequest buildUpdNaturalPersonPayload(Map<String, String> mapPersonDetails, ScenarioContext scenarioContext) {
+        POJOUpdNaturalPersonRequest updNaturalPerson = new POJOUpdNaturalPersonRequest();
+
+        String strDocumentObjectId = scenarioContext.getContext("documentObjectId");
+        String strAddressObjectId = scenarioContext.getContext("addressObjectId");
+
+        updNaturalPerson.setStrUuid(payloadHelper.normalize(mapPersonDetails.get("uuid")));
+//        updNaturalPerson.setStrId(payloadHelper.normalize(mapPersonDetails.get("id")));
+        updNaturalPerson.setStrSubType(payloadHelper.normalize(mapPersonDetails.get("subType")));
+        updNaturalPerson.setStrDomiCountry(payloadHelper.normalize(mapPersonDetails.get("domiCountry")));
+        updNaturalPerson.setStrFirstName(payloadHelper.normalize(mapPersonDetails.get("firstName")));
+        updNaturalPerson.setStrMiddleName(payloadHelper.normalize(mapPersonDetails.get("middleName")));
+        updNaturalPerson.setStrLastName(payloadHelper.normalize(mapPersonDetails.get("lastName")));
+        updNaturalPerson.setStrBirthDate(payloadHelper.resolveDate("UpdateNaturalPerson", "birthDate", mapPersonDetails.get("birthDate")));
+        updNaturalPerson.setStrGender(payloadHelper.normalize(mapPersonDetails.get("gender")));
+        updNaturalPerson.setLstNationalities(payloadHelper.parseNationalities(mapPersonDetails.get("nationalities")));
+        updNaturalPerson.setStrTitle(payloadHelper.normalize(mapPersonDetails.get("title")));
+        updNaturalPerson.setStrBirthPlace(payloadHelper.normalize(mapPersonDetails.get("birthPlace")));
+        updNaturalPerson.setStrBirthCountry(payloadHelper.normalize(mapPersonDetails.get("birthCountry")));
+        updNaturalPerson.setLstElectronicAddresses(buildElectronicAddresses(mapPersonDetails.get("electronicAddresses")));
+        payloadHelper.applyBooleanField(mapPersonDetails.get("isEmployee"), "isEmployee", updNaturalPerson);
+        updNaturalPerson.setLstTaxResidences(buildTaxResidences(mapPersonDetails.get("taxResidences")));
+        updNaturalPerson.setLstDocumentationIdentity(buildDocumentationIdentity(
+                mapPersonDetails.get("documentationIdentity"), "UpdateNaturalPerson"
+        ));
+        updNaturalPerson.setStrPepAssociationCountry(payloadHelper.normalize(mapPersonDetails.get("pepAssociationCountry")));
+        updNaturalPerson.setStrPepClassificationReason(payloadHelper.normalize(mapPersonDetails.get("pepClassificationReason")));
+        updNaturalPerson.setStrPepCategory(payloadHelper.normalize(mapPersonDetails.get("pepCategory")));
+        payloadHelper.applyBooleanField(mapPersonDetails.get("isMarketingOptOut"), "isMarketingOptOut", updNaturalPerson);
+        updNaturalPerson.setStrFatcaStatus(payloadHelper.normalize(mapPersonDetails.get("fatcaStatus")));
+        updNaturalPerson.setStrCrsType(payloadHelper.normalize(mapPersonDetails.get("crsType")));
+        updNaturalPerson.setStrUkTaxResidenceFromDate(payloadHelper.resolveDate("UpdateNaturalPerson", "ukTaxResidenceFromDate", mapPersonDetails.get("ukTaxResidenceFromDate")));
+        payloadHelper.applyBooleanField(mapPersonDetails.get("hasTaxAvoidanceSchemes"), "hasTaxAvoidanceSchemes", updNaturalPerson);
+        payloadHelper.applyBooleanField(mapPersonDetails.get("isHoldingBearerShares"), "isHoldingBearerShares", updNaturalPerson);
+        payloadHelper.applyBooleanField(mapPersonDetails.get("hasInvestableAssets10M"), "hasInvestableAssets10M", updNaturalPerson);
+        payloadHelper.applyBooleanField(mapPersonDetails.get("hasHistoricTaxIssues"), "hasHistoricTaxIssues", updNaturalPerson);
+        payloadHelper.applyBooleanField(mapPersonDetails.get("hasTaxChgDomiStatus"), "hasTaxChgDomiStatus", updNaturalPerson);
+        payloadHelper.applyBooleanField(mapPersonDetails.get("hasTaxChgUkDomiStatus"), "hasTaxChgUkDomiStatus", updNaturalPerson);
+        payloadHelper.applyBooleanField(mapPersonDetails.get("hasTaxPrevClaimRemitanceBasis"), "hasTaxPrevClaimRemitanceBasis", updNaturalPerson);
+        payloadHelper.applyBooleanField(mapPersonDetails.get("hasTaxIntendClaimRemitanceBasis"), "hasTaxIntendClaimRemitanceBasis", updNaturalPerson);
+        updNaturalPerson.setLstAccountants(buildAccountants(mapPersonDetails.get("accountants")));
+        payloadHelper.applyBooleanField(mapPersonDetails.get("hasTravelProtection"), "hasTravelProtection", updNaturalPerson);
+        payloadHelper.applyBooleanField(mapPersonDetails.get("hasCouttsOnline"), "hasCouttsOnline", updNaturalPerson);
+        payloadHelper.applyBooleanField(mapPersonDetails.get("hasCouttsId"), "hasCouttsId", updNaturalPerson);
+        updNaturalPerson.setLstAssociations(buildAssociations(mapPersonDetails.get("associations")));
+
+//        updNaturalPerson.setStrIdQuestionId(payloadHelper.normalize(mapPersonDetails.get("idQuestionId")));
+        String resolvedStrQuestionId = payloadHelper.resolveId(mapPersonDetails.get("idQuestionId"), strDocumentObjectId);
+        updNaturalPerson.setStrIdQuestionId(resolvedStrQuestionId);
+
+//        updNaturalPerson.setStrCorrespondanceAddressId(payloadHelper.normalize(mapPersonDetails.get("correspondanceAddressId")));
+        String resolvedCorrespondanceAddressId = payloadHelper.resolveId(mapPersonDetails.get("correspondanceAddressId"), strAddressObjectId);
+        updNaturalPerson.setStrCorrespondanceAddressId(resolvedCorrespondanceAddressId);
+
+        return updNaturalPerson;
+    }
+
+
+    public List<POJOElectronicAddress> buildElectronicAddresses(String input) {
+        if (input == null || input.trim().isEmpty()) return null;
+
+        List<POJOElectronicAddress> listElectronicAddresses = new ArrayList<>();
+        String[] entries = input.split("\\|");
+        for (String entry : entries) {
+            String[] parts = entry.split(";");
+            POJOElectronicAddress address = new POJOElectronicAddress();
+            address.setStrMedium(payloadHelper.normalize(parts[0]));
+            address.setStrKind(payloadHelper.normalize(parts[1]));
+            address.setStrValue(payloadHelper.normalize(parts[2]));
+            payloadHelper.applyBooleanField(parts[3], "isPreferred", address);
+            listElectronicAddresses.add(address);
+        }
+        return listElectronicAddresses;
+    }
+
+    public List<POJOTaxResidence> buildTaxResidences(String input) {
+        if (input == null || input.trim().isEmpty()) return null;
+
+        List<POJOTaxResidence> listTaxResidences = new ArrayList<>();
+        String[] entries = input.split("\\|");
+        for (String entry : entries) {
+            String[] parts = entry.split(";");
+            POJOTaxResidence tax = new POJOTaxResidence();
+            tax.setStrCountry(payloadHelper.normalize(parts[0]));
+            tax.setStrTaxNumber(payloadHelper.normalize(parts[1]));
+            tax.setStrIdentityType(payloadHelper.normalize(parts[2]));
+            listTaxResidences.add(tax);
+        }
+        return listTaxResidences;
+    }
+
+
+    public List<POJODocumentationIdentity> buildDocumentationIdentity(String input, String context) {
+        if (input == null || input.trim().isEmpty()) return null;
+
+        List<POJODocumentationIdentity> listDocumentation = new ArrayList<>();
+        String[] entries = input.split("\\|");
+        for (String entry : entries) {
+            String[] parts = entry.split(";");
+            POJODocumentationIdentity doc = new POJODocumentationIdentity();
+            doc.setStrIdentityType(payloadHelper.normalize(parts[0]));
+            doc.setStrNumber(payloadHelper.normalize(parts[1]));
+            doc.setStrIssueCountry(payloadHelper.normalize(parts[2]));
+            doc.setStrIssuePlace(payloadHelper.normalize(parts[3]));
+            doc.setStrIssueDate(payloadHelper.resolveDate(context, "issueDate", parts[4]));
+            doc.setStrValidUntil(payloadHelper.resolveDate(context, "validUntil", parts[5]));
+            listDocumentation.add(doc);
+        }
+        return listDocumentation;
+    }
+
+
+    public List<POJOAccountant> buildAccountants(String input) {
+        if (input == null || input.trim().isEmpty()) return null;
+
+        List<POJOAccountant> listAccountants = new ArrayList<>();
+        String[] entries = input.split("\\|");
+        for (String entry : entries) {
+            String[] parts = entry.split(";");
+            POJOAccountant accountant = new POJOAccountant();
+            accountant.setStrName(payloadHelper.normalize(parts[0]));
+            accountant.setStrCompanyId(payloadHelper.normalize(parts[1]));
+            accountant.setStrRole(payloadHelper.normalize(parts[2]));
+            accountant.setStrAddressId(payloadHelper.normalize(parts[3]));
+            accountant.setStrEmail(payloadHelper.normalize(parts[4]));
+            payloadHelper.applyBooleanField(parts[5], "hasConsent", accountant);
+            payloadHelper.applyBooleanField(parts[6], "doSendCopy", accountant);
+            listAccountants.add(accountant);
+        }
+        return listAccountants;
+    }
+
+    public List<POJOAssociation> buildAssociations(String input) {
+        if (input == null || input.trim().isEmpty()) return null;
+
+        List<POJOAssociation> listAssociations = new ArrayList<>();
+        String[] entries = input.split("\\|");
+        for (String entry : entries) {
+            String[] parts = entry.split(";");
+            POJOAssociation assoc = new POJOAssociation();
+            assoc.setStrPersonId(payloadHelper.normalize(parts[0]));
+            assoc.setStrRole(payloadHelper.normalize(parts[1]));
+            listAssociations.add(assoc);
+        }
+        return listAssociations;
+    }
+
+BUt few of the child POJO values are - which I missed to attach in earlier screenshot.
