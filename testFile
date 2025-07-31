@@ -1,17 +1,39 @@
-public List<POJOTaxResidence> buildTaxResidences(String input) {
-    if (input == null || input.trim().isEmpty()) return null;
+Can you update all the missing deatils in the below SD parameters which are present in examples. 
 
-    List<POJOTaxResidence> listTaxResidences = new ArrayList<>();
-    String[] entries = input.split("\\|");
-    for (String entry : entries) {
-        String[] parts = entry.split(";");
-        POJOTaxResidence tax = new POJOTaxResidence();
+ Then Send request to update Natural Person with below details
+      | subType                     | <subType>                    |
+      | domiCountry                 | <domiCountry>                |
+      | firstName                   | <firstName>                 |
+      | middleName                  | <middleName>               |
+      | lastName                    | <lastName>                  |
+      | birthDate                   | <birthDate>                 |
+      | gender                      | <gender>                    |
+      | nationalities               | <nationalities>             |
+      | title                       | <title>                     |
+      | birthPlace                  | <birthPlace>                |
+      | birthCountry                | <birthCountry>              |
+      | isEmployee                  | <isEmployee>                |
+      | pepAssociationCountry       | <pepAssociationCountry>     |
+      | pepClassificationReason     | <pepClassificationReason>   |
+      | pepCategory                 | <pepCategory>               |
+      | isMarketingOptOut           | <isMarketingOptOut>         |
+      | fatcaStatus                 | <fatcaStatus>               |
+      | crsType                     | <crsType>                   |
+      | ukTaxResidenceFromDate      | <ukTaxResidenceFromDate>    |
+      | hasTaxAvoidanceSchemes      | <hasTaxAvoidanceSchemes>    |
+      | hasHoldingBearerShares      | <hasHoldingBearerShares>    |
+      | hasInvestableAssets10M      | <hasInvestableAssets10M>    |
+      | hasHistoricTaxIssues        | <hasHistoricTaxIssues>      |
+      | hasTaxChgDomiStatus         | <hasTaxChgDomiStatus>       |
+      | hasTaxChgUkDomiStatus       | <hasTaxChgUkDomiStatus>     |
+      | hasTaxPrevClaimRemitBasis   | <hasTaxPrevClaimRemitBasis> |
+      | hasTaxIntendClaimRemitBasis | <hasTaxIntendClaimRemitBasis> |
+      | hasTravelProtection         | <hasTravelProtection>       |
+      | hasCouttsOnline             | <hasCouttsOnline>           |
+      | hasCouttsId                 | <hasCouttsId>               |
+      | idQuestionId                | <idQuestionId>              |
+      | correspondanceAddressId     | <correspondanceAddressId>   |
 
-        tax.setStrCountry(payloadHelper.normalize(parts[0]));
-        tax.setStrTaxNumber(payloadHelper.resolveDynamicText(parts[1]));
-        tax.setStrIdentityType(payloadHelper.normalize(parts[2]));
-
-        listTaxResidences.add(tax);
-    }
-    return listTaxResidences;
-}
+    Examples:
+      | subType       | domiCountry | firstName | middleName | lastName | birthDate  | gender | nationalities | title | birthPlace | birthCountry | electronicAddresses                        | isEmployee | taxResidences       | documentationIdentity                        | pepAssociationCountry | pepClassificationReason | pepCategory | isMarketingOptOut | fatcaStatus              | crsType            | ukTaxResidenceFromDate | hasTaxAvoidanceSchemes | isHoldingBearerShares | hasInvestableAssets10M | hasHistoricTaxIssues | hasTaxChgDomiStatus | hasTaxChgUkDomiStatus | hasTaxPrevClaimRemitanceBasis | hasTaxIntendClaimRemitanceBasis | accountants                                                                                                          | hasTravelProtection | hasCouttsOnline | hasCouttsId | associations                                | idQuestionId       | correspondanceAddressId | Comments    |
+      | pers_form_doc | GB          | Firstname | Middlename | Lastname | DEFAULT    | male   | GB            | mr    | London     | GB           | email;private;first.last@gmail.com;false   | false      | GB;RANDOM_10;nin    | pass;GB1234567890;GB;London;DEFAULT;DEFAULT  | GB                    | Testreason              | none        | false             | rbsc$fatca_non_us_person | rbsc$crs_np_doc    | DEFAULT                | false                  | false                 | false                  | false                | false               | false                 | false                         | false                           | TestName;LEGAL_PERSON_OBJECT_ID;rbsc$tax_adviser_primary;ADDRESS_OBJECT_ID;accountant.person@acccomp.com;false;false | false               | false           | false       | NATURAL_PERSON_OBJECT_ID;rbsc$is_sibling_of | DOCUMENT_OBJECT_ID | ADDRESS_OBJECT_ID       | Valid entry |
