@@ -1,26 +1,38 @@
-This is a pyalod - 
+Can we use this function in pyalod helper - 
 
-    public List<POJOTaxResidence> buildTaxResidences(String input) {
-        if (input == null || input.trim().isEmpty()) return null;
+public String resolveDynamicText(String type) {
+        if (type == null || type.isEmpty()) return "";
 
-        List<POJOTaxResidence> listTaxResidences = new ArrayList<>();
-        String[] entries = input.split("\\|");
-        for (String entry : entries) {
-            String[] parts = entry.split(";");
-            POJOTaxResidence tax = new POJOTaxResidence();
-            tax.setStrCountry(payloadHelper.normalize(parts[0]));
-            tax.setStrTaxNumber(payloadHelper.normalize(parts[1]));
-            tax.setStrIdentityType(payloadHelper.normalize(parts[2]));
-            listTaxResidences.add(tax);
+        // Handle expression like "prefix + RANDOM_6 + suffix"
+        if (type.contains("+")) {
+            String[] parts = type.split("\\+");
+            StringBuilder result = new StringBuilder();
+            for (String part : parts) {
+                String trimmed = part.trim();
+                result.append(resolveDynamicText(trimmed));
+            }
+            return result.toString();
         }
-        return listTaxResidences;
+
+        switch (type.trim().toUpperCase()) {
+            case "EMPTY":
+                return "";
+            case "NA":
+                return null;
+            case "RANDOM_LT_250":
+                return randomString(random.nextInt(249) + 1);
+            case "RANDOM_GT_250":
+                return randomString(random.nextInt(500) + 251);
+            default:
+                // Check if it's like RANDOM_6
+                if (type.toUpperCase().startsWith("RANDOM_")) {
+                    try {
+                        int length = Integer.parseInt(type.substring(7));
+                        return randomString(length);
+                    } catch (NumberFormatException e) {
+                        return type;
+                    }
+                }
+                return type;
+        }
     }
-
-For part[1], I want to generate a random character of 10 size, how to include that ?
-
-similar to below payload - 
-
-    public POJOChqBookProfileRequest buildChqBookProfilePayload(Map<String, String> mapChqBookDetails, ScenarioContext scenarioContext) {
-        POJOChqBookProfileRequest chqBookProfile = new POJOChqBookProfileRequest();
-
-        chqBookProfile.setStrUuid(UUID.randomUUID().toString().substring(0, 7));
