@@ -1,3 +1,26 @@
-Examples:
-  | subType       | domiCountry | firstName | middleName | lastName | birthDate | gender | nationalities | title | birthPlace | birthCountry | electronicAddresses                                                                                          | isEmployee | taxResidences                                         | documentationIdentity                                                                                                   | pepAssociationCountry | pepClassificationReason | pepCategory | isMarketingOptOut | fatcaStatus              | crsType            | ukTaxResidenceFromDate | hasTaxAvoidanceSchemes | isHoldingBearerShares | hasInvestableAssets10M | hasHistoricTaxIssues | hasTaxChgDomiStatus | hasTaxChgUkDomiStatus | hasTaxPrevClaimRemitanceBasis | hasTaxIntendClaimRemitanceBasis | accountants                                                                                                                                                            | hasTravelProtection | hasCouttsOnline | hasCouttsId | associations                                                                 | idQuestionId | correspondanceAddressId | Comments   |
-  | pers_form_doc | GB          | Firstname | Middlename | Lastname | 1990-10-01 | male   | GB,CH          | mr    | Zurich     | CH           | email;private;first.last@gmail.com;false|mobile;business;+44791234567;true                                          | false      | GB;123456789;nin|US;553518830;tin                       | pass;GB1234567890;GB;London;2018-01-01;2028-12-31|xxx;123;xx;123;2018-01-01;2028-12-31 | IR                   | Test Reason              | none        | true               | rbsc$fatca_non_us_person | rbsc$crs_np_doc   | 2010-01-01              | false                  | true                   | true                  | false               | false               | false                 | false                          | false                           | Primary Accountant Name;665992478;rbsc$tax_adviser_primary;661830651;accountant.person@acccomp.com;true;true|Secondary Accountant Name;665992478;rbsc$tax_adviser_second;661830651;accountant2.person@acccomp.com;false;false | false               | true            | true        | 665992477;rbsc$is_sibling_of|665992477;rbsc$has_director | 665984551    | 661830651              | Valid entry |
+This is a pyalod - 
+
+    public List<POJOTaxResidence> buildTaxResidences(String input) {
+        if (input == null || input.trim().isEmpty()) return null;
+
+        List<POJOTaxResidence> listTaxResidences = new ArrayList<>();
+        String[] entries = input.split("\\|");
+        for (String entry : entries) {
+            String[] parts = entry.split(";");
+            POJOTaxResidence tax = new POJOTaxResidence();
+            tax.setStrCountry(payloadHelper.normalize(parts[0]));
+            tax.setStrTaxNumber(payloadHelper.normalize(parts[1]));
+            tax.setStrIdentityType(payloadHelper.normalize(parts[2]));
+            listTaxResidences.add(tax);
+        }
+        return listTaxResidences;
+    }
+
+For part[1], I want to generate a random character of 10 size, how to include that ?
+
+similar to below payload - 
+
+    public POJOChqBookProfileRequest buildChqBookProfilePayload(Map<String, String> mapChqBookDetails, ScenarioContext scenarioContext) {
+        POJOChqBookProfileRequest chqBookProfile = new POJOChqBookProfileRequest();
+
+        chqBookProfile.setStrUuid(UUID.randomUUID().toString().substring(0, 7));
