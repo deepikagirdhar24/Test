@@ -1,11 +1,11 @@
 // Update Natural Person
-    public Response updateNaturalPerson(String strEnvType, String strBearerToken, String strJwtToken, Map<String, String> mapPersonDetails, ScenarioContext scenarioContext) throws Exception {
+    public Response updateNaturalPerson(String strEnvType, String strBearerToken, String strJwtToken, Map<String, String> mapUpdPersonDetails, ScenarioContext scenarioContext) throws Exception {
 
         String strUrl = getTYKURL(strEnvType, "TYK.CREATENEWPERSON") + "/{PersonKey}";
         String strNaturalPersonObjectId = scenarioContext.getContext("naturalPersonObjectId");
 
-        POJONewPersonRequest pojoNewPersonRequest = payloads.buildNewPersonPayload(mapPersonDetails);
-        String strRequestBody = objObjectMapper.writeValueAsString(pojoNewPersonRequest);
+        POJOUpdNaturalPersonRequest pojoUpdNaturalPersonRequest = payloads.buildUpdNaturalPersonPayload(mapUpdPersonDetails, scenarioContext);
+        String strRequestBody = objObjectMapper.writeValueAsString(pojoUpdNaturalPersonRequest);
 
         ExtentCucumberAdapter.addTestStepLog("Sending request to update Natural Person");
 
@@ -25,55 +25,8 @@
         return objResponse;
     }
 
-TYK.CREATENEWPERSON=/avq/acpr/sas-person/v1/natural-persons
+what is the problemw ith path paraeters here - 
 
-error is - 
-
-[INFO] 
-[INFO] --------------------< org.example:wealth-icos-api >---------------------
-[INFO] Building wealth-icos-api 1.0-SNAPSHOT
-[INFO] --------------------------------[ jar ]---------------------------------
-Downloading from dws-all-fallback-zambezi-mirror: https://artifactory-server.app.banksvcs.net/artifactory/dws-all-repos/io/cucumber/messages/maven-metadata.xml
-Downloading from zambezi-all-repos: https://artifactory-server.app.banksvcs.net/artifactory/dws-all-repos/io/cucumber/messages/maven-metadata.xml
-Downloaded from dws-all-fallback-zambezi-mirror: https://artifactory-server.app.banksvcs.net/artifactory/dws-all-repos/io/cucumber/messages/maven-metadata.xml (2.9 kB at 3.5 kB/s)
-Downloaded from zambezi-all-repos: https://artifactory-server.app.banksvcs.net/artifactory/dws-all-repos/io/cucumber/messages/maven-metadata.xml (2.9 kB at 3.4 kB/s)
-Downloading from dws-all-fallback-zambezi-mirror: https://artifactory-server.app.banksvcs.net/artifactory/dws-all-repos/io/cucumber/query/maven-metadata.xml
-Downloading from zambezi-all-repos: https://artifactory-server.app.banksvcs.net/artifactory/dws-all-repos/io/cucumber/query/maven-metadata.xml
-Downloaded from zambezi-all-repos: https://artifactory-server.app.banksvcs.net/artifactory/dws-all-repos/io/cucumber/query/maven-metadata.xml (678 B at 5.1 kB/s)
-Downloaded from dws-all-fallback-zambezi-mirror: https://artifactory-server.app.banksvcs.net/artifactory/dws-all-repos/io/cucumber/query/maven-metadata.xml (678 B at 4.1 kB/s)
-[INFO] 
-[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ wealth-icos-api ---
-[INFO] Deleting C:\Users\girdd\IdeaProjects\icosapitests\target
-[INFO] 
-[INFO] --- build-helper-maven-plugin:3.0.0:add-source (default) @ wealth-icos-api ---
-[INFO] Source directory: C:\Users\girdd\IdeaProjects\icosapitests\src\main\java added.
-[INFO] Source directory: C:\Users\girdd\IdeaProjects\icosapitests\src\test\java added.
-[INFO] 
-[INFO] --- properties-maven-plugin:1.1.0:write-project-properties (default) @ wealth-icos-api ---
-[INFO] 
-[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ wealth-icos-api ---
-[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
-[INFO] skip non existing resourceDirectory C:\Users\girdd\IdeaProjects\icosapitests\src\main\resources
-[INFO] 
-[INFO] --- maven-compiler-plugin:3.10.0:compile (default-compile) @ wealth-icos-api ---
-[INFO] Changes detected - recompiling the module!
-[WARNING] File encoding has not been set, using platform encoding UTF-8, i.e. build is platform dependent!
-[INFO] Compiling 72 source files to C:\Users\girdd\IdeaProjects\icosapitests\target\classes
-[INFO] /C:/Users/girdd/IdeaProjects/icosapitests/src/main/java/commonLibrary/devHelperLibrary.java: C:\Users\girdd\IdeaProjects\icosapitests\src\main\java\commonLibrary\devHelperLibrary.java uses or overrides a deprecated API.
-[INFO] /C:/Users/girdd/IdeaProjects/icosapitests/src/main/java/commonLibrary/devHelperLibrary.java: Recompile with -Xlint:deprecation for details.
-[INFO] /C:/Users/girdd/IdeaProjects/icosapitests/src/main/java/ICOS/Address.java: Some input files use unchecked or unsafe operations.
-[INFO] /C:/Users/girdd/IdeaProjects/icosapitests/src/main/java/ICOS/Address.java: Recompile with -Xlint:unchecked for details.
-[INFO] 
-[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ wealth-icos-api ---
-[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
-[INFO] Copying 23 resources
-[INFO] 
-[INFO] --- maven-compiler-plugin:3.10.0:testCompile (default-testCompile) @ wealth-icos-api ---
-[INFO] Changes detected - recompiling the module!
-[WARNING] File encoding has not been set, using platform encoding UTF-8, i.e. build is platform dependent!
-[INFO] Compiling 19 source files to C:\Users\girdd\IdeaProjects\icosapitests\target\test-classes
-[INFO] /C:/Users/girdd/IdeaProjects/icosapitests/src/test/java/stepDefinations/ContactNotesSteps.java: Some input files use unchecked or unsafe operations.
-[INFO] /C:/Users/girdd/IdeaProjects/icosapitests/src/test/java/stepDefinations/ContactNotesSteps.java: Recompile with -Xlint:unchecked for details.
 [INFO] 
 [INFO] --- maven-surefire-plugin:3.0.0-M5:test (default-test) @ wealth-icos-api ---
 [INFO] 
@@ -81,14 +34,14 @@ Downloaded from dws-all-fallback-zambezi-mirror: https://artifactory-server.app.
 [INFO]  T E S T S
 [INFO] -------------------------------------------------------
 [INFO] Running testRunner.Runner
-Scenario Outline: Verify the Post Natural Persons API with valid data - Valid entry # src/test/resources/Features/UpdateNaturalPerson.feature:79
+Scenario Outline: Verify the Post Natural Persons API with valid data - Valid entry # src/test/resources/Features/UpdateNaturalPerson.feature:82
 Before All
-Jul 31, 2025 8:29:55 AM hooks.CucumberHooks beforeScenario
+Jul 31, 2025 9:56:46 AM hooks.CucumberHooks beforeScenario
 INFO: Before Scenario: Test is starting!
   Given Send Request to get Authentication Token for ICOS                           # stepDefinations.GetUserSteps.sendRequestToGetAuthenticationTokenForICOS()
   When I generate the JWT Token                                                     # stepDefinations.GetUserSteps.iGenerateTheJWTToken()
-Jul 31, 2025 8:30:09 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Response is: {"objectId":"665077210","orderId":"2933225955"}
+Jul 31, 2025 9:56:53 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: Response is: {"objectId":"665077296","orderId":"2933234445"}
   Then Send request to generate New Person with below details                       # stepDefinations.NaturalPersonSteps.sendRequestToGenerateNewPersonWithDetails(io.cucumber.datatable.DataTable)
     | firstName       | Firstname     |
     | lastName        | Lastname      |
@@ -96,14 +49,14 @@ INFO: Value is: Response is: {"objectId":"665077210","orderId":"2933225955"}
     | domicileCountry | CH            |
     | gender          | male          |
     | nationalities   | CH            |
-Jul 31, 2025 8:30:15 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Response is: {"objectId":"665077212","orderId":"2933226024"}
+Jul 31, 2025 9:56:58 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: Response is: {"objectId":"665077297","orderId":"2933234456"}
   Then Send request to generate Legal Person with below details                     # stepDefinations.LegalPersonSteps.sendRequestToGenerateLegalPersonWithDetails(io.cucumber.datatable.DataTable)
     | subType         | pers_form_ass    |
     | domicileCountry | GB               |
     | name            | Company Name Ltd |
-Jul 31, 2025 8:30:25 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Response for Address is: {"objectId":"665832383","orderId":"2933226070"}
+Jul 31, 2025 9:57:02 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: Response for Address is: {"objectId":"665832431","orderId":"2933234469"}
   Then Send request to create Address with below details                            # stepDefinations.AddressSteps.sendRequestToCreateAddressWithDetails(io.cucumber.datatable.DataTable)
     | firstName        | Firstname             |
     | middleName       | Middlename            |
@@ -121,8 +74,8 @@ INFO: Value is: Response for Address is: {"objectId":"665832383","orderId":"2933
     | state            | RANDOM_49             |
     | zip              | 8001                  |
     | country          | CH                    |
-Jul 31, 2025 8:30:29 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Response is: {"objectId":"665077210","orderId":"2933226160"}
+Jul 31, 2025 9:57:05 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: Response is: {"objectId":"665077296","orderId":"2933234477"}
   Then Send request to generate New Document with below details                     # stepDefinations.DocumentSteps.sendRequestToGenerateNewDocumentWithDetails(io.cucumber.datatable.DataTable)
     | personId      | NATURAL_PERSON_OBJECT_ID                                                                      |
     | challengeWord | Challenge Answer                                                                              |
@@ -259,13 +212,16 @@ INFO: Value is: Response is: {"objectId":"665077210","orderId":"2933226160"}
 	at io.restassured.internal.RequestSpecificationImpl.post(RequestSpecificationImpl.groovy:176)
 	at io.restassured.internal.RequestSpecificationImpl.post(RequestSpecificationImpl.groovy)
 	at ICOS.BaseApiClient.sendPostRequest(BaseApiClient.java:40)
-	at ICOS.UpdNaturalPerson.updateNaturalPerson(UpdNaturalPerson.java:44)
+	at ICOS.UpdNaturalPerson.updateNaturalPerson(UpdNaturalPerson.java:45)
 	at stepDefinations.UpdNaturalPersonSteps.sendRequestToGenerateNewPersonWithDetails(UpdNaturalPersonSteps.java:77)
 	at âœ½.Send request to update Natural Person with below details(file:///C:/Users/girdd/IdeaProjects/icosapitests/src/test/resources/Features/UpdateNaturalPerson.feature:38)
-Jul 31, 2025 8:30:33 AM tech.grasshopper.pdf.PDFCucumberReport collectReportConfiguration
+  And I verify the Status Code for Update Natural Persons "200"                     # stepDefinations.UpdNaturalPersonSteps.iVerifyTheStatusCodeForUpdateNaturalPersons(java.lang.String)
+  And I verify the "objectId" exists in Update Natural Person response              # stepDefinations.UpdNaturalPersonSteps.iVerifyTheKeyExistsInUpdateNaturalPersonResponse(java.lang.String)
+  And I verify the "orderId" exists in Update Natural Person response               # stepDefinations.UpdNaturalPersonSteps.iVerifyTheKeyExistsInUpdateNaturalPersonResponse(java.lang.String)
+Jul 31, 2025 9:57:07 AM tech.grasshopper.pdf.PDFCucumberReport collectReportConfiguration
 INFO: PDF report configuration YAML file not found. Using default settings.
-[ERROR] Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 42.427 s <<< FAILURE! - in testRunner.Runner
-[ERROR] Verify Update Natural Person API.Verify the Post Natural Persons API with valid data - Valid entry  Time elapsed: 36.362 s  <<< ERROR!
+[ERROR] Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 24.743 s <<< FAILURE! - in testRunner.Runner
+[ERROR] Verify Update Natural Person API.Verify the Post Natural Persons API with valid data - Valid entry  Time elapsed: 19.925 s  <<< ERROR!
 java.lang.IllegalArgumentException: Invalid number of path parameters. Expected 1, was 0. Undefined path parameters are: PersonKey.
 [INFO] 
 [INFO] Results:
@@ -275,3 +231,651 @@ java.lang.IllegalArgumentException: Invalid number of path parameters. Expected 
 [INFO] 
 [ERROR] Tests run: 1, Failures: 0, Errors: 1, Skipped: 0
 [INFO] 
+
+
+Payloads - 
+
+public POJOUpdNaturalPersonRequest buildUpdNaturalPersonPayload(Map<String, String> mapPersonDetails, ScenarioContext scenarioContext) {
+        POJOUpdNaturalPersonRequest updNaturalPerson = new POJOUpdNaturalPersonRequest();
+
+        String strDocumentObjectId = scenarioContext.getContext("documentObjectId");
+        String strAddressObjectId = scenarioContext.getContext("addressObjectId");
+
+        updNaturalPerson.setStrUuid(payloadHelper.normalize(mapPersonDetails.get("uuid")));
+//        updNaturalPerson.setStrId(payloadHelper.normalize(mapPersonDetails.get("id")));
+        updNaturalPerson.setStrSubType(payloadHelper.normalize(mapPersonDetails.get("subType")));
+        updNaturalPerson.setStrDomiCountry(payloadHelper.normalize(mapPersonDetails.get("domiCountry")));
+        updNaturalPerson.setStrFirstName(payloadHelper.normalize(mapPersonDetails.get("firstName")));
+        updNaturalPerson.setStrMiddleName(payloadHelper.normalize(mapPersonDetails.get("middleName")));
+        updNaturalPerson.setStrLastName(payloadHelper.normalize(mapPersonDetails.get("lastName")));
+        updNaturalPerson.setStrBirthDate(payloadHelper.resolveDate("UpdateNaturalPerson", "birthDate", mapPersonDetails.get("birthDate")));
+        updNaturalPerson.setStrGender(payloadHelper.normalize(mapPersonDetails.get("gender")));
+        updNaturalPerson.setLstNationalities(payloadHelper.parseNationalities(mapPersonDetails.get("nationalities")));
+        updNaturalPerson.setStrTitle(payloadHelper.normalize(mapPersonDetails.get("title")));
+        updNaturalPerson.setStrBirthPlace(payloadHelper.normalize(mapPersonDetails.get("birthPlace")));
+        updNaturalPerson.setStrBirthCountry(payloadHelper.normalize(mapPersonDetails.get("birthCountry")));
+        updNaturalPerson.setLstElectronicAddresses(buildElectronicAddresses(mapPersonDetails.get("electronicAddresses")));
+        payloadHelper.applyBooleanField(mapPersonDetails.get("isEmployee"), "isEmployee", updNaturalPerson);
+        updNaturalPerson.setLstTaxResidences(buildTaxResidences(mapPersonDetails.get("taxResidences")));
+        updNaturalPerson.setLstDocumentationIdentity(buildDocumentationIdentity(
+                mapPersonDetails.get("documentationIdentity"), "UpdateNaturalPerson"
+        ));
+        updNaturalPerson.setStrPepAssociationCountry(payloadHelper.normalize(mapPersonDetails.get("pepAssociationCountry")));
+        updNaturalPerson.setStrPepClassificationReason(payloadHelper.normalize(mapPersonDetails.get("pepClassificationReason")));
+        updNaturalPerson.setStrPepCategory(payloadHelper.normalize(mapPersonDetails.get("pepCategory")));
+        payloadHelper.applyBooleanField(mapPersonDetails.get("isMarketingOptOut"), "isMarketingOptOut", updNaturalPerson);
+        updNaturalPerson.setStrFatcaStatus(payloadHelper.normalize(mapPersonDetails.get("fatcaStatus")));
+        updNaturalPerson.setStrCrsType(payloadHelper.normalize(mapPersonDetails.get("crsType")));
+        updNaturalPerson.setStrUkTaxResidenceFromDate(payloadHelper.resolveDate("UpdateNaturalPerson", "ukTaxResidenceFromDate", mapPersonDetails.get("ukTaxResidenceFromDate")));
+        payloadHelper.applyBooleanField(mapPersonDetails.get("hasTaxAvoidanceSchemes"), "hasTaxAvoidanceSchemes", updNaturalPerson);
+        payloadHelper.applyBooleanField(mapPersonDetails.get("isHoldingBearerShares"), "isHoldingBearerShares", updNaturalPerson);
+        payloadHelper.applyBooleanField(mapPersonDetails.get("hasInvestableAssets10M"), "hasInvestableAssets10M", updNaturalPerson);
+        payloadHelper.applyBooleanField(mapPersonDetails.get("hasHistoricTaxIssues"), "hasHistoricTaxIssues", updNaturalPerson);
+        payloadHelper.applyBooleanField(mapPersonDetails.get("hasTaxChgDomiStatus"), "hasTaxChgDomiStatus", updNaturalPerson);
+        payloadHelper.applyBooleanField(mapPersonDetails.get("hasTaxChgUkDomiStatus"), "hasTaxChgUkDomiStatus", updNaturalPerson);
+        payloadHelper.applyBooleanField(mapPersonDetails.get("hasTaxPrevClaimRemitanceBasis"), "hasTaxPrevClaimRemitanceBasis", updNaturalPerson);
+        payloadHelper.applyBooleanField(mapPersonDetails.get("hasTaxIntendClaimRemitanceBasis"), "hasTaxIntendClaimRemitanceBasis", updNaturalPerson);
+        updNaturalPerson.setLstAccountants(buildAccountants(mapPersonDetails.get("accountants"), scenarioContext));
+        payloadHelper.applyBooleanField(mapPersonDetails.get("hasTravelProtection"), "hasTravelProtection", updNaturalPerson);
+        payloadHelper.applyBooleanField(mapPersonDetails.get("hasCouttsOnline"), "hasCouttsOnline", updNaturalPerson);
+        payloadHelper.applyBooleanField(mapPersonDetails.get("hasCouttsId"), "hasCouttsId", updNaturalPerson);
+        updNaturalPerson.setLstAssociations(buildAssociations(mapPersonDetails.get("associations"), scenarioContext));
+
+//        updNaturalPerson.setStrIdQuestionId(payloadHelper.normalize(mapPersonDetails.get("idQuestionId")));
+        String resolvedStrQuestionId = payloadHelper.resolveId(mapPersonDetails.get("idQuestionId"), strDocumentObjectId);
+        updNaturalPerson.setStrIdQuestionId(resolvedStrQuestionId);
+
+//        updNaturalPerson.setStrCorrespondanceAddressId(payloadHelper.normalize(mapPersonDetails.get("correspondanceAddressId")));
+        String resolvedCorrespondanceAddressId = payloadHelper.resolveId(mapPersonDetails.get("correspondanceAddressId"), strAddressObjectId);
+        updNaturalPerson.setStrCorrespondanceAddressId(resolvedCorrespondanceAddressId);
+
+        return updNaturalPerson;
+    }
+
+
+    public List<POJOElectronicAddress> buildElectronicAddresses(String input) {
+        if (input == null || input.trim().isEmpty()) return null;
+
+        List<POJOElectronicAddress> listElectronicAddresses = new ArrayList<>();
+        String[] entries = input.split("\\|");
+        for (String entry : entries) {
+            String[] parts = entry.split(";");
+            POJOElectronicAddress address = new POJOElectronicAddress();
+            address.setStrMedium(payloadHelper.normalize(parts[0]));
+            address.setStrKind(payloadHelper.normalize(parts[1]));
+            address.setStrValue(payloadHelper.normalize(parts[2]));
+            payloadHelper.applyBooleanField(parts[3], "isPreferred", address);
+            listElectronicAddresses.add(address);
+        }
+        return listElectronicAddresses;
+    }
+
+    public List<POJOTaxResidence> buildTaxResidences(String input) {
+        if (input == null || input.trim().isEmpty()) return null;
+
+        List<POJOTaxResidence> listTaxResidences = new ArrayList<>();
+        String[] entries = input.split("\\|");
+        for (String entry : entries) {
+            String[] parts = entry.split(";");
+            POJOTaxResidence tax = new POJOTaxResidence();
+
+            tax.setStrCountry(payloadHelper.normalize(parts[0]));
+            tax.setStrTaxNumber(payloadHelper.resolveDynamicText(parts[1]));
+            tax.setStrIdentityType(payloadHelper.normalize(parts[2]));
+
+            listTaxResidences.add(tax);
+        }
+        return listTaxResidences;
+    }
+
+
+    public List<POJODocumentationIdentity> buildDocumentationIdentity(String input, String context) {
+        if (input == null || input.trim().isEmpty()) return null;
+
+        List<POJODocumentationIdentity> listDocumentation = new ArrayList<>();
+        String[] entries = input.split("\\|");
+        for (String entry : entries) {
+            String[] parts = entry.split(";");
+            POJODocumentationIdentity doc = new POJODocumentationIdentity();
+            doc.setStrIdentityType(payloadHelper.normalize(parts[0]));
+            doc.setStrNumber(payloadHelper.normalize(parts[1]));
+            doc.setStrIssueCountry(payloadHelper.normalize(parts[2]));
+            doc.setStrIssuePlace(payloadHelper.normalize(parts[3]));
+            doc.setStrIssueDate(payloadHelper.resolveDate(context, "issueDate", parts[4]));
+            doc.setStrValidUntil(payloadHelper.resolveDate(context, "validUntil", parts[5]));
+            listDocumentation.add(doc);
+        }
+        return listDocumentation;
+    }
+
+
+package ICOS.pojo;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.List;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class POJOUpdNaturalPersonRequest {
+
+    @JsonProperty("uuid")
+    private String strUuid;
+
+//    @JsonProperty("id")
+//    private String strId;
+
+    @JsonProperty("subType")
+    private String strSubType;
+
+    @JsonProperty("domiCountry")
+    private String strDomiCountry;
+
+    @JsonProperty("firstName")
+    private String strFirstName;
+
+    @JsonProperty("middleName")
+    private String strMiddleName;
+
+    @JsonProperty("lastName")
+    private String strLastName;
+
+    @JsonProperty("birthDate")
+    private String strBirthDate;
+
+    @JsonProperty("gender")
+    private String strGender;
+
+    @JsonProperty("nationalities")
+    private List<String> lstNationalities;
+
+    @JsonProperty("title")
+    private String strTitle;
+
+    @JsonProperty("birthPlace")
+    private String strBirthPlace;
+
+    @JsonProperty("birthCountry")
+    private String strBirthCountry;
+
+    @JsonProperty("electronicAddresses")
+    private List<POJOElectronicAddress> lstElectronicAddresses;
+
+    @JsonProperty("isEmployee")
+    private Boolean blnIsEmployee;
+
+    @JsonProperty("taxResidences")
+    private List<POJOTaxResidence> lstTaxResidences;
+
+    @JsonProperty("documentationIdentity")
+    private List<POJODocumentationIdentity> lstDocumentationIdentity;
+
+    @JsonProperty("pepAssociationCountry")
+    private String strPepAssociationCountry;
+
+    @JsonProperty("pepClassificationReason")
+    private String strPepClassificationReason;
+
+    @JsonProperty("pepCategory")
+    private String strPepCategory;
+
+    @JsonProperty("isMarketingOptOut")
+    private Boolean blnIsMarketingOptOut;
+
+    @JsonProperty("fatcaStatus")
+    private String strFatcaStatus;
+
+    @JsonProperty("crsType")
+    private String strCrsType;
+
+    @JsonProperty("ukTaxResidenceFromDate")
+    private String strUkTaxResidenceFromDate;
+
+    @JsonProperty("hasTaxAvoidanceSchemes")
+    private Boolean blnHasTaxAvoidanceSchemes;
+
+    @JsonProperty("isHoldingBearerShares")
+    private Boolean blnIsHoldingBearerShares;
+
+    @JsonProperty("hasInvestableAssets10M")
+    private Boolean blnHasInvestableAssets10M;
+
+    @JsonProperty("hasHistoricTaxIssues")
+    private Boolean blnHasHistoricTaxIssues;
+
+    @JsonProperty("hasTaxChgDomiStatus")
+    private Boolean blnHasTaxChgDomiStatus;
+
+    @JsonProperty("hasTaxChgUkDomiStatus")
+    private Boolean blnHasTaxChgUkDomiStatus;
+
+    @JsonProperty("hasTaxPrevClaimRemitanceBasis")
+    private Boolean blnHasTaxPrevClaimRemitanceBasis;
+
+    @JsonProperty("hasTaxIntendClaimRemitanceBasis")
+    private Boolean blnHasTaxIntendClaimRemitanceBasis;
+
+    @JsonProperty("accountants")
+    private List<POJOAccountant> lstAccountants;
+
+    @JsonProperty("hasTravelProtection")
+    private Boolean blnHasTravelProtection;
+
+    @JsonProperty("hasCouttsOnline")
+    private Boolean blnHasCouttsOnline;
+
+    @JsonProperty("hasCouttsId")
+    private Boolean blnHasCouttsId;
+
+    @JsonProperty("associations")
+    private List<POJOAssociation> lstAssociations;
+
+    @JsonProperty("idQuestionId")
+    private String strIdQuestionId;
+
+    @JsonProperty("correspondanceAddressId")
+    private String strCorrespondanceAddressId;
+
+    // ---------- Getters & Setters ----------
+
+    public String getStrUuid() { return strUuid; }
+    public void setStrUuid(String strUuid) { this.strUuid = strUuid; }
+
+//    public String getStrId() { return strId; }
+//    public void setStrId(String strId) { this.strId = strId; }
+
+    public String getStrSubType() { return strSubType; }
+    public void setStrSubType(String strSubType) { this.strSubType = strSubType; }
+
+    public String getStrDomiCountry() { return strDomiCountry; }
+    public void setStrDomiCountry(String strDomiCountry) { this.strDomiCountry = strDomiCountry; }
+
+    public String getStrFirstName() { return strFirstName; }
+    public void setStrFirstName(String strFirstName) { this.strFirstName = strFirstName; }
+
+    public String getStrMiddleName() { return strMiddleName; }
+    public void setStrMiddleName(String strMiddleName) { this.strMiddleName = strMiddleName; }
+
+    public String getStrLastName() { return strLastName; }
+    public void setStrLastName(String strLastName) { this.strLastName = strLastName; }
+
+    public String getStrBirthDate() { return strBirthDate; }
+    public void setStrBirthDate(String strBirthDate) { this.strBirthDate = strBirthDate; }
+
+    public String getStrGender() { return strGender; }
+    public void setStrGender(String strGender) { this.strGender = strGender; }
+
+    public List<String> getLstNationalities() { return lstNationalities; }
+    public void setLstNationalities(List<String> lstNationalities) { this.lstNationalities = lstNationalities; }
+
+    public String getStrTitle() { return strTitle; }
+    public void setStrTitle(String strTitle) { this.strTitle = strTitle; }
+
+    public String getStrBirthPlace() { return strBirthPlace; }
+    public void setStrBirthPlace(String strBirthPlace) { this.strBirthPlace = strBirthPlace; }
+
+    public String getStrBirthCountry() { return strBirthCountry; }
+    public void setStrBirthCountry(String strBirthCountry) { this.strBirthCountry = strBirthCountry; }
+
+    public List<POJOElectronicAddress> getLstElectronicAddresses() { return lstElectronicAddresses; }
+    public void setLstElectronicAddresses(List<POJOElectronicAddress> lstElectronicAddresses) { this.lstElectronicAddresses = lstElectronicAddresses; }
+
+    public Boolean getBlnIsEmployee() { return blnIsEmployee; }
+    public void setBlnIsEmployee(Boolean blnIsEmployee) { this.blnIsEmployee = blnIsEmployee; }
+
+    public List<POJOTaxResidence> getLstTaxResidences() { return lstTaxResidences; }
+    public void setLstTaxResidences(List<POJOTaxResidence> lstTaxResidences) { this.lstTaxResidences = lstTaxResidences; }
+
+    public List<POJODocumentationIdentity> getLstDocumentationIdentity() { return lstDocumentationIdentity; }
+    public void setLstDocumentationIdentity(List<POJODocumentationIdentity> lstDocumentationIdentity) { this.lstDocumentationIdentity = lstDocumentationIdentity; }
+
+    public String getStrPepAssociationCountry() { return strPepAssociationCountry; }
+    public void setStrPepAssociationCountry(String strPepAssociationCountry) { this.strPepAssociationCountry = strPepAssociationCountry; }
+
+    public String getStrPepClassificationReason() { return strPepClassificationReason; }
+    public void setStrPepClassificationReason(String strPepClassificationReason) { this.strPepClassificationReason = strPepClassificationReason; }
+
+    public String getStrPepCategory() { return strPepCategory; }
+    public void setStrPepCategory(String strPepCategory) { this.strPepCategory = strPepCategory; }
+
+    public Boolean getBlnIsMarketingOptOut() { return blnIsMarketingOptOut; }
+    public void setBlnIsMarketingOptOut(Boolean blnIsMarketingOptOut) { this.blnIsMarketingOptOut = blnIsMarketingOptOut; }
+
+    public String getStrFatcaStatus() { return strFatcaStatus; }
+    public void setStrFatcaStatus(String strFatcaStatus) { this.strFatcaStatus = strFatcaStatus; }
+
+    public String getStrCrsType() { return strCrsType; }
+    public void setStrCrsType(String strCrsType) { this.strCrsType = strCrsType; }
+
+    public String getStrUkTaxResidenceFromDate() { return strUkTaxResidenceFromDate; }
+    public void setStrUkTaxResidenceFromDate(String strUkTaxResidenceFromDate) { this.strUkTaxResidenceFromDate = strUkTaxResidenceFromDate; }
+
+    public Boolean getBlnHasTaxAvoidanceSchemes() { return blnHasTaxAvoidanceSchemes; }
+    public void setBlnHasTaxAvoidanceSchemes(Boolean blnHasTaxAvoidanceSchemes) { this.blnHasTaxAvoidanceSchemes = blnHasTaxAvoidanceSchemes; }
+
+    public Boolean getBlnIsHoldingBearerShares() { return blnIsHoldingBearerShares; }
+    public void setBlnIsHoldingBearerShares(Boolean blnIsHoldingBearerShares) { this.blnIsHoldingBearerShares = blnIsHoldingBearerShares; }
+
+    public Boolean getBlnHasInvestableAssets10M() { return blnHasInvestableAssets10M; }
+    public void setBlnHasInvestableAssets10M(Boolean blnHasInvestableAssets10M) { this.blnHasInvestableAssets10M = blnHasInvestableAssets10M; }
+
+    public Boolean getBlnHasHistoricTaxIssues() { return blnHasHistoricTaxIssues; }
+    public void setBlnHasHistoricTaxIssues(Boolean blnHasHistoricTaxIssues) { this.blnHasHistoricTaxIssues = blnHasHistoricTaxIssues; }
+
+    public Boolean getBlnHasTaxChgDomiStatus() { return blnHasTaxChgDomiStatus; }
+    public void setBlnHasTaxChgDomiStatus(Boolean blnHasTaxChgDomiStatus) { this.blnHasTaxChgDomiStatus = blnHasTaxChgDomiStatus; }
+
+    public Boolean getBlnHasTaxChgUkDomiStatus() { return blnHasTaxChgUkDomiStatus; }
+    public void setBlnHasTaxChgUkDomiStatus(Boolean blnHasTaxChgUkDomiStatus) { this.blnHasTaxChgUkDomiStatus = blnHasTaxChgUkDomiStatus; }
+
+    public Boolean getBlnHasTaxPrevClaimRemitanceBasis() { return blnHasTaxPrevClaimRemitanceBasis; }
+    public void setBlnHasTaxPrevClaimRemitanceBasis(Boolean blnHasTaxPrevClaimRemitanceBasis) { this.blnHasTaxPrevClaimRemitanceBasis = blnHasTaxPrevClaimRemitanceBasis; }
+
+    public Boolean getBlnHasTaxIntendClaimRemitanceBasis() { return blnHasTaxIntendClaimRemitanceBasis; }
+    public void setBlnHasTaxIntendClaimRemitanceBasis(Boolean blnHasTaxIntendClaimRemitanceBasis) { this.blnHasTaxIntendClaimRemitanceBasis = blnHasTaxIntendClaimRemitanceBasis; }
+
+    public List<POJOAccountant> getLstAccountants() { return lstAccountants; }
+    public void setLstAccountants(List<POJOAccountant> lstAccountants) { this.lstAccountants = lstAccountants; }
+
+    public Boolean getBlnHasTravelProtection() { return blnHasTravelProtection; }
+    public void setBlnHasTravelProtection(Boolean blnHasTravelProtection) { this.blnHasTravelProtection = blnHasTravelProtection; }
+
+    public Boolean getBlnHasCouttsOnline() { return blnHasCouttsOnline; }
+    public void setBlnHasCouttsOnline(Boolean blnHasCouttsOnline) { this.blnHasCouttsOnline = blnHasCouttsOnline; }
+
+    public Boolean getBlnHasCouttsId() { return blnHasCouttsId; }
+    public void setBlnHasCouttsId(Boolean blnHasCouttsId) { this.blnHasCouttsId = blnHasCouttsId; }
+
+    public List<POJOAssociation> getLstAssociations() { return lstAssociations; }
+    public void setLstAssociations(List<POJOAssociation> lstAssociations) { this.lstAssociations = lstAssociations; }
+
+    public String getStrIdQuestionId() { return strIdQuestionId; }
+    public void setStrIdQuestionId(String strIdQuestionId) { this.strIdQuestionId = strIdQuestionId; }
+
+    public String getStrCorrespondanceAddressId() { return strCorrespondanceAddressId; }
+    public void setStrCorrespondanceAddressId(String strCorrespondanceAddressId) { this.strCorrespondanceAddressId = strCorrespondanceAddressId; }
+}
+
+package ICOS.pojo;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class POJOAccountant {
+    @JsonProperty("name")
+    private String strName;
+
+    @JsonProperty("companyId")
+    private String strCompanyId;
+
+    @JsonProperty("role")
+    private String strRole;
+
+    @JsonProperty("addressId")
+    private String strAddressId;
+
+    @JsonProperty("email")
+    private String strEmail;
+
+    @JsonProperty("hasConsent")
+    private Boolean blnHasConsent;
+
+    @JsonProperty("doSendCopy")
+    private Boolean blnDoSendCopy;
+
+    public String getStrName() {
+        return strName;
+    }
+
+    public void setStrName(String strName) {
+        this.strName = strName;
+    }
+
+    public String getStrCompanyId() {
+        return strCompanyId;
+    }
+
+    public void setStrCompanyId(String strCompanyId) {
+        this.strCompanyId = strCompanyId;
+    }
+
+    public String getStrRole() {
+        return strRole;
+    }
+
+    public void setStrRole(String strRole) {
+        this.strRole = strRole;
+    }
+
+    public String getStrAddressId() {
+        return strAddressId;
+    }
+
+    public void setStrAddressId(String strAddressId) {
+        this.strAddressId = strAddressId;
+    }
+
+    public String getStrEmail() {
+        return strEmail;
+    }
+
+    public void setStrEmail(String strEmail) {
+        this.strEmail = strEmail;
+    }
+
+    public Boolean getBlnHasConsent() {
+        return blnHasConsent;
+    }
+
+    public void setBlnHasConsent(Boolean blnHasConsent) {
+        this.blnHasConsent = blnHasConsent;
+    }
+
+    public Boolean getBlnDoSendCopy() {
+        return blnDoSendCopy;
+    }
+
+    public void setBlnDoSendCopy(Boolean blnDoSendCopy) {
+        this.blnDoSendCopy = blnDoSendCopy;
+    }
+}
+
+package ICOS.pojo;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class POJOAssociation {
+    @JsonProperty("personId")
+    private String strPersonId;
+
+    @JsonProperty("role")
+    private String strRole;
+
+    public String getStrPersonId() {
+        return strPersonId;
+    }
+
+    public void setStrPersonId(String strPersonId) {
+        this.strPersonId = strPersonId;
+    }
+
+    public String getStrRole() {
+        return strRole;
+    }
+
+    public void setStrRole(String strRole) {
+        this.strRole = strRole;
+    }
+}
+
+
+package ICOS.pojo;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class POJODocumentationIdentity {
+    @JsonProperty("identityType")
+    private String strIdentityType;
+
+    @JsonProperty("number")
+    private String strNumber;
+
+    @JsonProperty("issueCountry")
+    private String strIssueCountry;
+
+    @JsonProperty("issuePlace")
+    private String strIssuePlace;
+
+    @JsonProperty("issueDate")
+    private String strIssueDate;
+
+    @JsonProperty("validUntil")
+    private String strValidUntil;
+
+    public String getStrIdentityType() {
+        return strIdentityType;
+    }
+
+    public void setStrIdentityType(String strIdentityType) {
+        this.strIdentityType = strIdentityType;
+    }
+
+    public String getStrNumber() {
+        return strNumber;
+    }
+
+    public void setStrNumber(String strNumber) {
+        this.strNumber = strNumber;
+    }
+
+    public String getStrIssueCountry() {
+        return strIssueCountry;
+    }
+
+    public void setStrIssueCountry(String strIssueCountry) {
+        this.strIssueCountry = strIssueCountry;
+    }
+
+    public String getStrIssuePlace() {
+        return strIssuePlace;
+    }
+
+    public void setStrIssuePlace(String strIssuePlace) {
+        this.strIssuePlace = strIssuePlace;
+    }
+
+    public String getStrIssueDate() {
+        return strIssueDate;
+    }
+
+    public void setStrIssueDate(String strIssueDate) {
+        this.strIssueDate = strIssueDate;
+    }
+
+    public String getStrValidUntil() {
+        return strValidUntil;
+    }
+
+    public void setStrValidUntil(String strValidUntil) {
+        this.strValidUntil = strValidUntil;
+    }
+}
+
+
+package ICOS.pojo;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class POJOElectronicAddress {
+    @JsonProperty("medium")
+    private String strMedium;
+
+    @JsonProperty("kind")
+    private String strKind;
+
+    @JsonProperty("value")
+    private String strValue;
+
+    @JsonProperty("isPreferred")
+    private Boolean blnIsPreferred;
+
+    public String getStrMedium() {
+        return strMedium;
+    }
+
+    public void setStrMedium(String strMedium) {
+        this.strMedium = strMedium;
+    }
+
+    public String getStrKind() {
+        return strKind;
+    }
+
+    public void setStrKind(String strKind) {
+        this.strKind = strKind;
+    }
+
+    public String getStrValue() {
+        return strValue;
+    }
+
+    public void setStrValue(String strValue) {
+        this.strValue = strValue;
+    }
+
+    public Boolean getBlnIsPreferred() {
+        return blnIsPreferred;
+    }
+
+    public void setBlnIsPreferred(Boolean blnIsPreferred) {
+        this.blnIsPreferred = blnIsPreferred;
+    }
+}
+
+package ICOS.pojo;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class POJOTaxResidence {
+    @JsonProperty("country")
+    private String strCountry;
+
+    @JsonProperty("taxNumber")
+    private String strTaxNumber;
+
+    @JsonProperty("identityType")
+    private String strIdentityType;
+
+    public String getStrCountry() {
+        return strCountry;
+    }
+
+    public void setStrCountry(String strCountry) {
+        this.strCountry = strCountry;
+    }
+
+    public String getStrTaxNumber() {
+        return strTaxNumber;
+    }
+
+    public void setStrTaxNumber(String strTaxNumber) {
+        this.strTaxNumber = strTaxNumber;
+    }
+
+    public String getStrIdentityType() {
+        return strIdentityType;
+    }
+
+    public void setStrIdentityType(String strIdentityType) {
+        this.strIdentityType = strIdentityType;
+    }
+}
