@@ -1,41 +1,15 @@
-// Update Natural Person
-    public Response updateNaturalPerson(String strEnvType, String strBearerToken, String strJwtToken, Map<String, String> mapUpdPersonDetails, ScenarioContext scenarioContext) throws Exception {
+public Response sendPatchRequest(String url, String bearerToken, String jwtToken, String body, Map<String, ?> queryParams, Map<String, ?> pathParams)
 
-        String strUrl = getTYKURL(strEnvType, "TYK.CREATENEWPERSON") + "/{PersonKey}";
-        String strNaturalPersonObjectId = scenarioContext.getContext("naturalPersonObjectId");
+RequestSpecification request = buildRequestSpec(bearerToken, jwtToken);
 
-        POJOUpdNaturalPersonRequest pojoUpdNaturalPersonRequest = payloads.buildUpdNaturalPersonPayload(mapUpdPersonDetails, scenarioContext);
-        String strRequestBody = objObjectMapper.writeValueAsString(pojoUpdNaturalPersonRequest);
+if (queryParams != null) {
+    request.queryParams(queryParams);
+}
+if (pathParams != null) {
+    request.pathParams(pathParams);
+}
 
-        ExtentCucumberAdapter.addTestStepLog("Sending request to update Natural Person");
-
-        Map<String, String> mapPathParams = new HashMap<>();
-        mapPathParams.put("PersonKey", strNaturalPersonObjectId);
-
-        Response objResponse = sendPatchRequest(strUrl, strBearerToken, strJwtToken, strRequestBody, null);
-        String strResponseBody = devHelperLibrary.getResponseBody(objResponse);
-        objCucumberLogger.PrintStatus("Response is: " + strResponseBody);
-
-        String strUpdNaturalPersonObjectId = jsonHelper.extractStringField(objResponse, "objectId");
-        String strUpdNaturalPersonOrderId = jsonHelper.extractStringField(objResponse, "orderId");
-
-        scenarioContext.setContext("updNaturalPersonObjectId", strUpdNaturalPersonObjectId);
-        scenarioContext.setContext("updNaturalPersonOrderId", strUpdNaturalPersonOrderId);
-
-        return objResponse;
-    }
-
-public Response sendPatchRequest(String url, String bearerToken, String jwtToken, String body, Map<String, ?> queryParams) {
-        RequestSpecification request = buildRequestSpec(bearerToken, jwtToken);
-
-        if (queryParams != null) {
-            request.queryParams(queryParams);
-        }
-
-        logRequestDetails("PATCH", url, body, queryParams);
-        Response response = request.body(body).patch(url);
-        logResponseDetails(response);
-        return response;
-    }
-
-I think the ptah parameter is not as per this PatchRequest, how to update this ?
+logRequestDetails("PATCH", url, body, queryParams);
+Response response = request.body(body).patch(url);
+logResponseDetails(response);
+return response;
