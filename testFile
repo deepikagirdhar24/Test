@@ -879,3 +879,17 @@ public class POJOTaxResidence {
         this.strIdentityType = strIdentityType;
     }
 }
+
+    public void applyBooleanField(String rawValue, String fieldName, Object targetObject) {
+        String normalized = normalize(rawValue);
+        if (normalized != null && !normalized.isEmpty()) {
+            boolean parsed = Boolean.parseBoolean(normalized);
+            String setterName = "setBln" + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1);
+            try {
+                Method setter = targetObject.getClass().getMethod(setterName, Boolean.class);
+                setter.invoke(targetObject, parsed);
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                throw new RuntimeException("Unable to set boolean field: " + setterName + " on " + targetObject.getClass().getSimpleName(), e);
+            }
+        }
+    }
