@@ -1,4 +1,277 @@
-naturalPerson.setBlnHasTaxPrevClaimRemitanceBasis(
-    payloadHelper.getBooleanValue(mapNaturalPersonDetails.get("hasTaxPrevClaimRemitanceBasis")));
-naturalPerson.setBlnHasTaxIntendClaimRemitanceBasis(
-    payloadHelper.getBooleanValue(mapNaturalPersonDetails.get("hasTaxIntendClaimRemitanceBasis")));
+// Update Natural Person
+    public Response updateNaturalPerson(String strEnvType, String strBearerToken, String strJwtToken, Map<String, String> mapPersonDetails, ScenarioContext scenarioContext) throws Exception {
+
+        String strUrl = getTYKURL(strEnvType, "TYK.CREATENEWPERSON") + "/{PersonKey}";
+        String strNaturalPersonObjectId = scenarioContext.getContext("naturalPersonObjectId");
+
+        POJONewPersonRequest pojoNewPersonRequest = payloads.buildNewPersonPayload(mapPersonDetails);
+        String strRequestBody = objObjectMapper.writeValueAsString(pojoNewPersonRequest);
+
+        ExtentCucumberAdapter.addTestStepLog("Sending request to update Natural Person");
+
+        Map<String, String> mapPathParams = new HashMap<>();
+        mapPathParams.put("PersonKey", strNaturalPersonObjectId);
+
+        Response objResponse = sendPostRequest(strUrl, strBearerToken, strJwtToken, strRequestBody, null);
+        String strResponseBody = devHelperLibrary.getResponseBody(objResponse);
+        objCucumberLogger.PrintStatus("Response is: " + strResponseBody);
+
+        String strUpdNaturalPersonObjectId = jsonHelper.extractStringField(objResponse, "objectId");
+        String strUpdNaturalPersonOrderId = jsonHelper.extractStringField(objResponse, "orderId");
+
+        scenarioContext.setContext("updNaturalPersonObjectId", strUpdNaturalPersonObjectId);
+        scenarioContext.setContext("updNaturalPersonOrderId", strUpdNaturalPersonOrderId);
+
+        return objResponse;
+    }
+
+TYK.CREATENEWPERSON=/avq/acpr/sas-person/v1/natural-persons
+
+error is - 
+
+[INFO] 
+[INFO] --------------------< org.example:wealth-icos-api >---------------------
+[INFO] Building wealth-icos-api 1.0-SNAPSHOT
+[INFO] --------------------------------[ jar ]---------------------------------
+Downloading from dws-all-fallback-zambezi-mirror: https://artifactory-server.app.banksvcs.net/artifactory/dws-all-repos/io/cucumber/messages/maven-metadata.xml
+Downloading from zambezi-all-repos: https://artifactory-server.app.banksvcs.net/artifactory/dws-all-repos/io/cucumber/messages/maven-metadata.xml
+Downloaded from dws-all-fallback-zambezi-mirror: https://artifactory-server.app.banksvcs.net/artifactory/dws-all-repos/io/cucumber/messages/maven-metadata.xml (2.9 kB at 3.5 kB/s)
+Downloaded from zambezi-all-repos: https://artifactory-server.app.banksvcs.net/artifactory/dws-all-repos/io/cucumber/messages/maven-metadata.xml (2.9 kB at 3.4 kB/s)
+Downloading from dws-all-fallback-zambezi-mirror: https://artifactory-server.app.banksvcs.net/artifactory/dws-all-repos/io/cucumber/query/maven-metadata.xml
+Downloading from zambezi-all-repos: https://artifactory-server.app.banksvcs.net/artifactory/dws-all-repos/io/cucumber/query/maven-metadata.xml
+Downloaded from zambezi-all-repos: https://artifactory-server.app.banksvcs.net/artifactory/dws-all-repos/io/cucumber/query/maven-metadata.xml (678 B at 5.1 kB/s)
+Downloaded from dws-all-fallback-zambezi-mirror: https://artifactory-server.app.banksvcs.net/artifactory/dws-all-repos/io/cucumber/query/maven-metadata.xml (678 B at 4.1 kB/s)
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ wealth-icos-api ---
+[INFO] Deleting C:\Users\girdd\IdeaProjects\icosapitests\target
+[INFO] 
+[INFO] --- build-helper-maven-plugin:3.0.0:add-source (default) @ wealth-icos-api ---
+[INFO] Source directory: C:\Users\girdd\IdeaProjects\icosapitests\src\main\java added.
+[INFO] Source directory: C:\Users\girdd\IdeaProjects\icosapitests\src\test\java added.
+[INFO] 
+[INFO] --- properties-maven-plugin:1.1.0:write-project-properties (default) @ wealth-icos-api ---
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ wealth-icos-api ---
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] skip non existing resourceDirectory C:\Users\girdd\IdeaProjects\icosapitests\src\main\resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.10.0:compile (default-compile) @ wealth-icos-api ---
+[INFO] Changes detected - recompiling the module!
+[WARNING] File encoding has not been set, using platform encoding UTF-8, i.e. build is platform dependent!
+[INFO] Compiling 72 source files to C:\Users\girdd\IdeaProjects\icosapitests\target\classes
+[INFO] /C:/Users/girdd/IdeaProjects/icosapitests/src/main/java/commonLibrary/devHelperLibrary.java: C:\Users\girdd\IdeaProjects\icosapitests\src\main\java\commonLibrary\devHelperLibrary.java uses or overrides a deprecated API.
+[INFO] /C:/Users/girdd/IdeaProjects/icosapitests/src/main/java/commonLibrary/devHelperLibrary.java: Recompile with -Xlint:deprecation for details.
+[INFO] /C:/Users/girdd/IdeaProjects/icosapitests/src/main/java/ICOS/Address.java: Some input files use unchecked or unsafe operations.
+[INFO] /C:/Users/girdd/IdeaProjects/icosapitests/src/main/java/ICOS/Address.java: Recompile with -Xlint:unchecked for details.
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ wealth-icos-api ---
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] Copying 23 resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.10.0:testCompile (default-testCompile) @ wealth-icos-api ---
+[INFO] Changes detected - recompiling the module!
+[WARNING] File encoding has not been set, using platform encoding UTF-8, i.e. build is platform dependent!
+[INFO] Compiling 19 source files to C:\Users\girdd\IdeaProjects\icosapitests\target\test-classes
+[INFO] /C:/Users/girdd/IdeaProjects/icosapitests/src/test/java/stepDefinations/ContactNotesSteps.java: Some input files use unchecked or unsafe operations.
+[INFO] /C:/Users/girdd/IdeaProjects/icosapitests/src/test/java/stepDefinations/ContactNotesSteps.java: Recompile with -Xlint:unchecked for details.
+[INFO] 
+[INFO] --- maven-surefire-plugin:3.0.0-M5:test (default-test) @ wealth-icos-api ---
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running testRunner.Runner
+Scenario Outline: Verify the Post Natural Persons API with valid data - Valid entry # src/test/resources/Features/UpdateNaturalPerson.feature:79
+Before All
+Jul 31, 2025 8:29:55 AM hooks.CucumberHooks beforeScenario
+INFO: Before Scenario: Test is starting!
+  Given Send Request to get Authentication Token for ICOS                           # stepDefinations.GetUserSteps.sendRequestToGetAuthenticationTokenForICOS()
+  When I generate the JWT Token                                                     # stepDefinations.GetUserSteps.iGenerateTheJWTToken()
+Jul 31, 2025 8:30:09 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: Response is: {"objectId":"665077210","orderId":"2933225955"}
+  Then Send request to generate New Person with below details                       # stepDefinations.NaturalPersonSteps.sendRequestToGenerateNewPersonWithDetails(io.cucumber.datatable.DataTable)
+    | firstName       | Firstname     |
+    | lastName        | Lastname      |
+    | subType         | pers_form_ass |
+    | domicileCountry | CH            |
+    | gender          | male          |
+    | nationalities   | CH            |
+Jul 31, 2025 8:30:15 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: Response is: {"objectId":"665077212","orderId":"2933226024"}
+  Then Send request to generate Legal Person with below details                     # stepDefinations.LegalPersonSteps.sendRequestToGenerateLegalPersonWithDetails(io.cucumber.datatable.DataTable)
+    | subType         | pers_form_ass    |
+    | domicileCountry | GB               |
+    | name            | Company Name Ltd |
+Jul 31, 2025 8:30:25 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: Response for Address is: {"objectId":"665832383","orderId":"2933226070"}
+  Then Send request to create Address with below details                            # stepDefinations.AddressSteps.sendRequestToCreateAddressWithDetails(io.cucumber.datatable.DataTable)
+    | firstName        | Firstname             |
+    | middleName       | Middlename            |
+    | lastName         | Lastname              |
+    | salutation       | mr                    |
+    | salutationLetter | mr                    |
+    | attnOf           | [empty]               |
+    | crof             | [empty]               |
+    | residency        | 123                   |
+    | streetNr         | 123                   |
+    | street           | teststreet + RANDOM_6 |
+    | streetAdd        | Addition street       |
+    | poBox            | P.O.Box 123           |
+    | city             | Zurich                |
+    | state            | RANDOM_49             |
+    | zip              | 8001                  |
+    | country          | CH                    |
+Jul 31, 2025 8:30:29 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: Response is: {"objectId":"665077210","orderId":"2933226160"}
+  Then Send request to generate New Document with below details                     # stepDefinations.DocumentSteps.sendRequestToGenerateNewDocumentWithDetails(io.cucumber.datatable.DataTable)
+    | personId      | NATURAL_PERSON_OBJECT_ID                                                                      |
+    | challengeWord | Challenge Answer                                                                              |
+    | qaPairs       | Question1=Answer1; Question2=Answer2; Question3=Answer3; Question4=Answer4; Question5=Answer5 |
+  Then Send request to update Natural Person with below details                     # stepDefinations.UpdNaturalPersonSteps.sendRequestToGenerateNewPersonWithDetails(io.cucumber.datatable.DataTable)
+    | subType                         | pers_form_doc                                                                                                        |
+    | domiCountry                     | GB                                                                                                                   |
+    | firstName                       | Firstname                                                                                                            |
+    | middleName                      | Middlename                                                                                                           |
+    | lastName                        | Lastname                                                                                                             |
+    | birthDate                       | DEFAULT                                                                                                              |
+    | gender                          | male                                                                                                                 |
+    | nationalities                   | GB                                                                                                                   |
+    | title                           | mr                                                                                                                   |
+    | birthPlace                      | London                                                                                                               |
+    | birthCountry                    | GB                                                                                                                   |
+    | electronicAddresses             | email;private;first.last@gmail.com;false                                                                             |
+    | isEmployee                      | false                                                                                                                |
+    | taxResidences                   | GB;RANDOM_10;nin                                                                                                     |
+    | documentationIdentity           | pass;GB1234567890;GB;London;DEFAULT;DEFAULT                                                                          |
+    | pepAssociationCountry           | GB                                                                                                                   |
+    | pepClassificationReason         | Testreason                                                                                                           |
+    | pepCategory                     | none                                                                                                                 |
+    | isMarketingOptOut               | false                                                                                                                |
+    | fatcaStatus                     | rbsc$fatca_non_us_person                                                                                             |
+    | crsType                         | rbsc$crs_np_doc                                                                                                      |
+    | ukTaxResidenceFromDate          | DEFAULT                                                                                                              |
+    | hasTaxAvoidanceSchemes          | false                                                                                                                |
+    | isHoldingBearerShares           | false                                                                                                                |
+    | hasInvestableAssets10M          | false                                                                                                                |
+    | hasHistoricTaxIssues            | false                                                                                                                |
+    | hasTaxChgDomiStatus             | false                                                                                                                |
+    | hasTaxChgUkDomiStatus           | false                                                                                                                |
+    | hasTaxPrevClaimRemitanceBasis   | false                                                                                                                |
+    | hasTaxIntendClaimRemitanceBasis | false                                                                                                                |
+    | accountants                     | TestName;LEGAL_PERSON_OBJECT_ID;rbsc$tax_adviser_primary;ADDRESS_OBJECT_ID;accountant.person@acccomp.com;false;false |
+    | hasTravelProtection             | false                                                                                                                |
+    | hasCouttsOnline                 | false                                                                                                                |
+    | hasCouttsId                     | false                                                                                                                |
+    | associations                    | NATURAL_PERSON_OBJECT_ID;rbsc$is_sibling_of                                                                          |
+    | idQuestionId                    | DOCUMENT_OBJECT_ID                                                                                                   |
+    | correspondanceAddressId         | ADDRESS_OBJECT_ID                                                                                                    |
+      java.lang.IllegalArgumentException: Invalid number of path parameters. Expected 1, was 0. Undefined path parameters are: PersonKey.
+	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.base/java.lang.reflect.Constructor.newInstanceWithCaller(Constructor.java:499)
+	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:480)
+	at org.codehaus.groovy.reflection.CachedConstructor.invoke(CachedConstructor.java:73)
+	at org.codehaus.groovy.reflection.CachedConstructor.doConstructorInvoke(CachedConstructor.java:60)
+	at org.codehaus.groovy.runtime.callsite.ConstructorSite$ConstructorSiteNoUnwrap.callConstructor(ConstructorSite.java:86)
+	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCallConstructor(CallSiteArray.java:57)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callConstructor(AbstractCallSite.java:263)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callConstructor(AbstractCallSite.java:277)
+	at io.restassured.internal.RequestSpecificationImpl.assertCorrectNumberOfPathParams(RequestSpecificationImpl.groovy:1277)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:343)
+	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:328)
+	at groovy.lang.MetaClassImpl.doInvokeMethod(MetaClassImpl.java:1333)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1088)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1007)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:790)
+	at io.restassured.internal.RequestSpecificationImpl.invokeMethod(RequestSpecificationImpl.groovy)
+	at org.codehaus.groovy.runtime.callsite.PogoInterceptableSite.call(PogoInterceptableSite.java:46)
+	at org.codehaus.groovy.runtime.callsite.PogoInterceptableSite.callCurrent(PogoInterceptableSite.java:57)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callCurrent(AbstractCallSite.java:176)
+	at io.restassured.internal.RequestSpecificationImpl.sendRequest(RequestSpecificationImpl.groovy:1161)
+	at io.restassured.internal.RequestSpecificationImpl.this$2$sendRequest(RequestSpecificationImpl.groovy)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:343)
+	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:328)
+	at groovy.lang.MetaClassImpl.doInvokeMethod(MetaClassImpl.java:1333)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1088)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1007)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:790)
+	at io.restassured.internal.RequestSpecificationImpl.invokeMethod(RequestSpecificationImpl.groovy)
+	at org.codehaus.groovy.runtime.callsite.PogoInterceptableSite.call(PogoInterceptableSite.java:46)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.call(AbstractCallSite.java:166)
+	at io.restassured.internal.filter.SendRequestFilter.filter(SendRequestFilter.groovy:30)
+	at io.restassured.filter.Filter$filter$0.call(Unknown Source)
+	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCall(CallSiteArray.java:45)
+	at io.restassured.filter.Filter$filter.call(Unknown Source)
+	at io.restassured.internal.filter.FilterContextImpl.next(FilterContextImpl.groovy:72)
+	at io.restassured.filter.time.TimingFilter.filter(TimingFilter.java:56)
+	at io.restassured.filter.Filter$filter.call(Unknown Source)
+	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCall(CallSiteArray.java:45)
+	at io.restassured.filter.Filter$filter$0.call(Unknown Source)
+	at io.restassured.internal.filter.FilterContextImpl.next(FilterContextImpl.groovy:72)
+	at io.restassured.filter.FilterContext$next.call(Unknown Source)
+	at io.restassured.internal.filter.CsrfFilter.filter(CsrfFilter.groovy:70)
+	at io.restassured.filter.Filter$filter$0.call(Unknown Source)
+	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCall(CallSiteArray.java:45)
+	at io.restassured.filter.Filter$filter$0.call(Unknown Source)
+	at io.restassured.internal.filter.FilterContextImpl.next(FilterContextImpl.groovy:72)
+	at io.restassured.filter.FilterContext$next.call(Unknown Source)
+	at io.restassured.internal.RequestSpecificationImpl.applyPathParamsAndSendRequest(RequestSpecificationImpl.groovy:1704)
+	at io.restassured.internal.RequestSpecificationImpl.this$2$applyPathParamsAndSendRequest(RequestSpecificationImpl.groovy)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:343)
+	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:328)
+	at groovy.lang.MetaClassImpl.doInvokeMethod(MetaClassImpl.java:1333)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1088)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1007)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:790)
+	at io.restassured.internal.RequestSpecificationImpl.invokeMethod(RequestSpecificationImpl.groovy)
+	at org.codehaus.groovy.runtime.callsite.PogoInterceptableSite.call(PogoInterceptableSite.java:46)
+	at org.codehaus.groovy.runtime.callsite.PogoInterceptableSite.callCurrent(PogoInterceptableSite.java:57)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callCurrent(AbstractCallSite.java:203)
+	at io.restassured.internal.RequestSpecificationImpl.applyPathParamsAndSendRequest(RequestSpecificationImpl.groovy:1710)
+	at io.restassured.internal.RequestSpecificationImpl.this$2$applyPathParamsAndSendRequest(RequestSpecificationImpl.groovy)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:343)
+	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:328)
+	at groovy.lang.MetaClassImpl.doInvokeMethod(MetaClassImpl.java:1333)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1088)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1007)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:790)
+	at io.restassured.internal.RequestSpecificationImpl.invokeMethod(RequestSpecificationImpl.groovy)
+	at org.codehaus.groovy.runtime.callsite.PogoInterceptableSite.call(PogoInterceptableSite.java:46)
+	at org.codehaus.groovy.runtime.callsite.PogoInterceptableSite.callCurrent(PogoInterceptableSite.java:57)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callCurrent(AbstractCallSite.java:203)
+	at io.restassured.internal.RequestSpecificationImpl.post(RequestSpecificationImpl.groovy:176)
+	at io.restassured.internal.RequestSpecificationImpl.post(RequestSpecificationImpl.groovy)
+	at ICOS.BaseApiClient.sendPostRequest(BaseApiClient.java:40)
+	at ICOS.UpdNaturalPerson.updateNaturalPerson(UpdNaturalPerson.java:44)
+	at stepDefinations.UpdNaturalPersonSteps.sendRequestToGenerateNewPersonWithDetails(UpdNaturalPersonSteps.java:77)
+	at âœ½.Send request to update Natural Person with below details(file:///C:/Users/girdd/IdeaProjects/icosapitests/src/test/resources/Features/UpdateNaturalPerson.feature:38)
+Jul 31, 2025 8:30:33 AM tech.grasshopper.pdf.PDFCucumberReport collectReportConfiguration
+INFO: PDF report configuration YAML file not found. Using default settings.
+[ERROR] Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 42.427 s <<< FAILURE! - in testRunner.Runner
+[ERROR] Verify Update Natural Person API.Verify the Post Natural Persons API with valid data - Valid entry  Time elapsed: 36.362 s  <<< ERROR!
+java.lang.IllegalArgumentException: Invalid number of path parameters. Expected 1, was 0. Undefined path parameters are: PersonKey.
+[INFO] 
+[INFO] Results:
+[INFO] 
+[ERROR] Errors: 
+[ERROR]   Invalid number of path parameters. Expected 1, was 0. Undefined path parameters are: PersonKey.
+[INFO] 
+[ERROR] Tests run: 1, Failures: 0, Errors: 1, Skipped: 0
+[INFO] 
