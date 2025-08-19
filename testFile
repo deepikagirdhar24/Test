@@ -1,24 +1,25 @@
-public void verifyTopLevelAWSFields(Response response, Map<String, String> expectedFields) throws Exception {
-    for (Map.Entry<String, String> entry : expectedFields.entrySet()) {
-        String field = entry.getKey();
-        String expectedValue = entry.getValue();
+public void verifyTopLevelAWSFields(Response objResponse, Map<String, String> mapExpectedFields) throws Exception {
+    String strActualType = jsonHelper.extractStringField(objResponse, "type");
+    String strActualTitle = jsonHelper.extractStringField(objResponse, "title");
+    String strActualDetail = jsonHelper.extractStringField(objResponse, "detail");
 
-        String actualValue = jsonHelper.extractStringField(response, field);
+    ExtentCucumberAdapter.addTestStepLog("Actual type: " + strActualType);
+    ExtentCucumberAdapter.addTestStepLog("Actual title: " + strActualTitle);
+    ExtentCucumberAdapter.addTestStepLog("Actual detail: " + strActualDetail);
 
-        ExtentCucumberAdapter.addTestStepLog(
-            "Field: " + field + " | Actual: " + actualValue + " | Expected: " + expectedValue
-        );
+    // exact match for type & title
+    Assert.assertEquals(strActualType, mapExpectedFields.get("type"), "Mismatch in 'type'");
+    Assert.assertEquals(strActualTitle, mapExpectedFields.get("title"), "Mismatch in 'title'");
 
-        String expected = StringUtils.strip(expectedValue, "*").trim();
+    // flexible match for detail with *
+    String expectedDetail = mapExpectedFields.get("detail");
+    String expected = StringUtils.strip(expectedDetail, "*").trim();
 
-        boolean matches = expectedValue.startsWith("*") && expectedValue.endsWith("*") ? actualValue.contains(expected)
-                : expectedValue.startsWith("*") ? actualValue.endsWith(expected)
-                : expectedValue.endsWith("*") ? actualValue.startsWith(expected)
-                : actualValue.equals(expected);
+    boolean matches = expectedDetail.startsWith("*") && expectedDetail.endsWith("*") ? strActualDetail.contains(expected)
+            : expectedDetail.startsWith("*") ? strActualDetail.endsWith(expected)
+            : expectedDetail.endsWith("*") ? strActualDetail.startsWith(expected)
+            : strActualDetail.equals(expected);
 
-        Assert.assertTrue(
-            matches,
-            "Expected pattern mismatch for field [" + field + "]. Actual: " + actualValue + ", Expected: " + expectedValue
-        );
-    }
+    Assert.assertTrue(matches,
+            "Mismatch in 'detail'. Actual: " + strActualDetail + " | Expected: " + expectedDetail);
 }
