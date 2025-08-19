@@ -48,3 +48,17 @@ currently my function is this below. Please handle * in this. * will be either b
         objErrorVerifier.verifyTopLevelAWSFields(response, mapExpectedAWSErrorFields);
     }
 
+    public void verifyTopLevelAWSFields(Response objResponse, Map<String, String> mapExpectedFields) throws Exception {
+        String strActualType = jsonHelper.extractStringField(objResponse, "type");
+        String strActualTitle = jsonHelper.extractStringField(objResponse, "title");
+        String strActualDetail = jsonHelper.extractStringField(objResponse, "detail");
+
+        ExtentCucumberAdapter.addTestStepLog("Actual type: " + strActualType);
+        ExtentCucumberAdapter.addTestStepLog("Actual title: " + strActualTitle);
+        ExtentCucumberAdapter.addTestStepLog("Actual detail: " + strActualDetail);
+
+        Assert.assertEquals(strActualType, mapExpectedFields.get("type"), "Mismatch in 'type'");
+        Assert.assertEquals(strActualTitle, mapExpectedFields.get("title"), "Mismatch in 'title'");
+        Assert.assertEquals(strActualDetail, mapExpectedFields.get("detail"), "Mismatch in 'detail'");
+    }
+
