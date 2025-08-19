@@ -1,64 +1,24 @@
-For 500 error we handled * in Debit card error message - 
+public void verifyTopLevelAWSFields(Response response, Map<String, String> expectedFields) throws Exception {
+    for (Map.Entry<String, String> entry : expectedFields.entrySet()) {
+        String field = entry.getKey();
+        String expectedValue = entry.getValue();
 
-  Scenario Outline: Verify the Post Debit Card API with invalid data - <Comments>
-    Given Send Request to get Authentication Token for ICOS
-    When I generate the JWT Token
-    Then Send Request to create Debit Card with below details
-      | type        | <type>        |
-      | maccId      | <maccId>      |
-      | ownerId     | <ownerId>     |
-      | label       | <label>       |
-      | dailyLimit  | <dailyLimit>  |
-      | addressId   | <addressId>   |
-    And I verify the Status Code for Debit Card "500"
-    And I verify the Debit Card API 500 error response with message "<error>"
-    And I verify the "orderId" exists in Debit Card response
+        String actualValue = jsonHelper.extractStringField(response, field);
 
-    Examples:
-      | type    | maccId                   | ownerId    | label                                     | dailyLimit | addressId              | error                                                       | Comments                                     |
-      | DEBIT   | xxx                      | 665041400  | LABEL                                     | 555        | ADDRESS_OBJECT_ID      | Key 'Client Account Number' is mandatory on 'Money account* | 007 - MACC ID = Invalid Text                 |
+        ExtentCucumberAdapter.addTestStepLog(
+            "Field: " + field + " | Actual: " + actualValue + " | Expected: " + expectedValue
+        );
 
-@And("I verify the Debit Card API 500 error response with message {string}")
-    public void iVerify500ErrorResponse(String expectedError) throws Exception {
-        String actualError = jsonHelper.extractStringField(response, "error");
-        ExtentCucumberAdapter.addTestStepLog("Actual: " + actualError + " | Expected: " + expectedError);
+        String expected = StringUtils.strip(expectedValue, "*").trim();
 
-        String expected = StringUtils.strip(expectedError, "*").trim();
+        boolean matches = expectedValue.startsWith("*") && expectedValue.endsWith("*") ? actualValue.contains(expected)
+                : expectedValue.startsWith("*") ? actualValue.endsWith(expected)
+                : expectedValue.endsWith("*") ? actualValue.startsWith(expected)
+                : actualValue.equals(expected);
 
-        boolean matches = expectedError.startsWith("*") && expectedError.endsWith("*") ? actualError.contains(expected)
-                : expectedError.startsWith("*") ? actualError.endsWith(expected)
-                : expectedError.endsWith("*") ? actualError.startsWith(expected)
-                : actualError.equals(expected);
-
-        Assert.assertTrue(matches, "Expected pattern mismatch. Actual: " + actualError);
+        Assert.assertTrue(
+            matches,
+            "Expected pattern mismatch for field [" + field + "]. Actual: " + actualValue + ", Expected: " + expectedValue
+        );
     }
-
-Similar to above, I want to handle * in 400 AWS error response as well - 
-
-    And I verify the Update Natural Person AWS-style 400 error response with below details
-      | type                | /aws/validation_error           |
-      | title               | Validation Error                |
-      | detail              | The field * cannot be parsed. Please check the data type is correct |
-
-currently my function is this below. Please handle * in this. * will be either birthDate or ukTaxResidenceFromDate
-
-    @And("I verify the Update Natural Person AWS-style 400 error response with below details")
-    public void iVerifyAWS400ErrorResponse(DataTable dataTable) throws Exception {
-        Map<String, String> mapExpectedAWSErrorFields = dataTable.asMap(String.class, String.class);
-        objErrorVerifier.verifyTopLevelAWSFields(response, mapExpectedAWSErrorFields);
-    }
-
-    public void verifyTopLevelAWSFields(Response objResponse, Map<String, String> mapExpectedFields) throws Exception {
-        String strActualType = jsonHelper.extractStringField(objResponse, "type");
-        String strActualTitle = jsonHelper.extractStringField(objResponse, "title");
-        String strActualDetail = jsonHelper.extractStringField(objResponse, "detail");
-
-        ExtentCucumberAdapter.addTestStepLog("Actual type: " + strActualType);
-        ExtentCucumberAdapter.addTestStepLog("Actual title: " + strActualTitle);
-        ExtentCucumberAdapter.addTestStepLog("Actual detail: " + strActualDetail);
-
-        Assert.assertEquals(strActualType, mapExpectedFields.get("type"), "Mismatch in 'type'");
-        Assert.assertEquals(strActualTitle, mapExpectedFields.get("title"), "Mismatch in 'title'");
-        Assert.assertEquals(strActualDetail, mapExpectedFields.get("detail"), "Mismatch in 'detail'");
-    }
-
+}
