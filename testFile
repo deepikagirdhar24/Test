@@ -1,25 +1,226 @@
-public void verifyTopLevelAWSFields(Response objResponse, Map<String, String> mapExpectedFields) throws Exception {
-    String strActualType = jsonHelper.extractStringField(objResponse, "type");
-    String strActualTitle = jsonHelper.extractStringField(objResponse, "title");
-    String strActualDetail = jsonHelper.extractStringField(objResponse, "detail");
+  @UpdNaturalPerson400
+  Scenario Outline: Verify the Patch Update Natural Persons API with invalid data and 400 error response - <Comments>
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    Then Send request to generate New Person Specification with below details
+      | firstName       | Firstname     |
+      | lastName        | Lastname      |
+      | subType         | pers_form_ass |
+      | domicileCountry | CH            |
+      | gender          | male          |
+      | nationalities   | CH            |
+    Then Send request to generate New Person with below details
+      | firstName       | Firstname     |
+      | lastName        | Lastname      |
+      | subType         | pers_form_ass |
+      | domicileCountry | CH            |
+      | gender          | male          |
+      | nationalities   | CH            |
+    Then Send request to generate Legal Person with below details
+      | subType         | pers_form_ass     |
+      | domicileCountry | GB                |
+      | name            | Company Name Ltd  |
+    Then Send request to create Address with below details
+      | firstName       | Firstname             |
+      | middleName      | Middlename            |
+      | lastName        | Lastname              |
+      | salutation      | mr                    |
+      | salutationLetter| mr                    |
+      | attnOf          |                       |
+      | crof            |                       |
+      | residency       | 123                   |
+      | streetNr        | 123                   |
+      | street          | teststreet + RANDOM_6 |
+      | streetAdd       | Addition street       |
+      | poBox           | P.O.Box 123           |
+      | city            | Zurich                |
+      | state           | RANDOM_49             |
+      | zip             | 8001                  |
+      | country         | CH                    |
+    Then Send request to generate New Document with below details
+      | personId      | NATURAL_PERSON_OBJECT_ID                                                                       |
+      | challengeWord | Challenge Answer                                                                               |
+      | qaPairs       | Question1=Answer1; Question2=Answer2; Question3=Answer3; Question4=Answer4; Question5=Answer5  |
+    Then Send request to update Natural Person with below details
+      | subType                           | <subType>                           |
+      | domiCountry                       | <domiCountry>                       |
+      | firstName                         | <firstName>                         |
+      | middleName                        | <middleName>                        |
+      | lastName                          | <lastName>                          |
+      | birthDate                         | <birthDate>                         |
+      | gender                            | <gender>                            |
+      | nationalities                     | <nationalities>                     |
+      | title                             | <title>                             |
+      | birthPlace                        | <birthPlace>                        |
+      | birthCountry                      | <birthCountry>                      |
+      | electronicAddresses               | <electronicAddresses>               |
+      | isEmployee                        | <isEmployee>                        |
+      | taxResidences                     | <taxResidences>                     |
+      | documentationIdentity             | <documentationIdentity>             |
+      | pepAssociationCountry             | <pepAssociationCountry>             |
+      | pepClassificationReason           | <pepClassificationReason>           |
+      | pepCategory                       | <pepCategory>                       |
+      | isMarketingOptOut                 | <isMarketingOptOut>                 |
+      | fatcaStatus                       | <fatcaStatus>                       |
+      | crsType                           | <crsType>                           |
+      | ukTaxResidenceFromDate            | <ukTaxResidenceFromDate>            |
+      | hasTaxAvoidanceSchemes            | <hasTaxAvoidanceSchemes>            |
+      | isHoldingBearerShares             | <isHoldingBearerShares>             |
+      | hasInvestableAssets10M            | <hasInvestableAssets10M>            |
+      | hasHistoricTaxIssues              | <hasHistoricTaxIssues>              |
+      | hasTaxChgDomiStatus               | <hasTaxChgDomiStatus>               |
+      | hasTaxChgUkDomiStatus             | <hasTaxChgUkDomiStatus>             |
+      | hasTaxPrevClaimRemitanceBasis     | <hasTaxPrevClaimRemitanceBasis>     |
+      | hasTaxIntendClaimRemitanceBasis   | <hasTaxIntendClaimRemitanceBasis>   |
+      | accountants                       | <accountants>                       |
+      | hasTravelProtection               | <hasTravelProtection>               |
+      | hasCouttsOnline                   | <hasCouttsOnline>                   |
+      | hasCouttsId                       | <hasCouttsId>                       |
+      | associations                      | <associations>                      |
+      | idQuestionId                      | <idQuestionId>                      |
+      | correspondanceAddressId           | <correspondanceAddressId>           |
+    And I verify the Status Code for Update Natural Persons "400"
 
-    ExtentCucumberAdapter.addTestStepLog("Actual type: " + strActualType);
-    ExtentCucumberAdapter.addTestStepLog("Actual title: " + strActualTitle);
-    ExtentCucumberAdapter.addTestStepLog("Actual detail: " + strActualDetail);
+    Examples:
+      | subType       | domiCountry | firstName    | middleName    | lastName    | birthDate  | gender | nationalities | title | birthPlace | birthCountry | electronicAddresses                        | isEmployee | taxResidences       | documentationIdentity                        | pepAssociationCountry | pepClassificationReason | pepCategory | isMarketingOptOut | fatcaStatus              | crsType            | ukTaxResidenceFromDate | hasTaxAvoidanceSchemes | isHoldingBearerShares | hasInvestableAssets10M | hasHistoricTaxIssues | hasTaxChgDomiStatus | hasTaxChgUkDomiStatus | hasTaxPrevClaimRemitanceBasis | hasTaxIntendClaimRemitanceBasis | accountants                                                                                                          | hasTravelProtection | hasCouttsOnline | hasCouttsId | associations                                  | idQuestionId         | correspondanceAddressId | Comments                 |
+      | pers_form_doc | GB          | Firstname    | Middlename    | Lastname    |            | male   | GB            | mr    | London     | GB           | email;private;first.last@gmail.com;false   | false      | GB;RANDOM_10;nin    | pass;GB1234567890;GB;London;DEFAULT;DEFAULT  | GB                    | Testreason              | none        | false             | rbsc$fatca_non_us_person | rbsc$crs_np_doc    | DEFAULT                | false                  | false                 | false                  | false                | false               | false                 | false                         | false                           | TestName;LEGAL_PERSON_OBJECT_ID;rbsc$tax_adviser_primary;ADDRESS_OBJECT_ID;accountant.person@acccomp.com;false;false | false               | false           | false       | NATURAL_PERSON_OBJECT_ID_1;rbsc$is_sibling_of | DOCUMENT_OBJECT_ID   | ADDRESS_OBJECT_ID       | 025x - birthDate=Empty   |
 
-    // exact match for type & title
-    Assert.assertEquals(strActualType, mapExpectedFields.get("type"), "Mismatch in 'type'");
-    Assert.assertEquals(strActualTitle, mapExpectedFields.get("title"), "Mismatch in 'title'");
+what is the error here - 
 
-    // flexible match for detail with *
-    String expectedDetail = mapExpectedFields.get("detail");
-    String expected = StringUtils.strip(expectedDetail, "*").trim();
-
-    boolean matches = expectedDetail.startsWith("*") && expectedDetail.endsWith("*") ? strActualDetail.contains(expected)
-            : expectedDetail.startsWith("*") ? strActualDetail.endsWith(expected)
-            : expectedDetail.endsWith("*") ? strActualDetail.startsWith(expected)
-            : strActualDetail.equals(expected);
-
-    Assert.assertTrue(matches,
-            "Mismatch in 'detail'. Actual: " + strActualDetail + " | Expected: " + expectedDetail);
-}
+[INFO] 
+[INFO] --- maven-surefire-plugin:3.0.0-M5:test (default-test) @ wealth-icos-api ---
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running testRunner.Runner
+@UpdNaturalPerson400
+Scenario Outline: Verify the Patch Update Natural Persons API with invalid data and 400 error response - 025x - birthDate=Empty # src/test/resources/Features/UpdateNaturalPerson.feature:290
+Before All
+Aug 19, 2025 11:44:29 AM hooks.CucumberHooks beforeScenario
+INFO: Before Scenario: Test is starting!
+  Given Send Request to get Authentication Token for ICOS                                                                       # stepDefinations.GetUserSteps.sendRequestToGetAuthenticationTokenForICOS()
+  When I generate the JWT Token                                                                                                 # stepDefinations.GetUserSteps.iGenerateTheJWTToken()
+Aug 19, 2025 11:44:38 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: Response for Natural Person Specification is: {"objectId":"665095150","orderId":"2937705246"}
+  Then Send request to generate New Person Specification with below details                                                     # stepDefinations.NaturalPersonSteps.sendRequestToGenerateNewPersonSpecWithDetails(io.cucumber.datatable.DataTable)
+    | firstName       | Firstname     |
+    | lastName        | Lastname      |
+    | subType         | pers_form_ass |
+    | domicileCountry | CH            |
+    | gender          | male          |
+    | nationalities   | CH            |
+Aug 19, 2025 11:44:40 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: Response for Natural Person is: {"objectId":"665095151","orderId":"2937705253"}
+  Then Send request to generate New Person with below details                                                                   # stepDefinations.NaturalPersonSteps.sendRequestToGenerateNewPersonWithDetails(io.cucumber.datatable.DataTable)
+    | firstName       | Firstname     |
+    | lastName        | Lastname      |
+    | subType         | pers_form_ass |
+    | domicileCountry | CH            |
+    | gender          | male          |
+    | nationalities   | CH            |
+Aug 19, 2025 11:44:43 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: Response for Legal Person is: {"objectId":"665095152","orderId":"2937705256"}
+  Then Send request to generate Legal Person with below details                                                                 # stepDefinations.LegalPersonSteps.sendRequestToGenerateLegalPersonWithDetails(io.cucumber.datatable.DataTable)
+    | subType         | pers_form_ass    |
+    | domicileCountry | GB               |
+    | name            | Company Name Ltd |
+Aug 19, 2025 11:44:45 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: Response for Address is: {"objectId":"665847908","orderId":"2937705260"}
+  Then Send request to create Address with below details                                                                        # stepDefinations.AddressSteps.sendRequestToCreateAddressWithDetails(io.cucumber.datatable.DataTable)
+    | firstName        | Firstname             |
+    | middleName       | Middlename            |
+    | lastName         | Lastname              |
+    | salutation       | mr                    |
+    | salutationLetter | mr                    |
+    | attnOf           | [empty]               |
+    | crof             | [empty]               |
+    | residency        | 123                   |
+    | streetNr         | 123                   |
+    | street           | teststreet + RANDOM_6 |
+    | streetAdd        | Addition street       |
+    | poBox            | P.O.Box 123           |
+    | city             | Zurich                |
+    | state            | RANDOM_49             |
+    | zip              | 8001                  |
+    | country          | CH                    |
+Aug 19, 2025 11:44:47 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: Response for Document is: {"objectId":"665095151","orderId":"2937705263"}
+  Then Send request to generate New Document with below details                                                                 # stepDefinations.DocumentSteps.sendRequestToGenerateNewDocumentWithDetails(io.cucumber.datatable.DataTable)
+    | personId      | NATURAL_PERSON_OBJECT_ID                                                                      |
+    | challengeWord | Challenge Answer                                                                              |
+    | qaPairs       | Question1=Answer1; Question2=Answer2; Question3=Answer3; Question4=Answer4; Question5=Answer5 |
+Aug 19, 2025 11:44:47 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: Request for UPDATE Natural Person is: {"uuid":"2911a43","subType":"pers_form_doc","domiCountry":"GB","firstName":"Firstname","middleName":"Middlename","lastName":"Lastname","birthDate":"","gender":"male","nationalities":["GB"],"title":"mr","birthPlace":"London","birthCountry":"GB","electronicAddresses":[{"medium":"email","kind":"private","value":"first.last@gmail.com","isPreferred":false}],"isEmployee":false,"taxResidences":[{"country":"GB","taxNumber":"zdtzvgdjyc","identityType":"nin"}],"documentationIdentity":[{"identityType":"pass","number":"GB1234567890","issueCountry":"GB","issuePlace":"London","issueDate":"2025-08-18","validUntil":"2025-08-20"}],"pepAssociationCountry":"GB","pepClassificationReason":"Testreason","pepCategory":"none","isMarketingOptOut":false,"fatcaStatus":"rbsc$fatca_non_us_person","crsType":"rbsc$crs_np_doc","ukTaxResidenceFromDate":"2015-08-19","hasTaxAvoidanceSchemes":false,"isHoldingBearerShares":false,"hasInvestableAssets10M":false,"hasHistoricTaxIssues":false,"hasTaxChgDomiStatus":false,"hasTaxChgUkDomiStatus":false,"hasTaxPrevClaimRemitanceBasis":false,"hasTaxIntendClaimRemitanceBasis":false,"accountants":[{"name":"TestName","companyId":"665095152","role":"rbsc$tax_adviser_primary","addressId":"665847908","email":"accountant.person@acccomp.com","hasConsent":false,"doSendCopy":false}],"hasTravelProtection":false,"hasCouttsOnline":false,"hasCouttsId":false,"associations":[{"personId":"665095150","role":"rbsc$is_sibling_of"}],"idQuestionId":"665095151","correspondanceAddressId":"665847908"}
+Aug 19, 2025 11:44:47 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: Response for UPDATE Natural Person is: Not able to deserialize data provided.
+  Then Send request to update Natural Person with below details                                                                 # stepDefinations.UpdNaturalPersonSteps.sendRequestToGenerateNewPersonWithDetails(io.cucumber.datatable.DataTable)
+    | subType                         | pers_form_doc                                                                                                        |
+    | domiCountry                     | GB                                                                                                                   |
+    | firstName                       | Firstname                                                                                                            |
+    | middleName                      | Middlename                                                                                                           |
+    | lastName                        | Lastname                                                                                                             |
+    | birthDate                       | [empty]                                                                                                              |
+    | gender                          | male                                                                                                                 |
+    | nationalities                   | GB                                                                                                                   |
+    | title                           | mr                                                                                                                   |
+    | birthPlace                      | London                                                                                                               |
+    | birthCountry                    | GB                                                                                                                   |
+    | electronicAddresses             | email;private;first.last@gmail.com;false                                                                             |
+    | isEmployee                      | false                                                                                                                |
+    | taxResidences                   | GB;RANDOM_10;nin                                                                                                     |
+    | documentationIdentity           | pass;GB1234567890;GB;London;DEFAULT;DEFAULT                                                                          |
+    | pepAssociationCountry           | GB                                                                                                                   |
+    | pepClassificationReason         | Testreason                                                                                                           |
+    | pepCategory                     | none                                                                                                                 |
+    | isMarketingOptOut               | false                                                                                                                |
+    | fatcaStatus                     | rbsc$fatca_non_us_person                                                                                             |
+    | crsType                         | rbsc$crs_np_doc                                                                                                      |
+    | ukTaxResidenceFromDate          | DEFAULT                                                                                                              |
+    | hasTaxAvoidanceSchemes          | false                                                                                                                |
+    | isHoldingBearerShares           | false                                                                                                                |
+    | hasInvestableAssets10M          | false                                                                                                                |
+    | hasHistoricTaxIssues            | false                                                                                                                |
+    | hasTaxChgDomiStatus             | false                                                                                                                |
+    | hasTaxChgUkDomiStatus           | false                                                                                                                |
+    | hasTaxPrevClaimRemitanceBasis   | false                                                                                                                |
+    | hasTaxIntendClaimRemitanceBasis | false                                                                                                                |
+    | accountants                     | TestName;LEGAL_PERSON_OBJECT_ID;rbsc$tax_adviser_primary;ADDRESS_OBJECT_ID;accountant.person@acccomp.com;false;false |
+    | hasTravelProtection             | false                                                                                                                |
+    | hasCouttsOnline                 | false                                                                                                                |
+    | hasCouttsId                     | false                                                                                                                |
+    | associations                    | NATURAL_PERSON_OBJECT_ID_1;rbsc$is_sibling_of                                                                        |
+    | idQuestionId                    | DOCUMENT_OBJECT_ID                                                                                                   |
+    | correspondanceAddressId         | ADDRESS_OBJECT_ID                                                                                                    |
+      com.fasterxml.jackson.core.JsonParseException: Unrecognized token 'Not': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"Not able to deserialize data provided."; line: 1, column: 4]
+	at com.fasterxml.jackson.core.JsonParser._constructError(JsonParser.java:2418)
+	at com.fasterxml.jackson.core.base.ParserMinimalBase._reportError(ParserMinimalBase.java:759)
+	at com.fasterxml.jackson.core.json.ReaderBasedJsonParser._reportInvalidToken(ReaderBasedJsonParser.java:3038)
+	at com.fasterxml.jackson.core.json.ReaderBasedJsonParser._reportInvalidToken(ReaderBasedJsonParser.java:3016)
+	at com.fasterxml.jackson.core.json.ReaderBasedJsonParser._matchToken(ReaderBasedJsonParser.java:2790)
+	at com.fasterxml.jackson.core.json.ReaderBasedJsonParser._handleOddValue(ReaderBasedJsonParser.java:2056)
+	at com.fasterxml.jackson.core.json.ReaderBasedJsonParser.nextToken(ReaderBasedJsonParser.java:805)
+	at com.fasterxml.jackson.databind.ObjectMapper._readTreeAndClose(ObjectMapper.java:4759)
+	at com.fasterxml.jackson.databind.ObjectMapper.readTree(ObjectMapper.java:3124)
+	at utilities.JsonHelper.extractStringField(JsonHelper.java:35)
+	at ICOS.UpdNaturalPerson.updateNaturalPerson(UpdNaturalPerson.java:50)
+	at stepDefinations.UpdNaturalPersonSteps.sendRequestToGenerateNewPersonWithDetails(UpdNaturalPersonSteps.java:77)
+	at âœ½.Send request to update Natural Person with below details(file:///C:/Users/girdd/IdeaProjects/icosapitests/src/test/resources/Features/UpdateNaturalPerson.feature:248)
+  And I verify the Status Code for Update Natural Persons "400"                                                                 # stepDefinations.UpdNaturalPersonSteps.iVerifyTheStatusCodeForUpdateNaturalPersons(java.lang.String)
+Aug 19, 2025 11:44:50 AM tech.grasshopper.pdf.PDFCucumberReport collectReportConfiguration
+INFO: PDF report configuration YAML file not found. Using default settings.
+[ERROR] Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 24.594 s <<< FAILURE! - in testRunner.Runner
+[ERROR] Verify Update Natural Person API.Verify the Patch Update Natural Persons API with invalid data and 400 error response - 025x - birthDate=Empty  Time elapsed: 19.611 s  <<< ERROR!
+com.fasterxml.jackson.core.JsonParseException: 
+Unrecognized token 'Not': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"Not able to deserialize data provided."; line: 1, column: 4]
+[INFO] 
+[INFO] Results:
+[INFO] 
+[ERROR] Errors: 
+[ERROR]   Unrecognized token 'Not': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"Not able to deserialize data provided."; line: 1, column: 4]
+[INFO] 
+[ERROR] Tests run: 1, Failures: 0, Errors: 1, Skipped: 0
+[INFO] 
