@@ -1,7 +1,17 @@
+public List<String> splitListInput(String input, String entryDelimiter) {
+    // NA => return null (means field should not appear in payload)
     if (input != null && input.trim().equalsIgnoreCase("NA")) {
         return null;
     }
-
+    // empty or null => return empty list
     if (input == null || input.trim().isEmpty()) {
-        return new ArrayList<>(); // or Collections.emptyList()
+        return new ArrayList<>();
     }
+    // split by given delimiter and trim each part
+    return Arrays.stream(input.split(entryDelimiter))
+                 .map(String::trim)
+                 .collect(Collectors.toList());
+}
+
+    List<String> entries = payloadHelper.splitListInput(input, "\\s*,\\s*");
+    if (entries == null) return null; // NA case
