@@ -13,5 +13,37 @@ public List<String> splitListInput(String input, String entryDelimiter) {
                  .collect(Collectors.toList());
 }
 
+public List<POJOElectronicAddress> buildElectronicAddresses(String input) {
     List<String> entries = payloadHelper.splitListInput(input, "\\s*,\\s*");
     if (entries == null) return null; // NA case
+    
+    List<POJOElectronicAddress> listElectronicAddresses = new ArrayList<>();
+    for (String entry : entries) {
+        String[] parts = entry.split(";");
+        POJOElectronicAddress address = new POJOElectronicAddress();
+        address.setStrMedium(payloadHelper.normalize(parts[0]));
+        address.setStrKind(payloadHelper.normalize(parts[1]));
+        address.setStrValue(payloadHelper.normalize(parts[2]));
+        payloadHelper.applyBooleanField(parts[3], "isPreferred", address);
+        listElectronicAddresses.add(address);
+    }
+    return listElectronicAddresses;
+}
+
+
+public List<POJOTaxResidence> buildTaxResidences(String input) {
+    List<String> entries = payloadHelper.splitListInput(input, "\\s*,\\s*");
+    if (entries == null) return null;
+    
+    List<POJOTaxResidence> listTaxResidences = new ArrayList<>();
+    for (String entry : entries) {
+        String[] parts = entry.split(";");
+        POJOTaxResidence tax = new POJOTaxResidence();
+        tax.setStrCountry(payloadHelper.normalize(parts[0]));
+        tax.setStrTaxNumber(payloadHelper.resolveDynamicText(parts[1]));
+        tax.setStrIdentityType(payloadHelper.normalize(parts[2]));
+        listTaxResidences.add(tax);
+    }
+    return listTaxResidences;
+}
+
