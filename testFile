@@ -1,4 +1,4 @@
-WHat is the probelm in this pom.xml - 
+DId this - 
 
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
@@ -430,11 +430,11 @@ WHat is the probelm in this pom.xml -
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.0.0-M5</version>
-                <configuration>
-                    <includes>
-                        <include>tests/DriverTest.java</include>
-                    </includes>
-                </configuration>-->
+                <!--     <configuration>
+                         <includes>
+                             <include>tests/DriverTest.java</include>
+                         </includes>
+                     </configuration> -->
                <configuration>
                     <rerunFailingTestsCount>0</rerunFailingTestsCount>
                     <forkCount>1</forkCount>
@@ -538,3 +538,22 @@ WHat is the probelm in this pom.xml -
 
 
 </project>
+
+getting error as - "C:\Program Files\Java\jdk-17\bin\java.exe" -Dmaven.multiModuleProjectDirectory=C:\Users\girdd\IdeaProjects\icosapitests -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -Dmaven.wagon.provider.http=httpclient -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -Dcom.sun.net.ssl.checkRevocation=false -Djavax.net.ssl.trustStore "-Dmaven.home=C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2021.3.2\plugins\maven\lib\maven3" "-Dclassworlds.conf=C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2021.3.2\plugins\maven\lib\maven3\bin\m2.conf" "-Dmaven.ext.class.path=C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2021.3.2\plugins\maven\lib\maven-event-listener.jar" "-javaagent:C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2021.3.2\lib\idea_rt.jar=62762:C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2021.3.2\bin" -Dfile.encoding=UTF-8 -classpath "C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2021.3.2\plugins\maven\lib\maven3\boot\plexus-classworlds-2.6.0.jar;C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2021.3.2\plugins\maven\lib\maven3\boot\plexus-classworlds.license" org.codehaus.classworlds.Launcher -Didea.version=2021.3.2 -s C:\maven\apache-maven-3.6.1\conf\settings.xml clean install
+[INFO] Scanning for projects...
+[ERROR] [ERROR] Some problems were encountered while processing the POMs:
+[FATAL] Non-parseable POM C:\Users\girdd\IdeaProjects\icosapitests\pom.xml: expected START_TAG or END_TAG not TEXT (position: TEXT seen ...</plugin>-->\r\n\r\n\r\n            <p... @490:15)  @ line 490, column 15
+ @ 
+[ERROR] The build could not read 1 project -> [Help 1]
+[ERROR]   
+[ERROR]   The project  (C:\Users\girdd\IdeaProjects\icosapitests\pom.xml) has 1 error
+[ERROR]     Non-parseable POM C:\Users\girdd\IdeaProjects\icosapitests\pom.xml: expected START_TAG or END_TAG not TEXT (position: TEXT seen ...</plugin>-->\r\n\r\n\r\n            <p... @490:15)  @ line 490, column 15 -> [Help 2]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/ProjectBuildingException
+[ERROR] [Help 2] http://cwiki.apache.org/confluence/display/MAVEN/ModelParseException
+
+Process finished with exit code 1
