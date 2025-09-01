@@ -1,559 +1,216 @@
-DId this - 
-
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-
-    <groupId>org.example</groupId>
-    <artifactId>wealth-icos-api</artifactId>
-    <version>1.0-SNAPSHOT</version>
-
-    <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-        <NEWARG_VAR>Some Value for NEWARG_VAR</NEWARG_VAR>
-        <Token>z2xbWCwHl2mHnfbra2ED2rHmlGL7</Token>
-        <slf4j-api.version>2.0.16</slf4j-api.version>
-        <slf4j-simple.version>1.7.36</slf4j-simple.version>
-        <junit.version>4.13.1</junit.version>
-        <cucumber.version>7.20.1</cucumber.version>
-    </properties>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-            <version>7.10.2</version>
-        </dependency>
-
-     <!--   <dependency>
-            <groupId>com.oracle.database.jdbc</groupId>
-            <artifactId>ojdbc11</artifactId>
-            <version>23.7.0.25.01</version>
-        </dependency>-->
-        <dependency>
-            <groupId>com.oracle.database.jdbc</groupId>
-            <artifactId>ojdbc8</artifactId>
-            <version>23.3.0.23.09</version>
-        </dependency>
-
-
-
-
-        <!-- https://mvnrepository.com/artifact/io.netty/netty-handler -->
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-handler</artifactId>
-            <version>4.1.97.Final</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.junit.vintage</groupId>
-            <artifactId>junit-vintage-engine</artifactId>
-            <version>5.10.1</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.hamcrest</groupId>
-                    <artifactId>hamcrest-core</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <!-- <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-            <version>7.4.0</version>
-        </dependency>-->
-
-        <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>3.0.0-beta2</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api -->
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-            <version>3.0.0-beta2</version>
-        </dependency>
-
-
-        <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>2.14.3</version>
-        </dependency>
-
-
-        <!-- https://mvnrepository.com/artifact/io.rest-assured/rest-assured -->
-        <dependency>
-            <groupId>io.rest-assured</groupId>
-            <artifactId>rest-assured</artifactId>
-            <version>5.5.0</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-vault-config -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-vault-config</artifactId>
-            <version>4.1.3</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <version>3.3.5</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp
-        <dependency>
-            <groupId>com.squareup.okhttp3</groupId>
-            <artifactId>okhttp</artifactId>
-            <version>5.0.0-alpha.14</version>
-        </dependency>-->
-
-
-        <!-- https://mvnrepository.com/artifact/org.json/json -->
-        <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-            <version>20240303</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.hamcrest/hamcrest -->
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest</artifactId>
-            <version>3.0</version>
-        </dependency>
-
-
-        <!-- https://mvnrepository.com/artifact/junit/junit
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.4</version>
-        </dependency>-->
-
-
-        <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
-
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpcore</artifactId>
-            <version>4.4.13</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.5.14</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.10.1</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/com.opencsv/opencsv -->
-        <dependency>
-            <groupId>com.opencsv</groupId>
-            <artifactId>opencsv</artifactId>
-            <version>5.9</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp-apache -->
-        <dependency>
-            <groupId>com.squareup.okhttp3</groupId>
-            <artifactId>okhttp-apache</artifactId>
-            <version>3.13.1</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.apache.poi/poi -->
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi</artifactId>
-            <version>5.3.0</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/io.rest-assured/json-schema-validator -->
-        <dependency>
-            <groupId>io.rest-assured</groupId>
-            <artifactId>json-schema-validator</artifactId>
-            <version>5.3.2</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${slf4j-api.version}</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-simple -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>${slf4j-simple.version}</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/com.github.java-json-tools/json-schema-validator -->
-        <dependency>
-            <groupId>com.github.java-json-tools</groupId>
-            <artifactId>json-schema-validator</artifactId>
-            <version>2.2.14</version>
-        </dependency>
-
-
-        <!-- https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml -->
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi-ooxml</artifactId>
-            <version>5.3.0</version>
-        </dependency>
-        <!--  <dependency>
-             <groupId>org.testng</groupId>
-             <artifactId>testng</artifactId>
-             <version>RELEASE</version>
-        </dependency>-->
-
-        <dependency>
-            <groupId>com.aventstack</groupId>
-            <artifactId>extentreports</artifactId>
-            <version>5.1.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-beans</artifactId>
-            <version>5.1.0.RELEASE</version>
-        </dependency>
-
-
-        <!--		&lt;!&ndash; https://mvnrepository.com/artifact/io.netty/netty-handler &ndash;&gt;-->
-        <!--		<dependency>-->
-        <!--			<groupId>io.netty</groupId>-->
-        <!--			<artifactId>netty-handler</artifactId>-->
-        <!--			<version>4.1.97.Final</version>-->
-        <!--		</dependency>-->
-
-        <!--		<dependency>-->
-        <!--			<groupId>org.junit.vintage</groupId>-->
-        <!--			<artifactId>junit-vintage-engine</artifactId>-->
-        <!--			<version>5.10.1</version>-->
-        <!--			<exclusions>-->
-        <!--				<exclusion>-->
-        <!--					<groupId>org.hamcrest</groupId>-->
-        <!--					<artifactId>hamcrest-core</artifactId>-->
-        <!--				</exclusion>-->
-        <!--			</exclusions>-->
-        <!--		</dependency>-->
-
-
-        <!--<dependencies>
-                    <dependency>
-                        <groupId>org.apache.maven.surefire</groupId>
-                        <artifactId>surefire-testng</artifactId>
-                        <version>3.0.0-M5</version>
-                    </dependency>
-                </dependencies>-->
-
-
-        <dependency>
-            <groupId>io.cucumber</groupId>
-            <artifactId>cucumber-java</artifactId>
-            <version>${cucumber.version}</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/io.cucumber/cucumber-core -->
-        <dependency>
-            <groupId>io.cucumber</groupId>
-            <artifactId>cucumber-core</artifactId>
-            <version>${cucumber.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.yaml</groupId>
-                    <artifactId>snakeyaml</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-
-        <dependency>
-            <groupId>io.cucumber</groupId>
-            <artifactId>messages</artifactId>
-            <version>18.0.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>io.cucumber</groupId>
-            <artifactId>cucumber-junit</artifactId>
-            <version>${cucumber.version}</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.apiguardian/apiguardian-api -->
-        <dependency>
-            <groupId>org.apiguardian</groupId>
-            <artifactId>apiguardian-api</artifactId>
-            <version>1.1.2</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/io.cucumber/datatable -->
-        <dependency>
-            <groupId>io.cucumber</groupId>
-            <artifactId>datatable</artifactId>
-            <version>${cucumber.version}</version>
-        </dependency>
-
-
-        <dependency>
-            <groupId>io.cucumber</groupId>
-            <artifactId>cucumber-java</artifactId>
-            <version>${cucumber.version}</version> </dependency>
-        <dependency>
-            <groupId>io.cucumber</groupId>
-            <artifactId>cucumber-gherkin</artifactId>
-            <version>${cucumber.version}</version>  </dependency>
-        <dependency>
-            <groupId>io.cucumber</groupId>
-            <artifactId>cucumber-junit</artifactId>
-            <version>${cucumber.version}</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/tech.grasshopper/extentreports-cucumber6-adapter -->
-
-        <dependency>
-            <groupId>tech.grasshopper</groupId>
-            <artifactId>extentreports-cucumber7-adapter</artifactId>
-            <version>1.14.0</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/tech.grasshopper/extent-pdf-report -->
-        <dependency>
-            <groupId>tech.grasshopper</groupId>
-            <artifactId>extent-pdf-report</artifactId>
-            <version>2.12.0</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.yaml/snakeyaml -->
-        <dependency>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
-            <version>1.30</version>
-        </dependency>
-
-
-        <!-- https://mvnrepository.com/artifact/io.cucumber/gherkin -->
-        <dependency>
-            <groupId>io.cucumber</groupId>
-            <artifactId>gherkin</artifactId>
-            <version>31.0.0</version>
-        </dependency>
-
-
-        <dependency>
-            <groupId>com.trivago.rta</groupId>
-            <artifactId>cucable-plugin</artifactId>
-            <version>1.1.0</version>
-        </dependency>
-
-
-
-
-
-        <dependency>
-            <groupId>io.cucumber</groupId>
-            <artifactId>cucumber-picocontainer</artifactId>
-            <version>${cucumber.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>io.cucumber</groupId>
-            <artifactId>cucumber-jvm</artifactId>
-            <version>1.2.6</version>
-            <type>pom</type>
-        </dependency>
-
-        <dependency>
-            <groupId>tech.grasshopper</groupId>
-            <artifactId>extent-pdf-report</artifactId>
-            <version>1.7.3</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-classic -->
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.5.16</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
-
-
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.10.0</version>
-                <configuration>
-                    <release>${maven.compiler.target}</release>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>3.0.0</version>
-                <executions>
-                    <execution>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>add-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <!-- <source>src/main</source> -->
-                                <source>src/main/java</source>
-                                <!-- <source>src/test</source> -->
-                                <source>src/test/java</source>
-                            </sources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M5</version>
-                <!--     <configuration>
-                         <includes>
-                             <include>tests/DriverTest.java</include>
-                         </includes>
-                     </configuration> -->
-               <configuration>
-                    <rerunFailingTestsCount>0</rerunFailingTestsCount>
-                    <forkCount>1</forkCount>
-                    <useSystemClassLoader>true</useSystemClassLoader>
-                    <useManifestOnlyJar>true</useManifestOnlyJar>
-                    <forkedProcessExitTimeoutInSeconds>120</forkedProcessExitTimeoutInSeconds>
-                    <includes>
-                        <include>**/*Runner.java</include>
-                    </includes>
-
-                    <properties>
-                        <systemPropertyVariables>
-                            <envType>TADP</envType>
-                            <tacbDB>TACB41</tacbDB>
-                            <password>123456</password>
-                        </systemPropertyVariables>
-
-
-                      <configurationParameters>
-                            cucumber.junit-platform.naming-strategy=long
-                            <argLine>
-                                <argLine>-Xmx1024m</argLine>
-                             -DenvType=TADP -DtacbDB=TACB41 -Dpassword=EKN#Fg3OV+*z7a
-                            </argLine> -->
-
-                            <!--<argLine>@{argLine} -Xmx1024m</argLine>-->
-                      </configurationParameters>
-                    </properties>
-                </configuration>
-            </plugin>-->
-
-       <!--     <plugin>
-             <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <version>3.2.5</version>
-            <configuration>
-            <parallel>classes</parallel>
-            <threadCount>10</threadCount>
-            <forkCount>4</forkCount>
-            <reuseForks>true</reuseForks>
-            <argLine>-Xmx2048m -XX:MaxMetaspaceSize=512m</argLine>
-            <includes>
-            <include>**/*Runner.java</include>
-            </includes>
-            <systemPropertyVariables>
-            <envType>TADP</envType>
-            <tacbDB>TACB41</tacbDB>
-            <password>123456</password>
-            <cucumber.execution.parallel.enabled>true</cucumber.execution.parallel.enabled>
-            </systemPropertyVariables>
-            </configuration>
-            </plugin>-->
-
-
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>properties-maven-plugin</artifactId>
-                <version>1.1.0</version>
-                <executions>
-                    <execution>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>write-project-properties</goal>
-                        </goals>
-                        <configuration>
-                            <outputFile>${project.build.testOutputDirectory}/maven.properties</outputFile>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!--
-
-
-                         <plugin>
-                            <groupId>org.codehaus.mojo</groupId>
-                            <artifactId>exec-maven-plugin</artifactId>
-                            <version>3.0.0</version>
-                            <executions>
-                                <execution>
-                                    <id>build-test-environment</id>
-                                    <phase>generate-test-resources</phase>
-                                    <goals>
-                                        <goal>java</goal>
-                                    </goals>
-                                </execution>
-                            </executions>
-                            <configuration>
-                                <mainClass>org.testng.TestNG</mainClass>
-                                <arguments>
-                                    <argument>src/test/resources/testng.xml</argument>
-                                    <argument>${Token}</argument>
-                                </arguments>
-                                <classpathScope>test</classpathScope>
-                            </configuration>
-
-                        </plugin>-->
-
-        </plugins>
-    </build>
-
-
-</project>
-
-getting error as - "C:\Program Files\Java\jdk-17\bin\java.exe" -Dmaven.multiModuleProjectDirectory=C:\Users\girdd\IdeaProjects\icosapitests -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -Dmaven.wagon.provider.http=httpclient -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -Dcom.sun.net.ssl.checkRevocation=false -Djavax.net.ssl.trustStore "-Dmaven.home=C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2021.3.2\plugins\maven\lib\maven3" "-Dclassworlds.conf=C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2021.3.2\plugins\maven\lib\maven3\bin\m2.conf" "-Dmaven.ext.class.path=C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2021.3.2\plugins\maven\lib\maven-event-listener.jar" "-javaagent:C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2021.3.2\lib\idea_rt.jar=62762:C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2021.3.2\bin" -Dfile.encoding=UTF-8 -classpath "C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2021.3.2\plugins\maven\lib\maven3\boot\plexus-classworlds-2.6.0.jar;C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2021.3.2\plugins\maven\lib\maven3\boot\plexus-classworlds.license" org.codehaus.classworlds.Launcher -Didea.version=2021.3.2 -s C:\maven\apache-maven-3.6.1\conf\settings.xml clean install
-[INFO] Scanning for projects...
-[ERROR] [ERROR] Some problems were encountered while processing the POMs:
-[FATAL] Non-parseable POM C:\Users\girdd\IdeaProjects\icosapitests\pom.xml: expected START_TAG or END_TAG not TEXT (position: TEXT seen ...</plugin>-->\r\n\r\n\r\n            <p... @490:15)  @ line 490, column 15
- @ 
-[ERROR] The build could not read 1 project -> [Help 1]
-[ERROR]   
-[ERROR]   The project  (C:\Users\girdd\IdeaProjects\icosapitests\pom.xml) has 1 error
-[ERROR]     Non-parseable POM C:\Users\girdd\IdeaProjects\icosapitests\pom.xml: expected START_TAG or END_TAG not TEXT (position: TEXT seen ...</plugin>-->\r\n\r\n\r\n            <p... @490:15)  @ line 490, column 15 -> [Help 2]
-[ERROR] 
-[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
-[ERROR] Re-run Maven using the -X switch to enable full debug logging.
-[ERROR] 
-[ERROR] For more information about the errors and possible solutions, please read the following articles:
-[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/ProjectBuildingException
-[ERROR] [Help 2] http://cwiki.apache.org/confluence/display/MAVEN/ModelParseException
-
-Process finished with exit code 1
+When I am running thsi debit card create with some hardocdes values of Money Account Object ID and Address Object ID, it is running successfully - 
+
+Feature: Verify Debit Card API
+
+  Scenario Outline: Verify the Post Debit Card API with valid data - <Comments>
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+Then Send Request to create Debit Card with below details
+      | type        | <type>        |
+      | maccId      | <maccId>      |
+      | ownerId     | <ownerId>     |
+      | label       | <label>       |
+      | dailyLimit  | <dailyLimit>  |
+      | addressId   | <addressId>   |
+    And I verify the Status Code for Debit Card "200"
+    And I verify the "objectId" exists in Debit Card response
+    And I verify the "orderId" exists in Debit Card response
+
+    Examples:
+      | type    | maccId                   | ownerId    | label      | dailyLimit | addressId              | Comments                               |
+      | DEBIT   | 66022644.2146  | 665041400  | LABEL 123  | 555        | 665871902      | 001 - StraightThrough                  |
+
+Output - 
+INFO: Value is: Request for Debit Card is: {"uuid":"1a29796","type":"DEBIT","maccId":"66022644.2146","ownerId":"665041400","label":"LABEL 123","dailyLimit":555,"addressId":"665871902"}
+Sept 01, 2025 8:43:48 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: Response for Debit Card is: {"objectId":"9900029556547199","orderId":"2955654719"}
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 15.049 s - in testRunner.Runner
+
+But when I generate values through the feature files and then put it in the Debit card create line in feature file, it ends with 500 error, why so ?
+
+  Scenario Outline: Verify the Post Debit Card API with valid data - <Comments>
+    Given Send Request to get Authentication Token for ICOS
+    When I generate the JWT Token
+    Then Send request to create Address with below details
+      | firstName       | Firstname             |
+      | middleName      | Middlename            |
+      | lastName        | Lastname              |
+      | salutation      | mr                    |
+      | salutationLetter| mr                    |
+      | attnOf          |                       |
+      | crof            |                       |
+      | residency       | 123                   |
+      | streetNr        | 123                   |
+      | street          | teststreet + RANDOM_6 |
+      | streetAdd       | Addition street       |
+      | poBox           | P.O.Box 123           |
+      | city            | Zurich                |
+      | state           | RANDOM_49             |
+      | zip             | 8001                  |
+      | country         | CH                    |
+    Then Send Request to create Container with below details
+      | type   | banking   |
+      | bpId   | 66022644  |
+    Then Send Request to create Money Account with below details
+      | ownerId            | CONTAINER_OBJECT_ID     |
+      | type               | privateCurrentAccount   |
+      | currency           | GBP                     |
+      | rubric             | NA                      |
+      | addressIds         | ADDRESS_OBJECT_ID       |
+      | mailingOffsetDay   | NA                      |
+      | mailingOffsetMonth | NA                      |
+      | minimalNoticeDays  | NA                      |
+      | isMailingPaper     | false                   |
+    Then Send Request to create Debit Card with below details
+      | type        | <type>        |
+      | maccId      | <maccId>      |
+      | ownerId     | <ownerId>     |
+      | label       | <label>       |
+      | dailyLimit  | <dailyLimit>  |
+      | addressId   | <addressId>   |
+    And I verify the Status Code for Debit Card "200"
+    And I verify the "objectId" exists in Debit Card response
+    And I verify the "orderId" exists in Debit Card response
+
+    Examples:
+      | type    | maccId                   | ownerId    | label      | dailyLimit | addressId              | Comments                               |
+      | DEBIT   | MONEY_ACCOUNT_OBJECT_ID  | 665041400  | LABEL 123  | 555        | ADDRESS_OBJECT_ID      | 001 - StraightThrough                  |
+
+Output - 
+
+INFO: Value is: Request for Debit Card is: {"uuid":"8462bf1","type":"DEBIT","maccId":"66022644.2147","ownerId":"665041400","label":"LABEL 123","dailyLimit":555,"addressId":"665871903"}
+Sept 01, 2025 8:55:06 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: Response for Debit Card is: {"orderId":"2955654970","error":"MAILING ADDRESS\nEither Name or Firm is mandatory."}
+  Then Send Request to create Debit Card with below details                              # stepDefinations.DebitCardSteps.sendRequestToCreateDebitCardWithDetails(io.cucumber.datatable.DataTable)
+    | type       | DEBIT                   |
+    | maccId     | MONEY_ACCOUNT_OBJECT_ID |
+    | ownerId    | 665041400               |
+    | label      | LABEL 123               |
+    | dailyLimit | 555                     |
+    | addressId  | ADDRESS_OBJECT_ID       |
+  And I verify the Status Code for Debit Card "200"                                      # stepDefinations.DebitCardSteps.iVerifyTheStatusCodeForDebitCard(java.lang.String)
+      java.lang.AssertionError: expected [500] but found [200]
+	at org.testng.Assert.fail(Assert.java:111)
+	at org.testng.Assert.failNotEquals(Assert.java:1578)
+	at org.testng.Assert.assertEqualsImpl(Assert.java:150)
+	at org.testng.Assert.assertEquals(Assert.java:132)
+	at org.testng.Assert.assertEquals(Assert.java:1419)
+	at org.testng.Assert.assertEquals(Assert.java:1383)
+	at org.testng.Assert.assertEquals(Assert.java:1429)
+	at stepDefinations.DebitCardSteps.iVerifyTheStatusCodeForDebitCard(DebitCardSteps.java:84)
+	at âœ½.I verify the Status Code for Debit Card "200"(file:///C:/Users/girdd/IdeaProjects/icosapitests/src/test/resources/Features/abc.feature:43)
+  And I verify the "objectId" exists in Debit Card response                              # stepDefinations.DebitCardSteps.iVerifyTheKeyExistsInDebitCardResponse(java.lang.String)
+  And I verify the "orderId" exists in Debit Card response                               # stepDefinations.DebitCardSteps.iVerifyTheKeyExistsInDebitCardResponse(java.lang.String)
+Sept 01, 2025 8:55:11 AM tech.grasshopper.pdf.PDFCucumberReport collectReportConfiguration
+INFO: PDF report configuration YAML file not found. Using default settings.
+[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 45.142 s <<< FAILURE! - in testRunner.Runner
+[ERROR] Verify Debit Card API.Verify the Post Debit Card API with valid data - 001 - StraightThrough  Time elapsed: 32.674 s  <<< FAILURE!
+java.lang.AssertionError: expected [500] but found [200]
+[INFO] 
+[INFO] Results:
+[INFO] 
+[ERROR] Failures: 
+[ERROR]   expected [500] but found [200]
+[INFO] 
+[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0
+
+
+
+
+Below is the code used - 
+
+    @Then("Send Request to create Debit Card with below details")
+    public void sendRequestToCreateDebitCardWithDetails(DataTable dataTable) throws Exception {
+        Map<String, String> mapDebitCardDetails = dataTable.asMap(String.class, String.class);
+        String jwtToken = scenarioContext.getContext("JWTToken");
+        response = objDebitCard.createDebitCard(strEnvType, "Bearer", jwtToken, mapDebitCardDetails, scenarioContext);
+    }
+
+// Create Debit Card
+    public Response createDebitCard(String strEnvType, String strBearerToken, String strJWTToken,
+                                      Map<String, String> mapDebitCardDetails, ScenarioContext scenarioContext) throws Exception {
+
+        String strTYKURL = getTYKURL(strEnvType, "TYK.DEBITCARD");
+
+        POJODebitCardRequest pojoDebitCardRequest = payloads.buildDebitCardPayload(mapDebitCardDetails, scenarioContext);
+        String strRequestBody = objObjectMapper.writeValueAsString(pojoDebitCardRequest);
+        objCucumberLogger.PrintStatus("Request for Debit Card is: " + strRequestBody);
+
+        ExtentCucumberAdapter.addTestStepLog("Sending request to Create Debit Card");
+
+        Response objResponse = sendPostRequest(strTYKURL, strBearerToken, strJWTToken, strRequestBody, null);
+        String strResponseBody = devHelperLibrary.getResponseBody(objResponse);
+        objCucumberLogger.PrintStatus("Response for Debit Card is: " + strResponseBody);
+
+        String strDebitCardObjectId = jsonHelper.extractStringField(objResponse, "objectId");
+        String strDebitCardOrderId = jsonHelper.extractStringField(objResponse, "orderId");
+
+        scenarioContext.setContext("debitCardObjectId", strDebitCardObjectId);
+        scenarioContext.setContext("debitCardOrderId", strDebitCardOrderId);
+
+        return objResponse;
+    }
+
+public POJODebitCardRequest buildDebitCardPayload(Map<String, String> mapDebitCardDetails, ScenarioContext scenarioContext) {
+        POJODebitCardRequest debitCard = new POJODebitCardRequest();
+
+        String strMoneyAccountObjectId = scenarioContext.getContext("moneyAccountObjectId");
+        String strAddressObjectId = scenarioContext.getContext("addressObjectId");
+
+        debitCard.setStrUuid(UUID.randomUUID().toString().substring(0, 7));
+
+        debitCard.setStrType(payloadHelper.normalize(mapDebitCardDetails.get("type")));
+
+        String resolvedMaccId = payloadHelper.resolveId(mapDebitCardDetails.get("maccId"), strMoneyAccountObjectId);
+        debitCard.setStrMaccId(resolvedMaccId);
+
+        debitCard.setStrOwnerId(payloadHelper.normalize(mapDebitCardDetails.get("ownerId")));
+
+        debitCard.setStrLabel(payloadHelper.normalize(mapDebitCardDetails.get("label")));
+        payloadHelper.applyBigDecimalField(mapDebitCardDetails.get("dailyLimit"), "dailyLimit", debitCard);
+
+        String resolvedAddressId = payloadHelper.resolveId(mapDebitCardDetails.get("addressId"), strAddressObjectId);
+        debitCard.setStrAddressId(resolvedAddressId);
+
+        return debitCard;
+    }
+
+public String resolveId(String input, String resolvedValue) {
+        if (input == null || input.trim().isEmpty()) {
+            return "";
+        }
+
+        switch (input.trim().toUpperCase()) {
+            case "EMPTY":
+                return "";
+            case "NA":
+                return null;
+            case "NATURAL_PERSON_OBJECT_ID":
+            case "CONTAINER_OBJECT_ID":
+            case "ADDRESS_OBJECT_ID":
+            case "ADDRESS_OBJECT_ID_ADHOC":
+            case "MONEY_ACCOUNT_OBJECT_ID":
+            case "DOCUMENT_OBJECT_ID":
+            case "LEGAL_PERSON_OBJECT_ID":
+            case "NATURAL_PERSON_OBJECT_ID_1":
+                return resolvedValue;
+            default:
+                return input;
+        }
+    }
+
+    public List<String> resolveIdList(String input, String fallbackSingleAddressId, List<String> addressObjectIds) {
+        if (input == null || input.trim().isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        if ("ADDRESS_OBJECT_ID_LIST".equalsIgnoreCase(input.trim())) {
+            return addressObjectIds != null ? addressObjectIds : Collections.emptyList();
+        }
+
+        // Resolve individual tokens
+        return Arrays.stream(input.split(","))
+                .map(id -> resolveId(id.trim(), fallbackSingleAddressId))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
