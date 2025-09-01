@@ -1,92 +1,88 @@
-package utilities;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.restassured.response.Response;
-import com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-public class JsonHelper {
-
-    static ObjectMapper objectMapper = new ObjectMapper();
-
-    public static Object extractRawField(Response response, String fieldName) throws Exception {
-        JsonNode rootNode = objectMapper.readTree(response.asString());
-        JsonNode node = rootNode.path(fieldName);
-        return node.isMissingNode() || node.isNull() ? null : node;
-    }
-
-    public static String extractStringField(Response response, String key) throws Exception {
-        JsonNode rootNode = objectMapper.readTree(response.asString());
-        return rootNode.path(key).asText();
-    }
-
-    public static Boolean extractBooleanField(Response response, String key) throws Exception {
-        JsonNode rootNode = objectMapper.readTree(response.asString());
-        return rootNode.path(key).asBoolean();
-    }
-
-    public static boolean valueExistsInJsonArray(Response response, String jsonPath, String targetValue) throws Exception {
-        JsonNode rootNode = objectMapper.readTree(response.asString());
-        JsonNode arrayNode = rootNode.path(jsonPath);
-        if (arrayNode.isArray()) {
-            return iterateAndCheckArray(arrayNode, targetValue);
-        }
-        return false;
-    }
-
-    private static boolean iterateAndCheckArray(JsonNode arrayNode, String targetValue) {
-        for (JsonNode itemNode : arrayNode) {
-            String currentValue = itemNode.asText();
-            System.out.println("Checking item: " + currentValue);
-            if (targetValue.equals(currentValue)) {
-                logMatchFound(currentValue);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private static void logMatchFound(String value) {
-        System.out.println("Match found: " + value);
-        ExtentCucumberAdapter.addTestStepLog("Actual value found: " + value);
-    }
-
-//    public static String extractStringFieldFromArray(Response response, String arrayField, int index, String fieldName) {
-//        return response.jsonPath().getString(arrayField + "[" + index + "]." + fieldName);
-//    }
-
-    public static List<String> extractListOfStringFieldsFromArray(Response response, String arrayField, String subField) {
-        List<Map<String, Object>> errorList = response.jsonPath().getList(arrayField);
-        List<String> result = new ArrayList<>();
-        for (Map<String, Object> errorMap : errorList) {
-            Object value = errorMap.get(subField);
-            if (value != null) {
-                result.add(value.toString());
-            }
-        }
-        return result;
-    }
-
-    public static void validateFieldExistsInArray(Response response, String arrayPath, String fieldName) throws Exception {
-        JsonNode rootNode = objectMapper.readTree(response.asString());
-        JsonNode arrayNode = rootNode.at(arrayPath); // Must start with '/'
-
-        if (!arrayNode.isArray()) {
-            throw new Exception("Expected an array at path: " + arrayPath);
-        }
-
-        for (JsonNode element : arrayNode) {
-            JsonNode fieldNode = element.get(fieldName);
-            if (fieldNode == null || fieldNode.asText().isEmpty()) {
-                throw new AssertionError("Missing or empty '" + fieldName + "' in one of the elements at: " + arrayPath);
-            }
-        }
-
-        ExtentCucumberAdapter.addTestStepLog("All elements in array " + arrayPath + " contain a valid '" + fieldName + "'");
-    }
-
-}
+[INFO] 
+[INFO] --- maven-surefire-plugin:3.0.0-M5:test (default-test) @ wealth-icos-api ---
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running testRunner.Runner
+Scenario Outline: Verify the Post Debit Card API with valid data - 001 - StraightThrough # src/test/resources/Features/abc.feature:49
+Before All
+Sept 01, 2025 8:54:35 AM hooks.CucumberHooks beforeScenario
+INFO: Before Scenario: Test is starting!
+  Given Send Request to get Authentication Token for ICOS                                # stepDefinations.GetUserSteps.sendRequestToGetAuthenticationTokenForICOS()
+  When I generate the JWT Token                                                          # stepDefinations.GetUserSteps.iGenerateTheJWTToken()
+Sept 01, 2025 8:54:53 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: Response for Address is: {"objectId":"665871903","orderId":"2955654959"}
+  Then Send request to create Address with below details                                 # stepDefinations.AddressSteps.sendRequestToCreateAddressWithDetails(io.cucumber.datatable.DataTable)
+    | firstName        | Firstname             |
+    | middleName       | Middlename            |
+    | lastName         | Lastname              |
+    | salutation       | mr                    |
+    | salutationLetter | mr                    |
+    | attnOf           | [empty]               |
+    | crof             | [empty]               |
+    | residency        | 123                   |
+    | streetNr         | 123                   |
+    | street           | teststreet + RANDOM_6 |
+    | streetAdd        | Addition street       |
+    | poBox            | P.O.Box 123           |
+    | city             | Zurich                |
+    | state            | RANDOM_49             |
+    | zip              | 8001                  |
+    | country          | CH                    |
+Sept 01, 2025 8:54:59 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: Response for Container is: {"objectId":"66022644.1000","orderId":"2955654962"}
+  Then Send Request to create Container with below details                               # stepDefinations.ContainerSteps.sendRequestToCreateContainerWithDetails(io.cucumber.datatable.DataTable)
+    | type | banking  |
+    | bpId | 66022644 |
+Sept 01, 2025 8:54:59 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: Request for Money Account is: {"uuid":"be4dc9e","ownerId":"66022644.1000","type":"privateCurrentAccount","currency":"GBP","addressIds":["665871903"],"isMailingPaper":false}
+Sept 01, 2025 8:55:04 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: Response for Money Account is: {"objectId":"66022644.2147","orderId":"2955654966"}
+  Then Send Request to create Money Account with below details                           # stepDefinations.MoneyAccountSteps.sendRequestToCreateMoneyAccountWithDetails(io.cucumber.datatable.DataTable)
+    | ownerId            | CONTAINER_OBJECT_ID   |
+    | type               | privateCurrentAccount |
+    | currency           | GBP                   |
+    | rubric             | NA                    |
+    | addressIds         | ADDRESS_OBJECT_ID     |
+    | mailingOffsetDay   | NA                    |
+    | mailingOffsetMonth | NA                    |
+    | minimalNoticeDays  | NA                    |
+    | isMailingPaper     | false                 |
+Sept 01, 2025 8:55:04 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: Request for Debit Card is: {"uuid":"8462bf1","type":"DEBIT","maccId":"66022644.2147","ownerId":"665041400","label":"LABEL 123","dailyLimit":555,"addressId":"665871903"}
+Sept 01, 2025 8:55:06 AM utilities.CucumberLogger PrintStatus
+INFO: Value is: Response for Debit Card is: {"orderId":"2955654970","error":"MAILING ADDRESS\nEither Name or Firm is mandatory."}
+  Then Send Request to create Debit Card with below details                              # stepDefinations.DebitCardSteps.sendRequestToCreateDebitCardWithDetails(io.cucumber.datatable.DataTable)
+    | type       | DEBIT                   |
+    | maccId     | MONEY_ACCOUNT_OBJECT_ID |
+    | ownerId    | 665041400               |
+    | label      | LABEL 123               |
+    | dailyLimit | 555                     |
+    | addressId  | ADDRESS_OBJECT_ID       |
+  And I verify the Status Code for Debit Card "200"                                      # stepDefinations.DebitCardSteps.iVerifyTheStatusCodeForDebitCard(java.lang.String)
+      java.lang.AssertionError: expected [500] but found [200]
+	at org.testng.Assert.fail(Assert.java:111)
+	at org.testng.Assert.failNotEquals(Assert.java:1578)
+	at org.testng.Assert.assertEqualsImpl(Assert.java:150)
+	at org.testng.Assert.assertEquals(Assert.java:132)
+	at org.testng.Assert.assertEquals(Assert.java:1419)
+	at org.testng.Assert.assertEquals(Assert.java:1383)
+	at org.testng.Assert.assertEquals(Assert.java:1429)
+	at stepDefinations.DebitCardSteps.iVerifyTheStatusCodeForDebitCard(DebitCardSteps.java:84)
+	at âœ½.I verify the Status Code for Debit Card "200"(file:///C:/Users/girdd/IdeaProjects/icosapitests/src/test/resources/Features/abc.feature:43)
+  And I verify the "objectId" exists in Debit Card response                              # stepDefinations.DebitCardSteps.iVerifyTheKeyExistsInDebitCardResponse(java.lang.String)
+  And I verify the "orderId" exists in Debit Card response                               # stepDefinations.DebitCardSteps.iVerifyTheKeyExistsInDebitCardResponse(java.lang.String)
+Sept 01, 2025 8:55:11 AM tech.grasshopper.pdf.PDFCucumberReport collectReportConfiguration
+INFO: PDF report configuration YAML file not found. Using default settings.
+[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 45.142 s <<< FAILURE! - in testRunner.Runner
+[ERROR] Verify Debit Card API.Verify the Post Debit Card API with valid data - 001 - StraightThrough  Time elapsed: 32.674 s  <<< FAILURE!
+java.lang.AssertionError: expected [500] but found [200]
+[INFO] 
+[INFO] Results:
+[INFO] 
+[ERROR] Failures: 
+[ERROR]   expected [500] but found [200]
+[INFO] 
+[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0
+[INFO] 
