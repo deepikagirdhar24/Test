@@ -1,88 +1,220 @@
-[INFO] 
-[INFO] --- maven-surefire-plugin:3.0.0-M5:test (default-test) @ wealth-icos-api ---
-[INFO] 
-[INFO] -------------------------------------------------------
-[INFO]  T E S T S
-[INFO] -------------------------------------------------------
-[INFO] Running testRunner.Runner
-Scenario Outline: Verify the Post Debit Card API with valid data - 001 - StraightThrough # src/test/resources/Features/abc.feature:49
-Before All
-Sept 01, 2025 8:54:35 AM hooks.CucumberHooks beforeScenario
-INFO: Before Scenario: Test is starting!
-  Given Send Request to get Authentication Token for ICOS                                # stepDefinations.GetUserSteps.sendRequestToGetAuthenticationTokenForICOS()
-  When I generate the JWT Token                                                          # stepDefinations.GetUserSteps.iGenerateTheJWTToken()
-Sept 01, 2025 8:54:53 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Response for Address is: {"objectId":"665871903","orderId":"2955654959"}
-  Then Send request to create Address with below details                                 # stepDefinations.AddressSteps.sendRequestToCreateAddressWithDetails(io.cucumber.datatable.DataTable)
-    | firstName        | Firstname             |
-    | middleName       | Middlename            |
-    | lastName         | Lastname              |
-    | salutation       | mr                    |
-    | salutationLetter | mr                    |
-    | attnOf           | [empty]               |
-    | crof             | [empty]               |
-    | residency        | 123                   |
-    | streetNr         | 123                   |
-    | street           | teststreet + RANDOM_6 |
-    | streetAdd        | Addition street       |
-    | poBox            | P.O.Box 123           |
-    | city             | Zurich                |
-    | state            | RANDOM_49             |
-    | zip              | 8001                  |
-    | country          | CH                    |
-Sept 01, 2025 8:54:59 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Response for Container is: {"objectId":"66022644.1000","orderId":"2955654962"}
-  Then Send Request to create Container with below details                               # stepDefinations.ContainerSteps.sendRequestToCreateContainerWithDetails(io.cucumber.datatable.DataTable)
-    | type | banking  |
-    | bpId | 66022644 |
-Sept 01, 2025 8:54:59 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Request for Money Account is: {"uuid":"be4dc9e","ownerId":"66022644.1000","type":"privateCurrentAccount","currency":"GBP","addressIds":["665871903"],"isMailingPaper":false}
-Sept 01, 2025 8:55:04 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Response for Money Account is: {"objectId":"66022644.2147","orderId":"2955654966"}
-  Then Send Request to create Money Account with below details                           # stepDefinations.MoneyAccountSteps.sendRequestToCreateMoneyAccountWithDetails(io.cucumber.datatable.DataTable)
-    | ownerId            | CONTAINER_OBJECT_ID   |
-    | type               | privateCurrentAccount |
-    | currency           | GBP                   |
-    | rubric             | NA                    |
-    | addressIds         | ADDRESS_OBJECT_ID     |
-    | mailingOffsetDay   | NA                    |
-    | mailingOffsetMonth | NA                    |
-    | minimalNoticeDays  | NA                    |
-    | isMailingPaper     | false                 |
-Sept 01, 2025 8:55:04 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Request for Debit Card is: {"uuid":"8462bf1","type":"DEBIT","maccId":"66022644.2147","ownerId":"665041400","label":"LABEL 123","dailyLimit":555,"addressId":"665871903"}
-Sept 01, 2025 8:55:06 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Response for Debit Card is: {"orderId":"2955654970","error":"MAILING ADDRESS\nEither Name or Firm is mandatory."}
-  Then Send Request to create Debit Card with below details                              # stepDefinations.DebitCardSteps.sendRequestToCreateDebitCardWithDetails(io.cucumber.datatable.DataTable)
-    | type       | DEBIT                   |
-    | maccId     | MONEY_ACCOUNT_OBJECT_ID |
-    | ownerId    | 665041400               |
-    | label      | LABEL 123               |
-    | dailyLimit | 555                     |
-    | addressId  | ADDRESS_OBJECT_ID       |
-  And I verify the Status Code for Debit Card "200"                                      # stepDefinations.DebitCardSteps.iVerifyTheStatusCodeForDebitCard(java.lang.String)
-      java.lang.AssertionError: expected [500] but found [200]
-	at org.testng.Assert.fail(Assert.java:111)
-	at org.testng.Assert.failNotEquals(Assert.java:1578)
-	at org.testng.Assert.assertEqualsImpl(Assert.java:150)
-	at org.testng.Assert.assertEquals(Assert.java:132)
-	at org.testng.Assert.assertEquals(Assert.java:1419)
-	at org.testng.Assert.assertEquals(Assert.java:1383)
-	at org.testng.Assert.assertEquals(Assert.java:1429)
-	at stepDefinations.DebitCardSteps.iVerifyTheStatusCodeForDebitCard(DebitCardSteps.java:84)
-	at âœ½.I verify the Status Code for Debit Card "200"(file:///C:/Users/girdd/IdeaProjects/icosapitests/src/test/resources/Features/abc.feature:43)
-  And I verify the "objectId" exists in Debit Card response                              # stepDefinations.DebitCardSteps.iVerifyTheKeyExistsInDebitCardResponse(java.lang.String)
-  And I verify the "orderId" exists in Debit Card response                               # stepDefinations.DebitCardSteps.iVerifyTheKeyExistsInDebitCardResponse(java.lang.String)
-Sept 01, 2025 8:55:11 AM tech.grasshopper.pdf.PDFCucumberReport collectReportConfiguration
-INFO: PDF report configuration YAML file not found. Using default settings.
-[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 45.142 s <<< FAILURE! - in testRunner.Runner
-[ERROR] Verify Debit Card API.Verify the Post Debit Card API with valid data - 001 - StraightThrough  Time elapsed: 32.674 s  <<< FAILURE!
-java.lang.AssertionError: expected [500] but found [200]
-[INFO] 
-[INFO] Results:
-[INFO] 
-[ERROR] Failures: 
-[ERROR]   expected [500] but found [200]
-[INFO] 
-[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0
-[INFO] 
+// Create Address
+    public Response createAddress(String strEnvType, String strBearerToken, String strJWTToken,
+                                      Map<String, String> mapAddressDetails, ScenarioContext scenarioContext) throws Exception {
+
+        String strTYKURL = getTYKURL(strEnvType, "TYK.ADDRESS");
+        POJOAddressRequest pojoAddressRequest = payloads.buildAddressPayload(mapAddressDetails, true);
+        String strRequestBody = objObjectMapper.writeValueAsString(pojoAddressRequest);
+
+        ExtentCucumberAdapter.addTestStepLog("Sending request to Create Address");
+
+        Response objResponse = sendPostRequest(strTYKURL, strBearerToken, strJWTToken, strRequestBody, null);
+        String strResponseBody = devHelperLibrary.getResponseBody(objResponse);
+        objCucumberLogger.PrintStatus("Response for Address is: " + strResponseBody);
+
+        String strAddressObjectId = jsonHelper.extractStringField(objResponse, "objectId");
+        String strAddressOrderId = jsonHelper.extractStringField(objResponse, "orderId");
+        String strAddressUuid = pojoAddressRequest.getStrUuid();
+
+        scenarioContext.setContext("addressObjectId", strAddressObjectId);
+        scenarioContext.setContext("addressOrderId", strAddressOrderId);
+        scenarioContext.setContext("addressUuid", strAddressUuid);
+
+        // Append to list for multiple address support
+        List<String> addressObjectIds = (List<String>) scenarioContext.getContext("addressObjectIds");
+        if (addressObjectIds == null) {
+            addressObjectIds = new ArrayList<>();
+        }
+        addressObjectIds.add(strAddressObjectId);
+        scenarioContext.setContext("addressObjectIds", addressObjectIds);
+
+        return objResponse;
+    }
+
+    // Create Money Account
+    public Response createMoneyAccount(String strEnvType, String strBearerToken, String strJWTToken,
+                                      Map<String, String> mapMoneyAccountDetails, ScenarioContext scenarioContext) throws Exception {
+
+        String strTYKURL = getTYKURL(strEnvType, "TYK.MONEYACCOUNT");
+
+        POJOMoneyAccountRequest pojoMoneyAccountRequest = payloads.buildMoneyAccountPayload(mapMoneyAccountDetails, scenarioContext);
+        String strRequestBody = objObjectMapper.writeValueAsString(pojoMoneyAccountRequest);
+        objCucumberLogger.PrintStatus("Request for Money Account is: " + strRequestBody);
+
+        ExtentCucumberAdapter.addTestStepLog("Sending request to Create Money Account");
+
+        Response objResponse = sendPostRequest(strTYKURL, strBearerToken, strJWTToken, strRequestBody, null);
+        String strResponseBody = devHelperLibrary.getResponseBody(objResponse);
+        objCucumberLogger.PrintStatus("Response for Money Account is: " + strResponseBody);
+
+        String strMoneyAccountObjectId = jsonHelper.extractStringField(objResponse, "objectId");
+        String strMoneyAccountOrderId = jsonHelper.extractStringField(objResponse, "orderId");
+
+        scenarioContext.setContext("moneyAccountObjectId", strMoneyAccountObjectId);
+        scenarioContext.setContext("moneyAccountOrderId", strMoneyAccountOrderId);
+
+        return objResponse;
+    }
+
+// Create Debit Card
+    public Response createDebitCard(String strEnvType, String strBearerToken, String strJWTToken,
+                                      Map<String, String> mapDebitCardDetails, ScenarioContext scenarioContext) throws Exception {
+
+        String strTYKURL = getTYKURL(strEnvType, "TYK.DEBITCARD");
+
+        POJODebitCardRequest pojoDebitCardRequest = payloads.buildDebitCardPayload(mapDebitCardDetails, scenarioContext);
+        String strRequestBody = objObjectMapper.writeValueAsString(pojoDebitCardRequest);
+        objCucumberLogger.PrintStatus("Request for Debit Card is: " + strRequestBody);
+
+        ExtentCucumberAdapter.addTestStepLog("Sending request to Create Debit Card");
+
+        Response objResponse = sendPostRequest(strTYKURL, strBearerToken, strJWTToken, strRequestBody, null);
+        String strResponseBody = devHelperLibrary.getResponseBody(objResponse);
+        objCucumberLogger.PrintStatus("Response for Debit Card is: " + strResponseBody);
+
+        String strDebitCardObjectId = jsonHelper.extractStringField(objResponse, "objectId");
+        String strDebitCardOrderId = jsonHelper.extractStringField(objResponse, "orderId");
+
+        scenarioContext.setContext("debitCardObjectId", strDebitCardObjectId);
+        scenarioContext.setContext("debitCardOrderId", strDebitCardOrderId);
+
+        return objResponse;
+    }
+
+public POJOAddressRequest buildAddressPayload(Map<String, String> mapAddressDetails, boolean includeUuid) {
+        POJOAddressRequest address = new POJOAddressRequest();
+
+        if (includeUuid) {
+            address.setStrUuid(UUID.randomUUID().toString().substring(0, 7));
+        }
+
+        address.setStrSalutation(payloadHelper.normalize(mapAddressDetails.get("salutation")));
+        address.setStrSalutationLetter(payloadHelper.normalize(mapAddressDetails.get("salutationLetter")));
+        address.setStrAttnOf(payloadHelper.normalize(mapAddressDetails.get("attnOf")));
+        address.setStrCrof(payloadHelper.normalize(mapAddressDetails.get("crof")));
+        address.setStrResidency(payloadHelper.normalize(mapAddressDetails.get("residency")));
+        address.setStrStreetNr(payloadHelper.normalize(mapAddressDetails.get("streetNr")));
+
+        // Street = fixed prefix + RANDOM_6
+        String streetSuffix = payloadHelper.resolveDynamicText(mapAddressDetails.get("street"));
+        address.setStrStreet("teststreet" + streetSuffix);
+
+        address.setStrStreetAdd(payloadHelper.normalize(mapAddressDetails.get("streetAdd")));
+        address.setStrPoBox(payloadHelper.normalize(mapAddressDetails.get("poBox")));
+        address.setStrCity(payloadHelper.normalize(mapAddressDetails.get("city")));
+
+        // state = RANDOM_49 or any other dynamic rule
+        address.setStrState(payloadHelper.resolveDynamicText(mapAddressDetails.get("state")));
+
+        address.setStrZip(payloadHelper.normalize(mapAddressDetails.get("zip")));
+        address.setStrCountry(payloadHelper.normalize(mapAddressDetails.get("country")));
+
+        return address;
+    }
+
+    public POJOContainerRequest buildContainerPayload(Map<String, String> mapContainerDetails) {
+        POJOContainerRequest container = new POJOContainerRequest();
+
+        container.setStrUuid(UUID.randomUUID().toString().substring(0, 7));
+        container.setStrType(payloadHelper.normalize(mapContainerDetails.get("type")));
+        container.setStrBpId(payloadHelper.normalize(mapContainerDetails.get("bpId")));
+
+        return container;
+    }
+
+    public POJOMoneyAccountRequest buildMoneyAccountPayload(Map<String, String> mapMoneyAccountDetails, ScenarioContext scenarioContext) {
+        POJOMoneyAccountRequest moneyAccount = new POJOMoneyAccountRequest();
+
+        String strContainerObjectId = scenarioContext.getContext("containerObjectId");
+        String strAddressObjectId = scenarioContext.getContext("addressObjectId");
+//        String strAddressObjectId = scenarioContext.getContext("addressObjectIdAdhoc");
+        @SuppressWarnings("unchecked")
+        List<String> addressObjectIds = (List<String>) scenarioContext.getContext("addressObjectIds");
+
+        moneyAccount.setStrUuid(UUID.randomUUID().toString().substring(0, 7));
+
+        String ownerId = payloadHelper.resolveId(mapMoneyAccountDetails.get("ownerId"), strContainerObjectId);
+        moneyAccount.setStrOwnerId((ownerId));
+
+        moneyAccount.setStrType(payloadHelper.normalize(mapMoneyAccountDetails.get("type")));
+        moneyAccount.setStrCurrency(payloadHelper.normalize(mapMoneyAccountDetails.get("currency")));
+        moneyAccount.setStrRubric(payloadHelper.normalize(mapMoneyAccountDetails.get("rubric")));
+
+        List<String> resolvedAddressIds = payloadHelper.resolveIdList(mapMoneyAccountDetails.get("addressIds"), strAddressObjectId, addressObjectIds);
+        moneyAccount.setLstAddressIds(resolvedAddressIds);
+
+        payloadHelper.applyBigDecimalField(mapMoneyAccountDetails.get("mailingOffsetDay"), "mailingOffsetDay", moneyAccount);
+        payloadHelper.applyBigDecimalField(mapMoneyAccountDetails.get("mailingOffsetMonth"), "mailingOffsetMonth", moneyAccount);
+        payloadHelper.applyBigDecimalField(mapMoneyAccountDetails.get("minimalNoticeDays"), "minimalNoticeDays", moneyAccount);
+        payloadHelper.applyBooleanField(mapMoneyAccountDetails.get("isMailingPaper"), "isMailingPaper", moneyAccount);
+
+        return moneyAccount;
+    }
+
+    public POJODebitCardRequest buildDebitCardPayload(Map<String, String> mapDebitCardDetails, ScenarioContext scenarioContext) {
+        POJODebitCardRequest debitCard = new POJODebitCardRequest();
+
+        String strMoneyAccountObjectId = scenarioContext.getContext("moneyAccountObjectId");
+        String strAddressObjectId = scenarioContext.getContext("addressObjectId");
+//        String strAddressObjectId = scenarioContext.getContext("addressObjectIdAdhoc");
+
+        debitCard.setStrUuid(UUID.randomUUID().toString().substring(0, 7));
+
+        debitCard.setStrType(payloadHelper.normalize(mapDebitCardDetails.get("type")));
+
+        String resolvedMaccId = payloadHelper.resolveId(mapDebitCardDetails.get("maccId"), strMoneyAccountObjectId);
+        debitCard.setStrMaccId(resolvedMaccId);
+
+        debitCard.setStrOwnerId(payloadHelper.normalize(mapDebitCardDetails.get("ownerId")));
+
+        debitCard.setStrLabel(payloadHelper.normalize(mapDebitCardDetails.get("label")));
+        payloadHelper.applyBigDecimalField(mapDebitCardDetails.get("dailyLimit"), "dailyLimit", debitCard);
+
+        String resolvedAddressId = payloadHelper.resolveId(mapDebitCardDetails.get("addressId"), strAddressObjectId);
+        debitCard.setStrAddressId(resolvedAddressId);
+
+        return debitCard;
+    }
+
+
+public String resolveId(String input, String resolvedValue) {
+        if (input == null || input.trim().isEmpty()) {
+            return "";
+        }
+
+        switch (input.trim().toUpperCase()) {
+            case "EMPTY":
+                return "";
+            case "NA":
+                return null;
+            case "NATURAL_PERSON_OBJECT_ID":
+            case "CONTAINER_OBJECT_ID":
+            case "ADDRESS_OBJECT_ID":
+            case "ADDRESS_OBJECT_ID_ADHOC":
+            case "MONEY_ACCOUNT_OBJECT_ID":
+            case "DOCUMENT_OBJECT_ID":
+            case "LEGAL_PERSON_OBJECT_ID":
+            case "NATURAL_PERSON_OBJECT_ID_1":
+                return resolvedValue;
+            default:
+                return input;
+        }
+    }
+
+    public List<String> resolveIdList(String input, String fallbackSingleAddressId, List<String> addressObjectIds) {
+        if (input == null || input.trim().isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        if ("ADDRESS_OBJECT_ID_LIST".equalsIgnoreCase(input.trim())) {
+            return addressObjectIds != null ? addressObjectIds : Collections.emptyList();
+        }
+
+        // Resolve individual tokens
+        return Arrays.stream(input.split(","))
+                .map(id -> resolveId(id.trim(), fallbackSingleAddressId))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+
+what can be wrong here ?
