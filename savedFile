@@ -1,4 +1,50 @@
-    address.setStrFirstName(payloadHelper.normalize(mapAddressDetails.get("firstName")));
-    address.setStrMiddleName(payloadHelper.normalize(mapAddressDetails.get("middleName")));
-    address.setStrLastName(payloadHelper.normalize(mapAddressDetails.get("lastName")));
-    address.setStrFirm(payloadHelper.normalize(mapAddressDetails.get("firm")));
+I have a test case which date issueDate has wrong date format. How to address this in the function below and in the feature file
+
+I am uisng below function to address the date - 
+
+public String resolveDate(String context, String fieldName, String dateInput) {
+        if (dateInput == null || dateInput.trim().isEmpty()) {
+            return ""; // Treat null/empty input as empty string
+        }
+
+        String input = dateInput.trim().toUpperCase();
+
+        switch (input) {
+            case "NA":
+                return null;
+            case "EMPTY":
+                return "";
+            case "DEFAULT":
+                return getDefaultDateForField(fieldName);
+            case "TODAY":
+                return LocalDate.now().toString();
+            case "PAST":
+                return resolvePastDate(context);
+            case "FUTURE":
+                return resolveFutureDate(context);
+            default:
+                return input; // Assume valid yyyy-MM-dd format
+        }
+    }
+
+public List<POJODocumentationIdentity> buildDocumentationIdentity(String input, String context) {
+        List<String> entries = payloadHelper.splitListInput(input, "\\s*,\\s*");
+        if (entries == null) return null; // NA case
+
+        List<POJODocumentationIdentity> listDocumentation = new ArrayList<>();
+        for (String entry : entries) {
+            String[] parts = entry.split(";");
+            POJODocumentationIdentity doc = new POJODocumentationIdentity();
+            doc.setStrIdentityType(payloadHelper.normalize(parts[0]));
+            doc.setStrNumber(payloadHelper.normalize(parts[1]));
+            doc.setStrIssueCountry(payloadHelper.normalize(parts[2]));
+            doc.setStrIssuePlace(payloadHelper.normalize(parts[3]));
+            doc.setStrIssueDate(payloadHelper.resolveDate(context, "issueDate", parts[4]));
+            doc.setStrValidUntil(payloadHelper.resolveDate(context, "validUntil", parts[5]));
+            listDocumentation.add(doc);
+        }
+
+ALso in featire files, I am passing either TODAY, FUTURE< DEFAULT as per test case - 
+
+See belwo - 
+      | pers_form_doc | GB          | Firstname    | Middlename    | Lastname    | DEFAULT    | male   | GB            | mr    | London     | GB           | email;private;first.last@gmail.com;false   | false      | GB;RANDOM_10;nin    | pass;GB1234567890;GB;London;DEFAULT;DEFAULT      | GB                    | Testreason              | none        | false             | rbsc$fatca_non_us_person | rbsc$crs_np_doc    | DEFAULT                | false                  | false                 | false                  | false                | false               | false                 | false                         | false                           | TestName;LEGAL_PERSON_OBJECT_ID;rbsc$tax_adviser_primary;ADDRESS_OBJECT_ID;accountant.person@acccomp.com;false;false | false               | false           | false       | NATURAL_PERSON_OBJECT_ID_1;rbsc$is_sibling_of | DOCUMENT_OBJECT_ID   | ADDRESS_OBJECT_ID       | 111x - documentationIdentity with issueDate |
