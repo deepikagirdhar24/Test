@@ -1,168 +1,44 @@
-Scenario Outline: Verify Update Natural Person Response
-  And I verify the following fields in Update Natural Person response
-    | id                                      | <id>                       |
-    | firstName                               | <firstName>                |
-    | middleName                              | <middleName>               |
-    | lastName                                | <lastName>                 |
-    | birthDate                               | <birthDate>                |
-    | nationalities[0]                        | <nationality>              |
-    | subType.key                             | <subTypeKey>               |
-    | subType.value                           | <subTypeValue>             |
-    | gender.key                              | <genderKey>                |
-    | gender.value                            | <genderValue>              |
-    | title.key                               | <titleKey>                 |
-    | title.value                             | <titleValue>               |
-    | birthPlace                              | <birthPlace>               |
-    | birthCountry                            | <birthCountry>             |
-    | domiCountry                             | <domiCountry>              |
-    | residenceAddress.id                     | <resAddressId>             |
-    | residenceAddress.firstName              | <resAddressFirstName>      |
-    | residenceAddress.middleName             | <resAddressMiddleName>     |
-    | residenceAddress.lastName               | <resAddressLastName>       |
-    | residenceAddress.firm                   | <resAddressFirm>           |
-    | residenceAddress.residency              | <resAddressResidency>      |
-    | residenceAddress.streetNr               | <resAddressStreetNr>       |
-    | residenceAddress.street                 | <resAddressStreet>         |
-    | residenceAddress.streetAdd              | <resAddressStreetAdd>      |
-    | residenceAddress.poBox                  | <resAddressPoBox>          |
-    | residenceAddress.city                   | <resAddressCity>           |
-    | residenceAddress.state                  | <resAddressState>          |
-    | residenceAddress.zip                    | <resAddressZip>            |
-    | residenceAddress.country                | <resAddressCountry>        |
-    | correspondanceAddress.id                | <corrAddressId>            |
-    | correspondanceAddress.firstName         | <corrAddressFirstName>     |
-    | correspondanceAddress.middleName        | <corrAddressMiddleName>    |
-    | correspondanceAddress.lastName          | <corrAddressLastName>      |
-    | correspondanceAddress.firm              | <corrAddressFirm>          |
-    | correspondanceAddress.residency         | <corrAddressResidency>     |
-    | correspondanceAddress.streetNr          | <corrAddressStreetNr>      |
-    | correspondanceAddress.street            | <corrAddressStreet>        |
-    | correspondanceAddress.streetAdd         | <corrAddressStreetAdd>     |
-    | correspondanceAddress.poBox             | <corrAddressPoBox>         |
-    | correspondanceAddress.city              | <corrAddressCity>          |
-    | correspondanceAddress.state             | <corrAddressState>         |
-    | correspondanceAddress.zip               | <corrAddressZip>           |
-    | correspondanceAddress.country           | <corrAddressCountry>       |
-    | correspondanceAddress.salutation.key    | <corrSalutationKey>        |
-    | correspondanceAddress.salutation.value  | <corrSalutationValue>      |
-    | correspondanceAddress.salutationLetter.key   | <corrSalutationLetterKey>   |
-    | correspondanceAddress.salutationLetter.value | <corrSalutationLetterValue> |
-    | electronicAddresses[0].value            | <emailValue>               |
-    | electronicAddresses[0].isPreferred      | <emailIsPreferred>         |
-    | electronicAddresses[0].medium.key       | <emailMediumKey>           |
-    | electronicAddresses[0].medium.value     | <emailMediumValue>         |
-    | electronicAddresses[0].kind.key         | <emailKindKey>             |
-    | electronicAddresses[0].kind.value       | <emailKindValue>           |
-    | electronicAddresses[0].country          | <emailCountry>             |
-    | isEmployee                              | <isEmployee>               |
-    | employmentKind.key                      | <employmentKey>            |
-    | employmentKind.value                    | <employmentValue>          |
-    | idQuestions[0].isChallengeWord          | <idQ1IsChallenge>          |
-    | idQuestions[0].question                 | <idQ1Question>             |
-    | idQuestions[0].answer                   | <idQ1Answer>               |
-    | idQuestions[1].isChallengeWord          | <idQ2IsChallenge>          |
-    | idQuestions[1].question                 | <idQ2Question>             |
-    | idQuestions[1].answer                   | <idQ2Answer>               |
-    | idQuestions[2].isChallengeWord          | <idQ3IsChallenge>          |
-    | idQuestions[2].question                 | <idQ3Question>             |
-    | idQuestions[2].answer                   | <idQ3Answer>               |
-    | idQuestions[3].isChallengeWord          | <idQ4IsChallenge>          |
-    | idQuestions[3].question                 | <idQ4Question>             |
-    | idQuestions[3].answer                   | <idQ4Answer>               |
-    | idQuestions[4].isChallengeWord          | <idQ5IsChallenge>          |
-    | idQuestions[4].question                 | <idQ5Question>             |
-    | idQuestions[4].answer                   | <idQ5Answer>               |
-    | idQuestions[5].isChallengeWord          | <idQ6IsChallenge>          |
-    | idQuestions[5].question                 | <idQ6Question>             |
-    | idQuestions[5].answer                   | <idQ6Answer>               |
-    | taxResidences[0].country                | <taxCountry>               |
-    | taxResidences[0].taxNumber              | <taxNumber>                |
-    | taxResidences[0].identityType.key       | <taxIdentityKey>           |
-    | taxResidences[0].identityType.value     | <taxIdentityValue>         |
-    | fatcaStatus.key                         | <fatcaKey>                 |
-    | fatcaStatus.value                       | <fatcaValue>               |
-    | crsType.key                             | <crsKey>                   |
-    | crsType.value                           | <crsValue>                 |
-    | ukTaxResidenceFromDate                  | <ukTaxFromDate>            |
-    | hasTaxAvoidanceSchemes                  | <hasTaxAvoidanceSchemes>   |
-    | isHoldingBearerShares                   | <isHoldingBearerShares>    |
-    | hasInvestableAssets10M                  | <hasInvestableAssets10M>   |
-    | hasHistoricTaxIssues                    | <hasHistoricTaxIssues>     |
-    | hasTaxChgDomiStatus                     | <hasTaxChgDomiStatus>      |
-    | taxChgDomiStatusDate                    | <taxChgDomiStatusDate>     |
-    | hasTaxChgUkDomiStatus                   | <hasTaxChgUkDomiStatus>    |
-    | hasTaxPrevClaimRemitanceBasis           | <hasTaxPrevClaimRemitanceBasis> |
-    | hasTaxIntendClaimRemitanceBasis         | <hasTaxIntendClaimRemitanceBasis> |
-    | accountants[0].name                     | <accountantName>           |
-    | accountants[0].companyId                | <accountantCompanyId>      |
-    | accountants[0].companyName              | <accountantCompanyName>    |
-    | accountants[0].companyResidenceCountry  | <accountantCompanyCountry> |
-    | accountants[0].email                    | <accountantEmail>          |
-    | accountants[0].hasConsent               | <accountantHasConsent>     |
-    | accountants[0].doSendCopy               | <accountantDoSendCopy>     |
-    | accountants[0].role.key                 | <accountantRoleKey>        |
-    | accountants[0].role.value               | <accountantRoleValue>      |
-    | accountants[0].address.id               | <accAddressId>             |
-    | accountants[0].address.firstName        | <accAddressFirstName>      |
-    | accountants[0].address.middleName       | <accAddressMiddleName>     |
-    | accountants[0].address.lastName         | <accAddressLastName>       |
-    | accountants[0].address.firm             | <accAddressFirm>           |
-    | accountants[0].address.residency        | <accAddressResidency>      |
-    | accountants[0].address.streetNr         | <accAddressStreetNr>       |
-    | accountants[0].address.street           | <accAddressStreet>         |
-    | accountants[0].address.streetAdd        | <accAddressStreetAdd>      |
-    | accountants[0].address.poBox            | <accAddressPoBox>          |
-    | accountants[0].address.city             | <accAddressCity>           |
-    | accountants[0].address.state            | <accAddressState>          |
-    | accountants[0].address.zip              | <accAddressZip>            |
-    | accountants[0].address.country          | <accAddressCountry>        |
-    | accountants[0].address.salutation.key   | <accAddressSalutationKey>  |
-    | accountants[0].address.salutation.value | <accAddressSalutationValue>|
-    | accountants[0].address.salutationLetter.key   | <accAddressSalutationLetterKey>   |
-    | accountants[0].address.salutationLetter.value | <accAddressSalutationLetterValue> |
-    | hasTravelProtection                     | <hasTravelProtection>      |
-    | hasCouttsOnline                         | <hasCouttsOnline>          |
-    | associations[0].personId                | <associationPersonId>      |
-    | associations[0].personFirstName         | <associationPersonFirstName> |
-    | associations[0].personLastName          | <associationPersonLastName>  |
-    | associations[0].personResidenceCountry  | <associationPersonResCountry>|
-    | associations[0].personNationality       | <associationPersonNationality> |
-    | associations[0].isProfessional          | <associationIsProfessional> |
-    | associations[0].personGender.key        | <associationGenderKey>     |
-    | associations[0].personGender.value      | <associationGenderValue>   |
-    | associations[0].role.key                | <associationRoleKey>       |
-    | associations[0].role.value              | <associationRoleValue>     |
-    | pepCategory.key                         | <pepCategoryKey>           |
-    | pepCategory.value                       | <pepCategoryValue>         |
-    | dueDillegence.key                       | <dueDiligenceKey>          |
-    | dueDillegence.value                     | <dueDiligenceValue>        |
-    | coreDv.key                              | <coreDvKey>                |
-    | coreDv.value                            | <coreDvValue>              |
-    | income                                  | <income>                   |
+      Then Send request to update Natural Person with below details
+        | subType                           | <subType>                           |
+        | domiCountry                       | <domiCountry>                       |
+        | firstName                         | <firstName>                         |
+        | middleName                        | <middleName>                        |
+        | lastName                          | <lastName>                          |
+        | birthDate                         | <birthDate>                         |
+        | gender                            | <gender>                            |
+        | nationalities                     | <nationalities>                     |
+        | title                             | <title>                             |
+        | birthPlace                        | <birthPlace>                        |
+        | birthCountry                      | <birthCountry>                      |
+        | electronicAddresses               | <electronicAddresses>               |
+        | isEmployee                        | <isEmployee>                        |
+        | taxResidences                     | <taxResidences>                     |
+        | documentationIdentity             | <documentationIdentity>             |
+        | pepAssociationCountry             | <pepAssociationCountry>             |
+        | pepClassificationReason           | <pepClassificationReason>           |
+        | pepCategory                       | <pepCategory>                       |
+        | isMarketingOptOut                 | <isMarketingOptOut>                 |
+        | fatcaStatus                       | <fatcaStatus>                       |
+        | crsType                           | <crsType>                           |
+        | ukTaxResidenceFromDate            | <ukTaxResidenceFromDate>            |
+        | hasTaxAvoidanceSchemes            | <hasTaxAvoidanceSchemes>            |
+        | isHoldingBearerShares             | <isHoldingBearerShares>             |
+        | hasInvestableAssets10M            | <hasInvestableAssets10M>            |
+        | hasHistoricTaxIssues              | <hasHistoricTaxIssues>              |
+        | hasTaxChgDomiStatus               | <hasTaxChgDomiStatus>               |
+        | hasTaxChgUkDomiStatus             | <hasTaxChgUkDomiStatus>             |
+        | hasTaxPrevClaimRemitanceBasis     | <hasTaxPrevClaimRemitanceBasis>     |
+        | hasTaxIntendClaimRemitanceBasis   | <hasTaxIntendClaimRemitanceBasis>   |
+        | accountants                       | <accountants>                       |
+        | hasTravelProtection               | <hasTravelProtection>               |
+        | hasCouttsOnline                   | <hasCouttsOnline>                   |
+        | hasCouttsId                       | <hasCouttsId>                       |
+        | associations                      | <associations>                      |
+        | idQuestionId                      | <idQuestionId>                      |
+        | correspondanceAddressId           | <correspondanceAddressId>           |
 
-  Examples:
-    | id        | firstName | middleName | lastName  | birthDate  | nationality | subTypeKey     | subTypeValue      | genderKey | genderValue | titleKey | titleValue | birthPlace | birthCountry | domiCountry | resAddressId | resAddressFirstName | resAddressMiddleName | resAddressLastName | resAddressFirm | resAddressResidency | resAddressStreetNr | resAddressStreet | resAddressStreetAdd | resAddressPoBox | resAddressCity | resAddressState | resAddressZip | resAddressCountry | corrAddressId | corrAddressFirstName | corrAddressMiddleName | corrAddressLastName | corrAddressFirm | corrAddressResidency | corrAddressStreetNr | corrAddressStreet        | corrAddressStreetAdd | corrAddressPoBox | corrAddressCity | corrAddressState | corrAddressZip | corrAddressCountry | corrSalutationKey | corrSalutationValue | corrSalutationLetterKey | corrSalutationLetterValue | emailValue             | emailIsPreferred | emailMediumKey | emailMediumValue | emailKindKey | emailKindValue | emailCountry | isEmployee | employmentKey | employmentValue | idQ1IsChallenge | idQ1Question | idQ1Answer | idQ2IsChallenge | idQ2Question | idQ2Answer | idQ3IsChallenge | idQ3Question | idQ3Answer | idQ4IsChallenge | idQ4Question | idQ4Answer | idQ5IsChallenge | idQ5Question | idQ5Answer | idQ6IsChallenge | idQ6Question                                                                 | idQ6Answer         | taxCountry | taxNumber  | taxIdentityKey | taxIdentityValue              | fatcaKey                     | fatcaValue        | crsKey             | crsValue                         | ukTaxFromDate | hasTaxAvoidanceSchemes | isHoldingBearerShares | hasInvestableAssets10M | hasHistoricTaxIssues | hasTaxChgDomiStatus | taxChgDomiStatusDate | hasTaxChgUkDomiStatus | hasTaxPrevClaimRemitanceBasis | hasTaxIntendClaimRemitanceBasis | accountantName | accountantCompanyId | accountantCompanyName | accountantCompanyCountry | accountantEmail               | accountantHasConsent | accountantDoSendCopy | accountantRoleKey                    | accountantRoleValue          | accAddressId | accAddressFirstName | accAddressMiddleName | accAddressLastName | accAddressFirm | accAddressResidency | accAddressStreetNr | accAddressStreet        | accAddressStreetAdd | accAddressPoBox | accAddressCity | accAddressState | accAddressZip | accAddressCountry | accAddressSalutationKey | accAddressSalutationValue | accAddressSalutationLetterKey | accAddressSalutationLetterValue | hasTravelProtection | hasCouttsOnline | associationPersonId | associationPersonFirstName | associationPersonLastName | associationPersonResCountry | associationPersonNationality | associationIsProfessional | associationGenderKey | associationGenderValue | associationRoleKey   | associationRoleValue | pepCategoryKey | pepCategoryValue | dueDiligenceKey | dueDiligenceValue | coreDvKey | coreDvValue | income |
-    | 665094555 | Firstname | Middlename | Lastname  | 1985-09-03 | GB          | pers_form_doc  | Documented (01)   | male      | male        | mr       | Mr         | London     | GB           | CH          | 665877226    | Firstname            | null                 | Lastname           | null           | null                | null                | null              | null                 | null            | null            | null            | null           | CH                 | 665877228     | Firstname              | Middlename            | Lastname             | null            | 123                 | 123                 | teststreetteststreetmvjxan | Addition street     | P.O.Box 123     | Zurich          | Zürich           | 8001           | CH                 | mr               | Mr                  | mr                    | Dear Mr                  | first.last@gmail.com | false            | email          | E-Mail Address   | private      | Private       | null         | false      | employee      | Employed        | false           | Question1    | Answer1   | false           | Question2    | Answer2   | false           | Question3    | Answer3   | false           | Question4    | Answer4   | false           | Question5    | Answer5   | true            | Client Challenge Word (to be given at clients request on outbound calls only) | Challenge Answer | GB         | abgrxfjdvw | nin            | National Insurance number      | rbsc$fatca_non_us_person     | Non US Person (03) | rbsc$crs_np_doc    | Natural Person: Documented (01)   | 2015-04-06   | false                  | false                 | false                   | false                | false                | 2015/16              | false                   | false                          | false                              | TestName        | 665094556          | Lastname             | CH                      | accountant.person@acccomp.com | false                | false               | netw$rbsc$prim_tax_advs_h          | has Tax Adviser (Primary)   | 665877228    | Firstname            | Middlename            | Lastname             | null            | 123                 | 123                 | teststreetteststreetmvjxan | Addition street     | P.O.Box 123     | Zurich          | Zürich           | 8001           | CH                 | mr                       | Mr                        | mr                           | Dear Mr                       | false               | false            | 665094554          | Firstname                  | Lastname                  | CH                        | CH                            | false                    | male               | male                  | rbsc$is_sibling_of | has Sibling          | none           | None (10)       | null            | null             | null      | null       | null   |
+      Examples:
+        | subType       | domiCountry | firstName    | middleName    | lastName    | birthDate  | gender | nationalities | title | birthPlace | birthCountry | electronicAddresses                                                                  | isEmployee | taxResidences                      | documentationIdentity                                                                     | pepAssociationCountry | pepClassificationReason | pepCategory | isMarketingOptOut | fatcaStatus              | crsType            | ukTaxResidenceFromDate | hasTaxAvoidanceSchemes | isHoldingBearerShares | hasInvestableAssets10M | hasHistoricTaxIssues | hasTaxChgDomiStatus | hasTaxChgUkDomiStatus | hasTaxPrevClaimRemitanceBasis | hasTaxIntendClaimRemitanceBasis | accountants                                                                                                                                                                                                                                | hasTravelProtection | hasCouttsOnline | hasCouttsId | associations                                                                                 | idQuestionId         | correspondanceAddressId | 
+        | pers_form_doc | GB          | Firstname    | Middlename    | Lastname    | DEFAULT    | male   | GB            | mr    | London     | GB           | email;private;first.last@gmail.com;false                                             | false      | GB;RANDOM_10;nin                   | pass;GB1234567890;GB;London;DEFAULT;DEFAULT                                               | GB                    | Testreason              | none        | false             | rbsc$fatca_non_us_person | rbsc$crs_np_doc    | DEFAULT                | false                  | false                 | false                  | false                | false               | false                 | false                         | false                           | TestName;LEGAL_PERSON_OBJECT_ID;rbsc$tax_adviser_primary;ADDRESS_OBJECT_ID;accountant.person@acccomp.com;false;false                                                                                                                       | false               | false           | false       | NATURAL_PERSON_OBJECT_ID_1;rbsc$is_sibling_of                                                | DOCUMENT_OBJECT_ID   | ADDRESS_OBJECT_ID       |
 
-@Then("I verify the following fields in Update Natural Person response")
-public void verifyUpdateNaturalPersonFields(DataTable dataTable) {
-    Map<String, String> expectedValues = dataTable.asMap(String.class, String.class);
-
-    for (Map.Entry<String, String> entry : expectedValues.entrySet()) {
-        String responseKey = entry.getKey();
-        String expectedValue = entry.getValue();
-        String actualValue = jsonHelper.getValue(response, responseKey);
-
-        ExtentCucumberAdapter.addTestStepLog(
-                "Validating field: '" + responseKey +
-                "' | Expected: '" + expectedValue +
-                "' | Actual: '" + actualValue + "'"
-        );
-
-        Assert.assertEquals(
-                actualValue,
-                expectedValue,
-                "Mismatch for field: " + responseKey
-        );
-    }
-}
+Can you add these values present in Examples directly in the above table of SD.
