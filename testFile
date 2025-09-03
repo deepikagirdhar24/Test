@@ -1,26 +1,29 @@
-And I verify the following fields in Update Natural Person response
-        | id                                      | <id>                       |
-        | firstName                               | <firstName>                |
-        | middleName                              | <middleName>               |
-        | lastName                                | <lastName>                 |
-        | birthDate                               | <birthDate>                |
-        | nationalities[0]                        | <nationality>              |
-        | subType.key                             | <subTypeKey>               |
-        | subType.value                           | <subTypeValue>             |
-        | gender.key                              | <genderKey>                |
-        | gender.value                            | <genderValue>              |
-        | title.key                               | <titleKey>                 |
-        | title.value                             | <titleValue>               |
-        | birthPlace                              | <birthPlace>               |
-        | birthCountry                            | <birthCountry>             |
-        | domiCountry                             | <domiCountry>              |
-        | residenceAddress.firstName              | <resAddressFirstName>      |
-        | residenceAddress.middleName             | <resAddressMiddleName>     |
+    @Then("I verify the following fields in Update Natural Person response")
+    public void verifyUpdateNaturalPersonFields(DataTable dataTable) {
+        Map<String, String> expectedValues = dataTable.asMap(String.class, String.class);
 
-        | id                          | firstName | middleName | lastName  | birthDate  | nationality | subTypeKey     | subTypeValue      | genderKey | genderValue | titleKey | titleValue | birthPlace | birthCountry | domiCountry | resAddressId | resAddressFirstName | resAddressMiddleName |
-        | SC:updNaturalPersonObjectId | Firstname | Middlename | Lastname  | 1985-09-03 | GB          | pers_form_doc  | Documented (01)   | male      | male        | mr       | Mr         | London     | GB           | CH          | 665877226    | Firstname            | null                 |
+        for (Map.Entry<String, String> entry : expectedValues.entrySet()) {
+            String responseKey = entry.getKey();
+            String expectedValue = entry.getValue();
 
-why below error - 
+            // 🔹 Check if expectedValue is a placeholder from ScenarioContext
+            if (expectedValue.startsWith("SC:")) {
+                String contextKey = expectedValue.replace("SC:", "").trim();
+                expectedValue = scenarioContext.getContext(contextKey);
+            }
 
-[ERROR] Failures: 
-[ERROR]   Mismatch for field: residenceAddress.middleName expected [null] but found [null]
+            String actualValue = jsonHelper.getValue(response, responseKey);
+
+            ExtentCucumberAdapter.addTestStepLog(
+                    "Validating field: '" + responseKey +
+                            "' | Expected: '" + expectedValue +
+                            "' | Actual: '" + actualValue + "'"
+            );
+
+            Assert.assertEquals(
+                    actualValue,
+                    expectedValue,
+                    "Mismatch for field: " + responseKey
+            );
+        }
+    }
