@@ -11,3 +11,12 @@
         JsonNode node = getNodeByPath(rootNode, fieldPath);
         return node.isMissingNode() || node.isNull() ? null : node.asText();
     }
+
+    private JsonNode getNodeByPath(JsonNode rootNode, String path) {
+        String[] keys = path.split("\\.");
+        for (String key : keys) {
+            if (rootNode == null) break;
+            rootNode = rootNode.path(key);
+        }
+        return rootNode;
+    }
