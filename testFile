@@ -1,6 +1,30 @@
-List<POJOTaxResidence> taxResidences = pojoUpdNaturalPersonRequest.getLstTaxResidences();
+Response Code: 200
+Response Body:
+{"id":"665096095","firstName":"Firstname","middleName":"Middlename","lastName":"Lastname","birthDate":"1985-09-03","nationalities":["GB"],"
+subType":{"key":"pers_form_doc","value":"Documented (01)"},"gender":{"key":"male","value":"male"},"title":{"key":"mr","value":"Mr"},"birthPlace":
+"London","birthCountry":"GB","domiCountry":"CH","residenceAddress":{"id":"665878685","firstName":"Firstname","middleName":null,
+"lastName":"Lastname","firm":null,"residency":null,"streetNr":null,"street":null,"streetAdd":null,"poBox":null,"city":null,"state":null,"zip":null,
+"country":"CH"},"correspondanceAddress":{"id":"665878687","firstName":"Firstname","middleName":"Middlename","lastName":"Lastname","firm
+":null,"residency":"123","streetNr":"123","street":"teststreetqtftzt","streetAdd":"Addition street","poBox":"P.O.Box
+123","city":"Zurich","state":"Zürich","zip":"8001","country":"CH","salutation":{"key":"mr","value":"Mr"},"salutationLetter":{"key":"mr","value":"Dear
+Mr"}},"electronicAddresses":[{"value":"first.last@gmail.com","isPreferred":false,"medium":{"key":"email","value":"E-Mail Address"},"kind":{"key":"
+private","value":"Private"},"country":null}],"isEmployee":false,
 
-if (taxResidences != null && !taxResidences.isEmpty()) {
-    String taxNumber = taxResidences.get(0).getTaxNumber();
-    scenarioContext.setContext("updNaturalPersonTaxNumber", taxNumber);
-}
+In Reponse GB is coming for nationality, and in feature file, I gave GB only, but it is showing error  
+
+      And I verify the following fields in Update Natural Person response
+        | id                                      | <id>                       |
+        | firstName                               | <firstName>                |
+        | middleName                              | <middleName>               |
+        | lastName                                | <lastName>                 |
+        | birthDate                               | <birthDate>                |
+        | nationalities[0]                        | <nationality>              |
+
+        | id                          | firstName | middleName | lastName  | birthDate  | nationality | 
+        | SC:updNaturalPersonObjectId | Firstname | Middlename | Lastname  | 1985-09-03 | GB          |
+
+[ERROR] Failures: 
+[ERROR]   Mismatch for field: nationalities[0] expected [GB] but found [null]
+[INFO] 
+[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0
+[INFO]  why ?
