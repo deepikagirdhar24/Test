@@ -1,32 +1,11 @@
-@Then("I verify the following fields in Update Natural Person response")
-public void verifyUpdateNaturalPersonFields(DataTable dataTable, ScenarioContext scenarioContext) {
-    Map<String, String> expectedValues = dataTable.asMap(String.class, String.class);
+This is one line - 
 
-    for (Map.Entry<String, String> entry : expectedValues.entrySet()) {
-        String responseKey = entry.getKey();
-        String expectedValue = entry.getValue();
+            pojoUpdNaturalPersonRequest.getLstTaxResidences();
 
-        // 🔹 Check if expectedValue is a placeholder from ScenarioContext
-        if (expectedValue.startsWith("SC:")) {
-            String contextKey = expectedValue.replace("SC:", "").trim();
-            expectedValue = scenarioContext.getContext(contextKey);
-        }
+and this is below function -
 
-        String actualValue = jsonHelper.getValue(response, responseKey);
+    public List<POJOTaxResidence> getLstTaxResidences() { return lstTaxResidences; }
+Now, this list returns something like this 
+"taxResidences":[{"country":"GB","taxNumber":"kufwhgsqcz","identityType":"nin"}]
 
-        ExtentCucumberAdapter.addTestStepLog(
-                "Validating field: '" + responseKey +
-                "' | Expected: '" + expectedValue +
-                "' | Actual: '" + actualValue + "'"
-        );
-
-        Assert.assertEquals(
-                actualValue,
-                expectedValue,
-                "Mismatch for field: " + responseKey
-        );
-    }
-}
-
-SC:updNaturalPersonObjectId
-SC:updNaturalPersonObjectId
+How to extract only tax number from this and save it in scenario context.
