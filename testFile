@@ -1,216 +1,168 @@
-When I am running thsi debit card create with some hardocdes values of Money Account Object ID and Address Object ID, it is running successfully - 
+Scenario Outline: Verify Update Natural Person Response
+  And I verify the following fields in Update Natural Person response
+    | id                                      | <id>                       |
+    | firstName                               | <firstName>                |
+    | middleName                              | <middleName>               |
+    | lastName                                | <lastName>                 |
+    | birthDate                               | <birthDate>                |
+    | nationalities[0]                        | <nationality>              |
+    | subType.key                             | <subTypeKey>               |
+    | subType.value                           | <subTypeValue>             |
+    | gender.key                              | <genderKey>                |
+    | gender.value                            | <genderValue>              |
+    | title.key                               | <titleKey>                 |
+    | title.value                             | <titleValue>               |
+    | birthPlace                              | <birthPlace>               |
+    | birthCountry                            | <birthCountry>             |
+    | domiCountry                             | <domiCountry>              |
+    | residenceAddress.id                     | <resAddressId>             |
+    | residenceAddress.firstName              | <resAddressFirstName>      |
+    | residenceAddress.middleName             | <resAddressMiddleName>     |
+    | residenceAddress.lastName               | <resAddressLastName>       |
+    | residenceAddress.firm                   | <resAddressFirm>           |
+    | residenceAddress.residency              | <resAddressResidency>      |
+    | residenceAddress.streetNr               | <resAddressStreetNr>       |
+    | residenceAddress.street                 | <resAddressStreet>         |
+    | residenceAddress.streetAdd              | <resAddressStreetAdd>      |
+    | residenceAddress.poBox                  | <resAddressPoBox>          |
+    | residenceAddress.city                   | <resAddressCity>           |
+    | residenceAddress.state                  | <resAddressState>          |
+    | residenceAddress.zip                    | <resAddressZip>            |
+    | residenceAddress.country                | <resAddressCountry>        |
+    | correspondanceAddress.id                | <corrAddressId>            |
+    | correspondanceAddress.firstName         | <corrAddressFirstName>     |
+    | correspondanceAddress.middleName        | <corrAddressMiddleName>    |
+    | correspondanceAddress.lastName          | <corrAddressLastName>      |
+    | correspondanceAddress.firm              | <corrAddressFirm>          |
+    | correspondanceAddress.residency         | <corrAddressResidency>     |
+    | correspondanceAddress.streetNr          | <corrAddressStreetNr>      |
+    | correspondanceAddress.street            | <corrAddressStreet>        |
+    | correspondanceAddress.streetAdd         | <corrAddressStreetAdd>     |
+    | correspondanceAddress.poBox             | <corrAddressPoBox>         |
+    | correspondanceAddress.city              | <corrAddressCity>          |
+    | correspondanceAddress.state             | <corrAddressState>         |
+    | correspondanceAddress.zip               | <corrAddressZip>           |
+    | correspondanceAddress.country           | <corrAddressCountry>       |
+    | correspondanceAddress.salutation.key    | <corrSalutationKey>        |
+    | correspondanceAddress.salutation.value  | <corrSalutationValue>      |
+    | correspondanceAddress.salutationLetter.key   | <corrSalutationLetterKey>   |
+    | correspondanceAddress.salutationLetter.value | <corrSalutationLetterValue> |
+    | electronicAddresses[0].value            | <emailValue>               |
+    | electronicAddresses[0].isPreferred      | <emailIsPreferred>         |
+    | electronicAddresses[0].medium.key       | <emailMediumKey>           |
+    | electronicAddresses[0].medium.value     | <emailMediumValue>         |
+    | electronicAddresses[0].kind.key         | <emailKindKey>             |
+    | electronicAddresses[0].kind.value       | <emailKindValue>           |
+    | electronicAddresses[0].country          | <emailCountry>             |
+    | isEmployee                              | <isEmployee>               |
+    | employmentKind.key                      | <employmentKey>            |
+    | employmentKind.value                    | <employmentValue>          |
+    | idQuestions[0].isChallengeWord          | <idQ1IsChallenge>          |
+    | idQuestions[0].question                 | <idQ1Question>             |
+    | idQuestions[0].answer                   | <idQ1Answer>               |
+    | idQuestions[1].isChallengeWord          | <idQ2IsChallenge>          |
+    | idQuestions[1].question                 | <idQ2Question>             |
+    | idQuestions[1].answer                   | <idQ2Answer>               |
+    | idQuestions[2].isChallengeWord          | <idQ3IsChallenge>          |
+    | idQuestions[2].question                 | <idQ3Question>             |
+    | idQuestions[2].answer                   | <idQ3Answer>               |
+    | idQuestions[3].isChallengeWord          | <idQ4IsChallenge>          |
+    | idQuestions[3].question                 | <idQ4Question>             |
+    | idQuestions[3].answer                   | <idQ4Answer>               |
+    | idQuestions[4].isChallengeWord          | <idQ5IsChallenge>          |
+    | idQuestions[4].question                 | <idQ5Question>             |
+    | idQuestions[4].answer                   | <idQ5Answer>               |
+    | idQuestions[5].isChallengeWord          | <idQ6IsChallenge>          |
+    | idQuestions[5].question                 | <idQ6Question>             |
+    | idQuestions[5].answer                   | <idQ6Answer>               |
+    | taxResidences[0].country                | <taxCountry>               |
+    | taxResidences[0].taxNumber              | <taxNumber>                |
+    | taxResidences[0].identityType.key       | <taxIdentityKey>           |
+    | taxResidences[0].identityType.value     | <taxIdentityValue>         |
+    | fatcaStatus.key                         | <fatcaKey>                 |
+    | fatcaStatus.value                       | <fatcaValue>               |
+    | crsType.key                             | <crsKey>                   |
+    | crsType.value                           | <crsValue>                 |
+    | ukTaxResidenceFromDate                  | <ukTaxFromDate>            |
+    | hasTaxAvoidanceSchemes                  | <hasTaxAvoidanceSchemes>   |
+    | isHoldingBearerShares                   | <isHoldingBearerShares>    |
+    | hasInvestableAssets10M                  | <hasInvestableAssets10M>   |
+    | hasHistoricTaxIssues                    | <hasHistoricTaxIssues>     |
+    | hasTaxChgDomiStatus                     | <hasTaxChgDomiStatus>      |
+    | taxChgDomiStatusDate                    | <taxChgDomiStatusDate>     |
+    | hasTaxChgUkDomiStatus                   | <hasTaxChgUkDomiStatus>    |
+    | hasTaxPrevClaimRemitanceBasis           | <hasTaxPrevClaimRemitanceBasis> |
+    | hasTaxIntendClaimRemitanceBasis         | <hasTaxIntendClaimRemitanceBasis> |
+    | accountants[0].name                     | <accountantName>           |
+    | accountants[0].companyId                | <accountantCompanyId>      |
+    | accountants[0].companyName              | <accountantCompanyName>    |
+    | accountants[0].companyResidenceCountry  | <accountantCompanyCountry> |
+    | accountants[0].email                    | <accountantEmail>          |
+    | accountants[0].hasConsent               | <accountantHasConsent>     |
+    | accountants[0].doSendCopy               | <accountantDoSendCopy>     |
+    | accountants[0].role.key                 | <accountantRoleKey>        |
+    | accountants[0].role.value               | <accountantRoleValue>      |
+    | accountants[0].address.id               | <accAddressId>             |
+    | accountants[0].address.firstName        | <accAddressFirstName>      |
+    | accountants[0].address.middleName       | <accAddressMiddleName>     |
+    | accountants[0].address.lastName         | <accAddressLastName>       |
+    | accountants[0].address.firm             | <accAddressFirm>           |
+    | accountants[0].address.residency        | <accAddressResidency>      |
+    | accountants[0].address.streetNr         | <accAddressStreetNr>       |
+    | accountants[0].address.street           | <accAddressStreet>         |
+    | accountants[0].address.streetAdd        | <accAddressStreetAdd>      |
+    | accountants[0].address.poBox            | <accAddressPoBox>          |
+    | accountants[0].address.city             | <accAddressCity>           |
+    | accountants[0].address.state            | <accAddressState>          |
+    | accountants[0].address.zip              | <accAddressZip>            |
+    | accountants[0].address.country          | <accAddressCountry>        |
+    | accountants[0].address.salutation.key   | <accAddressSalutationKey>  |
+    | accountants[0].address.salutation.value | <accAddressSalutationValue>|
+    | accountants[0].address.salutationLetter.key   | <accAddressSalutationLetterKey>   |
+    | accountants[0].address.salutationLetter.value | <accAddressSalutationLetterValue> |
+    | hasTravelProtection                     | <hasTravelProtection>      |
+    | hasCouttsOnline                         | <hasCouttsOnline>          |
+    | associations[0].personId                | <associationPersonId>      |
+    | associations[0].personFirstName         | <associationPersonFirstName> |
+    | associations[0].personLastName          | <associationPersonLastName>  |
+    | associations[0].personResidenceCountry  | <associationPersonResCountry>|
+    | associations[0].personNationality       | <associationPersonNationality> |
+    | associations[0].isProfessional          | <associationIsProfessional> |
+    | associations[0].personGender.key        | <associationGenderKey>     |
+    | associations[0].personGender.value      | <associationGenderValue>   |
+    | associations[0].role.key                | <associationRoleKey>       |
+    | associations[0].role.value              | <associationRoleValue>     |
+    | pepCategory.key                         | <pepCategoryKey>           |
+    | pepCategory.value                       | <pepCategoryValue>         |
+    | dueDillegence.key                       | <dueDiligenceKey>          |
+    | dueDillegence.value                     | <dueDiligenceValue>        |
+    | coreDv.key                              | <coreDvKey>                |
+    | coreDv.value                            | <coreDvValue>              |
+    | income                                  | <income>                   |
 
-Feature: Verify Debit Card API
+  Examples:
+    | id        | firstName | middleName | lastName  | birthDate  | nationality | subTypeKey     | subTypeValue      | genderKey | genderValue | titleKey | titleValue | birthPlace | birthCountry | domiCountry | resAddressId | resAddressFirstName | resAddressMiddleName | resAddressLastName | resAddressFirm | resAddressResidency | resAddressStreetNr | resAddressStreet | resAddressStreetAdd | resAddressPoBox | resAddressCity | resAddressState | resAddressZip | resAddressCountry | corrAddressId | corrAddressFirstName | corrAddressMiddleName | corrAddressLastName | corrAddressFirm | corrAddressResidency | corrAddressStreetNr | corrAddressStreet        | corrAddressStreetAdd | corrAddressPoBox | corrAddressCity | corrAddressState | corrAddressZip | corrAddressCountry | corrSalutationKey | corrSalutationValue | corrSalutationLetterKey | corrSalutationLetterValue | emailValue             | emailIsPreferred | emailMediumKey | emailMediumValue | emailKindKey | emailKindValue | emailCountry | isEmployee | employmentKey | employmentValue | idQ1IsChallenge | idQ1Question | idQ1Answer | idQ2IsChallenge | idQ2Question | idQ2Answer | idQ3IsChallenge | idQ3Question | idQ3Answer | idQ4IsChallenge | idQ4Question | idQ4Answer | idQ5IsChallenge | idQ5Question | idQ5Answer | idQ6IsChallenge | idQ6Question                                                                 | idQ6Answer         | taxCountry | taxNumber  | taxIdentityKey | taxIdentityValue              | fatcaKey                     | fatcaValue        | crsKey             | crsValue                         | ukTaxFromDate | hasTaxAvoidanceSchemes | isHoldingBearerShares | hasInvestableAssets10M | hasHistoricTaxIssues | hasTaxChgDomiStatus | taxChgDomiStatusDate | hasTaxChgUkDomiStatus | hasTaxPrevClaimRemitanceBasis | hasTaxIntendClaimRemitanceBasis | accountantName | accountantCompanyId | accountantCompanyName | accountantCompanyCountry | accountantEmail               | accountantHasConsent | accountantDoSendCopy | accountantRoleKey                    | accountantRoleValue          | accAddressId | accAddressFirstName | accAddressMiddleName | accAddressLastName | accAddressFirm | accAddressResidency | accAddressStreetNr | accAddressStreet        | accAddressStreetAdd | accAddressPoBox | accAddressCity | accAddressState | accAddressZip | accAddressCountry | accAddressSalutationKey | accAddressSalutationValue | accAddressSalutationLetterKey | accAddressSalutationLetterValue | hasTravelProtection | hasCouttsOnline | associationPersonId | associationPersonFirstName | associationPersonLastName | associationPersonResCountry | associationPersonNationality | associationIsProfessional | associationGenderKey | associationGenderValue | associationRoleKey   | associationRoleValue | pepCategoryKey | pepCategoryValue | dueDiligenceKey | dueDiligenceValue | coreDvKey | coreDvValue | income |
+    | 665094555 | Firstname | Middlename | Lastname  | 1985-09-03 | GB          | pers_form_doc  | Documented (01)   | male      | male        | mr       | Mr         | London     | GB           | CH          | 665877226    | Firstname            | null                 | Lastname           | null           | null                | null                | null              | null                 | null            | null            | null            | null           | CH                 | 665877228     | Firstname              | Middlename            | Lastname             | null            | 123                 | 123                 | teststreetteststreetmvjxan | Addition street     | P.O.Box 123     | Zurich          | Zürich           | 8001           | CH                 | mr               | Mr                  | mr                    | Dear Mr                  | first.last@gmail.com | false            | email          | E-Mail Address   | private      | Private       | null         | false      | employee      | Employed        | false           | Question1    | Answer1   | false           | Question2    | Answer2   | false           | Question3    | Answer3   | false           | Question4    | Answer4   | false           | Question5    | Answer5   | true            | Client Challenge Word (to be given at clients request on outbound calls only) | Challenge Answer | GB         | abgrxfjdvw | nin            | National Insurance number      | rbsc$fatca_non_us_person     | Non US Person (03) | rbsc$crs_np_doc    | Natural Person: Documented (01)   | 2015-04-06   | false                  | false                 | false                   | false                | false                | 2015/16              | false                   | false                          | false                              | TestName        | 665094556          | Lastname             | CH                      | accountant.person@acccomp.com | false                | false               | netw$rbsc$prim_tax_advs_h          | has Tax Adviser (Primary)   | 665877228    | Firstname            | Middlename            | Lastname             | null            | 123                 | 123                 | teststreetteststreetmvjxan | Addition street     | P.O.Box 123     | Zurich          | Zürich           | 8001           | CH                 | mr                       | Mr                        | mr                           | Dear Mr                       | false               | false            | 665094554          | Firstname                  | Lastname                  | CH                        | CH                            | false                    | male               | male                  | rbsc$is_sibling_of | has Sibling          | none           | None (10)       | null            | null             | null      | null       | null   |
 
-  Scenario Outline: Verify the Post Debit Card API with valid data - <Comments>
-    Given Send Request to get Authentication Token for ICOS
-    When I generate the JWT Token
-Then Send Request to create Debit Card with below details
-      | type        | <type>        |
-      | maccId      | <maccId>      |
-      | ownerId     | <ownerId>     |
-      | label       | <label>       |
-      | dailyLimit  | <dailyLimit>  |
-      | addressId   | <addressId>   |
-    And I verify the Status Code for Debit Card "200"
-    And I verify the "objectId" exists in Debit Card response
-    And I verify the "orderId" exists in Debit Card response
+@Then("I verify the following fields in Update Natural Person response")
+public void verifyUpdateNaturalPersonFields(DataTable dataTable) {
+    Map<String, String> expectedValues = dataTable.asMap(String.class, String.class);
 
-    Examples:
-      | type    | maccId                   | ownerId    | label      | dailyLimit | addressId              | Comments                               |
-      | DEBIT   | 66022644.2146  | 665041400  | LABEL 123  | 555        | 665871902      | 001 - StraightThrough                  |
+    for (Map.Entry<String, String> entry : expectedValues.entrySet()) {
+        String responseKey = entry.getKey();
+        String expectedValue = entry.getValue();
+        String actualValue = jsonHelper.getValue(response, responseKey);
 
-Output - 
-INFO: Value is: Request for Debit Card is: {"uuid":"1a29796","type":"DEBIT","maccId":"66022644.2146","ownerId":"665041400","label":"LABEL 123","dailyLimit":555,"addressId":"665871902"}
-Sept 01, 2025 8:43:48 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Response for Debit Card is: {"objectId":"9900029556547199","orderId":"2955654719"}
-[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 15.049 s - in testRunner.Runner
+        ExtentCucumberAdapter.addTestStepLog(
+                "Validating field: '" + responseKey +
+                "' | Expected: '" + expectedValue +
+                "' | Actual: '" + actualValue + "'"
+        );
 
-But when I generate values through the feature files and then put it in the Debit card create line in feature file, it ends with 500 error, why so ?
-
-  Scenario Outline: Verify the Post Debit Card API with valid data - <Comments>
-    Given Send Request to get Authentication Token for ICOS
-    When I generate the JWT Token
-    Then Send request to create Address with below details
-      | firstName       | Firstname             |
-      | middleName      | Middlename            |
-      | lastName        | Lastname              |
-      | salutation      | mr                    |
-      | salutationLetter| mr                    |
-      | attnOf          |                       |
-      | crof            |                       |
-      | residency       | 123                   |
-      | streetNr        | 123                   |
-      | street          | teststreet + RANDOM_6 |
-      | streetAdd       | Addition street       |
-      | poBox           | P.O.Box 123           |
-      | city            | Zurich                |
-      | state           | RANDOM_49             |
-      | zip             | 8001                  |
-      | country         | CH                    |
-    Then Send Request to create Container with below details
-      | type   | banking   |
-      | bpId   | 66022644  |
-    Then Send Request to create Money Account with below details
-      | ownerId            | CONTAINER_OBJECT_ID     |
-      | type               | privateCurrentAccount   |
-      | currency           | GBP                     |
-      | rubric             | NA                      |
-      | addressIds         | ADDRESS_OBJECT_ID       |
-      | mailingOffsetDay   | NA                      |
-      | mailingOffsetMonth | NA                      |
-      | minimalNoticeDays  | NA                      |
-      | isMailingPaper     | false                   |
-    Then Send Request to create Debit Card with below details
-      | type        | <type>        |
-      | maccId      | <maccId>      |
-      | ownerId     | <ownerId>     |
-      | label       | <label>       |
-      | dailyLimit  | <dailyLimit>  |
-      | addressId   | <addressId>   |
-    And I verify the Status Code for Debit Card "200"
-    And I verify the "objectId" exists in Debit Card response
-    And I verify the "orderId" exists in Debit Card response
-
-    Examples:
-      | type    | maccId                   | ownerId    | label      | dailyLimit | addressId              | Comments                               |
-      | DEBIT   | MONEY_ACCOUNT_OBJECT_ID  | 665041400  | LABEL 123  | 555        | ADDRESS_OBJECT_ID      | 001 - StraightThrough                  |
-
-Output - 
-
-INFO: Value is: Request for Debit Card is: {"uuid":"8462bf1","type":"DEBIT","maccId":"66022644.2147","ownerId":"665041400","label":"LABEL 123","dailyLimit":555,"addressId":"665871903"}
-Sept 01, 2025 8:55:06 AM utilities.CucumberLogger PrintStatus
-INFO: Value is: Response for Debit Card is: {"orderId":"2955654970","error":"MAILING ADDRESS\nEither Name or Firm is mandatory."}
-  Then Send Request to create Debit Card with below details                              # stepDefinations.DebitCardSteps.sendRequestToCreateDebitCardWithDetails(io.cucumber.datatable.DataTable)
-    | type       | DEBIT                   |
-    | maccId     | MONEY_ACCOUNT_OBJECT_ID |
-    | ownerId    | 665041400               |
-    | label      | LABEL 123               |
-    | dailyLimit | 555                     |
-    | addressId  | ADDRESS_OBJECT_ID       |
-  And I verify the Status Code for Debit Card "200"                                      # stepDefinations.DebitCardSteps.iVerifyTheStatusCodeForDebitCard(java.lang.String)
-      java.lang.AssertionError: expected [500] but found [200]
-	at org.testng.Assert.fail(Assert.java:111)
-	at org.testng.Assert.failNotEquals(Assert.java:1578)
-	at org.testng.Assert.assertEqualsImpl(Assert.java:150)
-	at org.testng.Assert.assertEquals(Assert.java:132)
-	at org.testng.Assert.assertEquals(Assert.java:1419)
-	at org.testng.Assert.assertEquals(Assert.java:1383)
-	at org.testng.Assert.assertEquals(Assert.java:1429)
-	at stepDefinations.DebitCardSteps.iVerifyTheStatusCodeForDebitCard(DebitCardSteps.java:84)
-	at âœ½.I verify the Status Code for Debit Card "200"(file:///C:/Users/girdd/IdeaProjects/icosapitests/src/test/resources/Features/abc.feature:43)
-  And I verify the "objectId" exists in Debit Card response                              # stepDefinations.DebitCardSteps.iVerifyTheKeyExistsInDebitCardResponse(java.lang.String)
-  And I verify the "orderId" exists in Debit Card response                               # stepDefinations.DebitCardSteps.iVerifyTheKeyExistsInDebitCardResponse(java.lang.String)
-Sept 01, 2025 8:55:11 AM tech.grasshopper.pdf.PDFCucumberReport collectReportConfiguration
-INFO: PDF report configuration YAML file not found. Using default settings.
-[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 45.142 s <<< FAILURE! - in testRunner.Runner
-[ERROR] Verify Debit Card API.Verify the Post Debit Card API with valid data - 001 - StraightThrough  Time elapsed: 32.674 s  <<< FAILURE!
-java.lang.AssertionError: expected [500] but found [200]
-[INFO] 
-[INFO] Results:
-[INFO] 
-[ERROR] Failures: 
-[ERROR]   expected [500] but found [200]
-[INFO] 
-[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0
-
-
-
-
-Below is the code used - 
-
-    @Then("Send Request to create Debit Card with below details")
-    public void sendRequestToCreateDebitCardWithDetails(DataTable dataTable) throws Exception {
-        Map<String, String> mapDebitCardDetails = dataTable.asMap(String.class, String.class);
-        String jwtToken = scenarioContext.getContext("JWTToken");
-        response = objDebitCard.createDebitCard(strEnvType, "Bearer", jwtToken, mapDebitCardDetails, scenarioContext);
+        Assert.assertEquals(
+                actualValue,
+                expectedValue,
+                "Mismatch for field: " + responseKey
+        );
     }
-
-// Create Debit Card
-    public Response createDebitCard(String strEnvType, String strBearerToken, String strJWTToken,
-                                      Map<String, String> mapDebitCardDetails, ScenarioContext scenarioContext) throws Exception {
-
-        String strTYKURL = getTYKURL(strEnvType, "TYK.DEBITCARD");
-
-        POJODebitCardRequest pojoDebitCardRequest = payloads.buildDebitCardPayload(mapDebitCardDetails, scenarioContext);
-        String strRequestBody = objObjectMapper.writeValueAsString(pojoDebitCardRequest);
-        objCucumberLogger.PrintStatus("Request for Debit Card is: " + strRequestBody);
-
-        ExtentCucumberAdapter.addTestStepLog("Sending request to Create Debit Card");
-
-        Response objResponse = sendPostRequest(strTYKURL, strBearerToken, strJWTToken, strRequestBody, null);
-        String strResponseBody = devHelperLibrary.getResponseBody(objResponse);
-        objCucumberLogger.PrintStatus("Response for Debit Card is: " + strResponseBody);
-
-        String strDebitCardObjectId = jsonHelper.extractStringField(objResponse, "objectId");
-        String strDebitCardOrderId = jsonHelper.extractStringField(objResponse, "orderId");
-
-        scenarioContext.setContext("debitCardObjectId", strDebitCardObjectId);
-        scenarioContext.setContext("debitCardOrderId", strDebitCardOrderId);
-
-        return objResponse;
-    }
-
-public POJODebitCardRequest buildDebitCardPayload(Map<String, String> mapDebitCardDetails, ScenarioContext scenarioContext) {
-        POJODebitCardRequest debitCard = new POJODebitCardRequest();
-
-        String strMoneyAccountObjectId = scenarioContext.getContext("moneyAccountObjectId");
-        String strAddressObjectId = scenarioContext.getContext("addressObjectId");
-
-        debitCard.setStrUuid(UUID.randomUUID().toString().substring(0, 7));
-
-        debitCard.setStrType(payloadHelper.normalize(mapDebitCardDetails.get("type")));
-
-        String resolvedMaccId = payloadHelper.resolveId(mapDebitCardDetails.get("maccId"), strMoneyAccountObjectId);
-        debitCard.setStrMaccId(resolvedMaccId);
-
-        debitCard.setStrOwnerId(payloadHelper.normalize(mapDebitCardDetails.get("ownerId")));
-
-        debitCard.setStrLabel(payloadHelper.normalize(mapDebitCardDetails.get("label")));
-        payloadHelper.applyBigDecimalField(mapDebitCardDetails.get("dailyLimit"), "dailyLimit", debitCard);
-
-        String resolvedAddressId = payloadHelper.resolveId(mapDebitCardDetails.get("addressId"), strAddressObjectId);
-        debitCard.setStrAddressId(resolvedAddressId);
-
-        return debitCard;
-    }
-
-public String resolveId(String input, String resolvedValue) {
-        if (input == null || input.trim().isEmpty()) {
-            return "";
-        }
-
-        switch (input.trim().toUpperCase()) {
-            case "EMPTY":
-                return "";
-            case "NA":
-                return null;
-            case "NATURAL_PERSON_OBJECT_ID":
-            case "CONTAINER_OBJECT_ID":
-            case "ADDRESS_OBJECT_ID":
-            case "ADDRESS_OBJECT_ID_ADHOC":
-            case "MONEY_ACCOUNT_OBJECT_ID":
-            case "DOCUMENT_OBJECT_ID":
-            case "LEGAL_PERSON_OBJECT_ID":
-            case "NATURAL_PERSON_OBJECT_ID_1":
-                return resolvedValue;
-            default:
-                return input;
-        }
-    }
-
-    public List<String> resolveIdList(String input, String fallbackSingleAddressId, List<String> addressObjectIds) {
-        if (input == null || input.trim().isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        if ("ADDRESS_OBJECT_ID_LIST".equalsIgnoreCase(input.trim())) {
-            return addressObjectIds != null ? addressObjectIds : Collections.emptyList();
-        }
-
-        // Resolve individual tokens
-        return Arrays.stream(input.split(","))
-                .map(id -> resolveId(id.trim(), fallbackSingleAddressId))
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-    }
+}
