@@ -1,11 +1,6 @@
-This is one line - 
+List<POJOTaxResidence> taxResidences = pojoUpdNaturalPersonRequest.getLstTaxResidences();
 
-            pojoUpdNaturalPersonRequest.getLstTaxResidences();
-
-and this is below function -
-
-    public List<POJOTaxResidence> getLstTaxResidences() { return lstTaxResidences; }
-Now, this list returns something like this 
-"taxResidences":[{"country":"GB","taxNumber":"kufwhgsqcz","identityType":"nin"}]
-
-How to extract only tax number from this and save it in scenario context.
+if (taxResidences != null && !taxResidences.isEmpty()) {
+    String taxNumber = taxResidences.get(0).getTaxNumber();
+    scenarioContext.setContext("updNaturalPersonTaxNumber", taxNumber);
+}
