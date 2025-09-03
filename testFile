@@ -1,38 +1,32 @@
-Then Send request to update Natural Person with below details
-  | subType                         | pers_form_doc                                                                                          |
-  | domiCountry                     | GB                                                                                                     |
-  | firstName                       | Firstname                                                                                              |
-  | middleName                      | Middlename                                                                                             |
-  | lastName                        | Lastname                                                                                               |
-  | birthDate                       | DEFAULT                                                                                                |
-  | gender                          | male                                                                                                   |
-  | nationalities                   | GB                                                                                                     |
-  | title                           | mr                                                                                                     |
-  | birthPlace                      | London                                                                                                 |
-  | birthCountry                    | GB                                                                                                     |
-  | electronicAddresses             | email;private;first.last@gmail.com;false                                                               |
-  | isEmployee                      | false                                                                                                  |
-  | taxResidences                   | GB;RANDOM_10;nin                                                                                       |
-  | documentationIdentity           | pass;GB1234567890;GB;London;DEFAULT;DEFAULT                                                             |
-  | pepAssociationCountry           | GB                                                                                                     |
-  | pepClassificationReason         | Testreason                                                                                             |
-  | pepCategory                     | none                                                                                                   |
-  | isMarketingOptOut               | false                                                                                                  |
-  | fatcaStatus                     | rbsc$fatca_non_us_person                                                                               |
-  | crsType                         | rbsc$crs_np_doc                                                                                        |
-  | ukTaxResidenceFromDate          | DEFAULT                                                                                                |
-  | hasTaxAvoidanceSchemes          | false                                                                                                  |
-  | isHoldingBearerShares           | false                                                                                                  |
-  | hasInvestableAssets10M          | false                                                                                                  |
-  | hasHistoricTaxIssues            | false                                                                                                  |
-  | hasTaxChgDomiStatus             | false                                                                                                  |
-  | hasTaxChgUkDomiStatus           | false                                                                                                  |
-  | hasTaxPrevClaimRemitanceBasis   | false                                                                                                  |
-  | hasTaxIntendClaimRemitanceBasis | false                                                                                                  |
-  | accountants                     | TestName;LEGAL_PERSON_OBJECT_ID;rbsc$tax_adviser_primary;ADDRESS_OBJECT_ID;accountant.person@acccomp.com;false;false |
-  | hasTravelProtection             | false                                                                                                  |
-  | hasCouttsOnline                 | false                                                                                                  |
-  | hasCouttsId                     | false                                                                                                  |
-  | associations                    | NATURAL_PERSON_OBJECT_ID_1;rbsc$is_sibling_of                                                          |
-  | idQuestionId                    | DOCUMENT_OBJECT_ID                                                                                     |
-  | correspondanceAddressId         | ADDRESS_OBJECT_ID                                                                                      |
+    // Update Natural Person
+    public Response updateNaturalPerson(String strEnvType, String strBearerToken, String strJwtToken, Map<String, String> mapUpdPersonDetails, ScenarioContext scenarioContext) throws Exception {
+
+        String strUrl = getTYKURL(strEnvType, "TYK.CREATENEWPERSON") + "/{PersonKey}";
+        String strNaturalPersonObjectId = scenarioContext.getContext("naturalPersonObjectId");
+
+        POJOUpdNaturalPersonRequest pojoUpdNaturalPersonRequest = payloads.buildUpdNaturalPersonPayload(mapUpdPersonDetails, scenarioContext);
+        String strRequestBody = objObjectMapper.writeValueAsString(pojoUpdNaturalPersonRequest);
+        objCucumberLogger.PrintStatus("Request for UPDATE Natural Person is: " + strRequestBody);
+
+        ExtentCucumberAdapter.addTestStepLog("Sending request to update Natural Person");
+
+        Map<String, String> mapPathParams = new HashMap<>();
+        mapPathParams.put("PersonKey", strNaturalPersonObjectId);
+
+        Response objResponse = sendPatchRequest(strUrl, strBearerToken, strJwtToken, strRequestBody, mapPathParams, null);
+        String strResponseBody = devHelperLibrary.getResponseBody(objResponse);
+        objCucumberLogger.PrintStatus("Response for UPDATE Natural Person is: " + strResponseBody);
+
+        // Avoid parsing if response is not JSON
+        if (objResponse.getContentType() != null && objResponse.getContentType().contains("application/json")) {
+            String strUpdNaturalPersonObjectId = jsonHelper.extractStringField(objResponse, "objectId");
+            String strUpdNaturalPersonOrderId = jsonHelper.extractStringField(objResponse, "orderId");
+            String strUpdNaturalPersonUuid = pojoUpdNaturalPersonRequest.getStrUuid();
+
+            scenarioContext.setContext("updNaturalPersonObjectId", strUpdNaturalPersonObjectId);
+            scenarioContext.setContext("updNaturalPersonOrderId", strUpdNaturalPersonOrderId);
+            scenarioContext.setContext("updNaturalPersonUuid", strUpdNaturalPersonUuid);
+        }
+
+        return objResponse;
+    }
