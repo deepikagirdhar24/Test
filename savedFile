@@ -1,30 +1,290 @@
-private JsonNode getNodeByPath(JsonNode rootNode, String path) {
-    String[] keys = path.split("\\.");
+Like for address, we have created a feature file step below and created a function below - 
 
-    JsonNode currentNode = rootNode;
-    for (String key : keys) {
-        if (currentNode == null || currentNode.isMissingNode()) {
-            return MissingNode.getInstance();
-        }
+    And I verify the following fields in Address response
+      | id               | <id>               |
+      | firstName        | <firstName>        |
+      | middleName       | <middleName>       |
+      | lastName         | <lastName>         |
+      | firm             | <firm>             |
+      | salutation       | <salutation>       |
+      | salutationLetter | <salutationLetter> |
+      | attnOf           | <attnOf>           |
+      | crof             | <crof>             |
+      | residency        | <residency>        |
+      | streetNr         | <streetNr>         |
+      | street           | <street>           |
+      | streetAdd        | <streetAdd>        |
+      | poBox            | <poBox>            |
+      | city             | <city>             |
+      | state            | <state>            |
+      | zip              | <zip>              |
+      | country          | <country>          |
 
-        // Handle array notation e.g. idQuestions[0]
-        if (key.contains("[")) {
-            String fieldName = key.substring(0, key.indexOf("["));
-            int index = Integer.parseInt(
-                key.substring(key.indexOf("[") + 1, key.indexOf("]"))
+    Examples:
+      | id | firstName | middleName | lastName | firm | salutation | salutationLetter | attnOf       | crof       | residency | streetNr  | street           | streetAdd       | poBox       | city   | state | zip  | country |
+      | 0  | First     | Middle     | Last     | Firm | mr         | mr               | Attention Of | c/0 Name   | Residency | Street Nr | Street name      | Street Addition | P.O.Box 123 | Zurich | ZH    | 8001 | CH      |
+
+@Then("I verify the following fields in Address response")
+    public void verifyMultipleFields(DataTable dataTable) {
+        Map<String, String> mapResponseExpectedValues = dataTable.asMap();
+
+        for (Map.Entry<String, String> entry : mapResponseExpectedValues.entrySet()) {
+            String strResponseKey = entry.getKey();
+            String strResponseExpectedValue = entry.getValue();
+            String strResponseActualValue = jsonHelper.getValue(response, strResponseKey);
+
+            ExtentCucumberAdapter.addTestStepLog(
+                    "Validating field: '" + strResponseKey + "' | Expected: '" + strResponseExpectedValue + "' | Actual: '" + strResponseActualValue + "'"
             );
 
-            currentNode = currentNode.path(fieldName);
-            if (currentNode.isArray() && currentNode.size() > index) {
-                currentNode = currentNode.get(index);
-            } else {
-                return MissingNode.getInstance();
-            }
-        } else {
-            // Normal field
-            currentNode = currentNode.path(key);
+            Assert.assertEquals(
+                    strResponseActualValue,
+                    strResponseExpectedValue,
+                    "Mismatch for field: " + strResponseKey
+            );
         }
     }
 
-    return currentNode;
+    public String getValue(Response response, String fieldPath) {
+        try {
+            return extractStringField(response, fieldPath);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to extract value from response for path: " + fieldPath, e);
+        }
+    }
+
+    public String extractStringField(Response response, String fieldPath) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode node = getNodeByPath(rootNode, fieldPath);
+        return node.isMissingNode() || node.isNull() ? null : node.asText();
+    }
+
+    private JsonNode getNodeByPath(JsonNode rootNode, String path) {
+        String[] keys = path.split("\\.");
+        for (String key : keys) {
+            if (rootNode == null) break;
+            rootNode = rootNode.path(key);
+        }
+        return rootNode;
+    }
+
+CReate a similar step for Update Natural Person with all the parameters in feature file and also create the function corresponding to the SD. Below is tha pyalod - 
+
+{
+    "id": "665094555",
+    "firstName": "Firstname",
+    "middleName": "Middlename",
+    "lastName": "Lastname",
+    "birthDate": "1985-09-03",
+    "nationalities": [
+        "GB"
+    ],
+    "subType": {
+        "key": "pers_form_doc",
+        "value": "Documented (01)"
+    },
+    "gender": {
+        "key": "male",
+        "value": "male"
+    },
+    "title": {
+        "key": "mr",
+        "value": "Mr"
+    },
+    "birthPlace": "London",
+    "birthCountry": "GB",
+    "domiCountry": "CH",
+    "residenceAddress": {
+        "id": "665877226",
+        "firstName": "Firstname",
+        "middleName": null,
+        "lastName": "Lastname",
+        "firm": null,
+        "residency": null,
+        "streetNr": null,
+        "street": null,
+        "streetAdd": null,
+        "poBox": null,
+        "city": null,
+        "state": null,
+        "zip": null,
+        "country": "CH"
+    },
+    "correspondanceAddress": {
+        "id": "665877228",
+        "firstName": "Firstname",
+        "middleName": "Middlename",
+        "lastName": "Lastname",
+        "firm": null,
+        "residency": "123",
+        "streetNr": "123",
+        "street": "teststreetteststreetmvjxan",
+        "streetAdd": "Addition street",
+        "poBox": "P.O.Box 123",
+        "city": "Zurich",
+        "state": "Zürich",
+        "zip": "8001",
+        "country": "CH",
+        "salutation": {
+            "key": "mr",
+            "value": "Mr"
+        },
+        "salutationLetter": {
+            "key": "mr",
+            "value": "Dear Mr"
+        }
+    },
+    "electronicAddresses": [
+        {
+            "value": "first.last@gmail.com",
+            "isPreferred": false,
+            "medium": {
+                "key": "email",
+                "value": "E-Mail Address"
+            },
+            "kind": {
+                "key": "private",
+                "value": "Private"
+            },
+            "country": null
+        }
+    ],
+    "isEmployee": false,
+    "employmentKind": {
+        "key": "employee",
+        "value": "Employed"
+    },
+    "idQuestions": [
+        {
+            "isChallengeWord": false,
+            "question": "Question1",
+            "answer": "Answer1"
+        },
+        {
+            "isChallengeWord": false,
+            "question": "Question2",
+            "answer": "Answer2"
+        },
+        {
+            "isChallengeWord": false,
+            "question": "Question3",
+            "answer": "Answer3"
+        },
+        {
+            "isChallengeWord": false,
+            "question": "Question4",
+            "answer": "Answer4"
+        },
+        {
+            "isChallengeWord": false,
+            "question": "Question5",
+            "answer": "Answer5"
+        },
+        {
+            "isChallengeWord": true,
+            "question": "Client Challenge Word (to be given at clients request on outbound calls only)",
+            "answer": "Challenge Answer"
+        }
+    ],
+    "taxResidences": [
+        {
+            "country": "GB",
+            "taxNumber": "abgrxfjdvw",
+            "identityType": {
+                "key": "nin",
+                "value": "National Insurance number"
+            }
+        }
+    ],
+    "fatcaStatus": {
+        "key": "rbsc$fatca_non_us_person",
+        "value": "Non US Person (03)"
+    },
+    "crsType": {
+        "key": "rbsc$crs_np_doc",
+        "value": "Natural Person: Documented (01)"
+    },
+    "ukTaxResidenceFromDate": "2015-04-06",
+    "hasTaxAvoidanceSchemes": false,
+    "isHoldingBearerShares": false,
+    "hasInvestableAssets10M": false,
+    "hasHistoricTaxIssues": false,
+    "hasTaxChgDomiStatus": false,
+    "taxChgDomiStatusDate": "2015/16",
+    "hasTaxChgUkDomiStatus": false,
+    "hasTaxPrevClaimRemitanceBasis": false,
+    "hasTaxIntendClaimRemitanceBasis": false,
+    "accountants": [
+        {
+            "name": "TestName",
+            "companyId": "665094556",
+            "companyName": "Lastname",
+            "companyResidenceCountry": "CH",
+            "email": "accountant.person@acccomp.com",
+            "hasConsent": false,
+            "doSendCopy": false,
+            "role": {
+                "key": "netw$rbsc$prim_tax_advs_h",
+                "value": "has Tax Adviser (Primary)"
+            },
+            "address": {
+                "id": "665877228",
+                "firstName": "Firstname",
+                "middleName": "Middlename",
+                "lastName": "Lastname",
+                "firm": null,
+                "residency": "123",
+                "streetNr": "123",
+                "street": "teststreetteststreetmvjxan",
+                "streetAdd": "Addition street",
+                "poBox": "P.O.Box 123",
+                "city": "Zurich",
+                "state": "Zürich",
+                "zip": "8001",
+                "country": "CH",
+                "salutation": {
+                    "key": "mr",
+                    "value": "Mr"
+                },
+                "salutationLetter": {
+                    "key": "mr",
+                    "value": "Dear Mr"
+                }
+            }
+        }
+    ],
+    "hasTravelProtection": false,
+    "hasCouttsOnline": false,
+    "associations": [
+        {
+            "personId": "665094554",
+            "personFirstName": "Firstname",
+            "personLastName": "Lastname",
+            "personResidenceCountry": "CH",
+            "personNationality": "CH",
+            "isProfessional": false,
+            "personGender": {
+                "key": "male",
+                "value": "male"
+            },
+            "role": {
+                "key": "rbsc$is_sibling_of",
+                "value": "has Sibling"
+            }
+        }
+    ],
+    "pepCategory": {
+        "key": "none",
+        "value": "None (10)"
+    },
+    "dueDillegence": {
+        "key": null,
+        "value": null
+    },
+    "coreDv": {
+        "key": null,
+        "value": null
+    },
+    "income": null
 }
+
