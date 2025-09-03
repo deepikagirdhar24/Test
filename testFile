@@ -1,44 +1,38 @@
-      Then Send request to update Natural Person with below details
-        | subType                           | <subType>                           |
-        | domiCountry                       | <domiCountry>                       |
-        | firstName                         | <firstName>                         |
-        | middleName                        | <middleName>                        |
-        | lastName                          | <lastName>                          |
-        | birthDate                         | <birthDate>                         |
-        | gender                            | <gender>                            |
-        | nationalities                     | <nationalities>                     |
-        | title                             | <title>                             |
-        | birthPlace                        | <birthPlace>                        |
-        | birthCountry                      | <birthCountry>                      |
-        | electronicAddresses               | <electronicAddresses>               |
-        | isEmployee                        | <isEmployee>                        |
-        | taxResidences                     | <taxResidences>                     |
-        | documentationIdentity             | <documentationIdentity>             |
-        | pepAssociationCountry             | <pepAssociationCountry>             |
-        | pepClassificationReason           | <pepClassificationReason>           |
-        | pepCategory                       | <pepCategory>                       |
-        | isMarketingOptOut                 | <isMarketingOptOut>                 |
-        | fatcaStatus                       | <fatcaStatus>                       |
-        | crsType                           | <crsType>                           |
-        | ukTaxResidenceFromDate            | <ukTaxResidenceFromDate>            |
-        | hasTaxAvoidanceSchemes            | <hasTaxAvoidanceSchemes>            |
-        | isHoldingBearerShares             | <isHoldingBearerShares>             |
-        | hasInvestableAssets10M            | <hasInvestableAssets10M>            |
-        | hasHistoricTaxIssues              | <hasHistoricTaxIssues>              |
-        | hasTaxChgDomiStatus               | <hasTaxChgDomiStatus>               |
-        | hasTaxChgUkDomiStatus             | <hasTaxChgUkDomiStatus>             |
-        | hasTaxPrevClaimRemitanceBasis     | <hasTaxPrevClaimRemitanceBasis>     |
-        | hasTaxIntendClaimRemitanceBasis   | <hasTaxIntendClaimRemitanceBasis>   |
-        | accountants                       | <accountants>                       |
-        | hasTravelProtection               | <hasTravelProtection>               |
-        | hasCouttsOnline                   | <hasCouttsOnline>                   |
-        | hasCouttsId                       | <hasCouttsId>                       |
-        | associations                      | <associations>                      |
-        | idQuestionId                      | <idQuestionId>                      |
-        | correspondanceAddressId           | <correspondanceAddressId>           |
-
-      Examples:
-        | subType       | domiCountry | firstName    | middleName    | lastName    | birthDate  | gender | nationalities | title | birthPlace | birthCountry | electronicAddresses                                                                  | isEmployee | taxResidences                      | documentationIdentity                                                                     | pepAssociationCountry | pepClassificationReason | pepCategory | isMarketingOptOut | fatcaStatus              | crsType            | ukTaxResidenceFromDate | hasTaxAvoidanceSchemes | isHoldingBearerShares | hasInvestableAssets10M | hasHistoricTaxIssues | hasTaxChgDomiStatus | hasTaxChgUkDomiStatus | hasTaxPrevClaimRemitanceBasis | hasTaxIntendClaimRemitanceBasis | accountants                                                                                                                                                                                                                                | hasTravelProtection | hasCouttsOnline | hasCouttsId | associations                                                                                 | idQuestionId         | correspondanceAddressId | 
-        | pers_form_doc | GB          | Firstname    | Middlename    | Lastname    | DEFAULT    | male   | GB            | mr    | London     | GB           | email;private;first.last@gmail.com;false                                             | false      | GB;RANDOM_10;nin                   | pass;GB1234567890;GB;London;DEFAULT;DEFAULT                                               | GB                    | Testreason              | none        | false             | rbsc$fatca_non_us_person | rbsc$crs_np_doc    | DEFAULT                | false                  | false                 | false                  | false                | false               | false                 | false                         | false                           | TestName;LEGAL_PERSON_OBJECT_ID;rbsc$tax_adviser_primary;ADDRESS_OBJECT_ID;accountant.person@acccomp.com;false;false                                                                                                                       | false               | false           | false       | NATURAL_PERSON_OBJECT_ID_1;rbsc$is_sibling_of                                                | DOCUMENT_OBJECT_ID   | ADDRESS_OBJECT_ID       |
-
-Can you add these values present in Examples directly in the above table of SD.
+Then Send request to update Natural Person with below details
+  | subType                         | pers_form_doc                                                                                          |
+  | domiCountry                     | GB                                                                                                     |
+  | firstName                       | Firstname                                                                                              |
+  | middleName                      | Middlename                                                                                             |
+  | lastName                        | Lastname                                                                                               |
+  | birthDate                       | DEFAULT                                                                                                |
+  | gender                          | male                                                                                                   |
+  | nationalities                   | GB                                                                                                     |
+  | title                           | mr                                                                                                     |
+  | birthPlace                      | London                                                                                                 |
+  | birthCountry                    | GB                                                                                                     |
+  | electronicAddresses             | email;private;first.last@gmail.com;false                                                               |
+  | isEmployee                      | false                                                                                                  |
+  | taxResidences                   | GB;RANDOM_10;nin                                                                                       |
+  | documentationIdentity           | pass;GB1234567890;GB;London;DEFAULT;DEFAULT                                                             |
+  | pepAssociationCountry           | GB                                                                                                     |
+  | pepClassificationReason         | Testreason                                                                                             |
+  | pepCategory                     | none                                                                                                   |
+  | isMarketingOptOut               | false                                                                                                  |
+  | fatcaStatus                     | rbsc$fatca_non_us_person                                                                               |
+  | crsType                         | rbsc$crs_np_doc                                                                                        |
+  | ukTaxResidenceFromDate          | DEFAULT                                                                                                |
+  | hasTaxAvoidanceSchemes          | false                                                                                                  |
+  | isHoldingBearerShares           | false                                                                                                  |
+  | hasInvestableAssets10M          | false                                                                                                  |
+  | hasHistoricTaxIssues            | false                                                                                                  |
+  | hasTaxChgDomiStatus             | false                                                                                                  |
+  | hasTaxChgUkDomiStatus           | false                                                                                                  |
+  | hasTaxPrevClaimRemitanceBasis   | false                                                                                                  |
+  | hasTaxIntendClaimRemitanceBasis | false                                                                                                  |
+  | accountants                     | TestName;LEGAL_PERSON_OBJECT_ID;rbsc$tax_adviser_primary;ADDRESS_OBJECT_ID;accountant.person@acccomp.com;false;false |
+  | hasTravelProtection             | false                                                                                                  |
+  | hasCouttsOnline                 | false                                                                                                  |
+  | hasCouttsId                     | false                                                                                                  |
+  | associations                    | NATURAL_PERSON_OBJECT_ID_1;rbsc$is_sibling_of                                                          |
+  | idQuestionId                    | DOCUMENT_OBJECT_ID                                                                                     |
+  | correspondanceAddressId         | ADDRESS_OBJECT_ID                                                                                      |
