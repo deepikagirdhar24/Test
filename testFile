@@ -1,21 +1,26 @@
-private JsonNode getNodeByPath(JsonNode rootNode, String path) {
-    String[] keys = path.split("\\.");
-    for (String key : keys) {
-        if (rootNode == null) break;
+And I verify the following fields in Update Natural Person response
+        | id                                      | <id>                       |
+        | firstName                               | <firstName>                |
+        | middleName                              | <middleName>               |
+        | lastName                                | <lastName>                 |
+        | birthDate                               | <birthDate>                |
+        | nationalities[0]                        | <nationality>              |
+        | subType.key                             | <subTypeKey>               |
+        | subType.value                           | <subTypeValue>             |
+        | gender.key                              | <genderKey>                |
+        | gender.value                            | <genderValue>              |
+        | title.key                               | <titleKey>                 |
+        | title.value                             | <titleValue>               |
+        | birthPlace                              | <birthPlace>               |
+        | birthCountry                            | <birthCountry>             |
+        | domiCountry                             | <domiCountry>              |
+        | residenceAddress.firstName              | <resAddressFirstName>      |
+        | residenceAddress.middleName             | <resAddressMiddleName>     |
 
-        // Check if key has array notation like field[0]
-        if (key.matches(".+\\[\\d+\\]")) {
-            String fieldName = key.substring(0, key.indexOf("["));
-            int index = Integer.parseInt(key.substring(key.indexOf("[") + 1, key.indexOf("]")));
-            rootNode = rootNode.path(fieldName);
-            if (rootNode.isArray() && rootNode.size() > index) {
-                rootNode = rootNode.get(index);
-            } else {
-                return null; // index out of bounds
-            }
-        } else {
-            rootNode = rootNode.path(key);
-        }
-    }
-    return rootNode;
-}
+        | id                          | firstName | middleName | lastName  | birthDate  | nationality | subTypeKey     | subTypeValue      | genderKey | genderValue | titleKey | titleValue | birthPlace | birthCountry | domiCountry | resAddressId | resAddressFirstName | resAddressMiddleName |
+        | SC:updNaturalPersonObjectId | Firstname | Middlename | Lastname  | 1985-09-03 | GB          | pers_form_doc  | Documented (01)   | male      | male        | mr       | Mr         | London     | GB           | CH          | 665877226    | Firstname            | null                 |
+
+why below error - 
+
+[ERROR] Failures: 
+[ERROR]   Mismatch for field: residenceAddress.middleName expected [null] but found [null]
