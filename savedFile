@@ -1,22 +1,30 @@
-    public String getValue(Response response, String fieldPath) {
-        try {
-            return extractStringField(response, fieldPath);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to extract value from response for path: " + fieldPath, e);
+private JsonNode getNodeByPath(JsonNode rootNode, String path) {
+    String[] keys = path.split("\\.");
+
+    JsonNode currentNode = rootNode;
+    for (String key : keys) {
+        if (currentNode == null || currentNode.isMissingNode()) {
+            return MissingNode.getInstance();
+        }
+
+        // Handle array notation e.g. idQuestions[0]
+        if (key.contains("[")) {
+            String fieldName = key.substring(0, key.indexOf("["));
+            int index = Integer.parseInt(
+                key.substring(key.indexOf("[") + 1, key.indexOf("]"))
+            );
+
+            currentNode = currentNode.path(fieldName);
+            if (currentNode.isArray() && currentNode.size() > index) {
+                currentNode = currentNode.get(index);
+            } else {
+                return MissingNode.getInstance();
+            }
+        } else {
+            // Normal field
+            currentNode = currentNode.path(key);
         }
     }
 
-    public String extractStringField(Response response, String fieldPath) throws Exception {
-        JsonNode rootNode = objectMapper.readTree(response.asString());
-        JsonNode node = getNodeByPath(rootNode, fieldPath);
-        return node.isMissingNode() || node.isNull() ? null : node.asText();
-    }
-
-    private JsonNode getNodeByPath(JsonNode rootNode, String path) {
-        String[] keys = path.split("\\.");
-        for (String key : keys) {
-            if (rootNode == null) break;
-            rootNode = rootNode.path(key);
-        }
-        return rootNode;
-    }
+    return currentNode;
+}
