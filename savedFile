@@ -45,6 +45,8 @@
 
 Can you create simiar feature file and similar function for the below payload and verify each field - 
 
+And I verify the following fields in Update Natural Person response
+
 {
     "id": "665094618",
     "firstName": "Firstname",
