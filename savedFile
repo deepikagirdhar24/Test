@@ -1,50 +1,264 @@
-I have a test case which date issueDate has wrong date format. How to address this in the function below and in the feature file
+    And I verify the following fields in Address response
+      | id               | <id>               |
+      | firstName        | <firstName>        |
+      | middleName       | <middleName>       |
+      | lastName         | <lastName>         |
+      | firm             | <firm>             |
+      | salutation       | <salutation>       |
+      | salutationLetter | <salutationLetter> |
+      | attnOf           | <attnOf>           |
+      | crof             | <crof>             |
+      | residency        | <residency>        |
+      | streetNr         | <streetNr>         |
+      | street           | <street>           |
+      | streetAdd        | <streetAdd>        |
+      | poBox            | <poBox>            |
+      | city             | <city>             |
+      | state            | <state>            |
+      | zip              | <zip>              |
+      | country          | <country>          |
 
-I am uisng below function to address the date - 
+    Examples:
+      | id | firstName | middleName | lastName | firm | salutation | salutationLetter | attnOf       | crof       | residency | streetNr  | street           | streetAdd       | poBox       | city   | state | zip  | country |
+      | 0  | First     | Middle     | Last     | Firm | mr         | mr               | Attention Of | c/0 Name   | Residency | Street Nr | Street name      | Street Addition | P.O.Box 123 | Zurich | ZH    | 8001 | CH      |
 
-public String resolveDate(String context, String fieldName, String dateInput) {
-        if (dateInput == null || dateInput.trim().isEmpty()) {
-            return ""; // Treat null/empty input as empty string
-        }
+@Then("I verify the following fields in Address response")
+    public void verifyMultipleFields(DataTable dataTable) {
+        Map<String, String> mapResponseExpectedValues = dataTable.asMap();
 
-        String input = dateInput.trim().toUpperCase();
+        for (Map.Entry<String, String> entry : mapResponseExpectedValues.entrySet()) {
+            String strResponseKey = entry.getKey();
+            String strResponseExpectedValue = entry.getValue();
+            String strResponseActualValue = jsonHelper.getValue(response, strResponseKey);
 
-        switch (input) {
-            case "NA":
-                return null;
-            case "EMPTY":
-                return "";
-            case "DEFAULT":
-                return getDefaultDateForField(fieldName);
-            case "TODAY":
-                return LocalDate.now().toString();
-            case "PAST":
-                return resolvePastDate(context);
-            case "FUTURE":
-                return resolveFutureDate(context);
-            default:
-                return input; // Assume valid yyyy-MM-dd format
+            ExtentCucumberAdapter.addTestStepLog(
+                    "Validating field: '" + strResponseKey + "' | Expected: '" + strResponseExpectedValue + "' | Actual: '" + strResponseActualValue + "'"
+            );
+
+            Assert.assertEquals(
+                    strResponseActualValue,
+                    strResponseExpectedValue,
+                    "Mismatch for field: " + strResponseKey
+            );
         }
     }
 
-public List<POJODocumentationIdentity> buildDocumentationIdentity(String input, String context) {
-        List<String> entries = payloadHelper.splitListInput(input, "\\s*,\\s*");
-        if (entries == null) return null; // NA case
+Can you create simiar feature file and similar function for the below payload and verify each field - 
 
-        List<POJODocumentationIdentity> listDocumentation = new ArrayList<>();
-        for (String entry : entries) {
-            String[] parts = entry.split(";");
-            POJODocumentationIdentity doc = new POJODocumentationIdentity();
-            doc.setStrIdentityType(payloadHelper.normalize(parts[0]));
-            doc.setStrNumber(payloadHelper.normalize(parts[1]));
-            doc.setStrIssueCountry(payloadHelper.normalize(parts[2]));
-            doc.setStrIssuePlace(payloadHelper.normalize(parts[3]));
-            doc.setStrIssueDate(payloadHelper.resolveDate(context, "issueDate", parts[4]));
-            doc.setStrValidUntil(payloadHelper.resolveDate(context, "validUntil", parts[5]));
-            listDocumentation.add(doc);
+{
+    "id": "665094618",
+    "firstName": "Firstname",
+    "middleName": "Middlename",
+    "lastName": "Lastname",
+    "birthDate": "1985-09-03",
+    "nationalities": [
+        "GB"
+    ],
+    "subType": {
+        "key": "pers_form_doc",
+        "value": "Documented (01)"
+    },
+    "gender": {
+        "key": "male",
+        "value": "male"
+    },
+    "title": {
+        "key": "mr",
+        "value": "Mr"
+    },
+    "birthPlace": "London",
+    "birthCountry": "GB",
+    "domiCountry": "CH",
+    "residenceAddress": {
+        "id": "665877251",
+        "firstName": "Firstname",
+        "middleName": null,
+        "lastName": "Lastname",
+        "firm": null,
+        "residency": null,
+        "streetNr": null,
+        "street": null,
+        "streetAdd": null,
+        "poBox": null,
+        "city": null,
+        "state": null,
+        "zip": null,
+        "country": "CH"
+    },
+    "correspondanceAddress": {
+        "id": "665877253",
+        "firstName": "Firstname",
+        "middleName": "Middlename",
+        "lastName": "Lastname",
+        "firm": null,
+        "residency": "123",
+        "streetNr": "123",
+        "street": "teststreetteststreetvpktia",
+        "streetAdd": "Addition street",
+        "poBox": "P.O.Box 123",
+        "city": "Zurich",
+        "state": "Zürich",
+        "zip": "8001",
+        "country": "CH",
+        "salutation": {
+            "key": "mr",
+            "value": "Mr"
+        },
+        "salutationLetter": {
+            "key": "mr",
+            "value": "Dear Mr"
         }
-
-ALso in featire files, I am passing either TODAY, FUTURE< DEFAULT as per test case - 
-
-See belwo - 
-      | pers_form_doc | GB          | Firstname    | Middlename    | Lastname    | DEFAULT    | male   | GB            | mr    | London     | GB           | email;private;first.last@gmail.com;false   | false      | GB;RANDOM_10;nin    | pass;GB1234567890;GB;London;DEFAULT;DEFAULT      | GB                    | Testreason              | none        | false             | rbsc$fatca_non_us_person | rbsc$crs_np_doc    | DEFAULT                | false                  | false                 | false                  | false                | false               | false                 | false                         | false                           | TestName;LEGAL_PERSON_OBJECT_ID;rbsc$tax_adviser_primary;ADDRESS_OBJECT_ID;accountant.person@acccomp.com;false;false | false               | false           | false       | NATURAL_PERSON_OBJECT_ID_1;rbsc$is_sibling_of | DOCUMENT_OBJECT_ID   | ADDRESS_OBJECT_ID       | 111x - documentationIdentity with issueDate |
+    },
+    "electronicAddresses": [
+        {
+            "value": "first.last@gmail.com",
+            "isPreferred": false,
+            "medium": {
+                "key": "email",
+                "value": "E-Mail Address"
+            },
+            "kind": {
+                "key": "private",
+                "value": "Private"
+            },
+            "country": null
+        }
+    ],
+    "isEmployee": false,
+    "employmentKind": {
+        "key": "employee",
+        "value": "Employed"
+    },
+    "idQuestions": [
+        {
+            "isChallengeWord": false,
+            "question": "Question1",
+            "answer": "Answer1"
+        },
+        {
+            "isChallengeWord": false,
+            "question": "Question2",
+            "answer": "Answer2"
+        },
+        {
+            "isChallengeWord": false,
+            "question": "Question3",
+            "answer": "Answer3"
+        },
+        {
+            "isChallengeWord": false,
+            "question": "Question4",
+            "answer": "Answer4"
+        },
+        {
+            "isChallengeWord": false,
+            "question": "Question5",
+            "answer": "Answer5"
+        },
+        {
+            "isChallengeWord": true,
+            "question": "Client Challenge Word (to be given at clients request on outbound calls only)",
+            "answer": "Challenge Answer"
+        }
+    ],
+    "taxResidences": [
+        {
+            "country": "GB",
+            "taxNumber": "aygrfivnrh",
+            "identityType": {
+                "key": "nin",
+                "value": "National Insurance number"
+            }
+        }
+    ],
+    "fatcaStatus": {
+        "key": "rbsc$fatca_non_us_person",
+        "value": "Non US Person (03)"
+    },
+    "crsType": {
+        "key": "rbsc$crs_np_doc",
+        "value": "Natural Person: Documented (01)"
+    },
+    "ukTaxResidenceFromDate": "2015-04-06",
+    "hasTaxAvoidanceSchemes": false,
+    "isHoldingBearerShares": false,
+    "hasInvestableAssets10M": false,
+    "hasHistoricTaxIssues": false,
+    "hasTaxChgDomiStatus": false,
+    "taxChgDomiStatusDate": "2015/16",
+    "hasTaxChgUkDomiStatus": false,
+    "hasTaxPrevClaimRemitanceBasis": false,
+    "hasTaxIntendClaimRemitanceBasis": false,
+    "accountants": [
+        {
+            "name": "TestName",
+            "companyId": "665094619",
+            "companyName": "Lastname",
+            "companyResidenceCountry": "CH",
+            "email": "accountant.person@acccomp.com",
+            "hasConsent": false,
+            "doSendCopy": false,
+            "role": {
+                "key": "netw$rbsc$prim_tax_advs_h",
+                "value": "has Tax Adviser (Primary)"
+            },
+            "address": {
+                "id": "665877253",
+                "firstName": "Firstname",
+                "middleName": "Middlename",
+                "lastName": "Lastname",
+                "firm": null,
+                "residency": "123",
+                "streetNr": "123",
+                "street": "teststreetteststreetvpktia",
+                "streetAdd": "Addition street",
+                "poBox": "P.O.Box 123",
+                "city": "Zurich",
+                "state": "Zürich",
+                "zip": "8001",
+                "country": "CH",
+                "salutation": {
+                    "key": "mr",
+                    "value": "Mr"
+                },
+                "salutationLetter": {
+                    "key": "mr",
+                    "value": "Dear Mr"
+                }
+            }
+        }
+    ],
+    "hasTravelProtection": false,
+    "hasCouttsOnline": false,
+    "associations": [
+        {
+            "personId": "665094617",
+            "personFirstName": "Firstname",
+            "personLastName": "Lastname",
+            "personResidenceCountry": "CH",
+            "personNationality": "CH",
+            "isProfessional": false,
+            "personGender": {
+                "key": "male",
+                "value": "male"
+            },
+            "role": {
+                "key": "rbsc$is_sibling_of",
+                "value": "has Sibling"
+            }
+        }
+    ],
+    "pepCategory": {
+        "key": "none",
+        "value": "None (10)"
+    },
+    "dueDillegence": {
+        "key": null,
+        "value": null
+    },
+    "coreDv": {
+        "key": null,
+        "value": null
+    },
+    "income": null
+}
