@@ -1,32 +1,32 @@
-    // Update Natural Person
-    public Response updateNaturalPerson(String strEnvType, String strBearerToken, String strJwtToken, Map<String, String> mapUpdPersonDetails, ScenarioContext scenarioContext) throws Exception {
+@Then("I verify the following fields in Update Natural Person response")
+public void verifyUpdateNaturalPersonFields(DataTable dataTable, ScenarioContext scenarioContext) {
+    Map<String, String> expectedValues = dataTable.asMap(String.class, String.class);
 
-        String strUrl = getTYKURL(strEnvType, "TYK.CREATENEWPERSON") + "/{PersonKey}";
-        String strNaturalPersonObjectId = scenarioContext.getContext("naturalPersonObjectId");
+    for (Map.Entry<String, String> entry : expectedValues.entrySet()) {
+        String responseKey = entry.getKey();
+        String expectedValue = entry.getValue();
 
-        POJOUpdNaturalPersonRequest pojoUpdNaturalPersonRequest = payloads.buildUpdNaturalPersonPayload(mapUpdPersonDetails, scenarioContext);
-        String strRequestBody = objObjectMapper.writeValueAsString(pojoUpdNaturalPersonRequest);
-        objCucumberLogger.PrintStatus("Request for UPDATE Natural Person is: " + strRequestBody);
-
-        ExtentCucumberAdapter.addTestStepLog("Sending request to update Natural Person");
-
-        Map<String, String> mapPathParams = new HashMap<>();
-        mapPathParams.put("PersonKey", strNaturalPersonObjectId);
-
-        Response objResponse = sendPatchRequest(strUrl, strBearerToken, strJwtToken, strRequestBody, mapPathParams, null);
-        String strResponseBody = devHelperLibrary.getResponseBody(objResponse);
-        objCucumberLogger.PrintStatus("Response for UPDATE Natural Person is: " + strResponseBody);
-
-        // Avoid parsing if response is not JSON
-        if (objResponse.getContentType() != null && objResponse.getContentType().contains("application/json")) {
-            String strUpdNaturalPersonObjectId = jsonHelper.extractStringField(objResponse, "objectId");
-            String strUpdNaturalPersonOrderId = jsonHelper.extractStringField(objResponse, "orderId");
-            String strUpdNaturalPersonUuid = pojoUpdNaturalPersonRequest.getStrUuid();
-
-            scenarioContext.setContext("updNaturalPersonObjectId", strUpdNaturalPersonObjectId);
-            scenarioContext.setContext("updNaturalPersonOrderId", strUpdNaturalPersonOrderId);
-            scenarioContext.setContext("updNaturalPersonUuid", strUpdNaturalPersonUuid);
+        // 🔹 Check if expectedValue is a placeholder from ScenarioContext
+        if (expectedValue.startsWith("SC:")) {
+            String contextKey = expectedValue.replace("SC:", "").trim();
+            expectedValue = scenarioContext.getContext(contextKey);
         }
 
-        return objResponse;
+        String actualValue = jsonHelper.getValue(response, responseKey);
+
+        ExtentCucumberAdapter.addTestStepLog(
+                "Validating field: '" + responseKey +
+                "' | Expected: '" + expectedValue +
+                "' | Actual: '" + actualValue + "'"
+        );
+
+        Assert.assertEquals(
+                actualValue,
+                expectedValue,
+                "Mismatch for field: " + responseKey
+        );
     }
+}
+
+SC:updNaturalPersonObjectId
+SC:updNaturalPersonObjectId
