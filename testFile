@@ -1,39 +1,10 @@
-@Then("I verify the following fields in Update Natural Person response")
-public void verifyUpdateNaturalPersonFields(DataTable dataTable) {
-    Map<String, String> expectedValues = dataTable.asMap(String.class, String.class);
-
-    for (Map.Entry<String, String> entry : expectedValues.entrySet()) {
-        String responseKey = entry.getKey();
-        String expectedValue = entry.getValue();
-
-        // 🔹 ScenarioContext placeholder handling
-        if (expectedValue != null && expectedValue.startsWith("SC:")) {
-            String contextKey = expectedValue.replace("SC:", "").trim();
-            expectedValue = scenarioContext.getContext(contextKey);
+    public String normalize(String value) {
+        if (value == null) return "";
+        switch (value.trim().toUpperCase()) {
+            case "NA": return null;
+            case "EMPTY": return "";
+            default: return value;
         }
-
-        // 🔹 Treat blank cells as null
-        if (expectedValue == null || expectedValue.trim().isEmpty()) {
-            expectedValue = null;
-        }
-
-        String actualValue = jsonHelper.getValue(response, responseKey);
-
-        // 🔹 Normalize actual "null" (jsonHelper may return string "null")
-        if (actualValue != null && "null".equalsIgnoreCase(actualValue.trim())) {
-            actualValue = null;
-        }
-
-        ExtentCucumberAdapter.addTestStepLog(
-            "Validating field: '" + responseKey +
-            "' | Expected: '" + expectedValue +
-            "' | Actual: '" + actualValue + "'"
-        );
-
-        Assert.assertEquals(
-            actualValue,
-            expectedValue,
-            "Mismatch for field: " + responseKey
-        );
     }
-}
+
+ye already existing normalize function hai mere code mein
