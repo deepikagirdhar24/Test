@@ -1,39 +1,4 @@
-@Then("I verify the following fields in Update Natural Person response")
-public void verifyUpdateNaturalPersonFields(DataTable dataTable) {
-    Map<String, String> expectedValues = dataTable.asMap(String.class, String.class);
+        | id                          | firstName | middleName | lastName  | birthDate  | nationality | subTypeKey     | subTypeValue      | genderKey | genderValue | titleKey | titleValue | birthPlace | birthCountry | domiCountry | resAddressId | resAddressFirstName | resAddressMiddleName | resAddressLastName | resAddressFirm | resAddressResidency | resAddressStreetNr | resAddressStreet | resAddressStreetAdd | resAddressPoBox | resAddressCity | resAddressState | resAddressZip | resAddressCountry | corrAddressId | corrAddressFirstName | corrAddressMiddleName | corrAddressLastName | corrAddressFirm | corrAddressResidency | corrAddressStreetNr | corrAddressStreet        | corrAddressStreetAdd | corrAddressPoBox | corrAddressCity | corrAddressState | corrAddressZip | corrAddressCountry | corrSalutationKey | corrSalutationValue | corrSalutationLetterKey | corrSalutationLetterValue | emailValue             | emailIsPreferred | emailMediumKey | emailMediumValue | emailKindKey | emailKindValue | emailCountry | isEmployee | employmentKey | employmentValue | idQ1IsChallenge | idQ1Question | idQ1Answer | idQ2IsChallenge | idQ2Question | idQ2Answer | idQ3IsChallenge | idQ3Question | idQ3Answer | idQ4IsChallenge | idQ4Question | idQ4Answer | idQ5IsChallenge | idQ5Question | idQ5Answer | idQ6IsChallenge | idQ6Question                                                                 | idQ6Answer         | taxCountry | taxNumber  | taxIdentityKey | taxIdentityValue              | fatcaKey                     | fatcaValue        | crsKey             | crsValue                         | ukTaxFromDate | hasTaxAvoidanceSchemes | isHoldingBearerShares | hasInvestableAssets10M | hasHistoricTaxIssues | hasTaxChgDomiStatus | taxChgDomiStatusDate | hasTaxChgUkDomiStatus | hasTaxPrevClaimRemitanceBasis | hasTaxIntendClaimRemitanceBasis | accountantName | accountantCompanyId | accountantCompanyName | accountantCompanyCountry | accountantEmail               | accountantHasConsent | accountantDoSendCopy | accountantRoleKey                    | accountantRoleValue          | accAddressId | accAddressFirstName | accAddressMiddleName | accAddressLastName | accAddressFirm | accAddressResidency | accAddressStreetNr | accAddressStreet        | accAddressStreetAdd | accAddressPoBox | accAddressCity | accAddressState | accAddressZip | accAddressCountry | accAddressSalutationKey | accAddressSalutationValue | accAddressSalutationLetterKey | accAddressSalutationLetterValue | hasTravelProtection | hasCouttsOnline | associationPersonId | associationPersonFirstName | associationPersonLastName | associationPersonResCountry | associationPersonNationality | associationIsProfessional | associationGenderKey | associationGenderValue | associationRoleKey   | associationRoleValue | pepCategoryKey | pepCategoryValue | dueDiligenceKey | dueDiligenceValue | coreDvKey | coreDvValue | income |
+        | SC:updNaturalPersonObjectId | Firstname | Middlename | Lastname  | 1985-09-03 | GB          | pers_form_doc  | Documented (01)   | male      | male        | mr       | Mr         | London     | GB           | CH          | 665877226    | Firstname            | null                 | Lastname           | null           | null                | null                | null              | null                 | null            | null            | null            | null           | CH                 | SC:addressObjectId       | Firstname              | Middlename            | Lastname             | null            | 123                 | 123                 | SC:addressStreet | Addition street     | P.O.Box 123     | Zurich          | Zürich           | 8001           | CH                 | mr               | Mr                  | mr                    | Dear Mr                  | first.last@gmail.com | false            | email          | E-Mail Address   | private      | Private       | null         | false      | employee      | Employed        | false           | Question1    | Answer1   | false           | Question2    | Answer2   | false           | Question3    | Answer3   | false           | Question4    | Answer4   | false           | Question5    | Answer5   | true            | Client Challenge Word (to be given at clients request on outbound calls only) | Challenge Answer | GB         | SC:updNaturalPersonTaxNumber | nin            | National Insurance number      | rbsc$fatca_non_us_person     | Non US Person (03) | rbsc$crs_np_doc    | Natural Person: Documented (01)   | 2015-04-06   | false                  | false                 | false                   | false                | false                | 2015/16              | false                   | false                          | false                              | TestName        | SC:legalPersonObjectId          | Lastname             | CH                      | accountant.person@acccomp.com | false                | false               | netw$rbsc$prim_tax_advs_h          | has Tax Adviser (Primary)   | SC:addressObjectId    | Firstname            | Middlename            | Lastname             | null            | 123                 | 123                 | SC:addressStreet | Addition street     | P.O.Box 123     | Zurich          | Zürich           | 8001           | CH                 | mr                       | Mr                        | mr                           | Dear Mr                       | false               | false            | SC:naturalPersonObjectIdSpec          | Firstname                  | Lastname                  | CH                        | CH                            | false                    | male               | male                  | rbsc$is_sibling_of | has Sibling          | none           | None (10)       | null            | null             | null      | null       | null   |
 
-    for (Map.Entry<String, String> entry : expectedValues.entrySet()) {
-        String responseKey = entry.getKey();
-        String expectedValue = entry.getValue();
-
-        // 🔹 ScenarioContext placeholder handling
-        if (expectedValue != null && expectedValue.startsWith("SC:")) {
-            String contextKey = expectedValue.replace("SC:", "").trim();
-            expectedValue = scenarioContext.getContext(contextKey);
-        }
-
-        // 🔹 Treat blank cells as null
-        if (expectedValue == null || expectedValue.trim().isEmpty()) {
-            expectedValue = null;
-        }
-
-        String actualValue = jsonHelper.getValue(response, responseKey);
-
-        // 🔹 Normalize actual "null" (jsonHelper may return string "null")
-        if (actualValue != null && "null".equalsIgnoreCase(actualValue.trim())) {
-            actualValue = null;
-        }
-
-        ExtentCucumberAdapter.addTestStepLog(
-            "Validating field: '" + responseKey +
-            "' | Expected: '" + expectedValue +
-            "' | Actual: '" + actualValue + "'"
-        );
-
-        Assert.assertEquals(
-            actualValue,
-            expectedValue,
-            "Mismatch for field: " + responseKey
-        );
-    }
-}
+jahan pr null hai na, vahan pr empty karke mujhe bhejna
