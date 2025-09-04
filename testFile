@@ -4,10 +4,21 @@ public void verifyUpdateNaturalPersonFields(DataTable dataTable) {
 
     for (Map.Entry<String, String> entry : expectedValues.entrySet()) {
         String responseKey = entry.getKey();
+        String expectedValue = entry.getValue();
 
-        // 🔹 Helper se expected aur actual dono nikal lo
-        String expectedValue = updateNaturalPerson.resolveExpectedValue(entry.getValue(), scenarioContext);
-        String actualValue = updateNaturalPerson.resolveActualValue(response, responseKey);
+        // 🔹 Use resolveId for SC: placeholders as well
+        expectedValue = payloadHelper.resolveId(expectedValue, scenarioContext);
+
+        // 🔹 Treat blank cells as null
+        if (expectedValue != null && expectedValue.trim().isEmpty()) {
+            expectedValue = null;
+        }
+
+        String actualValue = jsonHelper.getValue(response, responseKey);
+
+        if (actualValue != null && "null".equalsIgnoreCase(actualValue.trim())) {
+            actualValue = null;
+        }
 
         ExtentCucumberAdapter.addTestStepLog(
                 "Validating field: '" + responseKey +
@@ -15,34 +26,10 @@ public void verifyUpdateNaturalPersonFields(DataTable dataTable) {
                         "' | Actual: '" + actualValue + "'"
         );
 
-        // 🔹 Assertion yahin rahega
         Assert.assertEquals(
                 actualValue,
                 expectedValue,
                 "Mismatch for field: " + responseKey
         );
     }
-}
-
-public String resolveExpectedValue(String expectedValue, ScenarioContext scenarioContext) {
-    // Use resolveId to handle SC: and OBJECT_ID tokens
-    expectedValue = payloadHelper.resolveId(expectedValue, scenarioContext);
-
-    // Treat blank as null
-    if (expectedValue != null && expectedValue.trim().isEmpty()) {
-        expectedValue = null;
-    }
-
-    return expectedValue;
-}
-
-public String resolveActualValue(String response, String responseKey) {
-    String actualValue = jsonHelper.getValue(response, responseKey);
-
-    // Normalize string "null" to actual null
-    if (actualValue != null && "null".equalsIgnoreCase(actualValue.trim())) {
-        actualValue = null;
-    }
-
-    return actualValue;
 }
