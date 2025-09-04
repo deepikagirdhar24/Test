@@ -1,6 +1,45 @@
-List<POJOTaxResidence> taxResidences = pojoUpdNaturalPersonRequest.getLstTaxResidences();
+ public List<POJOAssociation> buildAssociations(String input, ScenarioContext scenarioContext) {
+        List<String> entries = payloadHelper.splitListInput(input, "\\s*,\\s*");
+        if (entries == null) return null; // NA case
 
-if (taxResidences != null && !taxResidences.isEmpty()) {
-    String taxNumber = taxResidences.get(0).getTaxNumber();
-    scenarioContext.setContext("updNaturalPersonTaxNumber", taxNumber);
-}
+        List<POJOAssociation> listAssociations = new ArrayList<>();
+        for (String entry : entries) {
+            String[] parts = entry.split(";");
+            POJOAssociation assoc = new POJOAssociation();
+
+            String strNaturalPersonObjectId = scenarioContext.getContext("naturalPersonObjectIdAss1");
+            String strlegalPersonObjectId = scenarioContext.getContext("legalPersonObjectIdAss1");
+
+            assoc.setStrPersonId(payloadHelper.resolveId(parts[0], strNaturalPersonObjectId));
+            assoc.setStrRole(payloadHelper.normalize(parts[1]));
+            listAssociations.add(assoc);
+        }
+        return listAssociations;
+    }
+
+in Association payload, the parts[0 ]can either be strNaturalPersonObjectId or strlegalPersonObjectId. How to upate this payload now.
+
+    public String resolveId(String input, String resolvedValue) {
+        if (input == null || input.trim().isEmpty()) {
+            return "";
+        }
+
+        switch (input.trim().toUpperCase()) {
+            case "EMPTY":
+                return "";
+            case "NA":
+                return null;
+            case "NATURAL_PERSON_OBJECT_ID":
+            case "CONTAINER_OBJECT_ID":
+            case "ADDRESS_OBJECT_ID":
+//            case "ADDRESS_OBJECT_ID_ADHOC":
+            case "MONEY_ACCOUNT_OBJECT_ID":
+            case "DOCUMENT_OBJECT_ID":
+            case "LEGAL_PERSON_OBJECT_ID":
+            case "NATURAL_PERSON_OBJECT_ID_1":
+            case "LEGAL_PERSON_OBJECT_ID_1":
+                return resolvedValue;
+            default:
+                return input;
+        }
+    }
