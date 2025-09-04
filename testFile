@@ -1,14 +1,54 @@
-String strNaturalPersonObjectId = scenarioContext.getContext("naturalPersonObjectIdAss1");
-String strLegalPersonObjectId   = scenarioContext.getContext("legalPersonObjectIdAss1");
+public List<POJOAssociation> buildAssociations(String input, ScenarioContext scenarioContext) {
+    List<String> entries = payloadHelper.splitListInput(input, "\\s*,\\s*");
+    if (entries == null) return null; // NA case
 
-String idCandidate = parts[0].trim();
+    List<POJOAssociation> listAssociations = new ArrayList<>();
+    for (String entry : entries) {
+        String[] parts = entry.split(";");
+        POJOAssociation assoc = new POJOAssociation();
 
-String resolvedValue = null;
-if (idCandidate.toUpperCase().contains("LEGAL_PERSON_OBJECT_ID")) {
-    resolvedValue = strLegalPersonObjectId;
-} else if (idCandidate.toUpperCase().contains("NATURAL_PERSON_OBJECT_ID")) {
-    resolvedValue = strNaturalPersonObjectId;
+        assoc.setStrPersonId(payloadHelper.resolveId(parts[0], scenarioContext));
+        assoc.setStrRole(payloadHelper.normalize(parts[1]));
+
+        listAssociations.add(assoc);
+    }
+    return listAssociations;
 }
 
-// let resolveId handle EMPTY / NA / pass-through
-assoc.setStrPersonId(payloadHelper.resolveId(idCandidate, resolvedValue));
+public String resolveId(String input, ScenarioContext scenarioContext) {
+    if (input == null || input.trim().isEmpty()) {
+        return "";
+    }
+
+    String token = input.trim().toUpperCase();
+
+    switch (token) {
+        case "EMPTY":
+            return "";
+        case "NA":
+            return null;
+
+        case "NATURAL_PERSON_OBJECT_ID":
+        case "NATURAL_PERSON_OBJECT_ID_1":
+            return scenarioContext.getContext("naturalPersonObjectIdAss1");
+
+        case "LEGAL_PERSON_OBJECT_ID":
+        case "LEGAL_PERSON_OBJECT_ID_1":
+            return scenarioContext.getContext("legalPersonObjectIdAss1");
+
+        case "CONTAINER_OBJECT_ID":
+            return scenarioContext.getContext("containerObjectId");
+
+        case "ADDRESS_OBJECT_ID":
+            return scenarioContext.getContext("addressObjectId");
+
+        case "MONEY_ACCOUNT_OBJECT_ID":
+            return scenarioContext.getContext("moneyAccountObjectId");
+
+        case "DOCUMENT_OBJECT_ID":
+            return scenarioContext.getContext("documentObjectId");
+
+        default:
+            return input; // plain string passthrough
+    }
+}
