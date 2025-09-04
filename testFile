@@ -1,59 +1,18 @@
-public String resolveId(String input, ScenarioContext scenarioContext) {
-    if (input == null || input.trim().isEmpty()) {
-        return ""; // ⚠️ important: don't change this else old cases break
-    }
-
-    String token = input.trim();
-
-    // 🔹 SC: format for response verification
-    if (token.toUpperCase().startsWith("SC:")) {
-        String contextKey = token.substring(3).trim(); // remove "SC:"
-        return scenarioContext.getContext(contextKey);
-    }
-
-    // 🔹 Normal OBJECT_ID placeholders for request payloads
-    switch (token.toUpperCase()) {
-        case "EMPTY": return "";
-        case "NA": return null;
-
-        case "NATURAL_PERSON_OBJECT_ID":
-            return scenarioContext.getContext("naturalPersonObjectId");
-        case "NATURAL_PERSON_OBJECT_ID_1":
-            return scenarioContext.getContext("naturalPersonObjectIdAss1");
-        case "NATURAL_PERSON_OBJECT_ID_2":
-            return scenarioContext.getContext("naturalPersonObjectIdAss2");
-
-        case "LEGAL_PERSON_OBJECT_ID":
-            return scenarioContext.getContext("legalPersonObjectId");
-        case "LEGAL_PERSON_OBJECT_ID_1":
-            return scenarioContext.getContext("legalPersonObjectIdAss1");
-
-        case "CONTAINER_OBJECT_ID":
-            return scenarioContext.getContext("containerObjectId");
-        case "ADDRESS_OBJECT_ID":
-            return scenarioContext.getContext("addressObjectId");
-        case "MONEY_ACCOUNT_OBJECT_ID":
-            return scenarioContext.getContext("moneyAccountObjectId");
-        case "DOCUMENT_OBJECT_ID":
-            return scenarioContext.getContext("documentObjectId");
-
-        default:
-            return token; // passthrough
-    }
-}
-
 @Then("I verify the following fields in Update Natural Person response")
 public void verifyUpdateNaturalPersonFields(DataTable dataTable) {
+    updateNaturalPerson.verifyUpdateNaturalPersonFields(dataTable, response, scenarioContext);
+}
+
+public void verifyUpdateNaturalPersonFields(DataTable dataTable, String response, ScenarioContext scenarioContext) {
     Map<String, String> expectedValues = dataTable.asMap(String.class, String.class);
 
     for (Map.Entry<String, String> entry : expectedValues.entrySet()) {
         String responseKey = entry.getKey();
         String expectedValue = entry.getValue();
 
-        // 🔹 Use resolveId for SC: placeholders as well
+        // 🔹 Centralized handling
         expectedValue = payloadHelper.resolveId(expectedValue, scenarioContext);
 
-        // 🔹 Treat blank cells as null
         if (expectedValue != null && expectedValue.trim().isEmpty()) {
             expectedValue = null;
         }
