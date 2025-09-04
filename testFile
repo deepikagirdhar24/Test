@@ -1,131 +1,14 @@
-I gave associationa s LEGAL_PERSON_OBJECT_ID_1 in feature file - 
+String strNaturalPersonObjectId = scenarioContext.getContext("naturalPersonObjectIdAss1");
+String strLegalPersonObjectId   = scenarioContext.getContext("legalPersonObjectIdAss1");
 
-and in request body I am getting only this - not the personId why ? -> associations":[{"role":"rbsc$has_director"}],
+String idCandidate = parts[0].trim();
 
-see code below - 
+String resolvedValue = null;
+if (idCandidate.toUpperCase().contains("LEGAL_PERSON_OBJECT_ID")) {
+    resolvedValue = strLegalPersonObjectId;
+} else if (idCandidate.toUpperCase().contains("NATURAL_PERSON_OBJECT_ID")) {
+    resolvedValue = strNaturalPersonObjectId;
+}
 
-feature file I gave this - 
-
-| LEGAL_PERSON_OBJECT_ID_1;rbsc$has_director |
-
-    @Then("Send request to update Natural Person with below details")
-    public void sendRequestToGenerateNewPersonWithDetails(DataTable dataTable) throws Exception {
-        Map<String, String> mapUpdPersonDetails = dataTable.asMap(String.class, String.class);
-        String jwtToken = scenarioContext.getContext("JWTToken");
-        response = objUpdNaturalPerson.updateNaturalPerson(strEnvType, "Bearer", jwtToken, mapUpdPersonDetails, scenarioContext);
-    }
-
-// Update Natural Person
-    public Response updateNaturalPerson(String strEnvType, String strBearerToken, String strJwtToken, Map<String, String> mapUpdPersonDetails, ScenarioContext scenarioContext) throws Exception {
-
-        String strUrl = getTYKURL(strEnvType, "TYK.CREATENEWPERSON") + "/{PersonKey}";
-        String strNaturalPersonObjectId = scenarioContext.getContext("naturalPersonObjectId");
-
-        POJOUpdNaturalPersonRequest pojoUpdNaturalPersonRequest = payloads.buildUpdNaturalPersonPayload(mapUpdPersonDetails, scenarioContext);
-        String strRequestBody = objObjectMapper.writeValueAsString(pojoUpdNaturalPersonRequest);
-        objCucumberLogger.PrintStatus("Request for UPDATE Natural Person is: " + strRequestBody);
-
-        ExtentCucumberAdapter.addTestStepLog("Sending request to update Natural Person");
-
-        Map<String, String> mapPathParams = new HashMap<>();
-        mapPathParams.put("PersonKey", strNaturalPersonObjectId);
-
-        Response objResponse = sendPatchRequest(strUrl, strBearerToken, strJwtToken, strRequestBody, mapPathParams, null);
-        String strResponseBody = devHelperLibrary.getResponseBody(objResponse);
-        objCucumberLogger.PrintStatus("Response for UPDATE Natural Person is: " + strResponseBody);
-
-        // Avoid parsing if response is not JSON
-        if (objResponse.getContentType() != null && objResponse.getContentType().contains("application/json")) {
-            String strUpdNaturalPersonObjectId = jsonHelper.extractStringField(objResponse, "objectId");
-            String strUpdNaturalPersonOrderId = jsonHelper.extractStringField(objResponse, "orderId");
-            String strUpdNaturalPersonUuid = pojoUpdNaturalPersonRequest.getStrUuid();
-            String strUpdNaturalPersonBirthDate = pojoUpdNaturalPersonRequest.getStrBirthDate();
-
-            List<POJOTaxResidence> taxResidences = pojoUpdNaturalPersonRequest.getLstTaxResidences();
-            if (taxResidences != null && !taxResidences.isEmpty()) {
-                String strUpdNaturalPersonTaxNumber = taxResidences.get(0).getStrTaxNumber();
-                scenarioContext.setContext("updNaturalPersonTaxNumber", strUpdNaturalPersonTaxNumber);
-            }
-
-            scenarioContext.setContext("updNaturalPersonObjectId", strUpdNaturalPersonObjectId);
-            scenarioContext.setContext("updNaturalPersonOrderId", strUpdNaturalPersonOrderId);
-            scenarioContext.setContext("updNaturalPersonUuid", strUpdNaturalPersonUuid);
-            scenarioContext.setContext("updNaturalPersonBirthDate", strUpdNaturalPersonBirthDate);
-        }
-
-public POJOUpdNaturalPersonRequest buildUpdNaturalPersonPayload(Map<String, String> mapPersonDetails, ScenarioContext scenarioContext) {
-        POJOUpdNaturalPersonRequest updNaturalPerson = new POJOUpdNaturalPersonRequest();
-
-        String strDocumentObjectId = scenarioContext.getContext("documentObjectId");
-        String strAddressObjectId = scenarioContext.getContext("addressObjectId");
-
-        updNaturalPerson.setStrUuid(UUID.randomUUID().toString().substring(0, 7));
-//        updNaturalPerson.setStrId(payloadHelper.normalize(mapPersonDetails.get("id")));
-        updNaturalPerson.setStrSubType(payloadHelper.normalize(mapPersonDetails.get("subType")));
-        updNaturalPerson.setStrDomiCountry(payloadHelper.normalize(mapPersonDetails.get("domiCountry")));
-        updNaturalPerson.setStrFirstName(payloadHelper.normalize(mapPersonDetails.get("firstName")));
-        updNaturalPerson.setStrMiddleName(payloadHelper.normalize(mapPersonDetails.get("middleName")));
-        updNaturalPerson.setStrLastName(payloadHelper.normalize(mapPersonDetails.get("lastName")));
-        updNaturalPerson.setStrBirthDate(payloadHelper.resolveDate("UpdateNaturalPerson", "birthDate", mapPersonDetails.get("birthDate")));
-        updNaturalPerson.setStrGender(payloadHelper.normalize(mapPersonDetails.get("gender")));
-        updNaturalPerson.setLstNationalities(payloadHelper.parseNationalities(mapPersonDetails.get("nationalities")));
-        updNaturalPerson.setStrTitle(payloadHelper.normalize(mapPersonDetails.get("title")));
-        updNaturalPerson.setStrBirthPlace(payloadHelper.normalize(mapPersonDetails.get("birthPlace")));
-        updNaturalPerson.setStrBirthCountry(payloadHelper.normalize(mapPersonDetails.get("birthCountry")));
-        updNaturalPerson.setLstElectronicAddresses(buildElectronicAddresses(mapPersonDetails.get("electronicAddresses")));
-        payloadHelper.applyBooleanField(mapPersonDetails.get("isEmployee"), "isEmployee", updNaturalPerson);
-        updNaturalPerson.setLstTaxResidences(buildTaxResidences(mapPersonDetails.get("taxResidences")));
-        updNaturalPerson.setLstDocumentationIdentity(buildDocumentationIdentity(
-                mapPersonDetails.get("documentationIdentity"), "UpdateNaturalPerson"
-        ));
-        updNaturalPerson.setStrPepAssociationCountry(payloadHelper.normalize(mapPersonDetails.get("pepAssociationCountry")));
-        updNaturalPerson.setStrPepClassificationReason(payloadHelper.normalize(mapPersonDetails.get("pepClassificationReason")));
-        updNaturalPerson.setStrPepCategory(payloadHelper.normalize(mapPersonDetails.get("pepCategory")));
-        payloadHelper.applyBooleanField(mapPersonDetails.get("isMarketingOptOut"), "isMarketingOptOut", updNaturalPerson);
-        updNaturalPerson.setStrFatcaStatus(payloadHelper.normalize(mapPersonDetails.get("fatcaStatus")));
-        updNaturalPerson.setStrCrsType(payloadHelper.normalize(mapPersonDetails.get("crsType")));
-        updNaturalPerson.setStrUkTaxResidenceFromDate(payloadHelper.resolveDate("UpdateNaturalPerson", "ukTaxResidenceFromDate", mapPersonDetails.get("ukTaxResidenceFromDate")));
-        payloadHelper.applyBooleanField(mapPersonDetails.get("hasTaxAvoidanceSchemes"), "hasTaxAvoidanceSchemes", updNaturalPerson);
-        payloadHelper.applyBooleanField(mapPersonDetails.get("isHoldingBearerShares"), "isHoldingBearerShares", updNaturalPerson);
-        payloadHelper.applyBooleanField(mapPersonDetails.get("hasInvestableAssets10M"), "hasInvestableAssets10M", updNaturalPerson);
-        payloadHelper.applyBooleanField(mapPersonDetails.get("hasHistoricTaxIssues"), "hasHistoricTaxIssues", updNaturalPerson);
-        payloadHelper.applyBooleanField(mapPersonDetails.get("hasTaxChgDomiStatus"), "hasTaxChgDomiStatus", updNaturalPerson);
-        payloadHelper.applyBooleanField(mapPersonDetails.get("hasTaxChgUkDomiStatus"), "hasTaxChgUkDomiStatus", updNaturalPerson);
-        payloadHelper.applyBooleanField(mapPersonDetails.get("hasTaxPrevClaimRemitanceBasis"), "hasTaxPrevClaimRemitanceBasis", updNaturalPerson);
-        payloadHelper.applyBooleanField(mapPersonDetails.get("hasTaxIntendClaimRemitanceBasis"), "hasTaxIntendClaimRemitanceBasis", updNaturalPerson);
-        updNaturalPerson.setLstAccountants(buildAccountants(mapPersonDetails.get("accountants"), scenarioContext));
-        payloadHelper.applyBooleanField(mapPersonDetails.get("hasTravelProtection"), "hasTravelProtection", updNaturalPerson);
-        payloadHelper.applyBooleanField(mapPersonDetails.get("hasCouttsOnline"), "hasCouttsOnline", updNaturalPerson);
-        payloadHelper.applyBooleanField(mapPersonDetails.get("hasCouttsId"), "hasCouttsId", updNaturalPerson);
-        updNaturalPerson.setLstAssociations(buildAssociations(mapPersonDetails.get("associations"), scenarioContext));
-
-        String resolvedStrQuestionId = payloadHelper.resolveId(mapPersonDetails.get("idQuestionId"), strDocumentObjectId);
-        updNaturalPerson.setStrIdQuestionId(resolvedStrQuestionId);
-
-        String resolvedCorrespondanceAddressId = payloadHelper.resolveId(mapPersonDetails.get("correspondanceAddressId"), strAddressObjectId);
-        updNaturalPerson.setStrCorrespondanceAddressId(resolvedCorrespondanceAddressId);
-
-        return updNaturalPerson;
-    }
-
-
-    public List<POJOAssociation> buildAssociations(String input, ScenarioContext scenarioContext) {
-        List<String> entries = payloadHelper.splitListInput(input, "\\s*,\\s*");
-        if (entries == null) return null; // NA case
-
-        List<POJOAssociation> listAssociations = new ArrayList<>();
-        for (String entry : entries) {
-            String[] parts = entry.split(";");
-            POJOAssociation assoc = new POJOAssociation();
-
-            String strNaturalPersonObjectId = scenarioContext.getContext("naturalPersonObjectIdAss1");
-            String strlegalPersonObjectId = scenarioContext.getContext("legalPersonObjectIdAss1");
-
-            assoc.setStrPersonId(payloadHelper.resolveId(parts[0], strlegalPersonObjectId));
-            assoc.setStrRole(payloadHelper.normalize(parts[1]));
-            listAssociations.add(assoc);
-        }
-        return listAssociations;
-    }
-
-
+// let resolveId handle EMPTY / NA / pass-through
+assoc.setStrPersonId(payloadHelper.resolveId(idCandidate, resolvedValue));
