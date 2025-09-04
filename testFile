@@ -1,90 +1,23 @@
-public POJOMoneyAccountRequest buildMoneyAccountPayload(Map<String, String> mapMoneyAccountDetails, ScenarioContext scenarioContext) {
-        POJOMoneyAccountRequest moneyAccount = new POJOMoneyAccountRequest();
+public List<String> resolveIdList(String input, ScenarioContext scenarioContext) {
+    if (input == null || input.trim().isEmpty()) {
+        return Collections.emptyList();
+    }
 
-        String strAddressObjectId = scenarioContext.getContext("addressObjectId");
-//        String strAddressObjectId = scenarioContext.getContext("addressObjectIdAdhoc");
+    // Special case: full list of addresses
+    if ("ADDRESS_OBJECT_ID_LIST".equalsIgnoreCase(input.trim())) {
         @SuppressWarnings("unchecked")
         List<String> addressObjectIds = (List<String>) scenarioContext.getContext("addressObjectIds");
-
-        moneyAccount.setStrUuid(UUID.randomUUID().toString().substring(0, 7));
-
-        String ownerId = payloadHelper.resolveId(mapMoneyAccountDetails.get("ownerId"), scenarioContext);
-        moneyAccount.setStrOwnerId((ownerId));
-
-        moneyAccount.setStrType(payloadHelper.normalize(mapMoneyAccountDetails.get("type")));
-        moneyAccount.setStrCurrency(payloadHelper.normalize(mapMoneyAccountDetails.get("currency")));
-        moneyAccount.setStrRubric(payloadHelper.normalize(mapMoneyAccountDetails.get("rubric")));
-
-        List<String> resolvedAddressIds = payloadHelper.resolveIdList(mapMoneyAccountDetails.get("addressIds"), strAddressObjectId, addressObjectIds);
-        moneyAccount.setLstAddressIds(resolvedAddressIds);
-
-        payloadHelper.applyBigDecimalField(mapMoneyAccountDetails.get("mailingOffsetDay"), "mailingOffsetDay", moneyAccount);
-        payloadHelper.applyBigDecimalField(mapMoneyAccountDetails.get("mailingOffsetMonth"), "mailingOffsetMonth", moneyAccount);
-        payloadHelper.applyBigDecimalField(mapMoneyAccountDetails.get("minimalNoticeDays"), "minimalNoticeDays", moneyAccount);
-        payloadHelper.applyBooleanField(mapMoneyAccountDetails.get("isMailingPaper"), "isMailingPaper", moneyAccount);
-
-        return moneyAccount;
+        return addressObjectIds != null ? addressObjectIds : Collections.emptyList();
     }
 
-I have updated resolve ID below as per your suggestion - but help me refine resolveIdlist also it is whoing error - 
+    // Resolve individual tokens via resolveId
+    return Arrays.stream(input.split(","))
+            .map(id -> resolveId(id.trim(), scenarioContext))
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
+}
 
-   public String resolveId(String input, ScenarioContext scenarioContext) {
-        if (input == null || input.trim().isEmpty()) {
-            return "";
-        }
-
-        String token = input.trim().toUpperCase();
-
-        switch (token) {
-            case "EMPTY":
-                return "";
-            case "NA":
-                return null;
-
-            case "NATURAL_PERSON_OBJECT_ID":
-                return scenarioContext.getContext("naturalPersonObjectId");
-
-            case "NATURAL_PERSON_OBJECT_ID_1":
-                return scenarioContext.getContext("naturalPersonObjectIdAss1");
-
-            case "NATURAL_PERSON_OBJECT_ID_2":
-                return scenarioContext.getContext("naturalPersonObjectIdAss2");
-
-            case "LEGAL_PERSON_OBJECT_ID":
-                return scenarioContext.getContext("legalPersonObjectId");
-
-            case "LEGAL_PERSON_OBJECT_ID_1":
-                return scenarioContext.getContext("legalPersonObjectIdAss1");
-
-            case "CONTAINER_OBJECT_ID":
-                return scenarioContext.getContext("containerObjectId");
-
-            case "ADDRESS_OBJECT_ID":
-                return scenarioContext.getContext("addressObjectId");
-
-            case "MONEY_ACCOUNT_OBJECT_ID":
-                return scenarioContext.getContext("moneyAccountObjectId");
-
-            case "DOCUMENT_OBJECT_ID":
-                return scenarioContext.getContext("documentObjectId");
-
-            default:
-                return input;
-        }
-    }
-
-public List<String> resolveIdList(String input, String fallbackSingleAddressId, List<String> addressObjectIds) {
-        if (input == null || input.trim().isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        if ("ADDRESS_OBJECT_ID_LIST".equalsIgnoreCase(input.trim())) {
-            return addressObjectIds != null ? addressObjectIds : Collections.emptyList();
-        }
-
-        // Resolve individual tokens
-        return Arrays.stream(input.split(","))
-                .map(id -> resolveId(id.trim(), scenarioContext))
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-    }
+List<String> resolvedAddressIds = payloadHelper.resolveIdList(
+    mapMoneyAccountDetails.get("addressIds"), scenarioContext
+);
+moneyAccount.setLstAddressIds(resolvedAddressIds);
