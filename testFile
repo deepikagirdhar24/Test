@@ -1,2 +1,2 @@
-git checkout --ours src/test/resources/Features/UpdateNaturalPerson.feature
-git add src/test/resources/Features/UpdateNaturalPerson.feature
+PS C:\Users\girdd\IdeaProjects\icosapitests> git checkout --ours src/test/resources/Features/UpdateNaturalPerson.feature
+error: path 'src/test/resources/Features/UpdateNaturalPerson.feature' does not have our version
