@@ -1,22 +1,2 @@
-   public List<POJOAccountant> buildAccountants(String input, ScenarioContext scenarioContext) {
-        List<String> entries = payloadHelper.splitListInput(input, "\\s*,\\s*");
-        if (entries == null) return null; // NA case
-
-        List<POJOAccountant> listAccountants = new ArrayList<>();
-        for (String entry : entries) {
-            String[] parts = entry.split(";");
-            POJOAccountant accountant = new POJOAccountant();
-
-            accountant.setStrName(payloadHelper.normalize(parts[0]));
-            accountant.setStrCompanyId(payloadHelper.resolveId(parts[1], scenarioContext));
-            accountant.setStrRole(payloadHelper.normalize(parts[2]));
-            accountant.setStrAddressId(payloadHelper.resolveId(parts[1], scenarioContext));
-            accountant.setStrEmail(payloadHelper.normalize(parts[4]));
-            payloadHelper.applyBooleanField(parts[5], "hasConsent", accountant);
-            payloadHelper.applyBooleanField(parts[6], "doSendCopy", accountant);
-            listAccountants.add(accountant);
-        }
-        return listAccountants;
-    }
-
-is it wrong ?
+git checkout --ours src/test/resources/Features/UpdateNaturalPerson.feature
+git add src/test/resources/Features/UpdateNaturalPerson.feature
