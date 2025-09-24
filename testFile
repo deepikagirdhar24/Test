@@ -1,2 +1,3665 @@
-git checkout --theirs src/test/resources/Features/UpdateNaturalPerson.feature
-git add src/test/resources/Features/UpdateNaturalPerson.feature
+Thsi is the response - 
+
+{
+    "id": "DIASSBD",
+    "name": "Steve Dias",
+    "privateBanker": {
+        "id": "DIASSBD",
+        "name": "Steve Dias",
+        "teams": [
+            {
+                "id": "£H6_0_00_00_048",
+                "name": "PB UK Professional Practices*048"
+            },
+            {
+                "id": "£H6_0_00_00_016",
+                "name": "PB UK Entrepreneurs 10*016"
+            }
+        ]
+    },
+    "businessUnits": [
+        {
+            "bu": "PUBL",
+            "roles": [
+                {
+                    "name": "R_AM_BANK_TEST"
+                },
+                {
+                    "name": "R_TECHNICAL_ACCOUNTING"
+                },
+                {
+                    "name": "R_TECHNICAL_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_CREDIT"
+                },
+                {
+                    "name": "R_TECHNICAL_CS_VIEW"
+                },
+                {
+                    "name": "R_TECHNICAL_CTACT"
+                },
+                {
+                    "name": "R_TECHNICAL_DYN_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_EDITEMP"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_FX"
+                },
+                {
+                    "name": "R_TECHNICAL_JOB"
+                },
+                {
+                    "name": "R_TECHNICAL_MINSTR"
+                },
+                {
+                    "name": "R_TECHNICAL_MMKT"
+                },
+                {
+                    "name": "R_TECHNICAL_MOVE_DATE"
+                },
+                {
+                    "name": "R_TECHNICAL_POS"
+                },
+                {
+                    "name": "R_TECHNICAL_REMARK"
+                },
+                {
+                    "name": "R_TECHNICAL_RO"
+                },
+                {
+                    "name": "£SENTI_BUSINESS_UNIT"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "£PRT_USERBOX"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAMI"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TPFM"
+                },
+                {
+                    "name": "R_TECHNICAL_SERPIL"
+                },
+                {
+                    "name": "R_TECHNICAL_STEX"
+                },
+                {
+                    "name": "R_TECHNICAL_SUPPORT"
+                },
+                {
+                    "name": "R_TECHNICAL_TSKADM"
+                },
+                {
+                    "name": "R_TECHNICAL_XRATE"
+                },
+                {
+                    "name": "R_AM_OCC_TEST"
+                },
+                {
+                    "name": "R_TECHNICAL_ACCOUNTING"
+                },
+                {
+                    "name": "R_TECHNICAL_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_CREDIT"
+                },
+                {
+                    "name": "R_TECHNICAL_CS_VIEW"
+                },
+                {
+                    "name": "R_TECHNICAL_CTACT"
+                },
+                {
+                    "name": "R_TECHNICAL_DYN_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_EDITEMP"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_FX"
+                },
+                {
+                    "name": "R_TECHNICAL_JOB"
+                },
+                {
+                    "name": "R_TECHNICAL_MINSTR"
+                },
+                {
+                    "name": "R_TECHNICAL_MMKT"
+                },
+                {
+                    "name": "R_TECHNICAL_MOVE_DATE"
+                },
+                {
+                    "name": "R_TECHNICAL_POS"
+                },
+                {
+                    "name": "R_TECHNICAL_REMARK"
+                },
+                {
+                    "name": "R_TECHNICAL_RO"
+                },
+                {
+                    "name": "£SENTI_BUSINESS_UNIT"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "£PRT_USERBOX"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAMI"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TPFM"
+                },
+                {
+                    "name": "R_TECHNICAL_SERPIL"
+                },
+                {
+                    "name": "R_TECHNICAL_STEX"
+                },
+                {
+                    "name": "R_TECHNICAL_SUPPORT"
+                },
+                {
+                    "name": "R_TECHNICAL_TSKADM"
+                },
+                {
+                    "name": "R_TECHNICAL_XRATE"
+                },
+                {
+                    "name": "R_WMP_B_TEST"
+                },
+                {
+                    "name": "R_TECHNICAL_ACCOUNTING"
+                },
+                {
+                    "name": "R_TECHNICAL_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_CREDIT"
+                },
+                {
+                    "name": "R_TECHNICAL_CS_VIEW"
+                },
+                {
+                    "name": "R_TECHNICAL_CTACT"
+                },
+                {
+                    "name": "R_TECHNICAL_DYN_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_EDITEMP"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_FX"
+                },
+                {
+                    "name": "R_TECHNICAL_JOB"
+                },
+                {
+                    "name": "R_TECHNICAL_MINSTR"
+                },
+                {
+                    "name": "R_TECHNICAL_MMKT"
+                },
+                {
+                    "name": "R_TECHNICAL_MOVE_DATE"
+                },
+                {
+                    "name": "R_TECHNICAL_POS"
+                },
+                {
+                    "name": "R_TECHNICAL_REMARK"
+                },
+                {
+                    "name": "R_TECHNICAL_RO"
+                },
+                {
+                    "name": "£SENTI_BUSINESS_UNIT"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "£PRT_USERBOX"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAMI"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TPFM"
+                },
+                {
+                    "name": "R_TECHNICAL_SERPIL"
+                },
+                {
+                    "name": "R_TECHNICAL_STEX"
+                },
+                {
+                    "name": "R_TECHNICAL_SUPPORT"
+                },
+                {
+                    "name": "R_TECHNICAL_TSKADM"
+                },
+                {
+                    "name": "R_TECHNICAL_XRATE"
+                },
+                {
+                    "name": "R_WMP_T_SERVICES_TEST"
+                },
+                {
+                    "name": "R_TECHNICAL_ACCOUNTING"
+                },
+                {
+                    "name": "R_TECHNICAL_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_CREDIT"
+                },
+                {
+                    "name": "R_TECHNICAL_CS_VIEW"
+                },
+                {
+                    "name": "R_TECHNICAL_CTACT"
+                },
+                {
+                    "name": "R_TECHNICAL_DYN_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_EDITEMP"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_FX"
+                },
+                {
+                    "name": "R_TECHNICAL_JOB"
+                },
+                {
+                    "name": "R_TECHNICAL_MINSTR"
+                },
+                {
+                    "name": "R_TECHNICAL_MMKT"
+                },
+                {
+                    "name": "R_TECHNICAL_MOVE_DATE"
+                },
+                {
+                    "name": "R_TECHNICAL_POS"
+                },
+                {
+                    "name": "R_TECHNICAL_REMARK"
+                },
+                {
+                    "name": "R_TECHNICAL_RO"
+                },
+                {
+                    "name": "£SENTI_BUSINESS_UNIT"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "£PRT_USERBOX"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAMI"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TPFM"
+                },
+                {
+                    "name": "R_TECHNICAL_SERPIL"
+                },
+                {
+                    "name": "R_TECHNICAL_STEX"
+                },
+                {
+                    "name": "R_TECHNICAL_SUPPORT"
+                },
+                {
+                    "name": "R_TECHNICAL_TSKADM"
+                },
+                {
+                    "name": "R_TECHNICAL_XRATE"
+                }
+            ]
+        },
+        {
+            "bu": "RBS.CUK",
+            "roles": [
+                {
+                    "name": "R_AM_BANK_TEST"
+                },
+                {
+                    "name": "R_TECHNICAL_ACCOUNTING"
+                },
+                {
+                    "name": "R_TECHNICAL_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_CREDIT"
+                },
+                {
+                    "name": "R_TECHNICAL_CS_VIEW"
+                },
+                {
+                    "name": "R_TECHNICAL_CTACT"
+                },
+                {
+                    "name": "R_TECHNICAL_DYN_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_EDITEMP"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_FX"
+                },
+                {
+                    "name": "R_TECHNICAL_JOB"
+                },
+                {
+                    "name": "R_TECHNICAL_MINSTR"
+                },
+                {
+                    "name": "R_TECHNICAL_MMKT"
+                },
+                {
+                    "name": "R_TECHNICAL_MOVE_DATE"
+                },
+                {
+                    "name": "R_TECHNICAL_POS"
+                },
+                {
+                    "name": "R_TECHNICAL_REMARK"
+                },
+                {
+                    "name": "R_TECHNICAL_RO"
+                },
+                {
+                    "name": "£SENTI_BUSINESS_UNIT"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "£PRT_USERBOX"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAMI"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TPFM"
+                },
+                {
+                    "name": "R_TECHNICAL_SERPIL"
+                },
+                {
+                    "name": "R_TECHNICAL_STEX"
+                },
+                {
+                    "name": "R_TECHNICAL_SUPPORT"
+                },
+                {
+                    "name": "R_TECHNICAL_TSKADM"
+                },
+                {
+                    "name": "R_TECHNICAL_XRATE"
+                },
+                {
+                    "name": "R_AM_OCC_TEST"
+                },
+                {
+                    "name": "R_TECHNICAL_ACCOUNTING"
+                },
+                {
+                    "name": "R_TECHNICAL_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_CREDIT"
+                },
+                {
+                    "name": "R_TECHNICAL_CS_VIEW"
+                },
+                {
+                    "name": "R_TECHNICAL_CTACT"
+                },
+                {
+                    "name": "R_TECHNICAL_DYN_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_EDITEMP"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_FX"
+                },
+                {
+                    "name": "R_TECHNICAL_JOB"
+                },
+                {
+                    "name": "R_TECHNICAL_MINSTR"
+                },
+                {
+                    "name": "R_TECHNICAL_MMKT"
+                },
+                {
+                    "name": "R_TECHNICAL_MOVE_DATE"
+                },
+                {
+                    "name": "R_TECHNICAL_POS"
+                },
+                {
+                    "name": "R_TECHNICAL_REMARK"
+                },
+                {
+                    "name": "R_TECHNICAL_RO"
+                },
+                {
+                    "name": "£SENTI_BUSINESS_UNIT"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "£PRT_USERBOX"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAMI"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TPFM"
+                },
+                {
+                    "name": "R_TECHNICAL_SERPIL"
+                },
+                {
+                    "name": "R_TECHNICAL_STEX"
+                },
+                {
+                    "name": "R_TECHNICAL_SUPPORT"
+                },
+                {
+                    "name": "R_TECHNICAL_TSKADM"
+                },
+                {
+                    "name": "R_TECHNICAL_XRATE"
+                },
+                {
+                    "name": "R_GEN_C24_CHG_TEST"
+                },
+                {
+                    "name": "R_GEN_COMPL_BAS"
+                },
+                {
+                    "name": "R_GEN_RPA_CHG_TEST"
+                },
+                {
+                    "name": "R_OB_SUPP_CENT_COUTTS"
+                },
+                {
+                    "name": "R_GEN_APPROVE_CC"
+                },
+                {
+                    "name": "R_GEN_PROCESS_HUB"
+                },
+                {
+                    "name": "R_GEN_RMWP"
+                },
+                {
+                    "name": "R_GEN_SEC_MSG"
+                },
+                {
+                    "name": "R_GEN_WORK_MGMT_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_CTACT"
+                },
+                {
+                    "name": "R_TECHNICAL_EXPORT_RESTR"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_SERVICE_DESK_TEST"
+                },
+                {
+                    "name": "R_TECHNICAL_ACCOUNTING"
+                },
+                {
+                    "name": "R_TECHNICAL_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_CREDIT"
+                },
+                {
+                    "name": "R_TECHNICAL_CS_VIEW"
+                },
+                {
+                    "name": "R_TECHNICAL_CTACT"
+                },
+                {
+                    "name": "R_TECHNICAL_DYN_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_EDITEMP"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_FX"
+                },
+                {
+                    "name": "R_TECHNICAL_JOB"
+                },
+                {
+                    "name": "R_TECHNICAL_MINSTR"
+                },
+                {
+                    "name": "R_TECHNICAL_MMKT"
+                },
+                {
+                    "name": "R_TECHNICAL_MOVE_DATE"
+                },
+                {
+                    "name": "R_TECHNICAL_POS"
+                },
+                {
+                    "name": "R_TECHNICAL_REMARK"
+                },
+                {
+                    "name": "R_TECHNICAL_RO"
+                },
+                {
+                    "name": "£SENTI_BUSINESS_UNIT"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "£PRT_USERBOX"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAMI"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TPFM"
+                },
+                {
+                    "name": "R_TECHNICAL_SERPIL"
+                },
+                {
+                    "name": "R_TECHNICAL_STEX"
+                },
+                {
+                    "name": "R_TECHNICAL_SUPPORT"
+                },
+                {
+                    "name": "R_TECHNICAL_TSKADM"
+                },
+                {
+                    "name": "R_TECHNICAL_XRATE"
+                },
+                {
+                    "name": "R_VIEW_EXPERT_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_WMP_B_TEST"
+                },
+                {
+                    "name": "R_TECHNICAL_ACCOUNTING"
+                },
+                {
+                    "name": "R_TECHNICAL_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_CREDIT"
+                },
+                {
+                    "name": "R_TECHNICAL_CS_VIEW"
+                },
+                {
+                    "name": "R_TECHNICAL_CTACT"
+                },
+                {
+                    "name": "R_TECHNICAL_DYN_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_EDITEMP"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_FX"
+                },
+                {
+                    "name": "R_TECHNICAL_JOB"
+                },
+                {
+                    "name": "R_TECHNICAL_MINSTR"
+                },
+                {
+                    "name": "R_TECHNICAL_MMKT"
+                },
+                {
+                    "name": "R_TECHNICAL_MOVE_DATE"
+                },
+                {
+                    "name": "R_TECHNICAL_POS"
+                },
+                {
+                    "name": "R_TECHNICAL_REMARK"
+                },
+                {
+                    "name": "R_TECHNICAL_RO"
+                },
+                {
+                    "name": "£SENTI_BUSINESS_UNIT"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "£PRT_USERBOX"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAMI"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TPFM"
+                },
+                {
+                    "name": "R_TECHNICAL_SERPIL"
+                },
+                {
+                    "name": "R_TECHNICAL_STEX"
+                },
+                {
+                    "name": "R_TECHNICAL_SUPPORT"
+                },
+                {
+                    "name": "R_TECHNICAL_TSKADM"
+                },
+                {
+                    "name": "R_TECHNICAL_XRATE"
+                },
+                {
+                    "name": "R_WMP_T_SERVICES_TEST"
+                },
+                {
+                    "name": "R_TECHNICAL_ACCOUNTING"
+                },
+                {
+                    "name": "R_TECHNICAL_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_CREDIT"
+                },
+                {
+                    "name": "R_TECHNICAL_CS_VIEW"
+                },
+                {
+                    "name": "R_TECHNICAL_CTACT"
+                },
+                {
+                    "name": "R_TECHNICAL_DYN_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_EDITEMP"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_FX"
+                },
+                {
+                    "name": "R_TECHNICAL_JOB"
+                },
+                {
+                    "name": "R_TECHNICAL_MINSTR"
+                },
+                {
+                    "name": "R_TECHNICAL_MMKT"
+                },
+                {
+                    "name": "R_TECHNICAL_MOVE_DATE"
+                },
+                {
+                    "name": "R_TECHNICAL_POS"
+                },
+                {
+                    "name": "R_TECHNICAL_REMARK"
+                },
+                {
+                    "name": "R_TECHNICAL_RO"
+                },
+                {
+                    "name": "£SENTI_BUSINESS_UNIT"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "£PRT_USERBOX"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAMI"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TPFM"
+                },
+                {
+                    "name": "R_TECHNICAL_SERPIL"
+                },
+                {
+                    "name": "R_TECHNICAL_STEX"
+                },
+                {
+                    "name": "R_TECHNICAL_SUPPORT"
+                },
+                {
+                    "name": "R_TECHNICAL_TSKADM"
+                },
+                {
+                    "name": "R_TECHNICAL_XRATE"
+                },
+                {
+                    "name": "£PRT_LON"
+                },
+                {
+                    "name": "£STD_COUTTS"
+                },
+                {
+                    "name": "£GRP_CUK_ONEVIEW_SEC"
+                },
+                {
+                    "name": "£PRT_STD_COUTTS"
+                },
+                {
+                    "name": "£SENTI_BUSINESS_UNIT"
+                },
+                {
+                    "name": "£SENTI_CLT_DOCM_COUTTS"
+                },
+                {
+                    "name": "£SENTI_CMAF_COUTTS"
+                },
+                {
+                    "name": "£SENTI_EBANK_DOCM_COUTTS"
+                },
+                {
+                    "name": "£SENTI_GRP_CONT_NV_COUTTS"
+                },
+                {
+                    "name": "£SENTI_KYC_DOCM_COUTTS"
+                }
+            ]
+        },
+        {
+            "bu": "RBS.ADA",
+            "roles": [
+                {
+                    "name": "R_AM_BANK_TEST"
+                },
+                {
+                    "name": "R_TECHNICAL_ACCOUNTING"
+                },
+                {
+                    "name": "R_TECHNICAL_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_CREDIT"
+                },
+                {
+                    "name": "R_TECHNICAL_CS_VIEW"
+                },
+                {
+                    "name": "R_TECHNICAL_CTACT"
+                },
+                {
+                    "name": "R_TECHNICAL_DYN_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_EDITEMP"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_FX"
+                },
+                {
+                    "name": "R_TECHNICAL_JOB"
+                },
+                {
+                    "name": "R_TECHNICAL_MINSTR"
+                },
+                {
+                    "name": "R_TECHNICAL_MMKT"
+                },
+                {
+                    "name": "R_TECHNICAL_MOVE_DATE"
+                },
+                {
+                    "name": "R_TECHNICAL_POS"
+                },
+                {
+                    "name": "R_TECHNICAL_REMARK"
+                },
+                {
+                    "name": "R_TECHNICAL_RO"
+                },
+                {
+                    "name": "£SENTI_BUSINESS_UNIT"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "£PRT_USERBOX"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAMI"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TPFM"
+                },
+                {
+                    "name": "R_TECHNICAL_SERPIL"
+                },
+                {
+                    "name": "R_TECHNICAL_STEX"
+                },
+                {
+                    "name": "R_TECHNICAL_SUPPORT"
+                },
+                {
+                    "name": "R_TECHNICAL_TSKADM"
+                },
+                {
+                    "name": "R_TECHNICAL_XRATE"
+                },
+                {
+                    "name": "R_AM_OCC_TEST"
+                },
+                {
+                    "name": "R_TECHNICAL_ACCOUNTING"
+                },
+                {
+                    "name": "R_TECHNICAL_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_CREDIT"
+                },
+                {
+                    "name": "R_TECHNICAL_CS_VIEW"
+                },
+                {
+                    "name": "R_TECHNICAL_CTACT"
+                },
+                {
+                    "name": "R_TECHNICAL_DYN_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_EDITEMP"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_FX"
+                },
+                {
+                    "name": "R_TECHNICAL_JOB"
+                },
+                {
+                    "name": "R_TECHNICAL_MINSTR"
+                },
+                {
+                    "name": "R_TECHNICAL_MMKT"
+                },
+                {
+                    "name": "R_TECHNICAL_MOVE_DATE"
+                },
+                {
+                    "name": "R_TECHNICAL_POS"
+                },
+                {
+                    "name": "R_TECHNICAL_REMARK"
+                },
+                {
+                    "name": "R_TECHNICAL_RO"
+                },
+                {
+                    "name": "£SENTI_BUSINESS_UNIT"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "£PRT_USERBOX"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAMI"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TPFM"
+                },
+                {
+                    "name": "R_TECHNICAL_SERPIL"
+                },
+                {
+                    "name": "R_TECHNICAL_STEX"
+                },
+                {
+                    "name": "R_TECHNICAL_SUPPORT"
+                },
+                {
+                    "name": "R_TECHNICAL_TSKADM"
+                },
+                {
+                    "name": "R_TECHNICAL_XRATE"
+                },
+                {
+                    "name": "R_GEN_RPA_CHG_TEST"
+                },
+                {
+                    "name": "R_WMP_B_TEST"
+                },
+                {
+                    "name": "R_TECHNICAL_ACCOUNTING"
+                },
+                {
+                    "name": "R_TECHNICAL_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_CREDIT"
+                },
+                {
+                    "name": "R_TECHNICAL_CS_VIEW"
+                },
+                {
+                    "name": "R_TECHNICAL_CTACT"
+                },
+                {
+                    "name": "R_TECHNICAL_DYN_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_EDITEMP"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_FX"
+                },
+                {
+                    "name": "R_TECHNICAL_JOB"
+                },
+                {
+                    "name": "R_TECHNICAL_MINSTR"
+                },
+                {
+                    "name": "R_TECHNICAL_MMKT"
+                },
+                {
+                    "name": "R_TECHNICAL_MOVE_DATE"
+                },
+                {
+                    "name": "R_TECHNICAL_POS"
+                },
+                {
+                    "name": "R_TECHNICAL_REMARK"
+                },
+                {
+                    "name": "R_TECHNICAL_RO"
+                },
+                {
+                    "name": "£SENTI_BUSINESS_UNIT"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "£PRT_USERBOX"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAMI"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TPFM"
+                },
+                {
+                    "name": "R_TECHNICAL_SERPIL"
+                },
+                {
+                    "name": "R_TECHNICAL_STEX"
+                },
+                {
+                    "name": "R_TECHNICAL_SUPPORT"
+                },
+                {
+                    "name": "R_TECHNICAL_TSKADM"
+                },
+                {
+                    "name": "R_TECHNICAL_XRATE"
+                },
+                {
+                    "name": "R_WMP_T_SERVICES_TEST"
+                },
+                {
+                    "name": "R_TECHNICAL_ACCOUNTING"
+                },
+                {
+                    "name": "R_TECHNICAL_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_CREDIT"
+                },
+                {
+                    "name": "R_TECHNICAL_CS_VIEW"
+                },
+                {
+                    "name": "R_TECHNICAL_CTACT"
+                },
+                {
+                    "name": "R_TECHNICAL_DYN_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_EDITEMP"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_FX"
+                },
+                {
+                    "name": "R_TECHNICAL_JOB"
+                },
+                {
+                    "name": "R_TECHNICAL_MINSTR"
+                },
+                {
+                    "name": "R_TECHNICAL_MMKT"
+                },
+                {
+                    "name": "R_TECHNICAL_MOVE_DATE"
+                },
+                {
+                    "name": "R_TECHNICAL_POS"
+                },
+                {
+                    "name": "R_TECHNICAL_REMARK"
+                },
+                {
+                    "name": "R_TECHNICAL_RO"
+                },
+                {
+                    "name": "£SENTI_BUSINESS_UNIT"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "£PRT_USERBOX"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAMI"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TPFM"
+                },
+                {
+                    "name": "R_TECHNICAL_SERPIL"
+                },
+                {
+                    "name": "R_TECHNICAL_STEX"
+                },
+                {
+                    "name": "R_TECHNICAL_SUPPORT"
+                },
+                {
+                    "name": "R_TECHNICAL_TSKADM"
+                },
+                {
+                    "name": "R_TECHNICAL_XRATE"
+                }
+            ]
+        },
+        {
+            "bu": "RBS.PBA",
+            "roles": [
+                {
+                    "name": "R_AML_COUTTS"
+                },
+                {
+                    "name": "R_GEN_PROCESS_HUB"
+                },
+                {
+                    "name": "R_GEN_WORK_MGMT_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_REMARK"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_AM_BANK_TEST"
+                },
+                {
+                    "name": "R_TECHNICAL_ACCOUNTING"
+                },
+                {
+                    "name": "R_TECHNICAL_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_CREDIT"
+                },
+                {
+                    "name": "R_TECHNICAL_CS_VIEW"
+                },
+                {
+                    "name": "R_TECHNICAL_CTACT"
+                },
+                {
+                    "name": "R_TECHNICAL_DYN_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_EDITEMP"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_FX"
+                },
+                {
+                    "name": "R_TECHNICAL_JOB"
+                },
+                {
+                    "name": "R_TECHNICAL_MINSTR"
+                },
+                {
+                    "name": "R_TECHNICAL_MMKT"
+                },
+                {
+                    "name": "R_TECHNICAL_MOVE_DATE"
+                },
+                {
+                    "name": "R_TECHNICAL_POS"
+                },
+                {
+                    "name": "R_TECHNICAL_REMARK"
+                },
+                {
+                    "name": "R_TECHNICAL_RO"
+                },
+                {
+                    "name": "£SENTI_BUSINESS_UNIT"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "£PRT_USERBOX"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAMI"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TPFM"
+                },
+                {
+                    "name": "R_TECHNICAL_SERPIL"
+                },
+                {
+                    "name": "R_TECHNICAL_STEX"
+                },
+                {
+                    "name": "R_TECHNICAL_SUPPORT"
+                },
+                {
+                    "name": "R_TECHNICAL_TSKADM"
+                },
+                {
+                    "name": "R_TECHNICAL_XRATE"
+                },
+                {
+                    "name": "R_AM_OCC_TEST"
+                },
+                {
+                    "name": "R_TECHNICAL_ACCOUNTING"
+                },
+                {
+                    "name": "R_TECHNICAL_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_CREDIT"
+                },
+                {
+                    "name": "R_TECHNICAL_CS_VIEW"
+                },
+                {
+                    "name": "R_TECHNICAL_CTACT"
+                },
+                {
+                    "name": "R_TECHNICAL_DYN_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_EDITEMP"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_FX"
+                },
+                {
+                    "name": "R_TECHNICAL_JOB"
+                },
+                {
+                    "name": "R_TECHNICAL_MINSTR"
+                },
+                {
+                    "name": "R_TECHNICAL_MMKT"
+                },
+                {
+                    "name": "R_TECHNICAL_MOVE_DATE"
+                },
+                {
+                    "name": "R_TECHNICAL_POS"
+                },
+                {
+                    "name": "R_TECHNICAL_REMARK"
+                },
+                {
+                    "name": "R_TECHNICAL_RO"
+                },
+                {
+                    "name": "£SENTI_BUSINESS_UNIT"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "£PRT_USERBOX"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAMI"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TPFM"
+                },
+                {
+                    "name": "R_TECHNICAL_SERPIL"
+                },
+                {
+                    "name": "R_TECHNICAL_STEX"
+                },
+                {
+                    "name": "R_TECHNICAL_SUPPORT"
+                },
+                {
+                    "name": "R_TECHNICAL_TSKADM"
+                },
+                {
+                    "name": "R_TECHNICAL_XRATE"
+                },
+                {
+                    "name": "R_GEN_RPA_CHG_TEST"
+                },
+                {
+                    "name": "R_WMP_B_TEST"
+                },
+                {
+                    "name": "R_TECHNICAL_ACCOUNTING"
+                },
+                {
+                    "name": "R_TECHNICAL_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_CREDIT"
+                },
+                {
+                    "name": "R_TECHNICAL_CS_VIEW"
+                },
+                {
+                    "name": "R_TECHNICAL_CTACT"
+                },
+                {
+                    "name": "R_TECHNICAL_DYN_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_EDITEMP"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_FX"
+                },
+                {
+                    "name": "R_TECHNICAL_JOB"
+                },
+                {
+                    "name": "R_TECHNICAL_MINSTR"
+                },
+                {
+                    "name": "R_TECHNICAL_MMKT"
+                },
+                {
+                    "name": "R_TECHNICAL_MOVE_DATE"
+                },
+                {
+                    "name": "R_TECHNICAL_POS"
+                },
+                {
+                    "name": "R_TECHNICAL_REMARK"
+                },
+                {
+                    "name": "R_TECHNICAL_RO"
+                },
+                {
+                    "name": "£SENTI_BUSINESS_UNIT"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "£PRT_USERBOX"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAMI"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TPFM"
+                },
+                {
+                    "name": "R_TECHNICAL_SERPIL"
+                },
+                {
+                    "name": "R_TECHNICAL_STEX"
+                },
+                {
+                    "name": "R_TECHNICAL_SUPPORT"
+                },
+                {
+                    "name": "R_TECHNICAL_TSKADM"
+                },
+                {
+                    "name": "R_TECHNICAL_XRATE"
+                },
+                {
+                    "name": "R_WMP_T_SERVICES_TEST"
+                },
+                {
+                    "name": "R_TECHNICAL_ACCOUNTING"
+                },
+                {
+                    "name": "R_TECHNICAL_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_CREDIT"
+                },
+                {
+                    "name": "R_TECHNICAL_CS_VIEW"
+                },
+                {
+                    "name": "R_TECHNICAL_CTACT"
+                },
+                {
+                    "name": "R_TECHNICAL_DYN_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_EDITEMP"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_FX"
+                },
+                {
+                    "name": "R_TECHNICAL_JOB"
+                },
+                {
+                    "name": "R_TECHNICAL_MINSTR"
+                },
+                {
+                    "name": "R_TECHNICAL_MMKT"
+                },
+                {
+                    "name": "R_TECHNICAL_MOVE_DATE"
+                },
+                {
+                    "name": "R_TECHNICAL_POS"
+                },
+                {
+                    "name": "R_TECHNICAL_REMARK"
+                },
+                {
+                    "name": "R_TECHNICAL_RO"
+                },
+                {
+                    "name": "£SENTI_BUSINESS_UNIT"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "£PRT_USERBOX"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAMI"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TPFM"
+                },
+                {
+                    "name": "R_TECHNICAL_SERPIL"
+                },
+                {
+                    "name": "R_TECHNICAL_STEX"
+                },
+                {
+                    "name": "R_TECHNICAL_SUPPORT"
+                },
+                {
+                    "name": "R_TECHNICAL_TSKADM"
+                },
+                {
+                    "name": "R_TECHNICAL_XRATE"
+                }
+            ]
+        },
+        {
+            "bu": "RBS.JER",
+            "roles": [
+                {
+                    "name": "R_AM_BANK_TEST"
+                },
+                {
+                    "name": "R_TECHNICAL_ACCOUNTING"
+                },
+                {
+                    "name": "R_TECHNICAL_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_CREDIT"
+                },
+                {
+                    "name": "R_TECHNICAL_CS_VIEW"
+                },
+                {
+                    "name": "R_TECHNICAL_CTACT"
+                },
+                {
+                    "name": "R_TECHNICAL_DYN_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_EDITEMP"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_FX"
+                },
+                {
+                    "name": "R_TECHNICAL_JOB"
+                },
+                {
+                    "name": "R_TECHNICAL_MINSTR"
+                },
+                {
+                    "name": "R_TECHNICAL_MMKT"
+                },
+                {
+                    "name": "R_TECHNICAL_MOVE_DATE"
+                },
+                {
+                    "name": "R_TECHNICAL_POS"
+                },
+                {
+                    "name": "R_TECHNICAL_REMARK"
+                },
+                {
+                    "name": "R_TECHNICAL_RO"
+                },
+                {
+                    "name": "£SENTI_BUSINESS_UNIT"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "£PRT_USERBOX"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAMI"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TPFM"
+                },
+                {
+                    "name": "R_TECHNICAL_SERPIL"
+                },
+                {
+                    "name": "R_TECHNICAL_STEX"
+                },
+                {
+                    "name": "R_TECHNICAL_SUPPORT"
+                },
+                {
+                    "name": "R_TECHNICAL_TSKADM"
+                },
+                {
+                    "name": "R_TECHNICAL_XRATE"
+                },
+                {
+                    "name": "R_AM_OCC_TEST"
+                },
+                {
+                    "name": "R_TECHNICAL_ACCOUNTING"
+                },
+                {
+                    "name": "R_TECHNICAL_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_CREDIT"
+                },
+                {
+                    "name": "R_TECHNICAL_CS_VIEW"
+                },
+                {
+                    "name": "R_TECHNICAL_CTACT"
+                },
+                {
+                    "name": "R_TECHNICAL_DYN_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_EDITEMP"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_FX"
+                },
+                {
+                    "name": "R_TECHNICAL_JOB"
+                },
+                {
+                    "name": "R_TECHNICAL_MINSTR"
+                },
+                {
+                    "name": "R_TECHNICAL_MMKT"
+                },
+                {
+                    "name": "R_TECHNICAL_MOVE_DATE"
+                },
+                {
+                    "name": "R_TECHNICAL_POS"
+                },
+                {
+                    "name": "R_TECHNICAL_REMARK"
+                },
+                {
+                    "name": "R_TECHNICAL_RO"
+                },
+                {
+                    "name": "£SENTI_BUSINESS_UNIT"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "£PRT_USERBOX"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAMI"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TPFM"
+                },
+                {
+                    "name": "R_TECHNICAL_SERPIL"
+                },
+                {
+                    "name": "R_TECHNICAL_STEX"
+                },
+                {
+                    "name": "R_TECHNICAL_SUPPORT"
+                },
+                {
+                    "name": "R_TECHNICAL_TSKADM"
+                },
+                {
+                    "name": "R_TECHNICAL_XRATE"
+                },
+                {
+                    "name": "R_GEN_C24_CHG_TEST"
+                },
+                {
+                    "name": "R_GEN_RPA_CHG_TEST"
+                },
+                {
+                    "name": "R_WMP_B_TEST"
+                },
+                {
+                    "name": "R_TECHNICAL_ACCOUNTING"
+                },
+                {
+                    "name": "R_TECHNICAL_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_CREDIT"
+                },
+                {
+                    "name": "R_TECHNICAL_CS_VIEW"
+                },
+                {
+                    "name": "R_TECHNICAL_CTACT"
+                },
+                {
+                    "name": "R_TECHNICAL_DYN_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_EDITEMP"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_FX"
+                },
+                {
+                    "name": "R_TECHNICAL_JOB"
+                },
+                {
+                    "name": "R_TECHNICAL_MINSTR"
+                },
+                {
+                    "name": "R_TECHNICAL_MMKT"
+                },
+                {
+                    "name": "R_TECHNICAL_MOVE_DATE"
+                },
+                {
+                    "name": "R_TECHNICAL_POS"
+                },
+                {
+                    "name": "R_TECHNICAL_REMARK"
+                },
+                {
+                    "name": "R_TECHNICAL_RO"
+                },
+                {
+                    "name": "£SENTI_BUSINESS_UNIT"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "£PRT_USERBOX"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAMI"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TPFM"
+                },
+                {
+                    "name": "R_TECHNICAL_SERPIL"
+                },
+                {
+                    "name": "R_TECHNICAL_STEX"
+                },
+                {
+                    "name": "R_TECHNICAL_SUPPORT"
+                },
+                {
+                    "name": "R_TECHNICAL_TSKADM"
+                },
+                {
+                    "name": "R_TECHNICAL_XRATE"
+                },
+                {
+                    "name": "R_WMP_T_SERVICES_TEST"
+                },
+                {
+                    "name": "R_TECHNICAL_ACCOUNTING"
+                },
+                {
+                    "name": "R_TECHNICAL_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_CREDIT"
+                },
+                {
+                    "name": "R_TECHNICAL_CS_VIEW"
+                },
+                {
+                    "name": "R_TECHNICAL_CTACT"
+                },
+                {
+                    "name": "R_TECHNICAL_DYN_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_EDITEMP"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_FX"
+                },
+                {
+                    "name": "R_TECHNICAL_JOB"
+                },
+                {
+                    "name": "R_TECHNICAL_MINSTR"
+                },
+                {
+                    "name": "R_TECHNICAL_MMKT"
+                },
+                {
+                    "name": "R_TECHNICAL_MOVE_DATE"
+                },
+                {
+                    "name": "R_TECHNICAL_POS"
+                },
+                {
+                    "name": "R_TECHNICAL_REMARK"
+                },
+                {
+                    "name": "R_TECHNICAL_RO"
+                },
+                {
+                    "name": "£SENTI_BUSINESS_UNIT"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "£PRT_USERBOX"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAMI"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TPFM"
+                },
+                {
+                    "name": "R_TECHNICAL_SERPIL"
+                },
+                {
+                    "name": "R_TECHNICAL_STEX"
+                },
+                {
+                    "name": "R_TECHNICAL_SUPPORT"
+                },
+                {
+                    "name": "R_TECHNICAL_TSKADM"
+                },
+                {
+                    "name": "R_TECHNICAL_XRATE"
+                }
+            ]
+        },
+        {
+            "bu": "RBS.TDS",
+            "roles": [
+                {
+                    "name": "R_AM_BANK_TEST"
+                },
+                {
+                    "name": "R_TECHNICAL_ACCOUNTING"
+                },
+                {
+                    "name": "R_TECHNICAL_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_CREDIT"
+                },
+                {
+                    "name": "R_TECHNICAL_CS_VIEW"
+                },
+                {
+                    "name": "R_TECHNICAL_CTACT"
+                },
+                {
+                    "name": "R_TECHNICAL_DYN_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_EDITEMP"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_FX"
+                },
+                {
+                    "name": "R_TECHNICAL_JOB"
+                },
+                {
+                    "name": "R_TECHNICAL_MINSTR"
+                },
+                {
+                    "name": "R_TECHNICAL_MMKT"
+                },
+                {
+                    "name": "R_TECHNICAL_MOVE_DATE"
+                },
+                {
+                    "name": "R_TECHNICAL_POS"
+                },
+                {
+                    "name": "R_TECHNICAL_REMARK"
+                },
+                {
+                    "name": "R_TECHNICAL_RO"
+                },
+                {
+                    "name": "£SENTI_BUSINESS_UNIT"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "£PRT_USERBOX"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAMI"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TPFM"
+                },
+                {
+                    "name": "R_TECHNICAL_SERPIL"
+                },
+                {
+                    "name": "R_TECHNICAL_STEX"
+                },
+                {
+                    "name": "R_TECHNICAL_SUPPORT"
+                },
+                {
+                    "name": "R_TECHNICAL_TSKADM"
+                },
+                {
+                    "name": "R_TECHNICAL_XRATE"
+                },
+                {
+                    "name": "R_AM_OCC_TEST"
+                },
+                {
+                    "name": "R_TECHNICAL_ACCOUNTING"
+                },
+                {
+                    "name": "R_TECHNICAL_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_CREDIT"
+                },
+                {
+                    "name": "R_TECHNICAL_CS_VIEW"
+                },
+                {
+                    "name": "R_TECHNICAL_CTACT"
+                },
+                {
+                    "name": "R_TECHNICAL_DYN_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_EDITEMP"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_FX"
+                },
+                {
+                    "name": "R_TECHNICAL_JOB"
+                },
+                {
+                    "name": "R_TECHNICAL_MINSTR"
+                },
+                {
+                    "name": "R_TECHNICAL_MMKT"
+                },
+                {
+                    "name": "R_TECHNICAL_MOVE_DATE"
+                },
+                {
+                    "name": "R_TECHNICAL_POS"
+                },
+                {
+                    "name": "R_TECHNICAL_REMARK"
+                },
+                {
+                    "name": "R_TECHNICAL_RO"
+                },
+                {
+                    "name": "£SENTI_BUSINESS_UNIT"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "£PRT_USERBOX"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAMI"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TPFM"
+                },
+                {
+                    "name": "R_TECHNICAL_SERPIL"
+                },
+                {
+                    "name": "R_TECHNICAL_STEX"
+                },
+                {
+                    "name": "R_TECHNICAL_SUPPORT"
+                },
+                {
+                    "name": "R_TECHNICAL_TSKADM"
+                },
+                {
+                    "name": "R_TECHNICAL_XRATE"
+                },
+                {
+                    "name": "R_WMP_B_TEST"
+                },
+                {
+                    "name": "R_TECHNICAL_ACCOUNTING"
+                },
+                {
+                    "name": "R_TECHNICAL_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_CREDIT"
+                },
+                {
+                    "name": "R_TECHNICAL_CS_VIEW"
+                },
+                {
+                    "name": "R_TECHNICAL_CTACT"
+                },
+                {
+                    "name": "R_TECHNICAL_DYN_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_EDITEMP"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_FX"
+                },
+                {
+                    "name": "R_TECHNICAL_JOB"
+                },
+                {
+                    "name": "R_TECHNICAL_MINSTR"
+                },
+                {
+                    "name": "R_TECHNICAL_MMKT"
+                },
+                {
+                    "name": "R_TECHNICAL_MOVE_DATE"
+                },
+                {
+                    "name": "R_TECHNICAL_POS"
+                },
+                {
+                    "name": "R_TECHNICAL_REMARK"
+                },
+                {
+                    "name": "R_TECHNICAL_RO"
+                },
+                {
+                    "name": "£SENTI_BUSINESS_UNIT"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "£PRT_USERBOX"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAMI"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TPFM"
+                },
+                {
+                    "name": "R_TECHNICAL_SERPIL"
+                },
+                {
+                    "name": "R_TECHNICAL_STEX"
+                },
+                {
+                    "name": "R_TECHNICAL_SUPPORT"
+                },
+                {
+                    "name": "R_TECHNICAL_TSKADM"
+                },
+                {
+                    "name": "R_TECHNICAL_XRATE"
+                },
+                {
+                    "name": "R_WMP_T_SERVICES_TEST"
+                },
+                {
+                    "name": "R_TECHNICAL_ACCOUNTING"
+                },
+                {
+                    "name": "R_TECHNICAL_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_CREDIT"
+                },
+                {
+                    "name": "R_TECHNICAL_CS_VIEW"
+                },
+                {
+                    "name": "R_TECHNICAL_CTACT"
+                },
+                {
+                    "name": "R_TECHNICAL_DYN_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_EDITEMP"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_FX"
+                },
+                {
+                    "name": "R_TECHNICAL_JOB"
+                },
+                {
+                    "name": "R_TECHNICAL_MINSTR"
+                },
+                {
+                    "name": "R_TECHNICAL_MMKT"
+                },
+                {
+                    "name": "R_TECHNICAL_MOVE_DATE"
+                },
+                {
+                    "name": "R_TECHNICAL_POS"
+                },
+                {
+                    "name": "R_TECHNICAL_REMARK"
+                },
+                {
+                    "name": "R_TECHNICAL_RO"
+                },
+                {
+                    "name": "£SENTI_BUSINESS_UNIT"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "£PRT_USERBOX"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAMI"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TPFM"
+                },
+                {
+                    "name": "R_TECHNICAL_SERPIL"
+                },
+                {
+                    "name": "R_TECHNICAL_STEX"
+                },
+                {
+                    "name": "R_TECHNICAL_SUPPORT"
+                },
+                {
+                    "name": "R_TECHNICAL_TSKADM"
+                },
+                {
+                    "name": "R_TECHNICAL_XRATE"
+                }
+            ]
+        },
+        {
+            "bu": "RBS.NWA",
+            "roles": [
+                {
+                    "name": "R_AM_BANK_TEST"
+                },
+                {
+                    "name": "R_TECHNICAL_ACCOUNTING"
+                },
+                {
+                    "name": "R_TECHNICAL_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_CREDIT"
+                },
+                {
+                    "name": "R_TECHNICAL_CS_VIEW"
+                },
+                {
+                    "name": "R_TECHNICAL_CTACT"
+                },
+                {
+                    "name": "R_TECHNICAL_DYN_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_EDITEMP"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_FX"
+                },
+                {
+                    "name": "R_TECHNICAL_JOB"
+                },
+                {
+                    "name": "R_TECHNICAL_MINSTR"
+                },
+                {
+                    "name": "R_TECHNICAL_MMKT"
+                },
+                {
+                    "name": "R_TECHNICAL_MOVE_DATE"
+                },
+                {
+                    "name": "R_TECHNICAL_POS"
+                },
+                {
+                    "name": "R_TECHNICAL_REMARK"
+                },
+                {
+                    "name": "R_TECHNICAL_RO"
+                },
+                {
+                    "name": "£SENTI_BUSINESS_UNIT"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "£PRT_USERBOX"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAMI"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TPFM"
+                },
+                {
+                    "name": "R_TECHNICAL_SERPIL"
+                },
+                {
+                    "name": "R_TECHNICAL_STEX"
+                },
+                {
+                    "name": "R_TECHNICAL_SUPPORT"
+                },
+                {
+                    "name": "R_TECHNICAL_TSKADM"
+                },
+                {
+                    "name": "R_TECHNICAL_XRATE"
+                },
+                {
+                    "name": "R_WMP_B_TEST"
+                },
+                {
+                    "name": "R_TECHNICAL_ACCOUNTING"
+                },
+                {
+                    "name": "R_TECHNICAL_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_CREDIT"
+                },
+                {
+                    "name": "R_TECHNICAL_CS_VIEW"
+                },
+                {
+                    "name": "R_TECHNICAL_CTACT"
+                },
+                {
+                    "name": "R_TECHNICAL_DYN_COLLECT"
+                },
+                {
+                    "name": "R_TECHNICAL_EDITEMP"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_FX"
+                },
+                {
+                    "name": "R_TECHNICAL_JOB"
+                },
+                {
+                    "name": "R_TECHNICAL_MINSTR"
+                },
+                {
+                    "name": "R_TECHNICAL_MMKT"
+                },
+                {
+                    "name": "R_TECHNICAL_MOVE_DATE"
+                },
+                {
+                    "name": "R_TECHNICAL_POS"
+                },
+                {
+                    "name": "R_TECHNICAL_REMARK"
+                },
+                {
+                    "name": "R_TECHNICAL_RO"
+                },
+                {
+                    "name": "£SENTI_BUSINESS_UNIT"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_ADAM"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "£PRT_USERBOX"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_ADAMI"
+                },
+                {
+                    "name": "R_TECHNICAL_ELAS_ALL"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_JERSEY"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_COUTTS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_NWA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_PBA"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_EARCH_TDS"
+                },
+                {
+                    "name": "R_TECHNICAL_RO_TPFM"
+                },
+                {
+                    "name": "R_TECHNICAL_SERPIL"
+                },
+                {
+                    "name": "R_TECHNICAL_STEX"
+                },
+                {
+                    "name": "R_TECHNICAL_SUPPORT"
+                },
+                {
+                    "name": "R_TECHNICAL_TSKADM"
+                },
+                {
+                    "name": "R_TECHNICAL_XRATE"
+                }
+            ]
+        }
+    ]
+}
+
+I have to validate bu as RBS.CUK and name as R_OB_SUPP_CENT_COUTTS.which function can I use ?
+
+For example, for contact Notes API, I have 2 step defintions like - 
+
+    And I verify the array field "personIds" contains "<Item>" in Contact Notes response
+    And I verify the string field "subject" is "<Subject>" in Contact Notes response
+
+    @And("I verify the array field {string} contains {string} in Contact Notes response")
+    public void iVerifyArrayFieldContainsValue(String jsonArrayPath, String expectedValue) throws Exception {
+        boolean valueExists = jsonHelper.valueExistsInJsonArray(response, jsonArrayPath, expectedValue);
+        ExtentCucumberAdapter.addTestStepLog("Expected value in array '" + jsonArrayPath + "': " + expectedValue + " → Found: " + valueExists);
+        Assert.assertTrue(valueExists, "Value '" + expectedValue + "' not found in array: " + jsonArrayPath);
+    }
+
+    @And("I verify the string field {string} is {string} in Contact Notes response")
+    public void iVerifyStringFieldEquals(String jsonPath, String expectedValue) throws Exception {
+        String actualValue = jsonHelper.extractStringField(response, jsonPath);
+        ExtentCucumberAdapter.addTestStepLog("Expected value at '" + jsonPath + "': " + expectedValue + ", Actual: " + actualValue);
+        Assert.assertEquals(actualValue, expectedValue, "Mismatch at: " + jsonPath);
+    }
+
+package utilities;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.restassured.response.Response;
+import com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter;
+import org.json.JSONObject;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+public class JsonHelper {
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    private JsonNode getNodeByPath(JsonNode rootNode, String path) {
+        String[] keys = path.split("\\.");
+        for (String key : keys) {
+            if (rootNode == null) break;
+
+            // Check if key has array notation like field[0]
+            if (key.matches(".+\\[\\d+\\]")) {
+                String fieldName = key.substring(0, key.indexOf("["));
+                int index = Integer.parseInt(key.substring(key.indexOf("[") + 1, key.indexOf("]")));
+                rootNode = rootNode.path(fieldName);
+                if (rootNode.isArray() && rootNode.size() > index) {
+                    rootNode = rootNode.get(index);
+                } else {
+                    return null; // index out of bounds
+                }
+            } else {
+                rootNode = rootNode.path(key);
+            }
+        }
+        return rootNode;
+    }
+
+
+    public Object extractRawField(Response response, String fieldPath) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode node = getNodeByPath(rootNode, fieldPath);
+        return node.isMissingNode() || node.isNull() ? null : node;
+    }
+
+    public String extractStringField(Response response, String fieldPath) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode node = getNodeByPath(rootNode, fieldPath);
+        return node.isMissingNode() || node.isNull() ? null : node.asText();
+    }
+
+    public Boolean extractBooleanField(Response response, String fieldPath) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode node = getNodeByPath(rootNode, fieldPath);
+        return node.isMissingNode() || node.isNull() ? null : node.asBoolean();
+    }
+
+    public boolean valueExistsInJsonArray(Response response, String jsonPath, String targetValue) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode arrayNode = getNodeByPath(rootNode, jsonPath);
+        if (arrayNode != null && arrayNode.isArray()) {
+            return iterateAndCheckArray(arrayNode, targetValue);
+        }
+        return false;
+    }
+
+    private boolean iterateAndCheckArray(JsonNode arrayNode, String targetValue) {
+        for (JsonNode itemNode : arrayNode) {
+            String currentValue = itemNode.asText();
+            System.out.println("Checking item: " + currentValue);
+            if (targetValue.equals(currentValue)) {
+                logMatchFound(currentValue);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void logMatchFound(String value) {
+        System.out.println("Match found: " + value);
+        ExtentCucumberAdapter.addTestStepLog("Actual value found: " + value);
+    }
+
+    public List<String> extractListOfStringFieldsFromArray(Response response, String arrayField, String subField) {
+        List<Map<String, Object>> itemList = response.jsonPath().getList(arrayField);
+        List<String> result = new ArrayList<>();
+        for (Map<String, Object> item : itemList) {
+            Object value = item.get(subField);
+            if (value != null) {
+                result.add(value.toString());
+            }
+        }
+        return result;
+    }
+
+    public void validateFieldExistsInArray(Response response, String arrayPath, String fieldName) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode arrayNode = rootNode.at(arrayPath); // Path should start with '/' for root level
+
+        if (!arrayNode.isArray()) {
+            throw new Exception("Expected an array at path: " + arrayPath);
+        }
+
+        for (JsonNode element : arrayNode) {
+            JsonNode fieldNode = element.get(fieldName);
+            if (fieldNode == null || fieldNode.asText().isEmpty()) {
+                throw new AssertionError("Missing or empty '" + fieldName + "' in one of the elements at: " + arrayPath);
+            }
+        }
+
+        ExtentCucumberAdapter.addTestStepLog("All elements in array " + arrayPath + " contain a valid '" + fieldName + "'");
+    }
+
+    public String extractStringFieldFromArray(Response response, String arrayField, int index, String fieldName) {
+        return response.jsonPath().getString(arrayField + "[" + index + "]." + fieldName);
+    }
+
+    public List<Map<String, Object>> extractListOfMapFromArray(Response response, String arrayFieldPath) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(response.asString());
+        JsonNode arrayNode = getNodeByPath(rootNode, arrayFieldPath);
+
+        if (!arrayNode.isArray()) {
+            throw new Exception("Expected an array at path: " + arrayFieldPath);
+        }
+
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (JsonNode node : arrayNode) {
+            Map<String, Object> map = objectMapper.convertValue(node, new TypeReference<Map<String, Object>>() {});
+            result.add(map);
+        }
+
+        return result;
+    }
+
+    public String getValue(Response response, String fieldPath) {
+        try {
+            return extractStringField(response, fieldPath);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to extract value from response for path: " + fieldPath, e);
+        }
+    }
+
+    public boolean hasField(Response response, String jsonPath) {
+        try {
+            Object fieldValue = response.jsonPath().get(jsonPath);
+            return fieldValue != null;
+        } catch (Exception e) {
+            return false; // Path does not exist
+        }
+    }
+
+    public BigDecimal extractBigDecimalField(Response response, String path) {
+        return new BigDecimal(response.jsonPath().getString(path));
+    }
+
