@@ -1,1 +1,2 @@
-If value left to pay is equal to or greater than the estimated value of the home then user is shown a kick out message when pressing continue
+MortgageOutstanding = CDbl(str_MortgageOutstanding.Replace(",", "").Trim)
+EstimatedHomeValue = CDbl(str_EstimatedHomeValue.Replace(",", "").Trim)
