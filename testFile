@@ -1,2 +1,1 @@
-MortgageOutstanding = CDbl(str_MortgageOutstanding.Replace(",", "").Trim)
-EstimatedHomeValue = CDbl(str_EstimatedHomeValue.Replace(",", "").Trim)
+<html app='chrome.exe' title='*' />
