@@ -1,1 +1,1 @@
-randomValue = System.Guid.NewGuid().ToString().Substring(0,8) & "&
+randomValue = System.Guid.NewGuid().ToString().Substring(0,6) & "&"
