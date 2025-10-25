@@ -1,1 +1,2 @@
-randomValue = System.Guid.NewGuid().ToString().Substring(0,6) & "&"
+rnd = New Random()
+randomNumber = rnd.Next(100000, 999999)
