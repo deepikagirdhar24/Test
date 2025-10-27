@@ -1,2 +1,5 @@
-rnd = New Random()
-randomNumber = rnd.Next(100000, 999999)
+"!@#$%^&*()_+=-"
+
+For i = 1 To 2
+    specialValue = specialValue + specialChars.Substring(rnd.Next(0, specialChars.Length), 1)
+Next
