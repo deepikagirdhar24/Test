@@ -1,5 +1,1 @@
-"!@#$%^&*()_+=-"
-
-For i = 1 To 2
-    specialValue = specialValue + specialChars.Substring(rnd.Next(0, specialChars.Length), 1)
-Next
+System.Guid.NewGuid().ToString().Substring(0,6) & str_RandomSpecialChar.Substring(rnd.Next(0, str_RandomSpecialChar.Length), 1)
