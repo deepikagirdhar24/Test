@@ -1,1 +1,2 @@
-"<webctrl idx='" + (2*i).ToString + "' parentid='ItemList__List' tag='LABEL' />"
+"<webctrl aaname='*' idx='" + (2*i).ToString + "' parentid='ItemList__List' tag='LABEL' />"
+
