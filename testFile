@@ -1,43 +1,9 @@
-DynamicTextSelector from OtherProp2 to 10 - I need to run loop from 2 to 10. 1st is already done.
+Textbox 1 and 2 - strict selectors
+<webctrl name='Properties.OtherProperties[1].EstimatedValue' tag='INPUT' type='text' />
+<webctrl name='Properties.OtherProperties[2].EstimatedValue' tag='INPUT' type='text' />
 
-<webctrl name='Properties.OtherProperties[1].EstimatedValue' tag='INPUT' type='text' class='FormControl ctHidden input-validation-error' aaname=' &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;What’s the estimated value of this property? If you own the property with someone else just tell us about your share. &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;' />
+Radio Buttons 1 and 2 - strict selectors
+<webctrl aaname=' &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9; &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;' idx='4' parentid='ItemList__List' tag='LABEL' />
+<webctrl aaname=' &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9; &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;' idx='6' parentid='ItemList__List' tag='LABEL' />
 
-<webctrl name='Properties.OtherProperties[11].EstimatedValue' tag='INPUT' type='text' class='FormControl ctHidden' aaname=' &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;What’s the estimated value of this property? If you own the property with someone else just tell us about your share. &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;' />
-
-<webctrl name='Properties.OtherProperties[12].EstimatedValue' tag='INPUT' type='text' class='FormControl ctHidden' aaname=' &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;What’s the estimated value of this property? If you own the property with someone else just tell us about your share. &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;' />
-
-<webctrl name='Properties.OtherProperties[13].EstimatedValue' tag='INPUT' type='text' class='FormControl ctHidden' aaname=' &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;What’s the estimated value of this property? If you own the property with someone else just tell us about your share. &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;' />
-
-<webctrl name='Properties.OtherProperties[14].EstimatedValue' tag='INPUT' type='text' class='FormControl ctHidden' aaname=' &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;What’s the estimated value of this property? If you own the property with someone else just tell us about your share. &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;' />
-
-<webctrl name='Properties.OtherProperties[15].EstimatedValue' tag='INPUT' type='text' class='FormControl ctHidden' aaname=' &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;What’s the estimated value of this property? If you own the property with someone else just tell us about your share. &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;' />
-
-<webctrl name='Properties.OtherProperties[16].EstimatedValue' tag='INPUT' type='text' class='FormControl ctHidden' aaname=' &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;What’s the estimated value of this property? If you own the property with someone else just tell us about your share. &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;' />
-
-<webctrl name='Properties.OtherProperties[17].EstimatedValue' tag='INPUT' type='text' class='FormControl ctHidden' aaname=' &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;What’s the estimated value of this property? If you own the property with someone else just tell us about your share. &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;' />
-
-<webctrl name='Properties.OtherProperties[18].EstimatedValue' tag='INPUT' type='text' class='FormControl ctHidden' aaname=' &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;What’s the estimated value of this property? If you own the property with someone else just tell us about your share. &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;' />
-
-
-
-DynamicRadioBtn from OtherProp2 to 10 - I need to run loop from 2 to 10. 1st is already done.
-
-<webctrl aaname=' &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9; &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;' type='' parentid='ItemList__List' tag='LABEL' class='' />
-
-<webctrl aaname=' &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9; &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;' type='' parentid='ItemList__List' tag='LABEL' class='' />
-
-<webctrl aaname=' &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9; &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;' type='' parentid='ItemList__List' tag='LABEL' class='' />
-
-<webctrl aaname=' &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9; &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;' type='' parentid='ItemList__List' tag='LABEL' class='' />
-
-<webctrl aaname=' &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9; &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;' type='' parentid='ItemList__List' tag='LABEL' class='' />
-
-<webctrl aaname=' &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9; &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;' type='' parentid='ItemList__List' tag='LABEL' class='' />
-
-<webctrl aaname=' &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9; &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;' type='' parentid='ItemList__List' tag='LABEL' class='' />
-
-<webctrl aaname=' &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9; &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;' type='' parentid='ItemList__List' tag='LABEL' class='' />
-
-<webctrl aaname=' &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9; &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;' type='' parentid='ItemList__List' tag='LABEL' class='' />
-
-
+Here are exact strictor patterns for textbox and radio button. These are total 9 each. Help me with the flow now
