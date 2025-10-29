@@ -1,5 +1,1 @@
-"<webctrl aaname=' &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9; &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;' idx='"+(2*i).ToString+"' parentid='ItemList__List' tag='LABEL' />"
-
-is anything wrong in this formula ?
-
-i starts from 2 - here the starting value of idx is 4
+idx='" + (2*i).ToString + "'
