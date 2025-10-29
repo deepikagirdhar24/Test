@@ -1,9 +1,5 @@
-Textbox 1 and 2 - strict selectors
-<webctrl name='Properties.OtherProperties[1].EstimatedValue' tag='INPUT' type='text' />
-<webctrl name='Properties.OtherProperties[2].EstimatedValue' tag='INPUT' type='text' />
+"<webctrl aaname=' &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9; &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;' idx='"+(2*i).ToString+"' parentid='ItemList__List' tag='LABEL' />"
 
-Radio Buttons 1 and 2 - strict selectors
-<webctrl aaname=' &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9; &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;' idx='4' parentid='ItemList__List' tag='LABEL' />
-<webctrl aaname=' &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9; &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;' idx='6' parentid='ItemList__List' tag='LABEL' />
+is anything wrong in this formula ?
 
-Here are exact strictor patterns for textbox and radio button. These are total 9 each. Help me with the flow now
+i starts from 2 - here the starting value of idx is 4
