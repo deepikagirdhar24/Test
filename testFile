@@ -1,5 +1,1 @@
-return (function(){
-  var popup = document.querySelector("[class*='popup'], [class*='modal'], [id*='popup'], [id*='kickout']");
-  if (!popup) return "Popup not found";
-  return popup.innerText || popup.textContent;
-})();
+"<webctrl class='modal-title' tag='H1' type='' />"
