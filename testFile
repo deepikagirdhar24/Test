@@ -1,1 +1,5 @@
-"<webctrl class='modal-title' tag='H1' type='' />"
+return (function(){
+  var el = document.querySelector("h1.modal-title");
+  var text = (el?.innerText || el?.textContent || "").trim();
+  return text;
+})();
