@@ -1,1 +1,5 @@
-"<webctrl idx='" + (2*i).ToString + "' parentid='ItemList__List' tag='LABEL' />"
+return (function(){
+  var popup = document.querySelector("[class*='popup'], [class*='modal'], [id*='popup'], [id*='kickout']");
+  if (!popup) return "Popup not found";
+  return popup.innerText || popup.textContent;
+})();
