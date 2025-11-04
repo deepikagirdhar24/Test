@@ -1,5 +1,5 @@
-return (function(){
-  var el = document.querySelector("h1.modal-title");
-  var text = (el?.innerText || el?.textContent || "").trim();
+"return (function() {
+  var el = document.querySelector('h1.modal-title');
+  var text = (el ? (el.innerText || el.textContent || '').trim() : '');
   return text;
-})();
+})();"
