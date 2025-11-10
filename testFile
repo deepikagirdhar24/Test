@@ -1,6 +1,18 @@
-    @And("I verify the Status Code for Debit Card {string}")
-    public void iVerifyTheStatusCodeForDebitCard(String strStatusCode) {
-        int responseCode= response.statusCode();
-        ExtentCucumberAdapter.addTestStepLog("Actual value of Status code is : " +responseCode);
-        Assert.assertEquals(Integer.parseInt(strStatusCode),responseCode);
-    }
+@And("I verify the Status Code for Debit Card {string}")
+public void iVerifyTheStatusCodeForDebitCard(String strStatusCode) {
+    int responseCode = response.statusCode();
+    ExtentCucumberAdapter.addTestStepLog("Actual value of Status code is : " + responseCode);
+
+    // Split expected codes (e.g. "400,500") and check if actual code matches any
+    List<Integer> expectedCodes = Arrays.stream(strStatusCode.split(","))
+                                        .map(String::trim)
+                                        .map(Integer::parseInt)
+                                        .toList();
+
+    boolean isValid = expectedCodes.contains(responseCode);
+
+    ExtentCucumberAdapter.addTestStepLog("Expected status codes: " + expectedCodes);
+
+    Assert.assertTrue(isValid,
+            "Expected one of " + expectedCodes + " but got: " + responseCode);
+}
