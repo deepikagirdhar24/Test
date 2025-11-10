@@ -1,5 +1,6 @@
-"return (function() {
-  var el = document.querySelector('h1.modal-title');
-  var text = (el ? (el.innerText || el.textContent || '').trim() : '');
-  return text;
-})();"
+    @And("I verify the Status Code for Debit Card {string}")
+    public void iVerifyTheStatusCodeForDebitCard(String strStatusCode) {
+        int responseCode= response.statusCode();
+        ExtentCucumberAdapter.addTestStepLog("Actual value of Status code is : " +responseCode);
+        Assert.assertEquals(Integer.parseInt(strStatusCode),responseCode);
+    }
