@@ -1,3 +1,6 @@
-STrict Selector - <webctrl id='SavingsAndInvestments_DeductibleAccessibleBankBuildingSocietyAmount-error' tag='SPAN' />
+str_Limit = System.Text.RegularExpressions.Regex.Match(str_SavingText, "£(\d+,?\d*)").Groups(1).Value
+int_Limit = CInt(str_Limit.Replace(",", ""))
 
-Fuzzy Selector - <webctrl id='SavingsAndInvestments_DeductibleAccessibleBankBuildingSocietyAmount-error' tag='SPAN' type='' class='' />
+int_ValidValue = int_Limit - 1000    ' → 9000
+
+Type Into → int_ValidValue.ToString
